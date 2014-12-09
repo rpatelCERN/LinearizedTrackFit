@@ -17,7 +17,8 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 
 process.TFileService = cms.Service("TFileService", fileName = cms.string("matrixHists.root") )
 
-process.demo = cms.EDAnalyzer('LinearizedTrackFit'
+process.demo = cms.EDAnalyzer('LinearizedTrackFit',
+                              InputFileName = cms.string("/afs/cern.ch/user/d/demattia/work/Upgrade/CMSSW_6_2_0_SLHC20_patch1/src/Fixed/extracted.root")
 )
 
 

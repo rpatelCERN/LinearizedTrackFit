@@ -25,8 +25,6 @@
 #include <unordered_set>
 #include <Eigen/Eigenvalues>
 
-// #include "TFile.h"
-// #include "TH1D.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
@@ -59,6 +57,8 @@ private:
   virtual void endJob() override;
   int fillVars(const L1TrackTriggerTree * tree, VectorXd & vars);
 
+  TString inputFileName_;
+
   //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
   //virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
   //virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
@@ -80,7 +80,8 @@ private:
 //
 
 
-LinearizedTrackFit::LinearizedTrackFit(const edm::ParameterSet& iConfig)
+LinearizedTrackFit::LinearizedTrackFit(const edm::ParameterSet& iConfig) :
+  inputFileName_(iConfig.getParameter<std::string>("InputFileName"))
 {
 }
 
@@ -120,7 +121,7 @@ int LinearizedTrackFit::fillVars(const L1TrackTriggerTree * tree, VectorXd & var
   int iV = 0;
   for (int k=0; k<tree->m_stub; ++k) {
     // Use only stubs from muons (skip also antimuons)
-    if (tree->m_stub_pdg->at(k) == 13) {
+    if (tree->m_stub_pdg->at(k) == -13) {
       // Need to skip the opposite side otherwise it will cause a discontinuity
       if (tree->m_stub_etaGEN->at(k) < 0) continue;
       // Avoid duplicates
@@ -143,21 +144,21 @@ void LinearizedTrackFit::beginJob()
 
   edm::Service<TFileService> fs;
 
-  L1TrackTriggerTree * tree = new L1TrackTriggerTree("/afs/cern.ch/user/d/demattia/work/Upgrade/CMSSW_6_2_0_SLHC20_patch1/src/extracted_FIXED.root");
-
-  // TFile* histFile = new TFile("matrixHists.root", "RECREATE");
+  L1TrackTriggerTree * tree = new L1TrackTriggerTree(inputFileName_);
 
   TH1D * hVar[nVars], * hPC[nVars], * hPCNorm[nVars];
   float xRange = 0.001;
-  float varRange = 1.;
+  float varRangeMin = -1.;
+  float varRangeMax = 1.;
   for(int iV = 0; iV != nVars; ++iV){
     std::ostringstream s;
     std::ostringstream t;
     std::ostringstream tNorm;
     s << "Var_" << iV;
-    iV%2 != 0 ? varRange = 100. : varRange = 1.;
+    iV%2 != 0 ? varRangeMax = 40. : varRangeMax = 0.1;
+    iV%2 != 0 ? varRangeMin = 0. : varRangeMin = -0.1;
     // hVar[iV] = new TH1D((s.str()).c_str(), (s.str()).c_str(), 100, -varRange, +varRange);
-    hVar[iV] = fs->make<TH1D>((s.str()).c_str(), (s.str()).c_str(), 100, -varRange, +varRange);
+    hVar[iV] = fs->make<TH1D>((s.str()).c_str(), (s.str()).c_str(), 1000, varRangeMin, varRangeMax);
     t << "PC_" << iV;
     tNorm << "PCNorm_" << iV;
     if (iV > 8) xRange = 0.1;
@@ -254,7 +255,6 @@ void LinearizedTrackFit::beginJob()
     // fill histograms
     for(int iV = 0; iV != nVars; ++iV) {
       hVar[iV]->Fill(vars(iV));
-      // std::cout << "vars("<<iV<<") = " << vars(iV) << std::endl;
       hPC[iV]->Fill(principal(iV));
       hPCNorm[iV]->Fill(principal(iV)/sqrtEigenvalues[iV]);
       if (iV > 8) continue;
@@ -264,8 +264,6 @@ void LinearizedTrackFit::beginJob()
     hNormChi2->Fill(chi2/nDof);
 
   }
-  // histFile->Write();
-  // histFile->Close();
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
