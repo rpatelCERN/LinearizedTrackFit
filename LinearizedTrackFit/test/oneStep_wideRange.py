@@ -43,7 +43,7 @@ process.load('DataProduction.SkimGeometry.mixNoPU_SKIM_cfi')
 process.load('DataProduction.SkimGeometry.Digi_SKIM_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100000)
+    input = cms.untracked.int32(100)
 )
 
 # Input source
