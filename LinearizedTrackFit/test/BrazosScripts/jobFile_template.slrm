@@ -17,7 +17,7 @@ echo "SLURM_ARRAH_TASK_ID=$SLURM_ARRAY_TASK_ID"
 cd /home/demattia/CMSSW_6_2_0_SLHC20_patch1/src/
 source /home/hepxadmin/cmssw/cmsset_default.sh
 eval `scramv1 runtime -sh`
-cd /home/demattia/CMSSW_6_2_0_SLHC20_patch1/src/LinearizedTrackFit/LinearizedTrackFit/test/JobFiles
+cd JOBSDIR
 cmsRun oneStep_wideRange_${SLURM_ARRAY_TASK_ID}.py
 
 echo "Ended at `date` on `hostname`"

@@ -24,5 +24,6 @@ slurm_template_file = open("jobFile_template.slrm", "r")
 slurm_output_file = open("JobFiles/jobFile.slrm", "w")
 for line in slurm_template_file:
     line = line.replace("ARRAYMAX", str(total_jobs))
+    line = line.replace("JOBSDIR", os.getcwd()+"/JobFiles")
     slurm_output_file.write(line)
 slurm_output_file.close()

@@ -56,10 +56,22 @@ private:
   virtual void beginJob() override;
   virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
   virtual void endJob() override;
-  int fillVars(const L1TrackTriggerTree * tree, VectorXd & vars, const int nVars);
+  int fillVars(const L1TrackTriggerTree * tree,
+	       VectorXd & varsTransverse, const int nVarsTransverse,
+	       VectorXd & varsLongitudinal, const int nVarsLongitudinal);
   bool goodTrack(const L1TrackTriggerTree * tree, const double & phiCut);
+  void updateMeanAndCov(const VectorXd & vars, const int nVars, VectorXd & meanValues, MatrixXd & cov, const int nTracks);
+  void updateMeanAndCovParams(const VectorXd & pars, const int nTrackParameters, VectorXd & meanP,
+			      const VectorXd & principal, const int nVars, VectorXd & meanV,
+			      MatrixXd & corrPV, const int nTracks2);
+  void createHistograms(const int nVars,  TH1D * hVar[], TH1D * hPC[], TH1D * hPCNorm[], const edm::Service<TFileService> & fs,
+			const float & varRangeMin, const float & varRangeMax, const std::string & suffix);
+  void fillHistograms(const int nVars, const VectorXd & vars, const VectorXd & principal, const std::vector<float> & sqrtEigenvalues,
+		      TH1D * hVar[], TH1D * hPC[], TH1D * hPCNorm[], const int nVarsForChi2, float & chi2, int & nDof);
   // IMPORTANT: We assume only one muon per event
-  bool fillTrackPars(const L1TrackTriggerTree * tree, VectorXd & pars, const bool debug = false);
+  bool fillTrackPars(const L1TrackTriggerTree * tree, VectorXd & parsTransverse, VectorXd & parsLongitudinal);
+  void invertCorrelationMatrix(const int nTrackParameters, const int nVars, MatrixXd & D, const MatrixXd & corrPV, const SelfAdjointEigenSolver<MatrixXd> & es);
+  void writeMatrices(const MatrixXd & V, const MatrixXd & D, const std::string & suffix);
 
   TString inputFileName_;
 
@@ -136,10 +148,13 @@ bool LinearizedTrackFit::goodTrack(const L1TrackTriggerTree * tree, const double
 }
 
 
-int LinearizedTrackFit::fillVars(const L1TrackTriggerTree * tree, VectorXd & vars, const int nVars)
+int LinearizedTrackFit::fillVars(const L1TrackTriggerTree * tree,
+				 VectorXd & varsTransverse, const int nVarsTransverse,
+				 VectorXd & varsLongitudinal, const int nVarsLongitudinal)
 {
   std::unordered_set<int> layersFound;
-  int iV = 0;
+  int iVt = 0;
+  int iVl = 0;
   for (int k=0; k<tree->m_stub; ++k) {
     // Use only stubs from muons
     if (tree->m_stub_pdg->at(k) == -13) {
@@ -148,17 +163,8 @@ int LinearizedTrackFit::fillVars(const L1TrackTriggerTree * tree, VectorXd & var
       // Avoid duplicates
       if (layersFound.insert(tree->m_stub_layer->at(k)).second) {
 	float phi = atan2(tree->m_stub_y->at(k), tree->m_stub_x->at(k));
-	vars(iV++) = phi;
-	// Skip the last three z coordinates because they have huge uncertainties
-	// and tend to have zero variance.
-	// std::cout << "filling variable " << iV << std::endl;
-	if (nVars == 9) {
-	  if (iV < 6) vars(iV++) = tree->m_stub_z->at(k);
-	}
-	else {
-	  vars(iV++) = tree->m_stub_z->at(k);
-	}
-	// std::cout << "filled variable " << iV << std::endl;
+	varsTransverse(iVt++) = phi;
+	varsLongitudinal(iVl++) = tree->m_stub_z->at(k);
       }
     }
   }
@@ -166,9 +172,10 @@ int LinearizedTrackFit::fillVars(const L1TrackTriggerTree * tree, VectorXd & var
 }
 
 
-bool LinearizedTrackFit::fillTrackPars(const L1TrackTriggerTree * tree, VectorXd & pars, const bool debug)
+bool LinearizedTrackFit::fillTrackPars(const L1TrackTriggerTree * tree, VectorXd & parsTransverse, VectorXd & parsLongitudinal)
 {
-  int iP = 0;
+  int iPt = 0;
+  int iPl = 0;
   int ptGENsize = tree->m_stub_ptGEN->size();
   int etaGENsize = tree->m_stub_etaGEN->size();
   int PHI0size = tree->m_stub_PHI0->size();
@@ -182,16 +189,10 @@ bool LinearizedTrackFit::fillTrackPars(const L1TrackTriggerTree * tree, VectorXd
       if (etaGENsize <= k) return false;
       if (PHI0size <= k) return false;
       if (Z0size <= k) return false;
-      if (debug) std::cout << "starting to fill " << k << ", " << iP << std::endl;
-      pars(iP++) = tree->m_stub_PHI0->at(k);
-      if (debug) std::cout << "starting to fill " <<tree->m_stub_PHI0->at(k)<< std::endl;
-      pars(iP++) = 1./tan(2*atan(exp(-tree->m_stub_etaGEN->at(k))));
-      if (debug) std::cout << "starting to fill " <<tree->m_stub_etaGEN->at(k)<< std::endl;
-      pars(iP++) = tree->m_stub_Z0->at(k);
-      if (debug) std::cout << "starting to fill " <<tree->m_stub_Z0->at(k)<< std::endl;
-      if (debug) std::cout << "ptGEN size " <<tree->m_stub_ptGEN->size()<< std::endl;
-      pars(iP++) = tree->m_stub_ptGEN->at(k) == 0 ? 10000. : 1./tree->m_stub_ptGEN->at(k);
-      if (debug) std::cout << "starting to fill " <<tree->m_stub_ptGEN->at(k)<< std::endl;
+      parsTransverse(iPt++) = tree->m_stub_PHI0->at(k);
+      parsTransverse(iPt++) = tree->m_stub_ptGEN->at(k) == 0 ? 10000. : 1./tree->m_stub_ptGEN->at(k);
+      parsLongitudinal(iPl++) = 1./tan(2*atan(exp(-tree->m_stub_etaGEN->at(k))));
+      parsLongitudinal(iPl++) = tree->m_stub_Z0->at(k);
       return true;
     }
   }
@@ -199,50 +200,139 @@ bool LinearizedTrackFit::fillTrackPars(const L1TrackTriggerTree * tree, VectorXd
 }
 
 
+void LinearizedTrackFit::updateMeanAndCov(const VectorXd & vars, const int nVars, VectorXd & meanValues, MatrixXd & cov, const int nTracks)
+{
+  for (int iVar=0; iVar<nVars; ++iVar) {
+    // update mean
+    meanValues(iVar) += (vars[iVar] - meanValues(iVar))/nTracks;
+
+    // update covariance matrix
+    if(nTracks == 1) continue; // skip first track
+    for (int jVar=0; jVar<nVars; ++jVar) {
+      cov(iVar, jVar) += (vars[iVar] - meanValues(iVar))*(vars[jVar] - meanValues(jVar))/(nTracks-1) - cov(iVar, jVar)/nTracks;
+    }
+  }
+}
+
+
+void LinearizedTrackFit::updateMeanAndCovParams(const VectorXd & pars, const int nTrackParameters, VectorXd & meanP,
+						const VectorXd & principal, const int nVars, VectorXd & meanV,
+						MatrixXd & corrPV, const int nTracks2)
+{
+  for(int iPar = 0; iPar != nTrackParameters; ++iPar){
+    meanP(iPar) += (pars[iPar] - meanP(iPar))/nTracks2;
+  };
+
+  for(int iVar = 0; iVar != nVars; ++iVar){
+    meanV(iVar) += (principal[iVar] - meanV(iVar))/nTracks2;
+  };
+
+  // update covariance matrix
+  if(nTracks2 == 1) return; // skip first track
+  for(int i = 0; i != nTrackParameters; ++i) {
+    for(int j = 0; j != nVars; ++j){
+      corrPV(i, j) += (pars[i] - meanP(i))*(principal[j] - meanV(j))/(nTracks2-1) - corrPV(i, j)/nTracks2;
+    }
+  }
+}
+
+
+void LinearizedTrackFit::createHistograms(const int nVars, TH1D * hVar[], TH1D * hPC[], TH1D * hPCNorm[], const edm::Service<TFileService> & fs,
+					  const float & varRangeMin, const float & varRangeMax, const std::string & suffix)
+{
+  for(int iV = 0; iV != nVars; ++iV){
+    std::ostringstream s;
+    std::ostringstream t;
+    std::ostringstream tNorm;
+    s << "Var"+suffix+"_" << iV;
+    t << "PC"+suffix+"_" << iV;
+    tNorm << "PCNorm"+suffix+"_" << iV;
+
+    hVar[iV] = fs->make<TH1D>((s.str()).c_str(), (s.str()).c_str(), 1000, varRangeMin, varRangeMax);
+    hPC[iV] = fs->make<TH1D>((t.str()).c_str(), (t.str()).c_str(), 100, -0.1, 0.1);
+    hPCNorm[iV] = fs->make<TH1D>((tNorm.str()).c_str(), (tNorm.str()).c_str(), 100, -10., +10.);
+  }
+}
+
+
+void LinearizedTrackFit::fillHistograms(const int nVars, const VectorXd & vars, const VectorXd & principal, const std::vector<float> & sqrtEigenvalues,
+					TH1D * hVar[], TH1D * hPC[], TH1D * hPCNorm[], const int nVarsForChi2, float & chi2, int & nDof)
+{
+  for(int iV = 0; iV != nVars; ++iV) {
+    hVar[iV]->Fill(vars(iV));
+    hPC[iV]->Fill(principal(iV));
+    hPCNorm[iV]->Fill(principal(iV)/sqrtEigenvalues[iV]);
+    if (iV > nVarsForChi2) continue;
+    chi2 += (principal(iV)/sqrtEigenvalues[iV])*(principal(iV)/sqrtEigenvalues[iV]);
+    ++nDof;
+  }
+}
+
+
+void LinearizedTrackFit::invertCorrelationMatrix(const int nTrackParameters, const int nVars, MatrixXd & D, const MatrixXd & corrPV, const SelfAdjointEigenSolver<MatrixXd> & es)
+{
+  for(int iP = 0; iP != nTrackParameters; ++iP) {
+    for(int iV = 0; iV != nVars; ++iV) {
+      D(iP, iV) = corrPV(iP, iV)/es.eigenvalues()[iV];
+    }
+  }
+}
+
+
+void LinearizedTrackFit::writeMatrices(const MatrixXd & V, const MatrixXd & D, const std::string & suffix)
+{
+  std::cout << std::endl;
+  std::cout << "V"+suffix+":" << std::endl;
+  std::cout << V << std::endl;
+  std::cout << "D"+suffix+":" << std::endl;
+  std::cout << D << std::endl;
+
+  // open matrix file and write V and D arrays
+  std::cout << "opening matrixVD"+suffix+".txt for writing" << std::endl;
+  std::ofstream outfile;
+  outfile.open("matrixVD"+suffix+".txt");
+  if(!outfile) {
+    std::cout << "error opening matrixVD"+suffix+".txt" << std::endl;
+    return;
+  }
+  outfile << V;
+  outfile << std::endl << std::endl;
+  outfile << D;
+  outfile << std::endl;
+}
+
+
 // ------------ method called once each job just before starting event loop  ------------
 void LinearizedTrackFit::beginJob()
 {
   int nLayers = 6;
-  // int nVars = nLayers*2;
-  int nVars = 9;
-  int nTrackParameters = 4;
+  int nVarsTransverse = nLayers;
+  int nVarsLongitudinal = nLayers;
+  int nTrackParametersTransverse = 2;
+  int nTrackParametersLongitudinal = 2;
+  int varsForChi2Transverse = nVarsTransverse - nTrackParametersTransverse;
+  int varsForChi2Longitudinal = nVarsLongitudinal - nTrackParametersLongitudinal;
 
   edm::Service<TFileService> fs;
 
   L1TrackTriggerTree * tree = new L1TrackTriggerTree(inputFileName_);
 
-  TH1D * hVar[nVars], * hPC[nVars], * hPCNorm[nVars];
-  float xRange = 0.001;
-  float varRangeMin = -1.;
-  float varRangeMax = 1.;
-  for(int iV = 0; iV != nVars; ++iV){
-    std::ostringstream s;
-    std::ostringstream t;
-    std::ostringstream tNorm;
-    s << "Var_" << iV;
-    iV%2 != 0 ? varRangeMax = 40. : varRangeMax = 0.1;
-    iV%2 != 0 ? varRangeMin = 0. : varRangeMin = -0.1;
-    // hVar[iV] = new TH1D((s.str()).c_str(), (s.str()).c_str(), 100, -varRange, +varRange);
-    hVar[iV] = fs->make<TH1D>((s.str()).c_str(), (s.str()).c_str(), 1000, varRangeMin, varRangeMax);
-    t << "PC_" << iV;
-    tNorm << "PCNorm_" << iV;
-    if (iV > 8) xRange = 0.1;
-    else if (iV > 5) xRange = 0.01;
-    // hPC[iV] = new TH1D((t.str()).c_str(), (t.str()).c_str(), 100, -xRange, +xRange);
-    // hPCNorm[iV] = new TH1D((tNorm.str()).c_str(), (tNorm.str()).c_str(), 100, -10., +10.);
-    hPC[iV] = fs->make<TH1D>((t.str()).c_str(), (t.str()).c_str(), 100, -xRange, +xRange);
-    hPCNorm[iV] = fs->make<TH1D>((tNorm.str()).c_str(), (tNorm.str()).c_str(), 100, -10., +10.);
-  }
+  TH1D * hVarTransverse[nVarsTransverse], * hPCTransverse[nVarsTransverse], * hPCNormTransverse[nVarsTransverse];
+  TH1D * hVarLongitudinal[nVarsLongitudinal], * hPCLongitudinal[nVarsLongitudinal], * hPCNormLongitudinal[nVarsLongitudinal];
+  
+  createHistograms(nVarsTransverse, hVarTransverse, hPCTransverse, hPCNormTransverse, fs, -0.1, 0.1, "Transverse");
+  createHistograms(nVarsLongitudinal, hVarLongitudinal, hPCLongitudinal, hPCNormLongitudinal, fs, 0., 40., "Longitudinal");
+
 
   TH1D * hGenCotTheta = fs->make<TH1D>("GenCotTheta","GenCotTheta",100, 0., +0.4);
   TH1D * hGenPhi = fs->make<TH1D>("GenPhi","GenPhi",100, -0.2, +0.2);
   TH1D * hGenZ0 = fs->make<TH1D>("GenZ0","GenZ0",100, -20., +20.);
-  TH1D * hGenInvPt = fs->make<TH1D>("GenInvPt","GenInvPt",100, -0.005, +0.005);
+  TH1D * hGenInvPt = fs->make<TH1D>("GenInvPt","GenInvPt",100, 0., 0.04);
 
   TH1D * hCotTheta = fs->make<TH1D>("CotTheta","CotTheta",100, 0., +0.4);
   TH1D * hPhi = fs->make<TH1D>("Phi","Phi",100, -0.2, +0.2);
   TH1D * hZ0 = fs->make<TH1D>("Z0","Z0",100, -20., +20.);
-  TH1D * hInvPt = fs->make<TH1D>("InvPt","InvPt",100, -0.01, +0.01);
+  TH1D * hInvPt = fs->make<TH1D>("InvPt","InvPt",100, 0., 0.04);
 
   TH1D * hErrEta = fs->make<TH1D>("ErrCotTheta","ErrCotTheta",100, -0.02, +0.02);
   TH1D * hErrPhi = fs->make<TH1D>("ErrPhi","ErrPhi",100, -0.01, +0.01);
@@ -250,14 +340,20 @@ void LinearizedTrackFit::beginJob()
   TH1D * hErrInvPt = fs->make<TH1D>("ErrInvPt","ErrInvPt",100, -0.01, +0.01);
 
   TH1D * hNormChi2 = fs->make<TH1D>("NormChi2", "NormChi2", 100, 0, 10);
-  TH1D * hNormChi2Params = fs->make<TH1D>("NormChi2Params", "NormChi2Params", 100, 0, 10);
-  TH1D * hNormChi2Diff = fs->make<TH1D>("NormChi2Diff", "NormChi2Diff", 100, -10, 10);
+  // TH1D * hNormChi2Params = fs->make<TH1D>("NormChi2Params", "NormChi2Params", 100, 0, 10);
+  // TH1D * hNormChi2Diff = fs->make<TH1D>("NormChi2Diff", "NormChi2Diff", 100, -10, 10);
 
+  // Transverse components
+  MatrixXd covTransverse(nVarsTransverse, nVarsTransverse);
+  covTransverse = MatrixXd::Constant(nVarsTransverse, nVarsTransverse, 0.);
+  VectorXd meanValuesTransverse(nVarsTransverse);
+  meanValuesTransverse = VectorXd::Constant(nVarsTransverse, 0.);
 
-  MatrixXd cov(nVars, nVars);
-  cov = MatrixXd::Constant(nVars, nVars, 0.);
-  VectorXd meanValues(nVars);
-  meanValues = VectorXd::Constant(nVars, 0.);
+  // Longitudinal components
+  MatrixXd covLongitudinal(nVarsLongitudinal, nVarsLongitudinal);
+  covLongitudinal = MatrixXd::Constant(nVarsLongitudinal, nVarsLongitudinal, 0.);
+  VectorXd meanValuesLongitudinal(nVarsLongitudinal);
+  meanValuesLongitudinal = VectorXd::Constant(nVarsLongitudinal, 0.);
 
   int nTracks = 0;
 
@@ -275,46 +371,59 @@ void LinearizedTrackFit::beginJob()
 
     if (tree->m_stub < 6) continue;
 
-    VectorXd vars(nVars);
-    vars = VectorXd::Constant(nVars, 0.);
-    int layersFound = fillVars(tree, vars, nVars);
+    VectorXd varsTransverse(nVarsTransverse);
+    varsTransverse = VectorXd::Constant(nVarsTransverse, 0.);
+    VectorXd varsLongitudinal(nVarsLongitudinal);
+    varsLongitudinal = VectorXd::Constant(nVarsLongitudinal, 0.);
+    int layersFound = fillVars(tree, varsTransverse, nVarsTransverse, varsLongitudinal, nVarsLongitudinal);
 
     if (layersFound == nLayers) {
       ++nTracks;
-      for (int iVar=0; iVar<nVars; ++iVar) {
-        // update mean
-        meanValues(iVar) += (vars[iVar] - meanValues(iVar))/nTracks;
-
-        // update covariance matrix
-        if(nTracks == 1) continue; // skip first track
-        for (int jVar=0; jVar<nVars; ++jVar) {
-          cov(iVar, jVar) += (vars[iVar] - meanValues(iVar))*(vars[jVar] - meanValues(jVar))/(nTracks-1) - cov(iVar, jVar)/nTracks;
-        }
-      }
+      updateMeanAndCov(varsTransverse, nVarsTransverse, meanValuesTransverse, covTransverse, nTracks);
+      updateMeanAndCov(varsLongitudinal, nVarsLongitudinal, meanValuesLongitudinal, covLongitudinal, nTracks);
     }
   }
 
   // Diagonalize matrix to find principal components
-  SelfAdjointEigenSolver<MatrixXd> es(cov);
-  std::cout << "Sqrt(eigenvalues) of cov:" << std::endl;
-  std::vector<float> sqrtEigenvalues;
-  for(int i = 0; i != nVars; ++i) {
-    sqrtEigenvalues.push_back(sqrt(es.eigenvalues()[i]));
-    std::cout << " " << sqrt(es.eigenvalues()[i]);
+  SelfAdjointEigenSolver<MatrixXd> esTransverse(covTransverse);
+  std::cout << "Sqrt(eigenvalues) of covTransverse:" << std::endl;
+  std::vector<float> sqrtEigenvaluesTransverse;
+  for(int i = 0; i != nVarsTransverse; ++i) {
+    sqrtEigenvaluesTransverse.push_back(sqrt(esTransverse.eigenvalues()[i]));
+    std::cout << " " << sqrt(esTransverse.eigenvalues()[i]);
   }
   std::cout << std::endl;
 
-  // V in the ortogonal transformation from variable space to parameter space
+  SelfAdjointEigenSolver<MatrixXd> esLongitudinal(covLongitudinal);
+  std::cout << "Sqrt(eigenvalues) of covLongitudinal:" << std::endl;
+  std::vector<float> sqrtEigenvaluesLongitudinal;
+  for(int i = 0; i != nVarsLongitudinal; ++i) {
+    sqrtEigenvaluesLongitudinal.push_back(sqrt(esLongitudinal.eigenvalues()[i]));
+    std::cout << " " << sqrt(esLongitudinal.eigenvalues()[i]);
+  }
+  std::cout << std::endl;
+
+  // V are the ortogonal transformations from variable space to parameter space
   // Parameters are constraints + rotated track parameters
-  MatrixXd V = (es.eigenvectors()).transpose();
+  MatrixXd VTransverse = (esTransverse.eigenvectors()).transpose();
+  MatrixXd VLongitudinal = (esLongitudinal.eigenvectors()).transpose();
 
   // Correlation matrix between hit coordinates and track parameters
-  MatrixXd corrPV(nTrackParameters, nVars);
-  corrPV = MatrixXd::Constant(nTrackParameters, nVars, 0.);
-  VectorXd meanP(nTrackParameters);
-  meanP = VectorXd::Constant(nTrackParameters, 0.);
-  VectorXd meanV(nVars);
-  meanV = VectorXd::Constant(nVars, 0.);
+  MatrixXd corrPVTransverse(nTrackParametersTransverse, nVarsTransverse);
+  corrPVTransverse = MatrixXd::Constant(nTrackParametersTransverse, nVarsTransverse, 0.);
+  VectorXd meanPTransverse(nTrackParametersTransverse);
+  meanPTransverse = VectorXd::Constant(nTrackParametersTransverse, 0.);
+  VectorXd meanVTransverse(nVarsTransverse);
+  meanVTransverse = VectorXd::Constant(nVarsTransverse, 0.);
+
+
+  // Correlation matrix between hit coordinates and track parameters
+  MatrixXd corrPVLongitudinal(nTrackParametersLongitudinal, nVarsLongitudinal);
+  corrPVLongitudinal = MatrixXd::Constant(nTrackParametersLongitudinal, nVarsLongitudinal, 0.);
+  VectorXd meanPLongitudinal(nTrackParametersLongitudinal);
+  meanPLongitudinal = VectorXd::Constant(nTrackParametersLongitudinal, 0.);
+  VectorXd meanVLongitudinal(nVarsLongitudinal);
+  meanVLongitudinal = VectorXd::Constant(nVarsLongitudinal, 0.);
 
   long int nTracks2 = 0; // number of tracks actually processed
 
@@ -326,82 +435,57 @@ void LinearizedTrackFit::beginJob()
     // Remove tracks with phi > phiCut
     if (!goodTrack(tree, phiCut)) continue;
 
-    VectorXd vars(nVars);
-    vars = VectorXd::Constant(nVars, 0.);
-    int layersFound = fillVars(tree, vars, nVars);
+    VectorXd varsTransverse(nVarsTransverse);
+    varsTransverse = VectorXd::Constant(nVarsTransverse, 0.);
+    VectorXd varsLongitudinal(nVarsLongitudinal);
+    varsLongitudinal = VectorXd::Constant(nVarsLongitudinal, 0.);
+
+    int layersFound = fillVars(tree, varsTransverse, nVarsTransverse, varsLongitudinal, nVarsLongitudinal);
     if (layersFound != nLayers) continue;
 
     // Get principal components
-    VectorXd principal(nVars);
-    principal = V*(vars - meanValues);
+    VectorXd principalTransverse(nVarsTransverse);
+    principalTransverse = VTransverse*(varsTransverse - meanValuesTransverse);
+    VectorXd principalLongitudinal(nVarsLongitudinal);
+    principalLongitudinal = VLongitudinal*(varsLongitudinal - meanValuesLongitudinal);
 
     // Track parameters
-    VectorXd pars(nTrackParameters);
-    fillTrackPars(tree, pars);
+    VectorXd parsTransverse(nTrackParametersTransverse);
+    VectorXd parsLongitudinal(nTrackParametersLongitudinal);
+    fillTrackPars(tree, parsTransverse, parsLongitudinal);
 
     // update correlation matrix between parameters and principal components
     ++nTracks2;
+    updateMeanAndCovParams(parsTransverse, nTrackParametersTransverse, meanPTransverse,
+			   principalTransverse, nVarsTransverse, meanVTransverse,
+			   corrPVTransverse, nTracks2);
+    updateMeanAndCovParams(parsLongitudinal, nTrackParametersLongitudinal, meanPLongitudinal,
+			   principalLongitudinal, nVarsLongitudinal, meanVLongitudinal,
+			   corrPVLongitudinal, nTracks2);
 
-    // update means
-    for(int iVar = 0; iVar != nVars; ++iVar){
-      meanV(iVar) += (principal[iVar] - meanV(iVar))/nTracks2;
-    };
-
-    for(int iPar = 0; iPar != nTrackParameters; ++iPar){
-      meanP(iPar) += (pars[iPar] - meanP(iPar))/nTracks2;
-    };
-
-    // update covariance matrix
-    if(nTracks2 == 1) continue; // skip first track
-
-    for(int i = 0; i != nTrackParameters; ++i) {
-      for(int j = 0; j != nVars; ++j){
-        corrPV(i, j) += (pars[i] - meanP(i))*(principal[j] - meanV(j))/(nTracks2-1) - corrPV(i, j)/nTracks2;
-      }
-    }
 
     float chi2 = 0.;
     int nDof = 0;
     // fill histograms
-    for(int iV = 0; iV != nVars; ++iV) {
-      hVar[iV]->Fill(vars(iV));
-      hPC[iV]->Fill(principal(iV));
-      hPCNorm[iV]->Fill(principal(iV)/sqrtEigenvalues[iV]);
-      if (iV > 8) continue;
-      chi2 += (principal(iV)/sqrtEigenvalues[iV])*(principal(iV)/sqrtEigenvalues[iV]);
-      ++nDof;
-    }
+    fillHistograms(nVarsTransverse, varsTransverse, principalTransverse, sqrtEigenvaluesTransverse,
+		   hVarTransverse, hPCTransverse, hPCNormTransverse, varsForChi2Transverse, chi2, nDof);
+    fillHistograms(nVarsLongitudinal, varsLongitudinal, principalLongitudinal, sqrtEigenvaluesLongitudinal,
+		   hVarLongitudinal, hPCLongitudinal, hPCNormLongitudinal, varsForChi2Longitudinal, chi2, nDof);
+
     hNormChi2->Fill(chi2/nDof);
   }
 
 
-  // Invert (diagonal) correlation matrix dividing by eigenvalues
-  MatrixXd D(nTrackParameters,nVars); // transformation from coordinates to track parameters
+  // Invert (diagonal) correlation matrix dividing by eigenvalues.
+  // Transformation from coordinates to track parameters
+  MatrixXd DTransverse(nTrackParametersTransverse, nVarsTransverse);
+  MatrixXd DLongitudinal(nTrackParametersLongitudinal, nVarsLongitudinal);
 
-  for(int iP = 0; iP != nTrackParameters; ++iP) {
-    for(int iV = 0; iV != nVars; ++iV) {
-      D(iP, iV) = corrPV(iP, iV)/es.eigenvalues()[iV];
-    }
-  }
+  invertCorrelationMatrix(nTrackParametersTransverse, nVarsTransverse, DTransverse, corrPVTransverse, esTransverse);
+  invertCorrelationMatrix(nTrackParametersLongitudinal, nVarsLongitudinal, DLongitudinal, corrPVLongitudinal, esLongitudinal);
 
-  std::cout << std::endl;
-  std::cout << "V:" << std::endl;
-  std::cout << V << std::endl;
-  std::cout << "D:" << std::endl;
-  std::cout << D << std::endl;
-
-  // open matrix file and write V and D arrays
-  std::cout << "opening matrixVD.txt for writing" << std::endl;
-  std::ofstream outfile;
-  outfile.open("matrixVD.txt");
-  if(!outfile) {
-    std::cout << "error opening matrixVD.txt" << std::endl;
-    return;
-  }
-  outfile << V;
-  outfile << std::endl << std::endl;
-  outfile << D;
-  outfile << std::endl;
+  writeMatrices(VTransverse, DTransverse, "Transverse");
+  writeMatrices(VLongitudinal, DLongitudinal, "Longitudinal");
 
 
   // Begin third loop on tracks
@@ -413,64 +497,66 @@ void LinearizedTrackFit::beginJob()
     if (!goodTrack(tree, phiCut)) continue;
 
     // Hit Coordinates
-    VectorXd vars(nVars);
-    vars = VectorXd::Constant(nVars, 0.);
-    int layersFound = fillVars(tree, vars, nVars);
+    VectorXd varsTransverse(nVarsTransverse);
+    varsTransverse = VectorXd::Constant(nVarsTransverse, 0.);
+    VectorXd varsLongitudinal(nVarsLongitudinal);
+    varsLongitudinal = VectorXd::Constant(nVarsLongitudinal, 0.);
+    int layersFound = fillVars(tree, varsTransverse, nVarsTransverse, varsLongitudinal, nVarsLongitudinal);
     if (layersFound != nLayers) continue;
 
-    // get principal components
-    VectorXd principal(nVars);
-    principal = V*(vars - meanValues);
+    // Get principal components
+    VectorXd principalTransverse(nVarsTransverse);
+    principalTransverse = VTransverse*(varsTransverse - meanValuesTransverse);
+    VectorXd principalLongitudinal(nVarsLongitudinal);
+    principalLongitudinal = VLongitudinal*(varsLongitudinal - meanValuesLongitudinal);
 
 
     float chi2 = 0.;
     int nDof = 0;
     // fill histograms (they were filled also in the second loop, add more statistics)
-    for(int iV = 0; iV != nVars; ++ iV){
-      hVar[iV]->Fill(vars(iV));
-      hPC[iV]->Fill(principal(iV));
-      hPCNorm[iV]->Fill(principal(iV)/sqrtEigenvalues[iV]);
-      // if (iV == 3) continue;
-      if (iV >= 5) continue;
-      chi2 += (principal(iV)/sqrtEigenvalues[iV])*(principal(iV)/sqrtEigenvalues[iV]);
-      ++nDof;
-    }
-    hNormChi2->Fill(chi2/nDof);
+    fillHistograms(nVarsTransverse, varsTransverse, principalTransverse, sqrtEigenvaluesTransverse,
+		   hVarTransverse, hPCTransverse, hPCNormTransverse, varsForChi2Transverse, chi2, nDof);
+    fillHistograms(nVarsLongitudinal, varsLongitudinal, principalLongitudinal, sqrtEigenvaluesLongitudinal,
+		   hVarLongitudinal, hPCLongitudinal, hPCNormLongitudinal, varsForChi2Longitudinal, chi2, nDof);
 
     // Estimate track parameters
-    VectorXd estimatedPars(nTrackParameters);
-    estimatedPars = D*principal + meanP;
+    VectorXd estimatedParsTransverse(nTrackParametersTransverse);
+    estimatedParsTransverse = DTransverse*principalTransverse + meanPTransverse;
+    VectorXd estimatedParsLongitudinal(nTrackParametersLongitudinal);
+    estimatedParsLongitudinal = DLongitudinal*principalLongitudinal + meanPLongitudinal;
 
     // Track parameters
-    VectorXd pars(nTrackParameters);
-    fillTrackPars(tree, pars);
+    VectorXd parsTransverse(nTrackParametersTransverse);
+    VectorXd parsLongitudinal(nTrackParametersLongitudinal);
+    fillTrackPars(tree, parsTransverse, parsLongitudinal);
 
     // Estimated parameter errors
-    VectorXd errPar(nTrackParameters);
-    errPar(0) = estimatedPars[0] - pars[0];
-    errPar(1) = estimatedPars[1] - pars[1];
-    errPar(2) = estimatedPars[2] - pars[2];
-    errPar(3) = estimatedPars[3] - pars[3];
+    VectorXd errParTransverse(nTrackParametersTransverse);
+    errParTransverse(0) = estimatedParsTransverse[0] - parsTransverse[0];
+    errParTransverse(1) = estimatedParsTransverse[1] - parsTransverse[1];
+    VectorXd errParLongitudinal(nTrackParametersLongitudinal);
+    errParLongitudinal(0) = estimatedParsLongitudinal[0] - parsLongitudinal[0];
+    errParLongitudinal(1) = estimatedParsLongitudinal[1] - parsLongitudinal[1];
 
-    float normChi2Params = (pow(errPar(0)/0.0009452,2) + pow(errPar(1)/0.002531,2) + pow(errPar(2)/0.001338,2) + pow(errPar(3)/0.004437,2))/4;
-    hNormChi2Params->Fill(normChi2Params);
+    // float normChi2Params = (pow(errPar(0)/0.0009452,2) + pow(errPar(1)/0.002531,2) + pow(errPar(2)/0.001338,2) + pow(errPar(3)/0.004437,2))/4;
+    // hNormChi2Params->Fill(normChi2Params);
 
-    hNormChi2Diff->Fill(chi2/nDof - normChi2Params);
+    // hNormChi2Diff->Fill(chi2/nDof - normChi2Params);
 
-    hGenPhi->Fill(pars(0));
-    hGenCotTheta->Fill(pars(1));
-    hGenZ0->Fill(pars(2));
-    hGenInvPt->Fill(pars(3));
+    hGenPhi->Fill(parsTransverse(0));
+    hGenInvPt->Fill(parsTransverse(1));
+    hGenCotTheta->Fill(parsLongitudinal(0));
+    hGenZ0->Fill(parsLongitudinal(1));
 
-    hPhi->Fill(estimatedPars(0));
-    hCotTheta->Fill(estimatedPars(1));
-    hZ0->Fill(estimatedPars(2));
-    hInvPt->Fill(estimatedPars(3));
+    hPhi->Fill(estimatedParsTransverse(0));
+    hInvPt->Fill(estimatedParsTransverse(1));
+    hCotTheta->Fill(estimatedParsLongitudinal(0));
+    hZ0->Fill(estimatedParsLongitudinal(1));
 
-    hErrPhi->Fill(errPar(0));
-    hErrEta->Fill(errPar(1));
-    hErrZ0->Fill(errPar(2));
-    hErrInvPt->Fill(errPar(3));
+    hErrPhi->Fill(errParTransverse(0));
+    hErrInvPt->Fill(errParTransverse(1));
+    hErrEta->Fill(errParLongitudinal(0));
+    hErrZ0->Fill(errParLongitudinal(1));
 
   } // end third loop on tracks
 }
