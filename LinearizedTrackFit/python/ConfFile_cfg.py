@@ -18,11 +18,15 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 process.TFileService = cms.Service("TFileService", fileName = cms.string("matrixHists.root") )
 
 process.demo = cms.EDAnalyzer('LinearizedTrackFit',
-                              HInvPtErrRangeMin = cms.double(-0.01),
-                              HInvPtErrRangeMax = cms.double(0.01),
-                              HZ0ErrRangeMin = cms.double(-1.),
-                              HZ0ErrRangeMax = cms.double(1.),
-
+                              # HInvPtErrRangeMin = cms.double(-0.002),
+                              # HInvPtErrRangeMax = cms.double(0.002),
+                              # HZ0ErrRangeMin = cms.double(-2.),
+                              # HZ0ErrRangeMax = cms.double(2.),
+                              # HPhiErrRangeMin = cms.double(-0.002),
+                              # HPhiErrRangeMax = cms.double(0.002),
+                              # HCotThetaErrRangeMin = cms.double(-0.05),
+                              # HCotThetaErrRangeMax = cms.double(0.05),
+                              # 
                               # PhiMinCut = cms.double(0.),
                               # PhiMaxCut = cms.double(0.04),
                               # InvPtMinCut = cms.double(1./105.),
@@ -31,7 +35,7 @@ process.demo = cms.EDAnalyzer('LinearizedTrackFit',
                               # Z0MaxCut = cms.double(15.),
                               # EtaMinCut = cms.double(0.),
                               # EtaMaxCut = cms.double(0.3),
-                              # InputFileName = cms.string("/home/demattia/CMSSW_6_2_0_SLHC20_patch1/src/LinearizedTrackFit/LinearizedTrackFit/test/AllOpenSmallRanges/JobFiles/extracted.root")
+                              # InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Muons_Pt_95_105_Eta_0_03_Phi_0_004_z0_m15p15/extracted.root")
 
 
                               # PhiMinCut = cms.double(-0.1),
@@ -45,15 +49,26 @@ process.demo = cms.EDAnalyzer('LinearizedTrackFit',
                               # InputFileName = cms.string("/home/demattia/CMSSW_6_2_0_SLHC20_patch1/src/LinearizedTrackFit/LinearizedTrackFit/test/InvPtRange/JobFiles/extracted.root")
 
 
-                              # PhiMinCut = cms.double(-0.04),
-                              # PhiMaxCut = cms.double(0.04),
-                              # InvPtMinCut = cms.double(1./4.),
-                              # InvPtMaxCut = cms.double(1./1.5),
-                              # Z0MinCut = cms.double(-15.),
-                              # Z0MaxCut = cms.double(15.),
-                              # EtaMinCut = cms.double(0.25),
-                              # EtaMaxCut = cms.double(0.35),
-                              # InputFileName = cms.string("/home/demattia/CMSSW_6_2_0_SLHC20_patch1/src/LinearizedTrackFit/LinearizedTrackFit/test/AllOpenVerySmallPt/JobFiles/extracted.root")
+                              HInvPtErrRangeMin = cms.double(-0.02),
+                              HInvPtErrRangeMax = cms.double(0.02),
+                              HZ0ErrRangeMin = cms.double(-2.),
+                              HZ0ErrRangeMax = cms.double(2.),
+                              HPhiErrRangeMin = cms.double(-0.01),
+                              HPhiErrRangeMax = cms.double(0.01),
+                              HCotThetaErrRangeMin = cms.double(-0.05),
+                              HCotThetaErrRangeMax = cms.double(0.05),
+                              HDeltaPtOverPtRangeMin = cms.double(-0.05),
+                              HDeltaPtOverPtRangeMax = cms.double(0.05),
+
+                              PhiMinCut = cms.double(-0.04),
+                              PhiMaxCut = cms.double(0.04),
+                              InvPtMinCut = cms.double(1./4.),
+                              InvPtMaxCut = cms.double(1./1.5),
+                              Z0MinCut = cms.double(-15.),
+                              Z0MaxCut = cms.double(15.),
+                              EtaMinCut = cms.double(0.25),
+                              EtaMaxCut = cms.double(0.35),
+                              InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Muons_Pt_1p5_4_Eta_025_035_Phi_m004_004_z0_m15p15/extracted.root")
 
 
                               # PhiMinCut = cms.double(-0.00001),
@@ -67,15 +82,24 @@ process.demo = cms.EDAnalyzer('LinearizedTrackFit',
                               # InputFileName = cms.string("/home/demattia/CMSSW_6_2_0_SLHC20_patch1/src/LinearizedTrackFit/LinearizedTrackFit/test/Fixed_Pt_100/JobFiles/extracted.root")
 
 
-                              PhiMinCut = cms.double(-0.1),
-                              PhiMaxCut = cms.double(0.1),
-                              InvPtMinCut = cms.double(1./500.-0.00001),
-                              InvPtMaxCut = cms.double(1./500.+0.00001),
-                              Z0MinCut = cms.double(-15.),
-                              Z0MaxCut = cms.double(15.),
-                              EtaMinCut = cms.double(0.15),
-                              EtaMaxCut = cms.double(0.25),
-                              InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Muons_wide/extracted.root")
+                              # HInvPtErrRangeMin = cms.double(-0.000005),
+                              # HInvPtErrRangeMax = cms.double(0.000005),
+                              # HZ0ErrRangeMin = cms.double(-0.1),
+                              # HZ0ErrRangeMax = cms.double(0.1),
+                              # HPhiErrRangeMin = cms.double(-0.0002),
+                              # HPhiErrRangeMax = cms.double(0.0002),
+                              # HCotThetaErrRangeMin = cms.double(-0.01),
+                              # HCotThetaErrRangeMax = cms.double(0.01),
+                              # 
+                              # PhiMinCut = cms.double(-0.1),
+                              # PhiMaxCut = cms.double(0.1),
+                              # InvPtMinCut = cms.double(1./500.-0.00001),
+                              # InvPtMaxCut = cms.double(1./500.+0.00001),
+                              # Z0MinCut = cms.double(-15.),
+                              # Z0MaxCut = cms.double(15.),
+                              # EtaMinCut = cms.double(0.15),
+                              # EtaMaxCut = cms.double(0.25),
+                              # InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Muons_wide/extracted.root")
 
 
                               # InputFileName = cms.string("/home/demattia/CMSSW_6_2_0_SLHC20_patch1/src/LinearizedTrackFit/LinearizedTrackFit/test/InvPtRange/extracted.root")

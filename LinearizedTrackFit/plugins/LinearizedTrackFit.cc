@@ -84,6 +84,15 @@ private:
   void invertCorrelationMatrix(const int nTrackParameters, const int nVars, MatrixXd & D, const MatrixXd & corrPV, const MatrixXd & cov);
   void writeMatrices(const MatrixXd & V, const MatrixXd & D, const std::string & suffix);
 
+  // Scale an interval with the passed factor. Returns the scaled interval limits as a pair(min, max).
+  template <class T>
+  std::pair<double, double> scaleInterval(const double & scaleFactor, const T & min, const T & max)
+  {
+    return std::pair<T, T>(((1.+scaleFactor)*min + (1.-scaleFactor)*max)/2.,
+			   ((1.+scaleFactor)*max + (1.-scaleFactor)*min)/2.);
+  }
+
+
   //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
   //virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
   //virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
@@ -93,6 +102,9 @@ private:
   TString inputFileName_;
   double hInvPtErrRangeMin_, hInvPtErrRangeMax_;
   double hZ0ErrRangeMin_, hZ0ErrRangeMax_;
+  double hPhiErrRangeMin_, hPhiErrRangeMax_;
+  double hCotThetaErrRangeMin_, hCotThetaErrRangeMax_;
+  double hDeltaPtOverPtRangeMin_, hDeltaPtOverPtRangeMax_;
 
   struct TrackSelectionCuts
   {
@@ -169,6 +181,12 @@ LinearizedTrackFit::LinearizedTrackFit(const edm::ParameterSet& iConfig) :
   hInvPtErrRangeMax_(iConfig.getParameter<double>("HInvPtErrRangeMax")),
   hZ0ErrRangeMin_(iConfig.getParameter<double>("HZ0ErrRangeMin")),
   hZ0ErrRangeMax_(iConfig.getParameter<double>("HZ0ErrRangeMax")),
+  hPhiErrRangeMin_(iConfig.getParameter<double>("HPhiErrRangeMin")),
+  hPhiErrRangeMax_(iConfig.getParameter<double>("HPhiErrRangeMax")),
+  hCotThetaErrRangeMin_(iConfig.getParameter<double>("HCotThetaErrRangeMin")),
+  hCotThetaErrRangeMax_(iConfig.getParameter<double>("HCotThetaErrRangeMax")),
+  hDeltaPtOverPtRangeMin_(iConfig.getParameter<double>("HDeltaPtOverPtRangeMin")),
+  hDeltaPtOverPtRangeMax_(iConfig.getParameter<double>("HDeltaPtOverPtRangeMax")),
   fillAdditionalHistograms_(true)
 {
   // Define the stub quality selection
@@ -477,21 +495,31 @@ void LinearizedTrackFit::beginJob()
   createHistograms(nVarsTransverse, hVarTransverse, hPCTransverse, hPCNormTransverse, fs, -0.1, 0.1, "Transverse");
   createHistograms(nVarsLongitudinal, hVarLongitudinal, hPCLongitudinal, hPCNormLongitudinal, fs, 0., 40., "Longitudinal");
 
+  
+  double cotThetaMinCut = 1./tan(2*atan(exp(-trackSel_.etaMinCut)));
+  double cotThetaMaxCut = 1./tan(2*atan(exp(-trackSel_.etaMaxCut)));
 
-  TH1D * hGenCotTheta = fs->make<TH1D>("GenCotTheta","GenCotTheta",100, 0., +0.4);
-  TH1D * hGenPhi = fs->make<TH1D>("GenPhi","GenPhi",100, -0.2, +0.2);
-  TH1D * hGenZ0 = fs->make<TH1D>("GenZ0","GenZ0",100, -20., +20.);
-  TH1D * hGenInvPt = fs->make<TH1D>("GenInvPt","GenInvPt",100, 0.008, 0.012);
+  double scaleFactor = 1.5; // Increase the interval size by 50%
+  std::pair<double, double> cotThetaInterval = scaleInterval(scaleFactor, cotThetaMinCut, cotThetaMaxCut);
+  std::pair<double, double> phiInterval = scaleInterval(scaleFactor, trackSel_.phiMinCut, trackSel_.phiMaxCut);
+  std::pair<double, double> z0Interval = scaleInterval(scaleFactor, trackSel_.z0MinCut, trackSel_.z0MaxCut);
+  std::pair<double, double> invPtInterval = scaleInterval(scaleFactor, trackSel_.invPtMinCut, trackSel_.invPtMaxCut);
 
-  TH1D * hCotTheta = fs->make<TH1D>("CotTheta","CotTheta",100, 0., +0.4);
-  TH1D * hPhi = fs->make<TH1D>("Phi","Phi",100, -0.2, +0.2);
-  TH1D * hZ0 = fs->make<TH1D>("Z0","Z0",100, -20., +20.);
-  TH1D * hInvPt = fs->make<TH1D>("InvPt","InvPt",100, 0.008, 0.012);
+  TH1D * hGenCotTheta = fs->make<TH1D>("GenCotTheta","GenCotTheta",100, cotThetaInterval.first, cotThetaInterval.second);
+  TH1D * hGenPhi = fs->make<TH1D>("GenPhi","GenPhi",100, phiInterval.first, phiInterval.second);
+  TH1D * hGenZ0 = fs->make<TH1D>("GenZ0","GenZ0",100, z0Interval.first, z0Interval.second);
+  TH1D * hGenInvPt = fs->make<TH1D>("GenInvPt","GenInvPt",100, invPtInterval.first, invPtInterval.second);
 
-  TH1D * hErrEta = fs->make<TH1D>("ErrCotTheta","ErrCotTheta",100, -0.02, +0.02);
-  TH1D * hErrPhi = fs->make<TH1D>("ErrPhi","ErrPhi",100, -0.01, +0.01);
+  TH1D * hCotTheta = fs->make<TH1D>("CotTheta","CotTheta",100, cotThetaInterval.first, cotThetaInterval.second);
+  TH1D * hPhi = fs->make<TH1D>("Phi","Phi",100, phiInterval.first, phiInterval.second);
+  TH1D * hZ0 = fs->make<TH1D>("Z0","Z0",100, z0Interval.first, z0Interval.second);
+  TH1D * hInvPt = fs->make<TH1D>("InvPt","InvPt",100, invPtInterval.first, invPtInterval.second);
+
+  TH1D * hErrEta = fs->make<TH1D>("ErrCotTheta","ErrCotTheta",100, hCotThetaErrRangeMin_, hCotThetaErrRangeMax_);
+  TH1D * hErrPhi = fs->make<TH1D>("ErrPhi","ErrPhi",100, hPhiErrRangeMin_, hPhiErrRangeMax_);
   TH1D * hErrZ0 = fs->make<TH1D>("ErrZ0","ErrZ0",100, hZ0ErrRangeMin_, hZ0ErrRangeMax_);
   TH1D * hErrInvPt = fs->make<TH1D>("ErrInvPt","ErrInvPt",100, hInvPtErrRangeMin_, hInvPtErrRangeMax_);
+  TH1D * hDeltaPtOverPt = fs->make<TH1D>("DeltaPtOverPt","DeltaPtOverPt",200, hDeltaPtOverPtRangeMin_, hDeltaPtOverPtRangeMax_);
 
   TH1D * hNormChi2 = fs->make<TH1D>("NormChi2", "NormChi2", 100, 0, 10);
   // TH1D * hNormChi2Params = fs->make<TH1D>("NormChi2Params", "NormChi2Params", 100, 0, 10);
@@ -675,6 +703,8 @@ void LinearizedTrackFit::beginJob()
     VectorXd errParTransverse(nTrackParametersTransverse);
     errParTransverse(0) = estimatedParsTransverse[0] - parsTransverse[0];
     errParTransverse(1) = estimatedParsTransverse[1] - parsTransverse[1];
+    double deltaPtOverPt = (1./estimatedParsTransverse[1] - 1./parsTransverse[1])*parsTransverse[1];
+
     VectorXd errParLongitudinal(nTrackParametersLongitudinal);
     errParLongitudinal(0) = estimatedParsLongitudinal[0] - parsLongitudinal[0];
     errParLongitudinal(1) = estimatedParsLongitudinal[1] - parsLongitudinal[1];
@@ -696,6 +726,8 @@ void LinearizedTrackFit::beginJob()
 
     hErrPhi->Fill(errParTransverse(0));
     hErrInvPt->Fill(errParTransverse(1));
+    hDeltaPtOverPt->Fill(deltaPtOverPt);
+
     hErrEta->Fill(errParLongitudinal(0));
     hErrZ0->Fill(errParLongitudinal(1));
 
