@@ -63,8 +63,8 @@ private:
   virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
   virtual void endJob() override;
   int fillVars(const L1TrackTriggerTree * tree,
-	       VectorXd & varsTransverse, const int nVarsTransverse,
-	       VectorXd & varsLongitudinal, const int nVarsLongitudinal);
+               VectorXd & varsTransverse, const int nVarsTransverse,
+               VectorXd & varsLongitudinal, const int nVarsLongitudinal);
   // bool goodTrack(const L1TrackTriggerTree * tree);
   bool goodStub(const L1TrackTriggerTree * tree, const int k);
   void updateMeanAndCov(const VectorXd & vars, const int nVars, VectorXd & meanValues, MatrixXd & cov, const int nTracks);
@@ -72,12 +72,12 @@ private:
   // 			      const VectorXd & principal, const int nVars, VectorXd & meanV,
   // 			      MatrixXd & corrPV, const int nTracks);
   void updateMeanAndCovParams(const VectorXd & pars, const int nTrackParameters, VectorXd & meanP,
-			      const VectorXd & principal, const int nVars, const VectorXd & meanV,
-			      MatrixXd & corrPV, const int nTracks);
+                              const VectorXd & principal, const int nVars, const VectorXd & meanV,
+                              MatrixXd & corrPV, const int nTracks);
   void createHistograms(const int nVars,  TH1D * hVar[], TH1D * hPC[], TH1D * hPCNorm[], const edm::Service<TFileService> & fs,
-			const float & varRangeMin, const float & varRangeMax, const std::string & suffix);
+                        const float & varRangeMin, const float & varRangeMax, const std::string & suffix);
   void fillHistograms(const int nVars, const VectorXd & vars, const VectorXd & principal, const std::vector<float> & sqrtEigenvalues,
-		      TH1D * hVar[], TH1D * hPC[], TH1D * hPCNorm[], const int nVarsForChi2, float & chi2, int & nDof);
+                      TH1D * hVar[], TH1D * hPC[], TH1D * hPCNorm[], const int nVarsForChi2, float & chi2, int & nDof);
   // IMPORTANT: We assume only one muon per event
   bool fillTrackPars(const L1TrackTriggerTree * tree, VectorXd & parsTransverse, VectorXd & parsLongitudinal);
   // void invertCorrelationMatrix(const int nTrackParameters, const int nVars, MatrixXd & D, const MatrixXd & corrPV, const SelfAdjointEigenSolver<MatrixXd> & es);
@@ -89,7 +89,7 @@ private:
   std::pair<double, double> scaleInterval(const double & scaleFactor, const T & min, const T & max)
   {
     return std::pair<T, T>(((1.+scaleFactor)*min + (1.-scaleFactor)*max)/2.,
-			   ((1.+scaleFactor)*max + (1.-scaleFactor)*min)/2.);
+                           ((1.+scaleFactor)*max + (1.-scaleFactor)*min)/2.);
   }
 
 
@@ -134,10 +134,10 @@ private:
       std::vector<float> RrangeMin {20, 33, 47, 65, 85, 105};
       std::vector<float> RrangeMax {25, 38, 55, 72, 92, 110};
       for (int l=0; l<6; ++l) {
-      	TString lStr(std::to_string(l+5));
-      	// the range in z is because eta is flat from 0 to 0.4 -> z in 0, ~45 cm at R = 1.1 m.
-      	hLayer.push_back(fs->make<TH2D>("layer"+lStr, "layer"+lStr, 100, -0.5, 0.5, 1000, 0., zRange[l]));
-      	hLayerRPhi.push_back(fs->make<TH2D>("layerPhiR"+lStr, "layerPhiR"+lStr, 100, -0.5, 0.5, 1000, RrangeMin[l], RrangeMax[l]));
+        TString lStr(std::to_string(l+5));
+        // the range in z is because eta is flat from 0 to 0.4 -> z in 0, ~45 cm at R = 1.1 m.
+        hLayer.push_back(fs->make<TH2D>("layer"+lStr, "layer"+lStr, 100, -0.5, 0.5, 1000, 0., zRange[l]));
+        hLayerRPhi.push_back(fs->make<TH2D>("layerPhiR"+lStr, "layerPhiR"+lStr, 100, -0.5, 0.5, 1000, RrangeMin[l], RrangeMax[l]));
       }
     }
 
@@ -203,8 +203,8 @@ LinearizedTrackFit::LinearizedTrackFit(const edm::ParameterSet& iConfig) :
 
 LinearizedTrackFit::~LinearizedTrackFit()
 {
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
+  // do anything here that needs to be done at desctruction time
+  // (e.g. close files, deallocate resources etc.)
 }
 
 
@@ -216,16 +216,16 @@ LinearizedTrackFit::~LinearizedTrackFit()
 void
 LinearizedTrackFit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   using namespace edm;
+  using namespace edm;
 
 #ifdef THIS_IS_AN_EVENT_EXAMPLE
-   Handle<ExampleData> pIn;
-   iEvent.getByLabel("example",pIn);
+  Handle<ExampleData> pIn;
+  iEvent.getByLabel("example",pIn);
 #endif
-   
+
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-   ESHandle<SetupData> pSetup;
-   iSetup.get<SetupRecord>().get(pSetup);
+  ESHandle<SetupData> pSetup;
+  iSetup.get<SetupRecord>().get(pSetup);
 #endif
 }
 
@@ -259,8 +259,8 @@ bool LinearizedTrackFit::goodStub(const L1TrackTriggerTree * tree, const int k)
 
 
 int LinearizedTrackFit::fillVars(const L1TrackTriggerTree * tree,
-				 VectorXd & varsTransverse, const int nVarsTransverse,
-				 VectorXd & varsLongitudinal, const int nVarsLongitudinal)
+                                 VectorXd & varsTransverse, const int nVarsTransverse,
+                                 VectorXd & varsLongitudinal, const int nVarsLongitudinal)
 {
   std::unordered_set<int> layersFound;
   std::vector<int> stubsPerLayerVec(6, 0);
@@ -282,16 +282,16 @@ int LinearizedTrackFit::fillVars(const L1TrackTriggerTree * tree,
     if (goodStub(tree, k)) {
       // Avoid duplicates
       if (tree->m_stub_layer->at(k) < 5 || tree->m_stub_layer->at(k) > 10) {
-	std::cout << "Error: layer "<< tree->m_stub_layer->at(k) <<" not in the expected range" << std::endl;
+        std::cout << "Error: layer "<< tree->m_stub_layer->at(k) <<" not in the expected range" << std::endl;
       }
       stubsPerLayerVec.at(tree->m_stub_layer->at(k) - 5) += 1;
       if (layersFound.insert(tree->m_stub_layer->at(k)).second) {
-	float phi = atan2(tree->m_stub_y->at(k), tree->m_stub_x->at(k));
-	varsTransverse(iVt++) = phi;
-	varsLongitudinal(iVl++) = tree->m_stub_z->at(k);
-	if (fillAdditionalHistograms_) {
-	  stubsPlots_->fillPlots(tree->m_stub_x->at(k), tree->m_stub_y->at(k), tree->m_stub_z->at(k), tree->m_stub_layer->at(k));
-	}
+        float phi = atan2(tree->m_stub_y->at(k), tree->m_stub_x->at(k));
+        varsTransverse(iVt++) = phi;
+        varsLongitudinal(iVl++) = tree->m_stub_z->at(k);
+        if (fillAdditionalHistograms_) {
+          stubsPlots_->fillPlots(tree->m_stub_x->at(k), tree->m_stub_y->at(k), tree->m_stub_z->at(k), tree->m_stub_layer->at(k));
+        }
       }
     }
   }
@@ -301,9 +301,9 @@ int LinearizedTrackFit::fillVars(const L1TrackTriggerTree * tree,
     if (layersFound.size() == 6) {
       int layerNum = 0;
       for (int stubs : stubsPerLayerVec) {
-	averageStubsPerLayer_->Fill(layerNum + 5, stubs);
-	stubsPerLayer_->Fill(layerNum + 5, stubs);
-	layerNum += 1;
+        averageStubsPerLayer_->Fill(layerNum + 5, stubs);
+        stubsPerLayer_->Fill(layerNum + 5, stubs);
+        layerNum += 1;
       }
     }
   }
@@ -381,8 +381,8 @@ void LinearizedTrackFit::updateMeanAndCov(const VectorXd & vars, const int nVars
 
 
 void LinearizedTrackFit::updateMeanAndCovParams(const VectorXd & pars, const int nTrackParameters, VectorXd & meanP,
-						const VectorXd & vars, const int nVars, const VectorXd & meanV,
-						MatrixXd & corrPV, const int nTracks)
+                                                const VectorXd & vars, const int nVars, const VectorXd & meanV,
+                                                MatrixXd & corrPV, const int nTracks)
 {
   for(int iPar = 0; iPar != nTrackParameters; ++iPar) {
     meanP(iPar) += (pars[iPar] - meanP(iPar))/nTracks;
@@ -401,7 +401,7 @@ void LinearizedTrackFit::updateMeanAndCovParams(const VectorXd & pars, const int
 
 
 void LinearizedTrackFit::createHistograms(const int nVars, TH1D * hVar[], TH1D * hPC[], TH1D * hPCNorm[], const edm::Service<TFileService> & fs,
-					  const float & varRangeMin, const float & varRangeMax, const std::string & suffix)
+                                          const float & varRangeMin, const float & varRangeMax, const std::string & suffix)
 {
   for(int iV = 0; iV != nVars; ++iV){
     std::ostringstream s;
@@ -419,7 +419,7 @@ void LinearizedTrackFit::createHistograms(const int nVars, TH1D * hVar[], TH1D *
 
 
 void LinearizedTrackFit::fillHistograms(const int nVars, const VectorXd & vars, const VectorXd & principal, const std::vector<float> & sqrtEigenvalues,
-					TH1D * hVar[], TH1D * hPC[], TH1D * hPCNorm[], const int nVarsForChi2, float & chi2, int & nDof)
+                                        TH1D * hVar[], TH1D * hPC[], TH1D * hPCNorm[], const int nVarsForChi2, float & chi2, int & nDof)
 {
   for(int iV = 0; iV != nVars; ++iV) {
     hVar[iV]->Fill(vars(iV));
@@ -509,19 +509,22 @@ void LinearizedTrackFit::beginJob()
   TH1D * hGenPhi = fs->make<TH1D>("GenPhi","GenPhi",100, phiInterval.first, phiInterval.second);
   TH1D * hGenZ0 = fs->make<TH1D>("GenZ0","GenZ0",100, z0Interval.first, z0Interval.second);
   TH1D * hGenInvPt = fs->make<TH1D>("GenInvPt","GenInvPt",100, invPtInterval.first, invPtInterval.second);
+  TH1D * hGenEta = fs->make<TH1D>("GenEta","GenEta",100, -log(tan(atan2(1.,cotThetaInterval.first)/2.)), -log(tan(atan2(1.,cotThetaInterval.second)/2.)));
 
   TH1D * hCotTheta = fs->make<TH1D>("CotTheta","CotTheta",100, cotThetaInterval.first, cotThetaInterval.second);
   TH1D * hPhi = fs->make<TH1D>("Phi","Phi",100, phiInterval.first, phiInterval.second);
   TH1D * hZ0 = fs->make<TH1D>("Z0","Z0",100, z0Interval.first, z0Interval.second);
   TH1D * hInvPt = fs->make<TH1D>("InvPt","InvPt",100, invPtInterval.first, invPtInterval.second);
+  TH1D * hEta = fs->make<TH1D>("Eta","Eta",100, -log(tan(atan2(1.,cotThetaInterval.first)/2.)), -log(tan(atan2(1.,cotThetaInterval.second)/2.)));
 
-  TH1D * hErrEta = fs->make<TH1D>("ErrCotTheta","ErrCotTheta",100, hCotThetaErrRangeMin_, hCotThetaErrRangeMax_);
-  TH1D * hErrPhi = fs->make<TH1D>("ErrPhi","ErrPhi",100, hPhiErrRangeMin_, hPhiErrRangeMax_);
-  TH1D * hErrZ0 = fs->make<TH1D>("ErrZ0","ErrZ0",100, hZ0ErrRangeMin_, hZ0ErrRangeMax_);
-  TH1D * hErrInvPt = fs->make<TH1D>("ErrInvPt","ErrInvPt",100, hInvPtErrRangeMin_, hInvPtErrRangeMax_);
+  TH1D * hErrCotTheta = fs->make<TH1D>("ErrCotTheta","ErrCotTheta",200, hCotThetaErrRangeMin_, hCotThetaErrRangeMax_);
+  TH1D * hErrPhi = fs->make<TH1D>("ErrPhi","ErrPhi",200, hPhiErrRangeMin_, hPhiErrRangeMax_);
+  TH1D * hErrZ0 = fs->make<TH1D>("ErrZ0","ErrZ0",200, hZ0ErrRangeMin_, hZ0ErrRangeMax_);
+  TH1D * hErrInvPt = fs->make<TH1D>("ErrInvPt","ErrInvPt",200, hInvPtErrRangeMin_, hInvPtErrRangeMax_);
   TH1D * hDeltaPtOverPt = fs->make<TH1D>("DeltaPtOverPt","DeltaPtOverPt",200, hDeltaPtOverPtRangeMin_, hDeltaPtOverPtRangeMax_);
+  TH1D * hErrEta = fs->make<TH1D>("ErrEta","ErrEta",200, -log(tan(atan2(1.,hCotThetaErrRangeMin_)/2.)), -log(tan(atan2(1.,hCotThetaErrRangeMax_)/2.)));
 
-  TH1D * hNormChi2 = fs->make<TH1D>("NormChi2", "NormChi2", 100, 0, 10);
+  TH1D * hNormChi2 = fs->make<TH1D>("NormChi2", "NormChi2", 100, 0, 5);
   // TH1D * hNormChi2Params = fs->make<TH1D>("NormChi2Params", "NormChi2Params", 100, 0, 10);
   // TH1D * hNormChi2Diff = fs->make<TH1D>("NormChi2Diff", "NormChi2Diff", 100, -10, 10);
 
@@ -594,12 +597,12 @@ void LinearizedTrackFit::beginJob()
 
     // update correlation matrix between parameters and principal components
     updateMeanAndCovParams(parsTransverse, nTrackParametersTransverse, meanPTransverse,
-			   varsTransverse, nVarsTransverse, meanValuesTransverse,
-			   corrPVTransverse, nTracks);
+                           varsTransverse, nVarsTransverse, meanValuesTransverse,
+                           corrPVTransverse, nTracks);
 
     updateMeanAndCovParams(parsLongitudinal, nTrackParametersLongitudinal, meanPLongitudinal,
-			   varsLongitudinal, nVarsLongitudinal, meanValuesLongitudinal,
-			   corrPVLongitudinal, nTracks);
+                           varsLongitudinal, nVarsLongitudinal, meanValuesLongitudinal,
+                           corrPVLongitudinal, nTracks);
 
   }
 
@@ -648,8 +651,8 @@ void LinearizedTrackFit::beginJob()
   std::cout << "meanPLongitudinal[1] = " << meanPLongitudinal[1] << std::endl;
 
 
-  // Begin third loop on tracks
-  // --------------------------
+  // Begin second loop on tracks
+  // ---------------------------
   for (int i=tree->n_entries/2+1; i<tree->n_entries; ++i) {
     tree->getEntry(i);
 
@@ -687,9 +690,9 @@ void LinearizedTrackFit::beginJob()
     int nDof = 0;
     // fill histograms
     fillHistograms(nVarsTransverse, varsTransverse, principalTransverse, sqrtEigenvaluesTransverse,
-		   hVarTransverse, hPCTransverse, hPCNormTransverse, varsForChi2Transverse, chi2, nDof);
+                   hVarTransverse, hPCTransverse, hPCNormTransverse, varsForChi2Transverse, chi2, nDof);
     fillHistograms(nVarsLongitudinal, varsLongitudinal, principalLongitudinal, sqrtEigenvaluesLongitudinal,
-		   hVarLongitudinal, hPCLongitudinal, hPCNormLongitudinal, varsForChi2Longitudinal, chi2, nDof);
+                   hVarLongitudinal, hPCLongitudinal, hPCNormLongitudinal, varsForChi2Longitudinal, chi2, nDof);
     hNormChi2->Fill(chi2/nDof);
 
     // Estimate track parameters
@@ -706,6 +709,8 @@ void LinearizedTrackFit::beginJob()
     double deltaPtOverPt = (1./estimatedParsTransverse[1] - 1./parsTransverse[1])*parsTransverse[1];
 
     VectorXd errParLongitudinal(nTrackParametersLongitudinal);
+    double genEta = -log(tan(atan2(1,parsLongitudinal[0])/2.));
+    double estimatedEta = -log(tan(atan2(1,estimatedParsLongitudinal[0])/2.));
     errParLongitudinal(0) = estimatedParsLongitudinal[0] - parsLongitudinal[0];
     errParLongitudinal(1) = estimatedParsLongitudinal[1] - parsLongitudinal[1];
 
@@ -714,22 +719,27 @@ void LinearizedTrackFit::beginJob()
 
     // hNormChi2Diff->Fill(chi2/nDof - normChi2Params);
 
+    // std::cout << "Estimated pt - generated pt = " << estimatedParsTransverse[1] << " - " << parsTransverse[1] << " = " << estimatedParsTransverse[1] - parsTransverse(1) << std::endl;
+
     hGenPhi->Fill(parsTransverse(0));
     hGenInvPt->Fill(parsTransverse(1));
     hGenCotTheta->Fill(parsLongitudinal(0));
     hGenZ0->Fill(parsLongitudinal(1));
+    hGenEta->Fill(genEta);
 
     hPhi->Fill(estimatedParsTransverse(0));
     hInvPt->Fill(estimatedParsTransverse(1));
     hCotTheta->Fill(estimatedParsLongitudinal(0));
     hZ0->Fill(estimatedParsLongitudinal(1));
+    hEta->Fill(estimatedEta);
 
     hErrPhi->Fill(errParTransverse(0));
     hErrInvPt->Fill(errParTransverse(1));
     hDeltaPtOverPt->Fill(deltaPtOverPt);
 
-    hErrEta->Fill(errParLongitudinal(0));
+    hErrCotTheta->Fill(errParLongitudinal(0));
     hErrZ0->Fill(errParLongitudinal(1));
+    hErrEta->Fill(estimatedEta - genEta);
 
   } // end third loop on tracks
 }
