@@ -15,7 +15,7 @@ class MatrixBuilder
 public:
   MatrixBuilder(const std::string & name, const unsigned int nVar, const unsigned int nTrackParameters);
   void update(const std::vector<float> & vars, const std::vector<float> & pars);
-  void writeMatrices();
+  void writeMatrices() const;
 
 private:
   void updateMeanAndCov(const std::vector<float> & vars);

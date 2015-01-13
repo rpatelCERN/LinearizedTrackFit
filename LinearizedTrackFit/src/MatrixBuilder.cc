@@ -65,7 +65,7 @@ void MatrixBuilder::update(const std::vector<float> & vars, const std::vector<fl
 //}
 
 
-void MatrixBuilder::writeMatrices()
+void MatrixBuilder::writeMatrices() const
 {
   // Diagonalize covariance matrix to find principal components
   SelfAdjointEigenSolver<MatrixXd> es(cov_);

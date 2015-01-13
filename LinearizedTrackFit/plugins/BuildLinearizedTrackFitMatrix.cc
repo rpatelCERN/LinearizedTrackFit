@@ -104,7 +104,6 @@ BuildLinearizedTrackFitMatrix::analyze(const edm::Event& iEvent, const edm::Even
 // ------------ method called once each job just before starting event loop  ------------
 void BuildLinearizedTrackFitMatrix::beginJob()
 {
-
   printSelectedNames();
 
   TreeReader treeReader(inputFileName_, eventsFraction_, requiredLayers_,

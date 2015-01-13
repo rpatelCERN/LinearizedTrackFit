@@ -627,7 +627,7 @@ void LinearizedTrackFit::beginJob()
   }
   std::cout << std::endl;
 
-  // V are the ortogonal transformations from variable space to parameter space
+  // V are the orthogonal transformations from variable space to parameter space
   // Parameters are constraints + rotated track parameters
   MatrixXd VTransverse = (esTransverse.eigenvectors()).transpose();
   MatrixXd VLongitudinal = (esLongitudinal.eigenvectors()).transpose();
