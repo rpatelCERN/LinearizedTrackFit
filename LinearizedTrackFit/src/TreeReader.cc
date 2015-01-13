@@ -14,7 +14,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   trackIndex_(0)
 {
   std::cout << "Requested running from track number " << firstTrack_ << " to track number " << lastTrack_ <<
-      "for a total of " << lastTrack_ - firstTrack_ << " tracks." << std::endl;
+      " for a total of " << lastTrack_ - firstTrack_ << " tracks." << std::endl;
 
   // Store the classes that will return the selected variables for each stub
   for (const std::string varName : varNames) {
@@ -31,6 +31,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   for (const std::string & trackParName : trackParNames) {
     if (trackParName == "phi") pars_.push_back(std::make_shared<GetParPhi>(tree_));
     else if (trackParName == "1/pt") pars_.push_back(std::make_shared<GetParOneOverPt>(tree_));
+    else if (trackParName == "charge/pt") pars_.push_back(std::make_shared<GetParChargeOverPt>(tree_));
     else if (trackParName == "cotTheta") pars_.push_back(std::make_shared<GetParCotTheta>(tree_));
     else if (trackParName == "z0") pars_.push_back(std::make_shared<GetParZ0>(tree_));
     else if (trackParName == "d0") pars_.push_back(std::make_shared<GetParD0>(tree_));

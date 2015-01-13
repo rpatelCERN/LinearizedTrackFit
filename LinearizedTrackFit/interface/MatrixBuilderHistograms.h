@@ -1,5 +1,5 @@
-#ifndef MATRIXHISTOGRAMS_H
-#define MATRIXHISTOGRAMS_H
+#ifndef MATRIXBUILDERHISTOGRAMS_H
+#define MATRIXBUILDERHISTOGRAMS_H
 
 #include <string>
 #include <vector>
@@ -8,15 +8,13 @@
 class MatrixBuilderHistograms
 {
 public:
-  MatrixHistograms(const std::string & name, const int nVars, const int nTrackParameters);
-  void fill(const std::vector<float> & vars, const std::vector<float> & pcs,
-      const std::vector<float> & npcs, const std::vector<float> & pars);
+  MatrixBuilderHistograms(const std::string & name, const int nVars, const int nTrackParameters);
+  void fill(const std::vector<float> & vars, const std::vector<float> & pars);
+  void write();
 
 private:
   // Data members
   BaseHistograms hVars_;
-  BaseHistograms hPC_;
-  BaseHistograms hNPC_;
   BaseHistograms hPars_;
 };
 
