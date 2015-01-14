@@ -22,10 +22,11 @@ public:
   std::vector<float> getVariables();
   std::vector<float> getTrackParameters();
 
-  float getOneOverPt() {return tree_->m_stub_ptGEN->at(0) == 0 ? 0 : 1./tree_->m_stub_ptGEN->at(0);}
-  float getPhi() {return tree_->m_stub_PHI0->at(0);}
-  float getEta() {return tree_->m_stub_etaGEN->at(0);}
-  float getZ0() {return tree_->m_stub_Z0->at(0);}
+  float getOneOverPt() { return tree_->m_stub_ptGEN->at(0) == 0 ? 0 : 1./tree_->m_stub_ptGEN->at(0); }
+  float getPhi() { return tree_->m_stub_PHI0->at(0); }
+  float getEta() { return tree_->m_stub_etaGEN->at(0); }
+  float getZ0() { return tree_->m_stub_Z0->at(0); }
+  int getCharge() { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
 
 private:
   bool goodTrack();

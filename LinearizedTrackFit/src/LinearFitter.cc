@@ -8,13 +8,13 @@ LinearFitter::LinearFitter(const std::string & inputDirName) :
 
 // Find the matrix in the hash-map for the given geometric index (needs the input parameters)
 bool LinearFitter::fit(const std::vector<float> & vars,
-    const float & genOneOverPt, const float & genPhi, const float & genEta, const float & genZ0)
+    const float & genOneOverPt, const float & genPhi, const float & genEta, const float & genZ0, const int charge)
 {
   geomIndex_ = -1;
   VectorXd varsVec(vars.size());
   for (unsigned int i=0; i<vars.size(); ++i) { varsVec(i) = vars[i]; }
 
-  geomIndex_ = gi_(genOneOverPt, genPhi, genEta, genZ0);
+  geomIndex_ = gi_(genOneOverPt, genPhi, genEta, genZ0, charge);
   if (geomIndex_ == -1) return false;
   if (matrices_.count(geomIndex_) == 0) {
     matrices_.insert(std::make_pair(geomIndex_,

@@ -27,6 +27,7 @@ GeometricIndex::GeometricIndex(const std::string & inputFileName)
   gic_.z0Min = std::stof(readValue(inputFile));
   gic_.z0Max = std::stof(readValue(inputFile));
   gic_.z0Regions = std::stoi(readValue(inputFile));
+  gic_.chargeRegions = std::stoi(readValue(inputFile));
 
   initialize();
 }
@@ -60,11 +61,12 @@ bool GeometricIndex::filter(const float & oneOverPt, const float & phi, const fl
 }
 
 
-int GeometricIndex::operator() (const float & oneOverPt, const float & phi, const float & eta, const float & z0)
+int GeometricIndex::operator() (const float & oneOverPt, const float & phi, const float & eta, const float & z0, const int charge)
 {
   if (!filter(oneOverPt, phi, eta, z0)) return -1;
   return (oneOverPtRegionIndex(oneOverPt) + gic_.oneOverPtRegions*(phiRegionIndex(phi) +
-      gic_.phiRegions*(etaRegionIndex(eta) + gic_.etaRegions*z0RegionIndex(z0))));
+      gic_.phiRegions*(etaRegionIndex(eta) + gic_.etaRegions*(z0RegionIndex(z0) +
+      gic_.z0Regions*chargeRegionIndex(charge)))));
 }
 
 
@@ -90,6 +92,7 @@ void GeometricIndex::write()
   outfile << "z0PtMin = " << gic_.z0Min << std::endl;
   outfile << "z0PtMax = " << gic_.z0Max << std::endl;
   outfile << "z0PtRegions = " << gic_.z0Regions << std::endl;
+  outfile << "chargeRegions = " << gic_.chargeRegions << std::endl;
   outfile << std::endl;
   outfile.close();
 }

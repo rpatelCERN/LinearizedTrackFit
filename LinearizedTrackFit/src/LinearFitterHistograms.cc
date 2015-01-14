@@ -5,8 +5,8 @@ LinearFitterHistograms::LinearFitterHistograms(const std::string & name, const i
     hPC_("PC_"+name, nVars),
     hNPC_("NPC_"+name, nVars),
     hEstimatedPars_("EstimatedPar_"+name, nTrackParameters),
-    hEstimatedParErrors_("EstimatedParError_"+name, nTrackParameters),
-    hEstimatedParRelErrors_("EstimatedParRelError_"+name, nTrackParameters)
+    hEstimatedParErrors_("EstimatedParError_"+name, nTrackParameters, 100, -0.1, 0.1),
+    hEstimatedParRelErrors_("EstimatedParRelError_"+name, nTrackParameters, 100, -0.1, 0.1)
 {
   TString hName = "normChi2_"+name;
   hNormChi2_ = new TH1F(hName, hName, 1000, 0., 10.);

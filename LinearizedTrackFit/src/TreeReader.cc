@@ -61,8 +61,8 @@ bool TreeReader::nextTrack()
 
     ++trackIndex_;
 
-    if (trackIndex_%int(totalTracks_/10) == 0) {
-      std::cout << "Analyzed " << (trackIndex_/int(totalTracks_/10))*10
+    if (trackIndex_%(totalTracks_/10) == 0) {
+      std::cout << "Analyzed " << (trackIndex_/(totalTracks_/10))*10
           << "% of " << totalTracks_ << " tracks" << std::endl;
     }
   }
