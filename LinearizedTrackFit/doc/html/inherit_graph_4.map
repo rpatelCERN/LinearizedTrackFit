@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_get_tree_track_parameter.html" title="GetTreeTrackParameter" alt="" coords="5,132,160,159"/>
+<area shape="rect" id="node2" href="$class_get_par_charge_over_pt.html" title="GetParChargeOverPt" alt="" coords="208,5,353,32"/>
+<area shape="rect" id="node3" href="$class_get_par_cot_theta.html" title="GetParCotTheta" alt="" coords="223,56,338,83"/>
+<area shape="rect" id="node4" href="$class_get_par_d0.html" title="GetParD0" alt="" coords="241,107,321,133"/>
+<area shape="rect" id="node5" href="$class_get_par_one_over_pt.html" title="GetParOneOverPt" alt="" coords="217,157,345,184"/>
+<area shape="rect" id="node6" href="$class_get_par_phi.html" title="GetParPhi" alt="" coords="240,208,321,235"/>
+<area shape="rect" id="node7" href="$class_get_par_z0.html" title="GetParZ0" alt="" coords="241,259,320,285"/>
+</map>
