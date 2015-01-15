@@ -16,32 +16,10 @@ namespace LinearFit {
 
   void buildMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
       const int requiredLayers, const std::vector<std::string> & inputVarNames,
-      const std::vector<std::string> & inputTrackParameterNames, bool singleModules)
+      const std::vector<std::string> & inputTrackParameterNames, bool singleModules,
+      const GeometricIndex::GeometricIndexConfiguration & gic)
   {
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers, inputVarNames, inputTrackParameterNames);
-
-    // The parameters used here should come from cfg
-    GeometricIndex::GeometricIndexConfiguration gic;
-    // gic.oneOverPtMin = 1./5.;
-    // gic.oneOverPtMax = 1./1.5;
-    // gic.oneOverPtMin = 1./4.;
-    gic.oneOverPtMin = 1. / 1000.;
-    gic.oneOverPtMax = 1. / 2.;
-    gic.oneOverPtRegions = 1;
-    // Bigger then -pi, pi
-    // gic.phiMin = -0.04;
-    // gic.phiMax = 0.04;
-    gic.phiMin = -4.;
-    gic.phiMax = 4.;
-    gic.phiRegions = 1;
-    gic.etaMin = -4.;
-    gic.etaMax = 4.;
-    gic.etaRegions = 1;
-    gic.z0Min = -15.;
-    gic.z0Max = 15.;
-    gic.z0Regions = 1;
-    // Specify 1 for no charge splitting and 2 for separating positive and negative charge in difference regions
-    gic.chargeRegions = 2;
 
     GeometricIndex geometricIndex(gic);
     std::unordered_map<int, MatrixBuilder> matrices;
