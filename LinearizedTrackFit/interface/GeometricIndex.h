@@ -4,6 +4,8 @@
 #include <functional>
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/StubRZPhi.h"
 
 /**
 * The GeometricIndex class is responsible for returning a unique index for each linearization region.
@@ -39,12 +41,13 @@ public:
   GeometricIndex(const std::string & inputFileName);
   GeometricIndex(const GeometricIndexConfiguration & gic);
   int operator() (const float & oneOverPt, const float & phi, const float & eta, const float & z0, const int charge);
+  int operator() (const std::vector<StubRZPhi> & stubs, const int charge);
   void write();
-  // void read(const std::string & inputFileName);
 
 private:
   void initialize();
   bool filter(const float & oneOverPt, const float & phi, const float & eta, const float & z0);
+  bool filter(const std::vector<StubRZPhi> & stubs);
   int regionIndex(const float & value, const float & min, const float & regionSize) {
     return int((value - min)/regionSize);
   }

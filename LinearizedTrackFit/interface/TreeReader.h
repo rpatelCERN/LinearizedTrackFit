@@ -11,6 +11,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/L1TrackTriggerTree.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GetVariables.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GetTrackParameters.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/StubRZPhi.h"
 
 class TreeReader
 {
@@ -27,6 +28,7 @@ public:
   float getEta() { return tree_->m_stub_etaGEN->at(0); }
   float getZ0() { return tree_->m_stub_Z0->at(0); }
   int getCharge() { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
+  std::vector<StubRZPhi> getStubRZPhi() const { return stubsRZPhi_; }
 
 private:
   bool goodTrack();
@@ -58,6 +60,8 @@ private:
   int trackIndex_;
   std::vector<float> variables_;
   std::vector<float> parameters_;
+
+  std::vector<StubRZPhi> stubsRZPhi_;
 };
 
 #endif // TREEREADER_H

@@ -24,6 +24,7 @@ L1TrackTriggerTree::L1TrackTriggerTree(const TString & fileName)
   L1TT->SetBranchAddress("STUB_module",    &m_stub_module);
   L1TT->SetBranchAddress("STUB_ladder",    &m_stub_ladder);
   L1TT->SetBranchAddress("STUB_seg",       &m_stub_seg);
+  L1TT->SetBranchAddress("STUB_modid",     &m_stub_modid);
   L1TT->SetBranchAddress("STUB_strip",     &m_stub_strip);
   L1TT->SetBranchAddress("STUB_x",         &m_stub_x);
   L1TT->SetBranchAddress("STUB_y",         &m_stub_y);

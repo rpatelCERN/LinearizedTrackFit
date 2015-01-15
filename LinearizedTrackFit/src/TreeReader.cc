@@ -115,29 +115,38 @@ bool TreeReader::goodTrack()
 
 
 // Fill the vector of selected variables
-void TreeReader::readVariables()
-{
+void TreeReader::readVariables() {
   variables_.clear();
-  std::map<int, std::vector<float> > layersFound;
+  stubsRZPhi_.clear();
 
-  // Loop on vars_ and fill the vector of variables.
+  std::map<int, unsigned int> layersFound;
+  // Find how the stub indexes correspond to the layers
   unsigned int totalStubs = tree_->m_stub;
-  for (unsigned int k=0; k < totalStubs; ++k) {
+  for (unsigned int k = 0; k < totalStubs; ++k) {
     int layer = tree_->m_stub_layer->at(k);
     if (layersFound.count(layer) != 0) continue;
-    std::vector<float> v;
-    for (const auto & var : vars_) {
-      v.push_back(var->at(k));
-    }
-    // Move the content of v to the vector constructed by std::make_pair.
-    layersFound.insert(std::make_pair(layer, std::move(v)));
+    layersFound.insert(std::make_pair(layer, k));
   }
 
-  // Fill the vector of variables. Since we use an std::map this is slow,
-  // but it guarantees that the layers are always sorted from the smallest.
-  for (const auto & m : layersFound) {
-    std::move(m.second.begin(), m.second.end(), std::back_inserter(variables_));
+  for (const auto &m : layersFound) {
+    unsigned int k = m.second;
+    for (const auto &var : vars_) {
+      variables_.push_back(var->at(k));
+    }
+    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
+        tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_seg->at(k), tree_->m_stub_modid->at(k)));
+
+//    if (fabs(tree_->m_stub_Z0->at(k)) < 1.)
+//      std::cout << "tree_->m_stub_module->at(" << k << ") = " << tree_->m_stub_module->at(k)
+//          << ", ladder = " << tree_->m_stub_ladder->at(k)
+//          << ", seg = " << tree_->m_stub_seg->at(k)
+//          << ", strip = " << tree_->m_stub_strip->at(k) << std::endl;
+//    if (fabs(tree_->m_stub_Z0->at(k)) < 1.)
+//      std::cout << "tree_->m_stub_modid->at(" << k << ") = " << tree_->m_stub_modid->at(k) << std::endl;
   }
+
+//  if (fabs(tree_->m_stub_Z0->at(0)) < 1.)
+//    throw;
 
   assert(variables_.size() == variablesSize_);
 }

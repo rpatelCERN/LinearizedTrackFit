@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GeometricIndex.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixReader.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/StubRZPhi.h"
 
 class LinearFitter
 {
@@ -16,6 +17,7 @@ public:
 
   // Fit track parameters
   bool fit(const std::vector<float> & vars, const float & genOneOverPt, const float & genPhi, const float & genEta, const float & genZ0, const int charge);
+  bool fit(const std::vector<float> & vars, const std::vector<StubRZPhi> & stubs, const int charge);
   float normChi2() { return normChi2_; }
   std::vector<float> trackParameters() { return trackParameters_; }
   int geometricIndex() { return geomIndex_; }
@@ -25,6 +27,8 @@ public:
   std::vector<float> normalizedPrincipalComponents(const std::vector<float> & vars);
 
 private:
+  bool fit(const std::vector<float> & vars);
+
   // Data members
   float normChi2_;
   std::vector<float> trackParameters_;

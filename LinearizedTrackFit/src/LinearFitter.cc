@@ -10,12 +10,23 @@ LinearFitter::LinearFitter(const std::string & inputDirName) :
 bool LinearFitter::fit(const std::vector<float> & vars,
     const float & genOneOverPt, const float & genPhi, const float & genEta, const float & genZ0, const int charge)
 {
-  geomIndex_ = -1;
+  geomIndex_ = gi_(genOneOverPt, genPhi, genEta, genZ0, charge);
+  return fit(vars);
+}
+
+
+bool LinearFitter::fit(const std::vector<float> & vars, const std::vector<StubRZPhi> & stubs, const int charge)
+{
+  geomIndex_ = gi_(stubs, charge);
+  return fit(vars);
+}
+
+
+bool LinearFitter::fit(const std::vector<float> & vars)
+{
+  if (geomIndex_ == -1) return false;
   VectorXd varsVec(vars.size());
   for (unsigned int i=0; i<vars.size(); ++i) { varsVec(i) = vars[i]; }
-
-  geomIndex_ = gi_(genOneOverPt, genPhi, genEta, genZ0, charge);
-  if (geomIndex_ == -1) return false;
   if (matrices_.count(geomIndex_) == 0) {
     matrices_.insert(std::make_pair(geomIndex_,
         MatrixReader(inputDirName_+"matrixVD_"+std::to_string(geomIndex_)+".txt")));

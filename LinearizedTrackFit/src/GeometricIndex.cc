@@ -70,6 +70,43 @@ int GeometricIndex::operator() (const float & oneOverPt, const float & phi, cons
 }
 
 
+bool GeometricIndex::filter(const std::vector<StubRZPhi> & stubs)
+{
+//  if (stubs[0].module() != 35 || stubs[0].ladder() != 0) return false;
+//  if (stubs[1].module() != 31 || stubs[1].ladder() != 0) return false;
+//  if (stubs[2].module() != 31 || stubs[2].ladder() != 0) return false;
+//  if (stubs[3].module() != 13 || stubs[3].ladder() != 47) return false;
+//  if (stubs[4].module() != 14 || stubs[4].ladder() != 61) return false;
+//  if (stubs[5].module() != 14 || stubs[5].ladder() != 74) return false;
+//  if (stubs[0].module() != 31 || stubs[0].ladder() != 0 || stubs[0].seg() != 5) return false;
+//  if (stubs[1].module() != 28 || stubs[1].ladder() != 0 || stubs[1].seg() != 27) return false;
+//  if (stubs[2].module() != 28 || stubs[2].ladder() != 0 || stubs[2].seg() != 27) return false;
+//  if (stubs[3].module() != 12 || stubs[3].ladder() != 47 || stubs[3].seg() != 0) return false;
+//  if (stubs[4].module() != 12 || stubs[4].ladder() != 61 || stubs[4].seg() != 0) return false;
+//  if (stubs[5].module() != 12 || stubs[5].ladder() != 74 || stubs[5].seg() != 0) return false;
+  if (stubs[0].module() != 31 || stubs[0].ladder() != 0) return false;
+  if (stubs[1].module() != 28 || stubs[1].ladder() != 0) return false;
+  if (stubs[2].module() != 28 || stubs[2].ladder() != 0) return false;
+  if (stubs[3].module() != 12 || stubs[3].ladder() != 47) return false;
+  if (stubs[4].module() != 12 || stubs[4].ladder() != 61) return false;
+  if (stubs[5].module() != 12 || stubs[5].ladder() != 74) return false;
+//  if (stubs[0].modid() != 5003105) return false;
+//  if (stubs[1].modid() != 6002827) return false;
+//  if (stubs[2].modid() != 7002827) return false;
+//  if (stubs[3].modid() != 8471200) return false;
+//  if (stubs[4].modid() != 9611200) return false;
+//  if (stubs[5].modid() != 10741200) return false;
+  return true;
+}
+
+
+int GeometricIndex::operator() (const std::vector<StubRZPhi> & stubs, const int charge)
+{
+  if (!filter(stubs)) return -1;
+  return chargeRegionIndex(charge);
+}
+
+
 void GeometricIndex::write()
 {
   // open matrix file and write V and D arrays
@@ -108,9 +145,3 @@ std::string GeometricIndex::readValue(std::ifstream & inputFile)
   }
   return s.substr(s.find("= ")+2);
 }
-
-
-//int GeometricIndex::oneOverPtRegionIndexF(const float & pt)
-//{
-//  return int((pt - gic_.oneOverPtMin)/oneOverPtRegionSize_);
-//}
