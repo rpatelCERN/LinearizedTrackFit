@@ -1,4 +1,3 @@
-#include <Python/Python.h>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixReader.h"
 
 using namespace Eigen;
