@@ -3,6 +3,7 @@
 LinearFitter::LinearFitter(const std::string & inputDirName) :
     normChi2_(0.), trackParameters_(0.), inputDirName_(inputDirName), gi_(inputDirName+"GeometricIndex.txt")
 {
+  readRequiredLayers(inputDirName+"Variables.txt");
 }
 
 
@@ -37,13 +38,19 @@ void LinearFitter::readRequiredLayers(const std::string & inputFileName)
   std::string layer;
   while (!inputFile.eof()) {
     inputFile >> varName;
-    std::unordered_set<int> layers;
-    while (layer != "-") {
+    if (requiredLayers_.count(varName) == 0 ) {
+      std::cout << "variable name: " << varName << std::endl;
+      std::unordered_set<int> layers;
       inputFile >> layer;
-      layers.insert(std::stoi(layer));
+      while (layer != "-") {
+        std::cout << "layer: " << layer << std::endl;
+        layers.insert(std::stoi(layer));
+        inputFile >> layer;
+      }
+      requiredLayers_.insert(std::make_pair(varName, layers));
     }
-    requiredLayers_.insert(std::make_pair(varName, layers));
   }
+  std::cout << std::endl;
 }
 
 
