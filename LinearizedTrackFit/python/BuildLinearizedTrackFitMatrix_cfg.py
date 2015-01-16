@@ -30,10 +30,10 @@ process.demo = cms.EDAnalyzer('BuildLinearizedTrackFitMatrix',
                               RequiredLayers = cms.uint32(6),
 
 
-                              # TODO: IMPLEMENT THIS
                               # Select layers to use (must be consistent with the required layers
-                              # UseLayers = cms.vint32(5, 6, 7, 8, 9, 10),
-
+                              LayersPhi = cms.vint32(5, 6, 7, 8, 9, 10);
+                              LayersR = cms.vint32(5, 6, 7, 8, 9, 10);
+                              LayersZ = cms.vint32(5, 6, 7, 8, 9, 10);
 
                               VariableNames = cms.vstring("phi"),
                               TrackParameterNames = cms.vstring("charge/pt", "phi"),

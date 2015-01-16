@@ -21,6 +21,7 @@
 // system include files
 #include <vector>
 #include <string>
+#include <unordered_set>
 
 // CMSSW include files
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -31,9 +32,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 // user include files
-// #include "LinearizedTrackFit/LinearizedTrackFit/interface/L1TrackTriggerTree.h"
-// #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
-// #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GeometricIndex.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/BuildMatrix.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TestMatrix.h"
@@ -62,6 +60,9 @@ private:
   double eventsFractionStartTest_;
   double eventsFractionEndTest_;
   unsigned int requiredLayers_;
+  std::vector<int> layersPhi_;
+  std::vector<int> layersR_;
+  std::vector<int> layersZ_;
   std::vector<std::string> inputVarNames_;
   std::vector<std::string> inputTrackParameterNames_;
   bool singleModules_;
@@ -102,7 +103,10 @@ BuildLinearizedTrackFitMatrix::BuildLinearizedTrackFitMatrix(const edm::Paramete
   eventsFractionEndBuild_(iConfig.getParameter<double>("EventsFractionEndBuild")),
   eventsFractionStartTest_(iConfig.getParameter<double>("EventsFractionStartTest")),
   eventsFractionEndTest_(iConfig.getParameter<double>("EventsFractionEndTest")),
-  requiredLayers_(iConfig.getParameter<unsigned int>("RequiredLayers")),
+  // requiredLayers_(iConfig.getParameter<unsigned int>("RequiredLayers")),
+  layersPhi_(iConfig.getParameter<std::vector<int> >("LayersPhi")),
+  layersR_(iConfig.getParameter<std::vector<int> >("LayersR")),
+  layersZ_(iConfig.getParameter<std::vector<int> >("LayersZ")),
   inputVarNames_(iConfig.getParameter<std::vector<std::string> >("VariableNames")),
   inputTrackParameterNames_(iConfig.getParameter<std::vector<std::string> >("TrackParameterNames")),
   singleModules_(iConfig.getParameter<bool>("SingleModules")),
@@ -163,6 +167,12 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     gic.z0Max = z0Max_;
     gic.z0Regions = z0Regions_;
     gic.chargeRegions = chargeRegions_;
+
+    std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
+    requiredLayers_.insert(std::make_pair("phi", std::unordered_set<int>(layersPhi_.begin(), layersPhi_.end())));
+    requiredLayers_.insert(std::make_pair("R", std::unordered_set<int>(layersR_.begin(), layersR_.end())));
+    requiredLayers_.insert(std::make_pair("z", std::unordered_set<int>(layersZ_.begin(), layersZ_.end())));
+
 
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
 			   requiredLayers_, inputVarNames_, inputTrackParameterNames_, singleModules_, gic);
