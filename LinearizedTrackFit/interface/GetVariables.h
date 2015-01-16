@@ -14,10 +14,8 @@ public:
   GetTreeVariable(const std::unordered_set<int> & layers) : layers_(layers) {}
   virtual ~GetTreeVariable() {}
   virtual float at(const int k) = 0;
-  virtual bool layer(const int layer) {
-    std::cout << "layers_.count("<<layer<<") = " << std::endl;
-    std::cout << layers_.count(layer) << std::endl;
-    return layers_.count(layer); }
+  virtual bool layer(const int layer) { return layers_.count(layer); }
+  unsigned int layersNum() { return layers_.size(); }
 protected:
   std::unordered_set<int> layers_;
 };

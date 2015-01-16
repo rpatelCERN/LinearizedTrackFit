@@ -105,7 +105,7 @@ void MatrixBuilder::writeMatrices() const
   // Write also the number of variables and track parameters used
   outfile << nVars_ << std::endl;
   outfile << nTrackParameters_ << std::endl;
-  std::cout << std::endl;
+  outfile << std::endl;
   outfile << sqrtEigenvalues;
   outfile << std::endl << std::endl;
   outfile << V;

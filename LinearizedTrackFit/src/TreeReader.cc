@@ -12,7 +12,8 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   lastTrack_(tree_->n_entries*eventsFractionEnd),
   totalTracks_(lastTrack_-firstTrack_),
   trackIndex_(0),
-  maxRequiredLayers_(0)
+  maxRequiredLayers_(0),
+  variablesSize_(0)
 {
   std::cout << "Requested running from track number " << firstTrack_ << " to track number " << lastTrack_ <<
       " for a total of " << lastTrack_ - firstTrack_ << " tracks." << std::endl;
@@ -27,8 +28,10 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
       throw;
     }
   }
-  // maxRequiredLayers_ = std::max_element(requiredLayers_.begin(), requiredLayers_.end(), [](auto a, auto b) { return a.size() < b.size(); })->size();
-  for (const auto & l : requiredLayers_) { if (l.second.size() > maxRequiredLayers_) maxRequiredLayers_ = l.second.size(); }
+  for (const auto & v : vars_) {
+    variablesSize_ += v->layersNum();
+    maxRequiredLayers_ = std::max(maxRequiredLayers_, v->layersNum());
+  }
 
   // Store the classes that will return the selected generated track parameters for each stub
   for (const std::string & trackParName : trackParNames) {
@@ -57,9 +60,7 @@ bool TreeReader::nextTrack()
 
     // if (trackIndex_ >= 10) return false;
 
-    std::cout << "getting track number " << trackIndex_+firstTrack_ << std::endl;
     tree_->getEntry(trackIndex_+firstTrack_);
-    std::cout << "track read" << std::endl;
 
     // Consistency checks
     good = goodTrack();
@@ -71,8 +72,6 @@ bool TreeReader::nextTrack()
           << "% of " << totalTracks_ << " tracks" << std::endl;
     }
   }
-
-  std::cout << "read variables" << std::endl;
 
   readTrackParameters();
   readVariables();
@@ -155,7 +154,7 @@ void TreeReader::readVariables() {
 //  if (fabs(tree_->m_stub_Z0->at(0)) < 1.)
 //    throw;
 
-  assert(variables_.size() == vars_.size());
+  assert(variables_.size() == variablesSize_);
 }
 
 
@@ -199,8 +198,8 @@ void TreeReader::writeConfiguration()
     for (const auto & l : m.second) {
       outfile << l << " ";
     }
-    std::cout << std::endl << std::endl;
-    std::cout << "-" << std::endl << std::endl;
+    outfile << std::endl << std::endl;
+    outfile << "-" << std::endl << std::endl;
   }
   outfile.close();
 }

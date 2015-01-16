@@ -32,7 +32,7 @@ public:
   float getZ0() { return tree_->m_stub_Z0->at(0); }
   int getCharge() { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
   std::vector<StubRZPhi> getStubRZPhi() const { return stubsRZPhi_; }
-  unsigned int variablesSize() const { return vars_.size(); }
+  unsigned int variablesSize() const { return variablesSize_; }
   unsigned int maxRequiredLayers() const { return maxRequiredLayers_; }
   void writeConfiguration();
 
@@ -66,6 +66,7 @@ private:
   std::vector<float> variables_;
   std::vector<float> parameters_;
   unsigned int maxRequiredLayers_;
+  unsigned int variablesSize_;
 
   std::vector<StubRZPhi> stubsRZPhi_;
 };
