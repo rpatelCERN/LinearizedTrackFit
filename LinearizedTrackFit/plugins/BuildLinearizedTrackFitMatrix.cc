@@ -31,9 +31,12 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 // user include files
-#include "LinearizedTrackFit/LinearizedTrackFit/interface/L1TrackTriggerTree.h"
-#include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
-#include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
+// #include "LinearizedTrackFit/LinearizedTrackFit/interface/L1TrackTriggerTree.h"
+// #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
+// #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/GeometricIndex.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/BuildMatrix.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/TestMatrix.h"
 
 //
 // class declaration
@@ -54,10 +57,30 @@ private:
 
   // ----------member data ---------------------------
   TString inputFileName_;
-  double eventsFraction_;
+  double eventsFractionStartBuild_;
+  double eventsFractionEndBuild_;
+  double eventsFractionStartTest_;
+  double eventsFractionEndTest_;
   unsigned int requiredLayers_;
   std::vector<std::string> inputVarNames_;
   std::vector<std::string> inputTrackParameterNames_;
+  bool singleModules_;
+  // Geometric cuts
+  double oneOverPtMin_;
+  double oneOverPtMax_;
+  int oneOverPtRegions_;
+  double phiMin_;
+  double phiMax_;
+  int phiRegions_;
+  double etaMin_;
+  double etaMax_;
+  int etaRegions_;
+  double z0Min_;
+  double z0Max_;
+  int z0Regions_;
+  int chargeRegions_;
+  bool buildMatrix_;
+  bool testMatrix_;
 };
 
 //
@@ -75,10 +98,29 @@ private:
 
 BuildLinearizedTrackFitMatrix::BuildLinearizedTrackFitMatrix(const edm::ParameterSet& iConfig) :
   inputFileName_(iConfig.getParameter<std::string>("InputFileName")),
-  eventsFraction_(iConfig.getParameter<double>("EventsFraction")),
+  eventsFractionStartBuild_(iConfig.getParameter<double>("EventsFractionStartBuild")),
+  eventsFractionEndBuild_(iConfig.getParameter<double>("EventsFractionEndBuild")),
+  eventsFractionStartTest_(iConfig.getParameter<double>("EventsFractionStartTest")),
+  eventsFractionEndTest_(iConfig.getParameter<double>("EventsFractionEndTest")),
   requiredLayers_(iConfig.getParameter<unsigned int>("RequiredLayers")),
   inputVarNames_(iConfig.getParameter<std::vector<std::string> >("VariableNames")),
-  inputTrackParameterNames_(iConfig.getParameter<std::vector<std::string> >("TrackParameterNames"))
+  inputTrackParameterNames_(iConfig.getParameter<std::vector<std::string> >("TrackParameterNames")),
+  singleModules_(iConfig.getParameter<bool>("SingleModules")),
+  oneOverPtMin_(iConfig.getParameter<double>("OneOverPtMin")),
+  oneOverPtMax_(iConfig.getParameter<double>("OneOverPtMax")),
+  oneOverPtRegions_(iConfig.getParameter<int>("OneOverPtRegions")),
+  phiMin_(iConfig.getParameter<double>("PhiMin")),
+  phiMax_(iConfig.getParameter<double>("PhiMax")),
+  phiRegions_(iConfig.getParameter<int>("PhiRegions")),
+  etaMin_(iConfig.getParameter<double>("EtaMin")),
+  etaMax_(iConfig.getParameter<double>("EtaMax")),
+  etaRegions_(iConfig.getParameter<int>("EtaRegions")),
+  z0Min_(iConfig.getParameter<double>("Z0Min")),
+  z0Max_(iConfig.getParameter<double>("Z0Max")),
+  z0Regions_(iConfig.getParameter<int>("Z0Regions")),
+  chargeRegions_(iConfig.getParameter<int>("ChargeRegions")),
+  buildMatrix_(iConfig.getParameter<bool>("BuildMatrix")),
+  testMatrix_(iConfig.getParameter<bool>("TestMatrix"))
 {
 }
 
@@ -106,26 +148,31 @@ void BuildLinearizedTrackFitMatrix::beginJob()
 {
   printSelectedNames();
 
-  TreeReader treeReader(inputFileName_, eventsFraction_, requiredLayers_,
-                        inputVarNames_, inputTrackParameterNames_);
+  if (buildMatrix_) {
+    GeometricIndex::GeometricIndexConfiguration gic;
+    gic.oneOverPtMin = oneOverPtMin_;
+    gic.oneOverPtMax = oneOverPtMax_;
+    gic.oneOverPtRegions = oneOverPtRegions_;
+    gic.phiMin = phiMin_;
+    gic.phiMax = phiMax_;
+    gic.phiRegions = phiRegions_;
+    gic.etaMin = etaMin_;
+    gic.etaMax = etaMax_;
+    gic.etaRegions = etaRegions_;
+    gic.z0Min = z0Min_;
+    gic.z0Max = z0Max_;
+    gic.z0Regions = z0Regions_;
+    gic.chargeRegions = chargeRegions_;
 
-  while (treeReader.nextTrack()) {
-    std::vector<float> vars(treeReader.getVariables());
-    std::vector<float> pars(treeReader.getTrackParameters());
-
-    std::cout << "variables: ";
-    for (const auto & v : vars) std::cout << v << ", ";
-    std::cout << std::endl;
-    std::cout << "parameters: ";
-    for (const auto & p : pars) std::cout << p << ", ";
-    std::cout << std::endl << std::endl;
-
-
-    // Use the geometrical index to access the matrix builder corresponding to that geometrical region.
-
-    // Simple test with a single matrix builder
-
+    LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
+			   requiredLayers_, inputVarNames_, inputTrackParameterNames_, singleModules_, gic);
   }
+
+  if (testMatrix_) {
+    LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
+			  requiredLayers_, inputVarNames_, inputTrackParameterNames_, singleModules_);
+  }
+
 }
 
 
