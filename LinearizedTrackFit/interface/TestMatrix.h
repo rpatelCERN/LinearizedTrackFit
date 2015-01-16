@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitter.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterHistograms.h"
@@ -12,14 +13,13 @@
 namespace LinearFit
 {
   void testMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-      const int requiredLayers, const std::vector<std::string> & inputVarNames,
-      const std::vector<std::string> & inputTrackParameterNames, bool singleModules)
+      const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames, bool singleModules)
   {
-    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd,
-        requiredLayers, inputVarNames, inputTrackParameterNames);
-
     LinearFitter linearFitter("");
     std::unordered_map<int, LinearFitterHistograms> histograms;
+
+    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd,
+        linearFitter.requiredLayers(), inputVarNames, inputTrackParameterNames);
 
     while (treeReader.nextTrack()) {
       std::vector<float> vars(treeReader.getVariables());

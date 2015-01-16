@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GeometricIndex.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixReader.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/StubRZPhi.h"
@@ -21,6 +22,7 @@ public:
   float normChi2() { return normChi2_; }
   std::vector<float> trackParameters() { return trackParameters_; }
   int geometricIndex() { return geomIndex_; }
+  std::unordered_map<std::string, std::unordered_set<int> > requiredLayers() { return requiredLayers_; }
 
   // These are mostly for debugging and validation. They must be called after the fit, otherwise the geomIndex is not updated.
   std::vector<float> principalComponents(const std::vector<float> & vars);
@@ -28,6 +30,7 @@ public:
 
 private:
   bool fit(const std::vector<float> & vars);
+  void readRequiredLayers(const std::string & inputFileName);
 
   // Data members
   float normChi2_;
@@ -36,6 +39,7 @@ private:
   GeometricIndex gi_;
   int geomIndex_;
   std::unordered_map<int, MatrixReader> matrices_;
+  std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
 };
 
 #endif // LINEARFITTER_H

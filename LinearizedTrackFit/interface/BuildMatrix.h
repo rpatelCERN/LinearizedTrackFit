@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GeometricIndex.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
@@ -15,7 +16,7 @@
 namespace LinearFit {
 
   void buildMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-      const int requiredLayers, const std::vector<std::string> & inputVarNames,
+      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, const std::vector<std::string> & inputVarNames,
       const std::vector<std::string> & inputTrackParameterNames, bool singleModules,
       const GeometricIndex::GeometricIndexConfiguration & gic)
   {
@@ -48,9 +49,9 @@ namespace LinearFit {
 
       // Update mean and covariance for this linearization region
       if (matrices.count(geomIndex) == 0) {
-        matrices.insert({{geomIndex, MatrixBuilder(std::to_string(geomIndex), requiredLayers * inputVarNames.size(), inputTrackParameterNames.size())}});
-        histograms.insert({{geomIndex, MatrixBuilderHistograms(std::to_string(geomIndex), requiredLayers * inputVarNames.size(), inputTrackParameterNames.size())}});
-        histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), requiredLayers)}});
+        matrices.insert({{geomIndex, MatrixBuilder(std::to_string(geomIndex), treeReader.variablesSize(), inputTrackParameterNames.size())}});
+        histograms.insert({{geomIndex, MatrixBuilderHistograms(std::to_string(geomIndex), treeReader.variablesSize(), inputTrackParameterNames.size())}});
+        histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), treeReader.maxRequiredLayers())}});
       }
       matrices.find(geomIndex)->second.update(vars, pars);
       histograms.find(geomIndex)->second.fill(vars, pars);
@@ -73,8 +74,10 @@ namespace LinearFit {
     for (auto &h : histograms) {h.second.write();}
     for (auto &h2D : histograms2D) {h2D.second.write();}
     outputFile.Close();
-  }
 
+    // Write configuration of variables
+    treeReader.writeConfiguration();
+  }
 }
 
 #endif // BUILDMATRIX_H

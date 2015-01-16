@@ -5,8 +5,10 @@
 #include <string>
 #include <algorithm>
 #include <map>
+#include <unordered_map>
 #include <unordered_set>
 #include <assert.h>
+#include <fstream>
 #include "TString.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/L1TrackTriggerTree.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GetVariables.h"
@@ -17,7 +19,8 @@ class TreeReader
 {
 public:
   TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-      const unsigned int requiredLayers, const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames);
+      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers,
+      const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames);
 
   bool nextTrack();
   std::vector<float> getVariables();
@@ -29,6 +32,9 @@ public:
   float getZ0() { return tree_->m_stub_Z0->at(0); }
   int getCharge() { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
   std::vector<StubRZPhi> getStubRZPhi() const { return stubsRZPhi_; }
+  unsigned int variablesSize() const { return vars_.size(); }
+  unsigned int maxRequiredLayers() const { return maxRequiredLayers_; }
+  void writeConfiguration();
 
 private:
   bool goodTrack();
@@ -49,8 +55,7 @@ private:
   std::shared_ptr<L1TrackTriggerTree> tree_;
   double eventsFractionStart_;
   double eventsFractionEnd_;
-  unsigned int requiredLayers_;
-  unsigned int variablesSize_;
+  std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
   unsigned int parametersSize_;
   std::vector<std::shared_ptr<GetTreeVariable> > vars_;
   std::vector<std::shared_ptr<GetTreeTrackParameter> > pars_;
@@ -60,6 +65,7 @@ private:
   int trackIndex_;
   std::vector<float> variables_;
   std::vector<float> parameters_;
+  unsigned int maxRequiredLayers_;
 
   std::vector<StubRZPhi> stubsRZPhi_;
 };

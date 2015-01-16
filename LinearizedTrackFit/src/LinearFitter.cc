@@ -22,6 +22,31 @@ bool LinearFitter::fit(const std::vector<float> & vars, const std::vector<StubRZ
 }
 
 
+void LinearFitter::readRequiredLayers(const std::string & inputFileName)
+{
+  std::cout << "opening "+inputFileName+" for reading" << std::endl;
+  std::ifstream inputFile;
+  inputFile.open(inputFileName);
+  if (!inputFile) {
+    std::cout << "LinearFitter: Error opening "+inputFileName << std::endl;
+    throw;
+  }
+
+  // Read the required layers
+  std::string varName;
+  std::string layer;
+  while (!inputFile.eof()) {
+    inputFile >> varName;
+    std::unordered_set<int> layers;
+    while (layer != "-") {
+      inputFile >> layer;
+      layers.insert(std::stoi(layer));
+    }
+    requiredLayers_.insert(std::make_pair(varName, layers));
+  }
+}
+
+
 bool LinearFitter::fit(const std::vector<float> & vars)
 {
   if (geomIndex_ == -1) return false;

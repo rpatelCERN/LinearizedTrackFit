@@ -1,31 +1,34 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
 
 TreeReader::TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-    const unsigned int requiredLayers, const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames) :
+    const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers,
+    const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames) :
   tree_(std::make_shared<L1TrackTriggerTree>(inputFileName)),
   eventsFractionStart_(eventsFractionStart),
   eventsFractionEnd_(eventsFractionEnd),
   requiredLayers_(requiredLayers),
-  variablesSize_(varNames.size()*requiredLayers),
   parametersSize_(trackParNames.size()),
   firstTrack_(tree_->n_entries*eventsFractionStart),
   lastTrack_(tree_->n_entries*eventsFractionEnd),
   totalTracks_(lastTrack_-firstTrack_),
-  trackIndex_(0)
+  trackIndex_(0),
+  maxRequiredLayers_(0)
 {
   std::cout << "Requested running from track number " << firstTrack_ << " to track number " << lastTrack_ <<
       " for a total of " << lastTrack_ - firstTrack_ << " tracks." << std::endl;
 
   // Store the classes that will return the selected variables for each stub
   for (const std::string varName : varNames) {
-    if (varName == "phi") vars_.push_back(std::make_shared<GetVarPhi>(tree_));
-    else if (varName == "z") vars_.push_back(std::make_shared<GetVarZ>(tree_));
-    else if (varName == "R") vars_.push_back(std::make_shared<GetVarR>(tree_));
+    if (varName == "phi") vars_.push_back(std::make_shared<GetVarPhi>(tree_, requiredLayers_["phi"]));
+    else if (varName == "z") vars_.push_back(std::make_shared<GetVarZ>(tree_, requiredLayers_["z"]));
+    else if (varName == "R") vars_.push_back(std::make_shared<GetVarR>(tree_, requiredLayers_["R"]));
     else {
       std::cout << "Error: undefined variable name " << varName << std::endl;
       throw;
     }
   }
+  // maxRequiredLayers_ = std::max_element(requiredLayers_.begin(), requiredLayers_.end(), [](auto a, auto b) { return a.size() < b.size(); })->size();
+  for (const auto & l : requiredLayers_) { if (l.second.size() > maxRequiredLayers_) maxRequiredLayers_ = l.second.size(); }
 
   // Store the classes that will return the selected generated track parameters for each stub
   for (const std::string & trackParName : trackParNames) {
@@ -54,7 +57,9 @@ bool TreeReader::nextTrack()
 
     // if (trackIndex_ >= 10) return false;
 
+    std::cout << "getting track number " << trackIndex_+firstTrack_ << std::endl;
     tree_->getEntry(trackIndex_+firstTrack_);
+    std::cout << "track read" << std::endl;
 
     // Consistency checks
     good = goodTrack();
@@ -67,6 +72,8 @@ bool TreeReader::nextTrack()
     }
   }
 
+  std::cout << "read variables" << std::endl;
+
   readTrackParameters();
   readVariables();
 
@@ -78,7 +85,7 @@ bool TreeReader::nextTrack()
 bool TreeReader::goodTrack()
 {
   unsigned int totalStubs = tree_->m_stub;
-  if (totalStubs <= 0 || totalStubs < requiredLayers_) return false;
+  if (totalStubs <= 0 || totalStubs < maxRequiredLayers_) return false;
 
   // Check for consistency in the generator level information
   if (tree_->m_stub_ptGEN->size() < totalStubs) return false;
@@ -108,7 +115,7 @@ bool TreeReader::goodTrack()
   for (unsigned int k=0; k < totalStubs; ++k) {
     layers.insert(tree_->m_stub_layer->at(k));
   }
-  if (layers.size() != requiredLayers_) return false;
+  if (layers.size() != maxRequiredLayers_) return false;
 
   return true;
 }
@@ -128,10 +135,10 @@ void TreeReader::readVariables() {
     layersFound.insert(std::make_pair(layer, k));
   }
 
-  for (const auto &m : layersFound) {
+  for (const auto & m : layersFound) {
     unsigned int k = m.second;
     for (const auto &var : vars_) {
-      variables_.push_back(var->at(k));
+      if (var->layer(m.first)) { variables_.push_back(var->at(k)); }
     }
     stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
         tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_seg->at(k), tree_->m_stub_modid->at(k)));
@@ -148,7 +155,7 @@ void TreeReader::readVariables() {
 //  if (fabs(tree_->m_stub_Z0->at(0)) < 1.)
 //    throw;
 
-  assert(variables_.size() == variablesSize_);
+  assert(variables_.size() == vars_.size());
 }
 
 
@@ -176,4 +183,24 @@ std::vector<float> TreeReader::getVariables()
 std::vector<float> TreeReader::getTrackParameters()
 {
   return parameters_;
+}
+
+
+void TreeReader::writeConfiguration()
+{
+  std::ofstream outfile;
+  outfile.open("Variables.txt");
+  if (!outfile) {
+    std::cout << "Error opening Variables.txt" << std::endl;
+    throw;
+  }
+  for (const auto & m : requiredLayers_) {
+    outfile << m.first << " ";
+    for (const auto & l : m.second) {
+      outfile << l << " ";
+    }
+    std::cout << std::endl << std::endl;
+    std::cout << "-" << std::endl << std::endl;
+  }
+  outfile.close();
 }
