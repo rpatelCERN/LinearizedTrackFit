@@ -64,6 +64,8 @@ bool TreeReader::nextTrack()
 
     // Consistency checks
     good = goodTrack();
+    // Inside readVariables we check the total number of variables accounting for the selected layers
+    if (good) good = readVariables();
 
     ++trackIndex_;
 
@@ -74,7 +76,6 @@ bool TreeReader::nextTrack()
   }
 
   readTrackParameters();
-  readVariables();
 
   return true;
 }
@@ -110,18 +111,18 @@ bool TreeReader::goodTrack()
   if (!goodStubsGenInfo(tree_->m_stub_pid)) return false;
 
   // Number of layers with stubs must match the requirement
-  std::unordered_set<int> layers;
-  for (unsigned int k=0; k < totalStubs; ++k) {
-    layers.insert(tree_->m_stub_layer->at(k));
-  }
-  if (layers.size() != maxRequiredLayers_) return false;
+//  std::unordered_set<int> layers;
+//  for (unsigned int k=0; k < totalStubs; ++k) {
+//    layers.insert(tree_->m_stub_layer->at(k));
+//  }
+//  if (layers.size() < maxRequiredLayers_) return false;
 
   return true;
 }
 
 
 // Fill the vector of selected variables
-void TreeReader::readVariables() {
+bool TreeReader::readVariables() {
   variables_.clear();
   stubsRZPhi_.clear();
 
@@ -136,12 +137,17 @@ void TreeReader::readVariables() {
 
   for (const auto & m : layersFound) {
     unsigned int k = m.second;
+    bool layerUsed = false;
     for (const auto &var : vars_) {
-      if (var->layer(m.first)) { variables_.push_back(var->at(k)); }
+      if (var->layer(m.first)) {
+        variables_.push_back(var->at(k));
+        layerUsed = true;
+      }
     }
-    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
-        tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_seg->at(k), tree_->m_stub_modid->at(k)));
-
+    if (layerUsed) {
+      stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
+          tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_seg->at(k), tree_->m_stub_modid->at(k)));
+    }
 //    if (fabs(tree_->m_stub_Z0->at(k)) < 1.)
 //      std::cout << "tree_->m_stub_module->at(" << k << ") = " << tree_->m_stub_module->at(k)
 //          << ", ladder = " << tree_->m_stub_ladder->at(k)
@@ -154,7 +160,13 @@ void TreeReader::readVariables() {
 //  if (fabs(tree_->m_stub_Z0->at(0)) < 1.)
 //    throw;
 
-  assert(variables_.size() == variablesSize_);
+//  if (variables_.size() != variablesSize_) {
+//    std::cout << "variables_.size() = " << variables_.size() << ", variablesSize_ = " << variablesSize_ << std::endl;
+//  }
+
+  // assert(variables_.size() == variablesSize_);
+  if (variables_.size() != variablesSize_) return false;
+  return true;
 }
 
 

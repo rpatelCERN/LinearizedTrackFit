@@ -48,7 +48,7 @@ private:
     return false;
   }
 
-  void readVariables();
+  bool readVariables();
   void readTrackParameters();
 
   // Data members
