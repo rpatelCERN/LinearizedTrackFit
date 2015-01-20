@@ -90,12 +90,20 @@ bool GeometricIndex::filter(const std::vector<StubRZPhi> & stubs)
 //  if (stubs[3].module() != 12 || stubs[3].ladder() != 47) return false;
 //  if (stubs[4].module() != 12 || stubs[4].ladder() != 61) return false;
 //  if (stubs[5].module() != 12 || stubs[5].ladder() != 74) return false;
-  if (stubs[0].modid() != 5003223) return false;
-  if (stubs[1].modid() != 6002815) return false;
-  if (stubs[2].modid() != 7002814) return false;
-  if (stubs[3].modid() != 8001200) return false;
-  if (stubs[4].modid() != 9001200) return false;
-  if (stubs[5].modid() != 10001301) return false;
+
+//  if (stubs[0].modid() != 5003223) return false;
+//  if (stubs[1].modid() != 6002815) return false;
+//  if (stubs[2].modid() != 7002814) return false;
+//  if (stubs[3].modid() != 8001200) return false;
+//  if (stubs[4].modid() != 9001200) return false;
+//  if (stubs[5].modid() != 10001301) return false;
+
+  if (stubs[0].module() != 31 || stubs[0].ladder() != 0) return false;
+  if (stubs[1].module() != 28 || stubs[1].ladder() != 0) return false;
+  if (stubs[2].module() != 28 || stubs[2].ladder() != 0) return false;
+  if (stubs[3].module() != 12 || stubs[3].ladder() != 0) return false;
+  if (stubs[4].module() != 12 || stubs[4].ladder() != 0) return false;
+  if (stubs[5].module() != 13 || stubs[5].ladder() != 0) return false;
   return true;
 }
 
