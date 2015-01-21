@@ -35,6 +35,8 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GeometricIndex.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/BuildMatrix.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TestMatrix.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/SingleSector.h"
+
 
 //
 // class declaration
@@ -59,7 +61,6 @@ private:
   double eventsFractionEndBuild_;
   double eventsFractionStartTest_;
   double eventsFractionEndTest_;
-  unsigned int requiredLayers_;
   std::vector<int> layersPhi_;
   std::vector<int> layersR_;
   std::vector<int> layersZ_;
@@ -103,7 +104,6 @@ BuildLinearizedTrackFitMatrix::BuildLinearizedTrackFitMatrix(const edm::Paramete
   eventsFractionEndBuild_(iConfig.getParameter<double>("EventsFractionEndBuild")),
   eventsFractionStartTest_(iConfig.getParameter<double>("EventsFractionStartTest")),
   eventsFractionEndTest_(iConfig.getParameter<double>("EventsFractionEndTest")),
-  // requiredLayers_(iConfig.getParameter<unsigned int>("RequiredLayers")),
   layersPhi_(iConfig.getParameter<std::vector<int> >("LayersPhi")),
   layersR_(iConfig.getParameter<std::vector<int> >("LayersR")),
   layersZ_(iConfig.getParameter<std::vector<int> >("LayersZ")),
@@ -152,6 +152,9 @@ void BuildLinearizedTrackFitMatrix::beginJob()
 {
   printSelectedNames();
 
+
+
+
   if (buildMatrix_) {
     GeometricIndex::GeometricIndexConfiguration gic;
     gic.oneOverPtMin = oneOverPtMin_;
@@ -174,14 +177,17 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     requiredLayers_.insert(std::make_pair("z", std::unordered_set<int>(layersZ_.begin(), layersZ_.end())));
 
 
+    // LinearFit::singleSector(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_, requiredLayers_, inputVarNames_, inputTrackParameterNames_);
+
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
-			   requiredLayers_, inputVarNames_, inputTrackParameterNames_, singleModules_, gic);
+    			   requiredLayers_, inputVarNames_, inputTrackParameterNames_, singleModules_, gic);
   }
 
   if (testMatrix_) {
     LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
-			  requiredLayers_, inputVarNames_, inputTrackParameterNames_, singleModules_);
+			  inputVarNames_, inputTrackParameterNames_, singleModules_);
   }
+
 
 }
 

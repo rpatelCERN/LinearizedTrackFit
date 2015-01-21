@@ -15,30 +15,29 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 #     )
 # )
 
-process.TFileService = cms.Service("TFileService", fileName = cms.string("matrixHists.root") )
+# process.TFileService = cms.Service("TFileService", fileName = cms.string("matrixHists.root") )
 
 process.demo = cms.EDAnalyzer('BuildLinearizedTrackFitMatrix',
                               # InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Muons_Pt_1p5_5_Eta_0_03_Phi_m004_004_z0_m15p15/extracted.root"),
                               # InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Muons_Pt_10_20_Eta_01_012_phi_004_01_z0_m1p1/extracted.root"),
                               # Full trigger tower
                               InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Muons_Pt_2_10_Eta_m04p06_Phi_m05p1_3_z0_m15p15/extracted.root"),
+                              # Bigger range to cover a set of single modules
+                              # InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Muons_Pt_2_10_Eta_01_03_phi_0_02_z0_m15p15/extracted.root"),
 
                               # Specify to select a single sector (made of single modules)
                               SingleModules = cms.bool(True),
 
-                              # Tracks are required to have at least one stub in this number of layers. More stubs (e.g. overlaps) are neglected, but the track is still used.
-                              RequiredLayers = cms.uint32(6),
-
-
-                              # Select layers to use (must be consistent with the required layers
-                              LayersPhi = cms.vint32(5, 6, 7, 8, 9, 10);
-                              LayersR = cms.vint32(5, 6, 7, 8, 9, 10);
-                              LayersZ = cms.vint32(5, 6, 7, 8, 9, 10);
+                              # Select layers to use for each stub coordinate
+                              LayersPhi = cms.vint32(5, 6, 7, 8, 9, 10),
+                              LayersR = cms.vint32(5, 6, 7, 8, 9, 10),
+                              LayersZ = cms.vint32(5, 6, 7, 8, 9, 10),
 
                               VariableNames = cms.vstring("phi"),
                               TrackParameterNames = cms.vstring("charge/pt", "phi"),
                               # VariableNames = cms.vstring("z"),
                               # TrackParameterNames = cms.vstring("cotTheta", "z0"),
+                              # LayersZ = cms.vint32(5, 6, 7),
 
                               # Geometric cuts
                               OneOverPtMin = cms.double(1./1000.),
@@ -56,7 +55,7 @@ process.demo = cms.EDAnalyzer('BuildLinearizedTrackFitMatrix',
                               # Specify 1 for no charge splitting and 2 for separating positive and negative charge in difference regions
                               ChargeRegions = cms.int32(2),
                               
-                              BuildMatrix = cms.bool(True),
+                              BuildMatrix = cms.bool(False),
                               # Fraction of the events in the input file to use. Use only 1/2 of them so that the testing phase can use the rest as a statistically independent sample.
                               EventsFractionStartBuild = cms.double(0.),
                               EventsFractionEndBuild = cms.double(0.5),

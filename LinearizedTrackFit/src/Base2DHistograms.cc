@@ -4,7 +4,7 @@ Base2DHistograms::Base2DHistograms(const std::string & name, const int inputSize
     inputSize_(inputSize)
 {
   TString hName = "RZ_"+name;
-  hRZ_ = new TH2F(hName, hName, 200, 0., 100., 240, 0., 120.);
+  hRZ_ = new TH2F(hName, hName, 200, -100., 100., 240, 0., 120.);
   hName = "xy_"+name;
   hxy_ = new TH2F(hName, hName, 240, -120., 120., 240, -120., 120.);
 
