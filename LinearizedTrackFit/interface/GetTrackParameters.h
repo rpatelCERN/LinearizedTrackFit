@@ -29,30 +29,59 @@ private:
 
 
 // 1/pt parameter of the generated track associated to stub k
+//class GetParOneOverPt : public GetTreeTrackParameter
+//{
+//public:
+//  GetParOneOverPt(std::shared_ptr<L1TrackTriggerTree> tree) : par_pt(tree->m_stub_ptGEN) {}
+//  virtual ~GetParOneOverPt() {}
+//  virtual float at(const int k) {return par_pt->at(k) > 0 ? 1./par_pt->at(k) : 0.;}
+//private:
+//  std::vector<float> * par_pt;
+//};
 class GetParOneOverPt : public GetTreeTrackParameter
 {
 public:
-  GetParOneOverPt(std::shared_ptr<L1TrackTriggerTree> tree) : par_pt(tree->m_stub_ptGEN) {}
+  GetParOneOverPt(std::shared_ptr<L1TrackTriggerTree> tree) : par_px(tree->m_stub_pxGEN), par_py(tree->m_stub_pyGEN) {}
   virtual ~GetParOneOverPt() {}
-  virtual float at(const int k) {return par_pt->at(k) > 0 ? 1./par_pt->at(k) : 0.;}
+  virtual float at(const int k) {
+    float pt = std::sqrt(std::pow(par_px->at(k), 2) + std::pow(par_py->at(k), 2));
+    return pt > 0 ? 1./pt : 0.;
+  }
 private:
-  std::vector<float> * par_pt;
+  std::vector<float> * par_px;
+  std::vector<float> * par_py;
 };
 
 
 // charge/pt parameter of the generated track associated to stub k
+//class GetParChargeOverPt : public GetTreeTrackParameter
+//{
+//public:
+//  GetParChargeOverPt(std::shared_ptr<L1TrackTriggerTree> tree) : par_pt(tree->m_stub_ptGEN), par_pdg(tree->m_stub_pdg) {}
+//  virtual ~GetParChargeOverPt() {}
+//  virtual float at(const int k) {
+//    // For muons, electrons and taus the charge is the opposite of the sign of the pdgId
+//    int charge = par_pdg->at(k) > 0 ? -1 : 1;
+//    return par_pt->at(k) > 0 ? charge/par_pt->at(k) : 0.;
+//  }
+//private:
+//  std::vector<float> * par_pt;
+//  std::vector<int> * par_pdg;
+//};
 class GetParChargeOverPt : public GetTreeTrackParameter
 {
 public:
-  GetParChargeOverPt(std::shared_ptr<L1TrackTriggerTree> tree) : par_pt(tree->m_stub_ptGEN), par_pdg(tree->m_stub_pdg) {}
+  GetParChargeOverPt(std::shared_ptr<L1TrackTriggerTree> tree) : par_px(tree->m_stub_pxGEN), par_py(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg) {}
   virtual ~GetParChargeOverPt() {}
   virtual float at(const int k) {
     // For muons, electrons and taus the charge is the opposite of the sign of the pdgId
     int charge = par_pdg->at(k) > 0 ? -1 : 1;
-    return par_pt->at(k) > 0 ? charge/par_pt->at(k) : 0.;
+    float pt = std::sqrt(std::pow(par_px->at(k), 2) + std::pow(par_py->at(k), 2));
+    return pt > 0 ? charge/pt : 0.;
   }
 private:
-  std::vector<float> * par_pt;
+  std::vector<float> * par_px;
+  std::vector<float> * par_py;
   std::vector<int> * par_pdg;
 };
 

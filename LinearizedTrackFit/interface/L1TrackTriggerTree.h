@@ -23,8 +23,8 @@ public:
   TChain *L1TT;
   int n_entries;
   int m_stub;
-  std::vector<float>  *m_stub_pt;
-  std::vector<float>  *m_stub_ptGEN;
+  // std::vector<float>  *m_stub_pt;
+  // std::vector<float>  *m_stub_ptGEN;
   std::vector<float>  *m_stub_pxGEN;
   std::vector<float>  *m_stub_pyGEN;
   std::vector<float>  *m_stub_etaGEN;
@@ -35,21 +35,21 @@ public:
   std::vector<int>    *m_stub_layer;
   std::vector<int>    *m_stub_module;
   std::vector<int>    *m_stub_ladder;
-  std::vector<int>    *m_stub_seg;
-  std::vector<int>    *m_stub_modid;
-  std::vector<int>    *m_stub_strip;
+  // std::vector<int>    *m_stub_seg;
+  // std::vector<int>    *m_stub_modid;
+  // std::vector<int>    *m_stub_strip;
   std::vector<float>  *m_stub_x;
   std::vector<float>  *m_stub_y;
   std::vector<float>  *m_stub_z;
-  std::vector<int>    *m_stub_clust1;
-  std::vector<int>    *m_stub_clust2;
-  std::vector<int>    *m_stub_cw1;
-  std::vector<int>    *m_stub_cw2;
+  // std::vector<int>    *m_stub_clust1;
+  // std::vector<int>    *m_stub_clust2;
+  // std::vector<int>    *m_stub_cw1;
+  // std::vector<int>    *m_stub_cw2;
   std::vector<float>  *m_stub_deltas;
-  std::vector<float>  *m_stub_cor;
-  std::vector<int>    *m_stub_tp;
+  // std::vector<float>  *m_stub_cor;
+  // std::vector<int>    *m_stub_tp;
   std::vector<int>    *m_stub_pdg;
-  std::vector<int>    *m_stub_pid;
+  // std::vector<int>    *m_stub_pid;
 };
 
 #endif // L1TRACKTRIGGERTREE_H

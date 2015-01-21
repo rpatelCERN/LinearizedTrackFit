@@ -88,27 +88,31 @@ bool TreeReader::goodTrack()
   if (totalStubs <= 0 || totalStubs < maxRequiredLayers_) return false;
 
   // Check for consistency in the generator level information
-  if (tree_->m_stub_ptGEN->size() < totalStubs) return false;
+  // if (tree_->m_stub_ptGEN->size() < totalStubs) return false;
+  if (tree_->m_stub_pxGEN->size() < totalStubs) return false;
+  if (tree_->m_stub_pyGEN->size() < totalStubs) return false;
   if (tree_->m_stub_etaGEN->size() < totalStubs) return false;
   if (tree_->m_stub_PHI0->size() < totalStubs) return false;
   if (tree_->m_stub_X0->size() < totalStubs) return false;
   if (tree_->m_stub_Y0->size() < totalStubs) return false;
   if (tree_->m_stub_Z0->size() < totalStubs) return false;
   if (tree_->m_stub_pdg->size() < totalStubs) return false;
-  if (tree_->m_stub_pid->size() < totalStubs) return false;
+  // if (tree_->m_stub_pid->size() < totalStubs) return false;
 
   // Check for stubs not associated to the original track
   // (one or more of the stubs will have different generator-level
   // parameters than the others).
   // We do not use the track in this case.
-  if (!goodStubsGenInfo(tree_->m_stub_ptGEN)) return false;
+  // if (!goodStubsGenInfo(tree_->m_stub_ptGEN)) return false;
+  if (!goodStubsGenInfo(tree_->m_stub_pxGEN)) return false;
+  if (!goodStubsGenInfo(tree_->m_stub_pyGEN)) return false;
   if (!goodStubsGenInfo(tree_->m_stub_etaGEN)) return false;
   if (!goodStubsGenInfo(tree_->m_stub_PHI0)) return false;
   if (!goodStubsGenInfo(tree_->m_stub_X0)) return false;
   if (!goodStubsGenInfo(tree_->m_stub_Y0)) return false;
   if (!goodStubsGenInfo(tree_->m_stub_Z0)) return false;
   if (!goodStubsGenInfo(tree_->m_stub_pdg)) return false;
-  if (!goodStubsGenInfo(tree_->m_stub_pid)) return false;
+  // if (!goodStubsGenInfo(tree_->m_stub_pid)) return false;
 
   // Number of layers with stubs must match the requirement
 //  std::unordered_set<int> layers;
@@ -146,7 +150,7 @@ bool TreeReader::readVariables() {
     }
     if (layerUsed) {
       stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
-          tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_seg->at(k), tree_->m_stub_modid->at(k)));
+          tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k)));//, tree_->m_stub_seg->at(k), tree_->m_stub_modid->at(k)));
     }
 //    if (fabs(tree_->m_stub_Z0->at(k)) < 1.)
 //      std::cout << "tree_->m_stub_module->at(" << k << ") = " << tree_->m_stub_module->at(k)
