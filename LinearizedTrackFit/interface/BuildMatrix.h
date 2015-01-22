@@ -10,6 +10,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilderHistograms.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/Base2DHistograms.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/SingleSector.h"
 #include "TString.h"
 #include "TFile.h"
 
@@ -18,7 +19,7 @@ namespace LinearFit {
   void buildMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
       const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, const std::vector<double> distanceCuts,
       const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames, bool singleModules,
-      const GeometricIndex::GeometricIndexConfiguration & gic)
+      bool doMapSectors, bool computeDistances, const GeometricIndex::GeometricIndexConfiguration & gic)
   {
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers, distanceCuts, inputVarNames, inputTrackParameterNames);
 
@@ -26,6 +27,10 @@ namespace LinearFit {
     std::unordered_map<int, MatrixBuilder> matrices;
     std::unordered_map<int, MatrixBuilderHistograms> histograms;
     std::unordered_map<int, Base2DHistograms> histograms2D;
+
+    // Extra, not necessarily used
+    std::unordered_map<std::string, int> sectors;
+    BaseHistograms stubDistanceHistograms("stubDistance", 6, 1000, 0., 5.);
 
     while (treeReader.nextTrack()) {
 
@@ -41,6 +46,10 @@ namespace LinearFit {
         // A geometrical index of -1 means we are outside the min-max boundaries
         if (geomIndex == -1) continue;
       }
+
+      if (doMapSectors) mapSectors(treeReader.getStubRZPhi(), sectors);
+      if (computeDistances) fillDistances(treeReader, stubDistanceHistograms);
+
 
       std::vector<float> vars(treeReader.getVariables());
       std::vector<float> pars(treeReader.getTrackParameters());
@@ -78,6 +87,9 @@ namespace LinearFit {
 
     // Write configuration of variables
     treeReader.writeConfiguration();
+
+    if (doMapSectors) writeSectorsMap(sectors);
+    if (computeDistances) writeDistances(stubDistanceHistograms);
   }
 }
 

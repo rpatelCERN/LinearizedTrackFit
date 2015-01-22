@@ -81,7 +81,7 @@ bool TreeReader::nextTrack()
 
 
 float TreeReader::genTrackDistance(const float &pt, const float &phi, const float &x0, const float &y0, const int charge,
-    const float &B, const float &x1, const float &y1)
+    const float &B, const float &x1, const float &y1) const
 {
   float r = pt / (0.003 * B); // In centimeters (0.3 for meters)
   float deltaXc = x1 - (charge*r * sin(phi) + x0);

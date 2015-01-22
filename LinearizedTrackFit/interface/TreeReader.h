@@ -26,22 +26,22 @@ public:
   std::vector<float> getVariables();
   std::vector<float> getTrackParameters();
 
-  float getOneOverPt() {
+  float getOneOverPt() const {
     float pt = std::sqrt(std::pow(tree_->m_stub_pxGEN->at(0), 2) + std::pow(tree_->m_stub_pyGEN->at(0), 2));
     return pt == 0 ? 0 : 1./pt;
   }
-  float getPhi() { return tree_->m_stub_PHI0->at(0); }
-  float getEta() { return tree_->m_stub_etaGEN->at(0); }
-  float getX0() { return tree_->m_stub_X0->at(0); }
-  float getY0() { return tree_->m_stub_Y0->at(0); }
-  float getZ0() { return tree_->m_stub_Z0->at(0); }
-  int getCharge() { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
+  float getPhi() const { return tree_->m_stub_PHI0->at(0); }
+  float getEta() const { return tree_->m_stub_etaGEN->at(0); }
+  float getX0() const { return tree_->m_stub_X0->at(0); }
+  float getY0() const { return tree_->m_stub_Y0->at(0); }
+  float getZ0() const { return tree_->m_stub_Z0->at(0); }
+  int getCharge() const { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
   std::vector<StubRZPhi> getStubRZPhi() const { return stubsRZPhi_; }
   unsigned int variablesSize() const { return variablesSize_; }
   unsigned int maxRequiredLayers() const { return maxRequiredLayers_; }
   void writeConfiguration();
   float genTrackDistance(const float &pt, const float &phi, const float &x0, const float &y0,
-      const int charge, const float &B, const float &x1, const float &y1);
+      const int charge, const float &B, const float &x1, const float &y1) const;
 
 private:
   bool goodTrack();
