@@ -28,7 +28,7 @@ namespace LinearFit {
         float dist = treeReader.genTrackDistance(1. / treeReader.getOneOverPt(), treeReader.getPhi(),
             treeReader.getX0(), treeReader.getY0(), treeReader.getCharge(), 3.8, s.x(), s.y());
         distances.push_back(dist);
-        std::cout << "stub["<<distances.size()<<"] = " << dist << std::endl;
+        // std::cout << "stub["<<distances.size()<<"] = " << dist << std::endl;
       }
       histograms.fill(distances);
       sectorString.erase(sectorString.find_last_not_of("+")+1);
