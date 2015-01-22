@@ -1,7 +1,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
 
 TreeReader::TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-    const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, const std::vector<float> & distanceCuts,
+    const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, const std::vector<double> & distanceCuts,
     const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames) :
   tree_(std::make_shared<L1TrackTriggerTree>(inputFileName)),
   eventsFractionStart_(eventsFractionStart),

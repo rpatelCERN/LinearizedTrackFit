@@ -14,7 +14,7 @@ namespace LinearFit
 {
   void testMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
       const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
-      std::vector<float> & distanceCuts, bool singleModules)
+      std::vector<double> & distanceCuts, bool singleModules)
   {
     LinearFitter linearFitter("");
     std::unordered_map<int, LinearFitterHistograms> histograms;
