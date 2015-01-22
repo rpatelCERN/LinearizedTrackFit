@@ -64,6 +64,7 @@ private:
   std::vector<int> layersPhi_;
   std::vector<int> layersR_;
   std::vector<int> layersZ_;
+  std::vector<float> distanceCutsPhi_;
   std::vector<std::string> inputVarNames_;
   std::vector<std::string> inputTrackParameterNames_;
   bool singleModules_;
@@ -107,6 +108,7 @@ BuildLinearizedTrackFitMatrix::BuildLinearizedTrackFitMatrix(const edm::Paramete
   layersPhi_(iConfig.getParameter<std::vector<int> >("LayersPhi")),
   layersR_(iConfig.getParameter<std::vector<int> >("LayersR")),
   layersZ_(iConfig.getParameter<std::vector<int> >("LayersZ")),
+  distanceCutsPhi_(iConfig.getParameter<std::vector<double> >("DistanceCutsPhi")),
   inputVarNames_(iConfig.getParameter<std::vector<std::string> >("VariableNames")),
   inputTrackParameterNames_(iConfig.getParameter<std::vector<std::string> >("TrackParameterNames")),
   singleModules_(iConfig.getParameter<bool>("SingleModules")),
@@ -177,15 +179,16 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     requiredLayers_.insert(std::make_pair("z", std::unordered_set<int>(layersZ_.begin(), layersZ_.end())));
 
 
-    // LinearFit::singleSector(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_, requiredLayers_, inputVarNames_, inputTrackParameterNames_);
+    // LinearFit::singleSector(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_, requiredLayers_,
+    //     distanceCutsPhi_, inputVarNames_, inputTrackParameterNames_);
 
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
-    			   requiredLayers_, inputVarNames_, inputTrackParameterNames_, singleModules_, gic);
+    			   requiredLayers_, distanceCutsPhi_, inputVarNames_, inputTrackParameterNames_, singleModules_, gic);
   }
 
   if (testMatrix_) {
     LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
-			  inputVarNames_, inputTrackParameterNames_, singleModules_);
+			  inputVarNames_, inputTrackParameterNames_, distanceCutsPhi_, singleModules_);
   }
 
 

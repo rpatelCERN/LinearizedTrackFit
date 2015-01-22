@@ -70,11 +70,9 @@ void MatrixBuilder::writeMatrices() const
   // Diagonalize covariance matrix to find principal components
   SelfAdjointEigenSolver<MatrixXd> es(cov_);
   std::cout << "Sqrt(eigenvalues) of cov:" << std::endl;
-  // std::vector<float> sqrtEigenvalues;
   VectorXd sqrtEigenvalues = VectorXd::Zero(nVars_);
   for(unsigned int i = 0; i != nVars_; ++i) {
     double eigenvalue = es.eigenvalues()[i] != 0. ? es.eigenvalues()[i] : 1000000.;
-    // sqrtEigenvalues.push_back(std::sqrt(eigenvalue));
     sqrtEigenvalues(i) = std::sqrt(eigenvalue);
     std::cout << " " << std::sqrt(es.eigenvalues()[i]);
   }
@@ -85,7 +83,6 @@ void MatrixBuilder::writeMatrices() const
 
   // Invert (diagonal) correlation matrix dividing by eigenvalues.
   // Transformation from coordinates to track parameters
-  // MatrixXd D(nTrackParameters_, nVars_);
   MatrixXd D = corrPV_*(cov_.inverse());
 
   std::cout << std::endl;

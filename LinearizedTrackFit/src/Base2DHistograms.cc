@@ -21,7 +21,6 @@ Base2DHistograms::Base2DHistograms(const std::string & name, const int inputSize
 
 void Base2DHistograms::fill(const std::vector<StubRZPhi> & stubsRZPhi)
 {
-  // for (const auto & s : stubsRZPhi) {
   for (unsigned int i=0; i<stubsRZPhi.size(); ++i) {
     const auto & s = stubsRZPhi[i];
     hRZ_->Fill(s.z(), s.R());

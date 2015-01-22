@@ -13,13 +13,14 @@
 namespace LinearFit
 {
   void testMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-      const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames, bool singleModules)
+      const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
+      std::vector<float> & distanceCuts, bool singleModules)
   {
     LinearFitter linearFitter("");
     std::unordered_map<int, LinearFitterHistograms> histograms;
 
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd,
-        linearFitter.requiredLayers(), inputVarNames, inputTrackParameterNames);
+        linearFitter.requiredLayers(), distanceCuts, inputVarNames, inputTrackParameterNames);
 
     while (treeReader.nextTrack()) {
       std::vector<float> vars(treeReader.getVariables());
@@ -35,14 +36,6 @@ namespace LinearFit
       if (goodFit) {
         float normChi2 = linearFitter.normChi2();
         std::vector<float> estimatedPars = linearFitter.trackParameters();
-
-//      std::cout << "chi2/ndof = " << normChi2 << std::endl;
-//      for (int i=0; i<pars.size(); ++i) {
-//        std::cout << "pars["<<i<<"] - estimatedPars["<<i<<"] = " << pars[i] << " - " << estimatedPars[i] <<
-//            " = " << pars[i] - estimatedPars[i] << std::endl;
-//      }
-
-        // if (normChi2 > 2.) continue;
         int geomIndex = linearFitter.geometricIndex();
         if (histograms.count(geomIndex) == 0) {
           histograms.insert({{geomIndex, LinearFitterHistograms(std::to_string(geomIndex), vars.size(), inputTrackParameterNames)}});

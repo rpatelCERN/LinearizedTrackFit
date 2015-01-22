@@ -1,7 +1,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
 
 TreeReader::TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-    const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers,
+    const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, const std::vector<float> & distanceCuts,
     const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames) :
   tree_(std::make_shared<L1TrackTriggerTree>(inputFileName)),
   eventsFractionStart_(eventsFractionStart),
@@ -14,7 +14,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   trackIndex_(0),
   maxRequiredLayers_(0),
   variablesSize_(0),
-  distanceCuts_{1., 2., 4., 5., 8., 10.}
+  distanceCuts_(distanceCuts)
 {
   std::cout << "Requested running from track number " << firstTrack_ << " to track number " << lastTrack_ <<
       " for a total of " << lastTrack_ - firstTrack_ << " tracks." << std::endl;
@@ -59,8 +59,6 @@ bool TreeReader::nextTrack()
   while (!good) {
     if (trackIndex_ >= totalTracks_) return false;
 
-    // if (trackIndex_ >= 10) return false;
-
     tree_->getEntry(trackIndex_+firstTrack_);
 
     // Consistency checks
@@ -86,7 +84,6 @@ float TreeReader::genTrackDistance(const float &pt, const float &phi, const floa
     const float &B, const float &x1, const float &y1)
 {
   float r = pt / (0.003 * B); // In centimeters (0.3 for meters)
-  // if (charge == 0) r = -r;
   float deltaXc = x1 - (charge*r * sin(phi) + x0);
   float deltaYc = y1 - (-charge*r * cos(phi) + y0);
   return fabs(std::sqrt(deltaXc * deltaXc + deltaYc * deltaYc) - r);
@@ -98,12 +95,9 @@ bool TreeReader::closeDistanceFromGenTrack()
   int i = 0;
   for (const auto & s : stubsRZPhi_) {
     if (genTrackDistance(1. / getOneOverPt(), getPhi(), getX0(), getY0(), getCharge(), 3.8, s.x(), s.y()) > distanceCuts_[i]) return false;
-    // if (genTrackDistance(1. / getOneOverPt(), getPhi(), getX0(), getY0(), getCharge(), 3.8, s.x(), s.y()) < distanceCuts_[i]) return true;
-    // if (genTrackDistance(1. / getOneOverPt(), getPhi(), getX0(), getY0(), getCharge(), 3.8, s.x(), s.y()) > 10000.) return false;
     ++i;
   }
   return true;
-  // return false;
 }
 
 
@@ -114,7 +108,6 @@ bool TreeReader::goodTrack()
   if (totalStubs <= 0 || totalStubs < maxRequiredLayers_) return false;
 
   // Check for consistency in the generator level information
-  // if (tree_->m_stub_ptGEN->size() < totalStubs) return false;
   if (tree_->m_stub_pxGEN->size() < totalStubs) return false;
   if (tree_->m_stub_pyGEN->size() < totalStubs) return false;
   if (tree_->m_stub_etaGEN->size() < totalStubs) return false;
@@ -124,14 +117,11 @@ bool TreeReader::goodTrack()
   if (tree_->m_stub_Z0->size() < totalStubs) return false;
   if (tree_->m_stub_pdg->size() < totalStubs) return false;
   if (tree_->m_stub_tp->size() < totalStubs) return false;
-  // if (tree_->m_stub_pid->size() < totalStubs) return false;
 
   // Check for stubs not associated to the original track
   // (one or more of the stubs will have different generator-level
   // parameters than the others).
   // We do not use the track in this case.
-
-  // if (!goodStubsGenInfo(tree_->m_stub_ptGEN)) return false;
   if (!goodStubsGenInfo(tree_->m_stub_pxGEN)) return false;
   if (!goodStubsGenInfo(tree_->m_stub_pyGEN)) return false;
   if (!goodStubsGenInfo(tree_->m_stub_etaGEN)) return false;
@@ -141,14 +131,6 @@ bool TreeReader::goodTrack()
   if (!goodStubsGenInfo(tree_->m_stub_Z0)) return false;
   if (!goodStubsGenInfo(tree_->m_stub_pdg)) return false;
   if (!goodStubsGenInfo(tree_->m_stub_tp)) return false;
-  // if (!goodStubsGenInfo(tree_->m_stub_pid)) return false;
-
-  // Number of layers with stubs must match the requirement
-//  std::unordered_set<int> layers;
-//  for (unsigned int k=0; k < totalStubs; ++k) {
-//    layers.insert(tree_->m_stub_layer->at(k));
-//  }
-//  if (layers.size() < maxRequiredLayers_) return false;
 
   return true;
 }
@@ -170,37 +152,17 @@ bool TreeReader::readVariables() {
 
   for (const auto & m : layersFound) {
     unsigned int k = m.second;
-    bool layerUsed = false;
     for (const auto &var : vars_) {
       if (var->layer(m.first)) {
         variables_.push_back(var->at(k));
-        layerUsed = true;
       }
     }
 
     stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
-        tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k)));//, tree_->m_stub_seg->at(k), tree_->m_stub_modid->at(k)));
-//    if (layerUsed) {
-//    }
-//    if (fabs(tree_->m_stub_Z0->at(k)) < 1.)
-//      std::cout << "tree_->m_stub_module->at(" << k << ") = " << tree_->m_stub_module->at(k)
-//          << ", ladder = " << tree_->m_stub_ladder->at(k)
-//          << ", seg = " << tree_->m_stub_seg->at(k)
-//          << ", strip = " << tree_->m_stub_strip->at(k) << std::endl;
-//    if (fabs(tree_->m_stub_Z0->at(k)) < 1.)
-//      std::cout << "tree_->m_stub_modid->at(" << k << ") = " << tree_->m_stub_modid->at(k) << std::endl;
+        tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k)));
   }
 
-//  if (fabs(tree_->m_stub_Z0->at(0)) < 1.)
-//    throw;
-
-//  if (variables_.size() != variablesSize_) {
-//    std::cout << "variables_.size() = " << variables_.size() << ", variablesSize_ = " << variablesSize_ << std::endl;
-//  }
-
-  // assert(variables_.size() == variablesSize_);
   if (variables_.size() != variablesSize_) return false;
-
 
   // Check the distance of the stubs from the generated track
   if (!closeDistanceFromGenTrack()) return false;
