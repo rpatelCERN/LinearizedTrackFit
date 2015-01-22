@@ -10,6 +10,7 @@ class BaseHistograms
 {
 public:
   BaseHistograms(const std::string & name, const int inputSize, const int bins = 100, const float & min = -1., const float & max = 1.);
+  BaseHistograms(const std::string & name, const std::vector<std::string> & varNames, const int bins = 100, const float & min = -1., const float & max = 1.);
   void fill(const std::vector<float> & input);
   void write();
 

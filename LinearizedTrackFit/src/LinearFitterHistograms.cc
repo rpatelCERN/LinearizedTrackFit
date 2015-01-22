@@ -1,12 +1,12 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterHistograms.h"
 
-LinearFitterHistograms::LinearFitterHistograms(const std::string & name, const int nVars, const int nTrackParameters) :
-    MatrixBuilderHistograms(name, nVars, nTrackParameters),
+LinearFitterHistograms::LinearFitterHistograms(const std::string & name, const int nVars, const std::vector<std::string> & trackParameterNames) :
+    MatrixBuilderHistograms(name, nVars, trackParameterNames),
     hPC_("PC_"+name, nVars),
     hNPC_("NPC_"+name, nVars, 100, -3., 3.),
-    hEstimatedPars_("EstimatedPar_"+name, nTrackParameters),
-    hEstimatedParErrors_("EstimatedParError_"+name, nTrackParameters, 200, -0.01, 0.01),
-    hEstimatedParRelErrors_("EstimatedParRelError_"+name, nTrackParameters, 200, -0.05, 0.05)
+    hEstimatedPars_("EstimatedPar_"+name, trackParameterNames),
+    hEstimatedParErrors_("EstimatedParError_"+name, trackParameterNames, 200, -0.01, 0.01),
+    hEstimatedParRelErrors_("EstimatedParRelError_"+name, trackParameterNames, 200, -0.05, 0.05)
 {
   TString hName = "normChi2_"+name;
   hNormChi2_ = new TH1F(hName, hName, 500, 0., 10.);

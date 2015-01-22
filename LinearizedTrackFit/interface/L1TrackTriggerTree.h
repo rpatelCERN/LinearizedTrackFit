@@ -49,6 +49,7 @@ public:
   // std::vector<float>  *m_stub_cor;
   // std::vector<int>    *m_stub_tp;
   std::vector<int>    *m_stub_pdg;
+  std::vector<int>    *m_stub_tp;
   // std::vector<int>    *m_stub_pid;
 };
 

@@ -45,7 +45,7 @@ namespace LinearFit
         // if (normChi2 > 2.) continue;
         int geomIndex = linearFitter.geometricIndex();
         if (histograms.count(geomIndex) == 0) {
-          histograms.insert({{geomIndex, LinearFitterHistograms(std::to_string(geomIndex), vars.size(), pars.size())}});
+          histograms.insert({{geomIndex, LinearFitterHistograms(std::to_string(geomIndex), vars.size(), inputTrackParameterNames)}});
         }
         histograms.find(geomIndex)->second.fill(vars, linearFitter.principalComponents(vars),
             linearFitter.normalizedPrincipalComponents(vars), pars, estimatedPars, normChi2);
@@ -60,7 +60,6 @@ namespace LinearFit
     }
     outputFile.Close();
   }
-
 }
 
 #endif // TESTMATRIX_H

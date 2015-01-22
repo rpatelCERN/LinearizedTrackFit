@@ -17,15 +17,33 @@ namespace LinearFit {
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers, inputVarNames, inputTrackParameterNames);
 
     std::unordered_map<std::string, int> sectors;
+    BaseHistograms histograms("stubDistance", 6, 1000, 0., 5.);
 
     while (treeReader.nextTrack()) {
-
       std::string sectorString = "";
       // Use this for the single module
+      // std::cout << "event has " << treeReader.getStubRZPhi().size() << " stubs" << std::endl;
+      // std::cout << "inputs: pt = " << 1./treeReader.getOneOverPt() << ", phi = " << treeReader.getPhi() << ", x0 = " << treeReader.getX0() << ", y0 = " << treeReader.getY0() << std::endl;
+      std::vector<float> distances;
       for (const auto &s : treeReader.getStubRZPhi()) {
         // sectorString += std::to_string(s.modid()) + "+";
         sectorString += std::to_string(s.module()) + "+" + std::to_string(s.ladder()) + "+";
+
+        float dist = treeReader.genTrackDistance(1. / treeReader.getOneOverPt(), treeReader.getPhi(),
+            treeReader.getX0(), treeReader.getY0(), treeReader.getCharge(), 3.8, s.x(), s.y());
+        // std::cout << "transverse distance = " << dist << std::endl;
+
+
+        distances.push_back(dist);
+        std::cout << "stub["<<distances.size()<<"] = " << dist << std::endl;
+
+//        if (s.x() < 0) {
+//          std::cout << "negative stub["<<distances.size()<<"] = " << dist << std::endl;
+//        }
+
       }
+      histograms.fill(distances);
+
       // std::cout << "before = " << sectorString << std::endl;
       sectorString.erase(sectorString.find_last_not_of("+")+1);
       // std::cout << "after =  " << sectorString << std::endl;
@@ -48,6 +66,11 @@ namespace LinearFit {
       outfile << s.first << " " << s.second << std::endl;
     }
     outfile.close();
+
+    TFile outputFile("StubDistanceFromGenTrack.root", "RECREATE");
+    outputFile.cd();
+    histograms.write();
+    outputFile.Close();
   }
 }
 

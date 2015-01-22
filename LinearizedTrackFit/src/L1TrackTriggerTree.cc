@@ -49,6 +49,7 @@ L1TrackTriggerTree::L1TrackTriggerTree(const TString & fileName)
   L1TT->SetBranchAddress("L1TkSTUB_PHI0",      &m_stub_PHI0);
   // L1TT->SetBranchAddress("L1TkSTUB_tp",        &m_stub_tp);
   L1TT->SetBranchAddress("L1TkSTUB_pdgID",     &m_stub_pdg);
+  L1TT->SetBranchAddress("L1TkSTUB_tp",        &m_stub_tp);
   // L1TT->SetBranchAddress("L1TkSTUB_process",   &m_stub_pid);
   L1TT->SetBranchAddress("L1TkSTUB_n",         &m_stub);
   // L1TT->SetBranchAddress("L1TkSTUB_pt",        &m_stub_pt);

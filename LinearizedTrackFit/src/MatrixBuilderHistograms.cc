@@ -1,9 +1,8 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilderHistograms.h"
 
-MatrixBuilderHistograms::MatrixBuilderHistograms(const std::string & name, const int nVars, const int nTrackParameters) :
+MatrixBuilderHistograms::MatrixBuilderHistograms(const std::string & name, const int nVars, const std::vector<std::string> & trackParameterNames) :
     hVars_("vars_"+name, nVars),
-    hPars_("pars_"+name, nTrackParameters)
-//    h2D_("2D_"+name, nLayers)
+    hPars_("pars_"+name, trackParameterNames)
 {
 }
 
@@ -14,15 +13,8 @@ void MatrixBuilderHistograms::fill(const std::vector<float> & vars, const std::v
 }
 
 
-//void MatrixBuilderHistograms::fill2D(const std::vector<TreeReader::StubRZPhi> & stubs)
-//{
-//  h2D_.fill(stubs);
-//}
-
-
 void MatrixBuilderHistograms::write()
 {
   hVars_.write();
   hPars_.write();
-  // h2D_.write();
 }
