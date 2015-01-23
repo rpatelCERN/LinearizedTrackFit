@@ -14,13 +14,13 @@ namespace LinearFit
 {
   void testMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
       const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
-      std::vector<double> & distanceCuts, bool singleModules)
+      std::vector<double> & distanceCutsTransverse, std::vector<double> & distanceCutsLongitudinal, bool singleModules)
   {
     LinearFitter linearFitter("");
     std::unordered_map<int, LinearFitterHistograms> histograms;
 
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd,
-        linearFitter.requiredLayers(), distanceCuts, inputVarNames, inputTrackParameterNames);
+        linearFitter.requiredLayers(), distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
 
     while (treeReader.nextTrack()) {
       std::vector<float> vars(treeReader.getVariables());

@@ -17,11 +17,13 @@
 namespace LinearFit {
 
   void buildMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, const std::vector<double> distanceCuts,
+      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers,
+      const std::vector<double> & distanceCutsTransverse, const std::vector<double> & distanceCutsLongitudinal,
       const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames, bool singleModules,
       bool doMapSectors, bool computeDistances, const GeometricIndex::GeometricIndexConfiguration & gic)
   {
-    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers, distanceCuts, inputVarNames, inputTrackParameterNames);
+    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers,
+        distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
 
     GeometricIndex geometricIndex(gic);
     std::unordered_map<int, MatrixBuilder> matrices;
@@ -30,7 +32,8 @@ namespace LinearFit {
 
     // Extra, not necessarily used
     std::unordered_map<std::string, int> sectors;
-    BaseHistograms stubDistanceHistograms("stubDistance", 6, 1000, 0., 5.);
+    BaseHistograms stubDistanceTransverseHistograms("stubDistanceTransverse", 6, 1000, 0., 5.);
+    BaseHistograms stubDistanceLongitudinalHistograms("stubDistanceLongitudinal", 6, 1000, -10., 10.);
 
     while (treeReader.nextTrack()) {
 
@@ -48,7 +51,7 @@ namespace LinearFit {
       }
 
       if (doMapSectors) mapSectors(treeReader.getStubRZPhi(), sectors);
-      if (computeDistances) fillDistances(treeReader, stubDistanceHistograms);
+      if (computeDistances) fillDistances(treeReader, stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms);
 
 
       std::vector<float> vars(treeReader.getVariables());
@@ -89,7 +92,7 @@ namespace LinearFit {
     treeReader.writeConfiguration();
 
     if (doMapSectors) writeSectorsMap(sectors);
-    if (computeDistances) writeDistances(stubDistanceHistograms);
+    if (computeDistances) writeDistances(stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms);
   }
 }
 

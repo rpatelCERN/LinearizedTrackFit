@@ -1,7 +1,8 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
 
 TreeReader::TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-    const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, const std::vector<double> & distanceCuts,
+    const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers,
+    const std::vector<double> & distanceCutsTransverse, const std::vector<double> & distanceCutsLongitudinal,
     const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames) :
   tree_(std::make_shared<L1TrackTriggerTree>(inputFileName)),
   eventsFractionStart_(eventsFractionStart),
@@ -14,7 +15,8 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   trackIndex_(0),
   maxRequiredLayers_(0),
   variablesSize_(0),
-  distanceCuts_(distanceCuts)
+  distanceCutsTransverse_(distanceCutsTransverse),
+  distanceCutsLongitudinal_(distanceCutsLongitudinal)
 {
   std::cout << "Requested running from track number " << firstTrack_ << " to track number " << lastTrack_ <<
       " for a total of " << lastTrack_ - firstTrack_ << " tracks." << std::endl;
@@ -80,7 +82,7 @@ bool TreeReader::nextTrack()
 }
 
 
-float TreeReader::genTrackDistance(const float &pt, const float &phi, const float &x0, const float &y0, const int charge,
+float TreeReader::genTrackDistanceTransverse(const float &pt, const float &phi, const float &x0, const float &y0, const int charge,
     const float &B, const float &x1, const float &y1) const
 {
   float r = pt / (0.003 * B); // In centimeters (0.3 for meters)
@@ -90,11 +92,23 @@ float TreeReader::genTrackDistance(const float &pt, const float &phi, const floa
 }
 
 
+float TreeReader::genTrackDistanceLongitudinal(const float &x0, const float &y0, const float &z0, const float &cotTheta,
+    const float &r1, const float &z1) const
+{
+  if (cotTheta == 0) return z1;
+  float r0 = std::sqrt(x0*x0 + y0*y0);
+  // The point r, z0 is the point the track goes through, 1/cotTheta = tan(theta) = m in z = m*r + c.
+  // c = z0 - m*r0
+  return (z1 - z0 - (r1-r0)*cotTheta);
+}
+
+
 bool TreeReader::closeDistanceFromGenTrack()
 {
   int i = 0;
   for (const auto & s : stubsRZPhi_) {
-    if (genTrackDistance(1. / getOneOverPt(), getPhi(), getX0(), getY0(), getCharge(), 3.8, s.x(), s.y()) > distanceCuts_[i]) return false;
+    if (genTrackDistanceTransverse(1. / getOneOverPt(), getPhi(), getX0(), getY0(), getCharge(), 3.8, s.x(), s.y()) > distanceCutsTransverse_[i]) return false;
+    if (fabs(genTrackDistanceLongitudinal(getX0(), getY0(), getZ0(), getCotTheta(), s.R(), s.z())) > distanceCutsLongitudinal_[i]) return false;
     ++i;
   }
   return true;

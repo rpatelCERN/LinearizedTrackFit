@@ -11,23 +11,29 @@
 namespace LinearFit {
 
 
-  void fillDistances(const TreeReader & treeReader, BaseHistograms & histograms)
+  void fillDistances(const TreeReader & treeReader, BaseHistograms & histogramsTransverse, BaseHistograms & histogramsLongitudinal)
   {
-    std::vector<float> distances;
+    std::vector<float> distancesTransverse;
+    std::vector<float> distancesLongitudinal;
     for (const auto &s : treeReader.getStubRZPhi()) {
-      float dist = treeReader.genTrackDistance(1. / treeReader.getOneOverPt(), treeReader.getPhi(),
+      float distTransverse = treeReader.genTrackDistanceTransverse(1. / treeReader.getOneOverPt(), treeReader.getPhi(),
           treeReader.getX0(), treeReader.getY0(), treeReader.getCharge(), 3.8, s.x(), s.y());
-      distances.push_back(dist);
+      distancesTransverse.push_back(distTransverse);
+      float distLongitudinal = treeReader.genTrackDistanceLongitudinal(treeReader.getX0(), treeReader.getY0(), treeReader.getZ0(),
+          treeReader.getCotTheta(), s.R(), s.z());
+      distancesLongitudinal.push_back(distLongitudinal);
     }
-    histograms.fill(distances);
+    histogramsTransverse.fill(distancesTransverse);
+    histogramsLongitudinal.fill(distancesLongitudinal);
   }
 
 
-  void writeDistances(BaseHistograms & histograms)
+  void writeDistances(BaseHistograms & histogramsTransverse, BaseHistograms & histogramsLongitudinal)
   {
     TFile outputFile("StubDistanceFromGenTrack.root", "RECREATE");
     outputFile.cd();
-    histograms.write();
+    histogramsTransverse.write();
+    histogramsLongitudinal.write();
     outputFile.Close();
   }
 
@@ -65,24 +71,27 @@ namespace LinearFit {
   }
 
 
-  void singleSector(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::vector<double> distanceCuts,
-      const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames)
-  {
-    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers, distanceCuts, inputVarNames, inputTrackParameterNames);
-
-    std::unordered_map<std::string, int> sectors;
-    BaseHistograms histograms("stubDistance", 6, 1000, 0., 5.);
-
-    while (treeReader.nextTrack()) {
-      mapSectors(treeReader.getStubRZPhi(), sectors);
-      fillDistances(treeReader, histograms);
-    }
-
-    writeSectorsMap(sectors);
-
-    writeDistances(histograms);
-  }
+//  void singleSector(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
+//      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers,
+//      std::vector<double> & distanceCutsTransverse, std::vector<double> & distanceCutsLongitudinal,
+//      const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames)
+//  {
+//    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers,
+//        distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
+//
+//    std::unordered_map<std::string, int> sectors;
+//    BaseHistograms histogramsTransverse("stubDistanceTransverse", 6, 1000, 0., 5.);
+//    BaseHistograms histogramsLongitudinal("stubDistanceLongitudinal", 6, 1000, 0., 15.);
+//
+//    while (treeReader.nextTrack()) {
+//      mapSectors(treeReader.getStubRZPhi(), sectors);
+//      fillDistances(treeReader, histogramsTransverse, histogramsLongitudinal);
+//    }
+//
+//    writeSectorsMap(sectors);
+//
+//    writeDistances(histogramsTransverse, histogramsLongitudinal);
+//  }
 }
 
 #endif // SINGLESECTOR_H

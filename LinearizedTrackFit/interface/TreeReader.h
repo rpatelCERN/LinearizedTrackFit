@@ -19,7 +19,8 @@ class TreeReader
 {
 public:
   TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, const std::vector<double> & distanceCuts,
+      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers,
+      const std::vector<double> & distanceCutsTransverse,  const std::vector<double> & distanceCutsLongitudinal,
       const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames);
 
   bool nextTrack();
@@ -32,6 +33,7 @@ public:
   }
   float getPhi() const { return tree_->m_stub_PHI0->at(0); }
   float getEta() const { return tree_->m_stub_etaGEN->at(0); }
+  float getCotTheta() const { return 1./tan(2*atan(exp(-tree_->m_stub_etaGEN->at(0)))); }
   float getX0() const { return tree_->m_stub_X0->at(0); }
   float getY0() const { return tree_->m_stub_Y0->at(0); }
   float getZ0() const { return tree_->m_stub_Z0->at(0); }
@@ -40,9 +42,11 @@ public:
   unsigned int variablesSize() const { return variablesSize_; }
   unsigned int maxRequiredLayers() const { return maxRequiredLayers_; }
   void writeConfiguration();
-  float genTrackDistance(const float &pt, const float &phi, const float &x0, const float &y0,
+  float genTrackDistanceTransverse(const float &pt, const float &phi, const float &x0, const float &y0,
       const int charge, const float &B, const float &x1, const float &y1) const;
-
+  float genTrackDistanceLongitudinal(const float &x0, const float &y0, const float &z0, const float &cotTheta,
+      const float &r1, const float &z1) const;
+  
 private:
   bool goodTrack();
 
@@ -76,7 +80,8 @@ private:
   std::vector<float> parameters_;
   unsigned int maxRequiredLayers_;
   unsigned int variablesSize_;
-  std::vector<double> distanceCuts_;
+  std::vector<double> distanceCutsTransverse_;
+  std::vector<double> distanceCutsLongitudinal_;
 
   std::vector<StubRZPhi> stubsRZPhi_;
 };
