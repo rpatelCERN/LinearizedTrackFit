@@ -53,7 +53,6 @@ namespace LinearFit {
       if (doMapSectors) mapSectors(treeReader.getStubRZPhi(), sectors);
       if (computeDistances) fillDistances(treeReader, stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms);
 
-
       std::vector<float> vars(treeReader.getVariables());
       std::vector<float> pars(treeReader.getTrackParameters());
 
