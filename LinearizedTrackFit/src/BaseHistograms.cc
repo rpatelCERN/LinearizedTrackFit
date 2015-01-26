@@ -19,7 +19,7 @@ BaseHistograms::BaseHistograms(const std::string & name, const std::vector<std::
     else if (varName == "cotTheta") {
       if (name.find("ParError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -0.02, 0.02));
       else if (name.find("ParRelError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -0.5, 0.5));
-      else histograms_.push_back(new TH1F(hName, hName, bins, -0.2, 0.2));
+      else histograms_.push_back(new TH1F(hName, hName, bins, -1., 1.));
     }
     else histograms_.push_back(new TH1F(hName, hName, bins, min, max));
   }

@@ -1,7 +1,8 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitter.h"
 
 LinearFitter::LinearFitter(const std::string & inputDirName) :
-    normChi2_(0.), trackParameters_(0.), inputDirName_(inputDirName), gi_(inputDirName+"GeometricIndex.txt")
+    normChi2_(0.), trackParameters_(0.), inputDirName_(inputDirName), gi_(inputDirName+"GeometricIndex.txt"),
+    geomIndex_(0), variablesSize_(0)
 {
   readRequiredLayers(inputDirName+"Variables.txt");
 }
@@ -51,6 +52,11 @@ void LinearFitter::readRequiredLayers(const std::string & inputFileName)
     }
   }
   std::cout << std::endl;
+
+  // Compute the total number of variables
+  for (const auto & varLayers : requiredLayers_) {
+    variablesSize_ += varLayers.second.size();
+  }
 }
 
 

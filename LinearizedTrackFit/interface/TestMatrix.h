@@ -18,6 +18,7 @@ namespace LinearFit
   {
     LinearFitter linearFitter("");
     std::unordered_map<int, LinearFitterHistograms> histograms;
+    LinearFitterHistograms summaryHistograms("summary", linearFitter.variablesSize(), inputTrackParameterNames);
 
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd,
         linearFitter.requiredLayers(), distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
@@ -42,12 +43,15 @@ namespace LinearFit
         }
         histograms.find(geomIndex)->second.fill(vars, linearFitter.principalComponents(vars),
             linearFitter.normalizedPrincipalComponents(vars), pars, estimatedPars, normChi2);
+        summaryHistograms.fill(vars, linearFitter.principalComponents(vars),
+            linearFitter.normalizedPrincipalComponents(vars), pars, estimatedPars, normChi2);
       }
     }
 
     // Write histograms to file
     TFile outputFile("linearFitterHistograms.root", "RECREATE");
     outputFile.cd();
+    summaryHistograms.write();
     for (auto & h : histograms) {
       h.second.write();
     }
