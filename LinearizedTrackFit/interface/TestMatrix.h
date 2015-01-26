@@ -8,6 +8,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitter.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterHistograms.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterSummaryHistograms.h"
 #include "TString.h"
 
 namespace LinearFit
@@ -18,7 +19,7 @@ namespace LinearFit
   {
     LinearFitter linearFitter("");
     std::unordered_map<int, LinearFitterHistograms> histograms;
-    LinearFitterHistograms summaryHistograms("summary", linearFitter.variablesSize(), inputTrackParameterNames);
+    LinearFitterSummaryHistograms summaryHistograms("summary", linearFitter.variablesSize(), inputTrackParameterNames);
 
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd,
         linearFitter.requiredLayers(), distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);

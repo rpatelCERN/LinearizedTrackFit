@@ -26,7 +26,7 @@ void LinearFitterHistograms::fill(const std::vector<float> & vars, const std::ve
   hEstimatedParErrors_.fill(estimatedParErrors);
 
   std::vector<float> estimatedParRelErrors(estimatedPars.size(), 0.);
-  for (unsigned int i=0; i<estimatedPars.size(); ++i) { estimatedParRelErrors[i] = pars[i] == 0. ? 0. : estimatedParErrors[i]/pars[i]; }
+  for (unsigned int i=0; i<estimatedPars.size(); ++i) { estimatedParRelErrors[i] = (pars[i] == 0.) ? 0. : estimatedParErrors[i]/pars[i]; }
   // std::transform(estimatedParErrors.begin(), estimatedParErrors.end(), pars.begin(), estimatedParRelErrors.begin(), std::divides<float>());
   hEstimatedParRelErrors_.fill(estimatedParRelErrors);
 
