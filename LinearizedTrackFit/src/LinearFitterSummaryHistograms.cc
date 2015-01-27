@@ -53,9 +53,9 @@ void LinearFitterSummaryHistograms::fill(const std::vector<float> & vars, const 
 
   if (ptIndex_ != -1) {
     float curvature = pars[ptIndex_];
-    float pt = curvature == 0. ? 10000. : 1/curvature;
+    float pt = curvature == 0. ? 10000. : 1./curvature;
     float estCurvature = estimatedPars[ptIndex_];
-    float estPt = estCurvature == 0. ? 10000. : 1/estCurvature;
+    float estPt = estCurvature == 0. ? 10000. : 1./estCurvature;
     hDeltaCurvatureOverCurvatureVsCurvature_->Fill(curvature, (curvature-estCurvature)/curvature);
     hDeltaCurvatureOverCurvatureVsPt_->Fill(pt, (curvature-estCurvature)/curvature);
     hDeltaPtOverPtVsPt_->Fill(pt, (pt-estPt)/pt);
@@ -76,9 +76,9 @@ void LinearFitterSummaryHistograms::fill(const std::vector<float> & vars, const 
     hDeltaEtaVsEta_->Fill(eta, eta-estEta);
     if (ptIndex_ != -1) {
       float curvature = pars[ptIndex_];
-      float pt = curvature == 0. ? 10000. : 1/curvature;
+      float pt = curvature == 0. ? 10000. : 1./curvature;
       float estCurvature = estimatedPars[ptIndex_];
-      float estPt = estCurvature == 0. ? 10000. : 1/estCurvature;
+      float estPt = estCurvature == 0. ? 10000. : 1./estCurvature;
       hDeltaCurvatureOverCurvatureVsEta_->Fill(eta, (curvature-estCurvature)/curvature);
       hDeltaPtOverPtVsEta_->Fill(eta, (pt-estPt)/pt);
     }
