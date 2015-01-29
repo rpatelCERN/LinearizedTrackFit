@@ -27,7 +27,7 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     hDeltaPtOverPtVsPt_ = new TH2F("deltaPtOverPtVsPt", "deltaPtOverPtVsPt", 400, ptMin, ptMax, 100, -0.1, 0.1);
     if (z0Index_ != -1) hDeltaZ0VsPt_ = new TH2F("deltaZ0VsPt", "deltaZ0VsPt", 400, ptMin, ptMax, 100, -0.2, 0.2);
     if (phiIndex_ != -1) hDeltaPhiVsPt_ = new TH2F("deltaPhiVsPt", "deltaPhiVsPt", 400, ptMin, ptMax, 100, -0.05, 0.05);
-    if (d0Index_ != -1) hDeltaD0VsPt_ = new TH2F("deltaZ0VsPt", "deltaZ0VsPt", 400, ptMin, ptMax, 100, -0.1, 0.1);
+    if (d0Index_ != -1) hDeltaD0VsPt_ = new TH2F("deltaD0VsPt", "deltaD0VsPt", 400, ptMin, ptMax, 100, -0.1, 0.1);
     if (cotThetaIndex_ != -1) {
       hDeltaCotThetaVsPt_ = new TH2F("deltaCotThetaVsPt", "deltaCotThetaVsPt", 400, ptMin, ptMax, 100, -0.05, 0.05);
       hDeltaEtaVsPt_ = new TH2F("deltaEtaVsPt", "deltaEtaVsPt", 400, ptMin, ptMax, 100, -0.05, 0.05);
@@ -42,7 +42,7 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     }
     if (z0Index_ != -1) hDeltaZ0VsEta_ = new TH2F("deltaZ0VsEta", "deltaZ0VsEta", 100, etaMin, etaMax, 100, -0.2, 0.2);
     if (phiIndex_ != -1) hDeltaPhiVsEta_ = new TH2F("deltaPhiVsEta", "deltaPhiVsEta", 100, etaMin, etaMax, 100, -0.05, 0.05);
-    if (d0Index_ != -1) hDeltaD0VsEta_ = new TH2F("deltaZ0VsEta", "deltaZ0VsEta", 100, etaMin, etaMax, 100, -0.1, 0.1);
+    if (d0Index_ != -1) hDeltaD0VsEta_ = new TH2F("deltaD0VsEta", "deltaD0VsEta", 100, etaMin, etaMax, 100, -0.1, 0.1);
   }
 }
 

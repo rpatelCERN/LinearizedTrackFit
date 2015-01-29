@@ -61,4 +61,19 @@ private:
   std::vector<float> * var_y;
 };
 
+
+// DeltaS variable of the stubs
+class GetVarDeltaS : public GetTreeVariable
+{
+public:
+  GetVarDeltaS(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
+      GetTreeVariable(layers), var_deltas(tree->m_stub_deltas) {}
+  virtual ~GetVarDeltaS() {}
+  virtual float at(const int k) {
+    return var_deltas->at(k);
+  }
+private:
+  std::vector<float> * var_deltas;
+};
+
 #endif // GETVARIABLES_H
