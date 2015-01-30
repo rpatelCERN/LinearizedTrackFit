@@ -18,11 +18,13 @@ namespace LinearFit
       std::vector<double> & distanceCutsTransverse, std::vector<double> & distanceCutsLongitudinal, bool singleModules)
   {
     LinearFitter linearFitter("");
-    std::unordered_map<int, LinearFitterHistograms> histograms;
-    LinearFitterSummaryHistograms summaryHistograms("summary", linearFitter.variablesSize(), inputTrackParameterNames);
 
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd,
         linearFitter.requiredLayers(), distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
+
+    // Control histograms
+    std::unordered_map<int, LinearFitterHistograms> histograms;
+    LinearFitterSummaryHistograms summaryHistograms("summary", treeReader.variablesNames(), inputTrackParameterNames);
 
     while (treeReader.nextTrack()) {
       std::vector<float> vars(treeReader.getVariables());
@@ -40,7 +42,7 @@ namespace LinearFit
         std::vector<float> estimatedPars = linearFitter.trackParameters();
         int geomIndex = linearFitter.geometricIndex();
         if (histograms.count(geomIndex) == 0) {
-          histograms.insert({{geomIndex, LinearFitterHistograms(std::to_string(geomIndex), vars.size(), inputTrackParameterNames)}});
+          histograms.insert({{geomIndex, LinearFitterHistograms(std::to_string(geomIndex), treeReader.variablesNames(), inputTrackParameterNames)}});
         }
         histograms.find(geomIndex)->second.fill(vars, linearFitter.principalComponents(vars),
             linearFitter.normalizedPrincipalComponents(vars), pars, estimatedPars, normChi2);

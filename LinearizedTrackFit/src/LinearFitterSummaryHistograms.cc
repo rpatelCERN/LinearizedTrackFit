@@ -1,7 +1,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterSummaryHistograms.h"
 
-LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &name, const int nVars, const std::vector<std::string> &trackParameterNames) :
-    linearFitterHistograms(name, nVars, trackParameterNames), hDeltaCurvatureOverCurvatureVsCurvature_(nullptr),
+LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &name, const std::vector<std::string> & varNames, const std::vector<std::string> &trackParameterNames) :
+    linearFitterHistograms(name, varNames, trackParameterNames), hDeltaCurvatureOverCurvatureVsCurvature_(nullptr),
     hDeltaPtOverPtVsPt_(nullptr), hDeltaCurvatureOverCurvatureVsPt_(nullptr), hDeltaZ0VsPt_(nullptr), hDeltaPhiVsPt_(nullptr),
     hDeltaCotThetaVsPt_(nullptr), hDeltaEtaVsPt_(nullptr), hDeltaD0VsPt_(nullptr), hDeltaPtOverPtVsEta_(nullptr),
     hDeltaCurvatureOverCurvatureVsEta_(nullptr), hDeltaZ0VsEta_(nullptr), hDeltaPhiVsEta_(nullptr), hDeltaCotThetaVsEta_(nullptr),

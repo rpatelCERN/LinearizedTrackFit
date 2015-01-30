@@ -37,6 +37,21 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     maxRequiredLayers_ = std::max(maxRequiredLayers_, v->layersNum());
   }
 
+  // Build the full list of names
+  std::unordered_set<int> allRequiredLayers;
+  for (const auto & requiredLayers : requiredLayers_) {
+    for (const auto & layer : requiredLayers.second) {
+      allRequiredLayers.insert(layer);
+    }
+  }
+  for (const auto & layer : allRequiredLayers) {
+    for (const auto & varName : varNames) {
+      if (requiredLayers_[varName].count(layer) != 0) {
+        variablesNames_.push_back(varName);
+      }
+    }
+  }
+
   // Store the classes that will return the selected generated track parameters for each stub
   for (const std::string & trackParName : trackParNames) {
     if (trackParName == "phi") pars_.push_back(std::make_shared<GetParPhi>(tree_));

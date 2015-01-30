@@ -8,7 +8,7 @@
 class MatrixBuilderHistograms
 {
 public:
-  MatrixBuilderHistograms(const std::string & name, const int nVars, const std::vector<std::string> & trackParameterNames);
+  MatrixBuilderHistograms(const std::string & name, const std::vector<std::string> & varNames, const std::vector<std::string> & trackParameterNames);
   void fill(const std::vector<float> & vars, const std::vector<float> & pars);
   void write();
 

@@ -11,7 +11,7 @@
 class LinearFitterHistograms : public MatrixBuilderHistograms
 {
 public:
-  LinearFitterHistograms(const std::string & name, const int nVars, const std::vector<std::string> & trackParameterNames);
+  LinearFitterHistograms(const std::string & name, const std::vector<std::string> & varNames, const std::vector<std::string> & trackParameterNames);
   void fill(const std::vector<float> & vars, const std::vector<float> & pcs, const std::vector<float> & npcs,
       const std::vector<float> & pars, const std::vector<float> & estimatedPars, const float & normChi2);
   void write();

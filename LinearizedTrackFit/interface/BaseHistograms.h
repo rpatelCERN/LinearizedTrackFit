@@ -15,6 +15,8 @@ public:
   void write();
 
 private:
+  void initializeVarsHistograms(const std::string name, const std::vector<std::string> & varNames, const int bins, const float & min, const float & max);
+  void initializeParsHistograms(const std::string name, const std::vector<std::string> & varNames, const int bins, const float & min, const float & max);
   // Data members
   int inputSize_;
   std::vector<TH1F*> histograms_;

@@ -61,7 +61,7 @@ namespace LinearFit {
       // Update mean and covariance for this linearization region
       if (matrices.count(geomIndex) == 0) {
         matrices.insert({{geomIndex, MatrixBuilder(std::to_string(geomIndex), treeReader.variablesSize(), inputTrackParameterNames.size())}});
-        histograms.insert({{geomIndex, MatrixBuilderHistograms(std::to_string(geomIndex), treeReader.variablesSize(), inputTrackParameterNames)}});
+        histograms.insert({{geomIndex, MatrixBuilderHistograms(std::to_string(geomIndex), treeReader.variablesNames(), inputTrackParameterNames)}});
         // histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), treeReader.maxRequiredLayers())}});
         histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), 6)}});
       }

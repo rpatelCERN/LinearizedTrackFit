@@ -41,6 +41,7 @@ public:
   std::vector<StubRZPhi> getStubRZPhi() const { return stubsRZPhi_; }
   unsigned int variablesSize() const { return variablesSize_; }
   unsigned int maxRequiredLayers() const { return maxRequiredLayers_; }
+  std::vector<std::string> const variablesNames() const { return variablesNames_; }
   void writeConfiguration();
   float genTrackDistanceTransverse(const float &pt, const float &phi, const float &x0, const float &y0,
       const int charge, const float &B, const float &x1, const float &y1) const;
@@ -80,6 +81,8 @@ private:
   std::vector<float> parameters_;
   unsigned int maxRequiredLayers_;
   unsigned int variablesSize_;
+  // This is the full list of names ordered as the variables are in variables_
+  std::vector<std::string> variablesNames_;
   std::vector<double> distanceCutsTransverse_;
   std::vector<double> distanceCutsLongitudinal_;
 
