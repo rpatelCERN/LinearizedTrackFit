@@ -10,6 +10,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilderHistograms.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/Base2DHistograms.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/CorrelationHistograms.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/SingleSector.h"
 #include "TString.h"
 #include "TFile.h"
@@ -20,7 +21,7 @@ namespace LinearFit {
       const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers,
       const std::vector<double> & distanceCutsTransverse, const std::vector<double> & distanceCutsLongitudinal,
       const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames, bool singleModules,
-      bool doMapSectors, bool computeDistances, const GeometricIndex::GeometricIndexConfiguration & gic)
+      bool doMapSectors, bool computeDistances, bool computeCorrelations, const GeometricIndex::GeometricIndexConfiguration & gic)
   {
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers,
         distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
@@ -29,6 +30,7 @@ namespace LinearFit {
     std::unordered_map<int, MatrixBuilder> matrices;
     std::unordered_map<int, MatrixBuilderHistograms> histograms;
     std::unordered_map<int, Base2DHistograms> histograms2D;
+    CorrelationHistograms correlationHistograms(treeReader.variablesNames(), inputTrackParameterNames);
 
     // Extra, not necessarily used
     std::unordered_map<std::string, int> sectors;
@@ -68,6 +70,7 @@ namespace LinearFit {
       matrices.find(geomIndex)->second.update(vars, pars);
       histograms.find(geomIndex)->second.fill(vars, pars);
       histograms2D.find(geomIndex)->second.fill(treeReader.getStubRZPhi());
+      if (computeCorrelations) correlationHistograms.fill(vars, pars, treeReader.getCharge());
     }
 
     // Write the geometric index settings to a file
@@ -92,6 +95,14 @@ namespace LinearFit {
 
     if (doMapSectors) writeSectorsMap(sectors);
     if (computeDistances) writeDistances(stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms);
+
+    if (computeCorrelations) {
+      TFile outputCorrelationsFile("correlationHistograms.root", "RECREATE");
+      outputCorrelationsFile.cd();
+      correlationHistograms.write();
+      outputCorrelationsFile.Close();
+    }
+
   }
 }
 

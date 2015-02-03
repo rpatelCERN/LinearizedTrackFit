@@ -1,5 +1,4 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/BaseHistograms.h"
-#include <iostream>
 
 BaseHistograms::BaseHistograms(const std::string & name, const int inputSize, const int bins, const float & min, const float & max) :
     inputSize_(inputSize)
@@ -32,15 +31,16 @@ void BaseHistograms::initializeVarsHistograms(const std::string name, const std:
   int i = 0;
   for (const auto & varName : varNames) {
     TString hName = name+"_"+varName;
-    std::cout << "hName = " << hName << std::endl;
     if (varName == "phi") {
       hName+="_"+std::to_string(iPhi++);
       // histograms_.push_back(new TH1F(hName, hName, bins, -3.15, 3.15));
-      histograms_.push_back(new TH1F(hName, hName, bins, -1., 1.));
+      histograms_.push_back(new TH1F(hName, hName, bins, -1.57, 1.57));
     }
     else if (varName == "z") {
       hName+="_"+std::to_string(iZ++);
-      histograms_.push_back(new TH1F(hName, hName, bins, -20., 20));
+      // histograms_.push_back(new TH1F(hName, hName, bins, -20., 20.));
+      // Automatic binning
+      histograms_.push_back(new TH1F(hName, hName, bins, 0., 0.));
     }
     else if (varName == "R") {
       hName+="_"+std::to_string(iR++);

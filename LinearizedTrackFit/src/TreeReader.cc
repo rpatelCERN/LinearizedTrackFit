@@ -57,6 +57,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     if (trackParName == "phi") pars_.push_back(std::make_shared<GetParPhi>(tree_));
     else if (trackParName == "1/pt") pars_.push_back(std::make_shared<GetParOneOverPt>(tree_));
     else if (trackParName == "charge/pt") pars_.push_back(std::make_shared<GetParChargeOverPt>(tree_));
+    else if (trackParName == "charge") pars_.push_back(std::make_shared<GetParCharge>(tree_));
     else if (trackParName == "cotTheta") pars_.push_back(std::make_shared<GetParCotTheta>(tree_));
     else if (trackParName == "z0") pars_.push_back(std::make_shared<GetParZ0>(tree_));
     else if (trackParName == "d0") pars_.push_back(std::make_shared<GetParD0>(tree_));

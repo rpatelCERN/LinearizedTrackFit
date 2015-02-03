@@ -86,6 +86,20 @@ private:
 };
 
 
+class GetParCharge : public GetTreeTrackParameter
+{
+public:
+  GetParCharge(std::shared_ptr<L1TrackTriggerTree> tree) : par_pdg(tree->m_stub_pdg) {}
+  virtual ~GetParCharge() {}
+  virtual float at(const int k) {
+    // For muons, electrons and taus the charge is the opposite of the sign of the pdgId
+    return ((par_pdg->at(k) > 0) ? -1 : 1);
+  }
+private:
+  std::vector<int> * par_pdg;
+};
+
+
 // cotTheta parameter of the generated track associated to stub k
 class GetParCotTheta : public GetTreeTrackParameter
 {
@@ -121,5 +135,6 @@ private:
   std::vector<float> * par_x0;
   std::vector<float> * par_y0;
 };
+
 
 #endif // GETTRACKPARAMETERS_H
