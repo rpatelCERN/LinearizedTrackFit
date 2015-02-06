@@ -64,10 +64,15 @@ private:
   std::vector<int> layersPhi_;
   std::vector<int> layersR_;
   std::vector<int> layersZ_;
-  std::vector<float> distanceCutsPhi_;
+  std::vector<int> layersDeltaS_;
+  std::vector<double> distanceCutsTransverse_;
+  std::vector<double> distanceCutsLongitudinal_;
   std::vector<std::string> inputVarNames_;
   std::vector<std::string> inputTrackParameterNames_;
   bool singleModules_;
+  bool mapSectors_;
+  bool computeDistances_;
+  bool computeCorrelations_;
   // Geometric cuts
   double oneOverPtMin_;
   double oneOverPtMax_;
@@ -108,10 +113,15 @@ BuildLinearizedTrackFitMatrix::BuildLinearizedTrackFitMatrix(const edm::Paramete
   layersPhi_(iConfig.getParameter<std::vector<int> >("LayersPhi")),
   layersR_(iConfig.getParameter<std::vector<int> >("LayersR")),
   layersZ_(iConfig.getParameter<std::vector<int> >("LayersZ")),
-  distanceCutsPhi_(iConfig.getParameter<std::vector<double> >("DistanceCutsPhi")),
+  layersDeltaS_(iConfig.getParameter<std::vector<int> >("LayersDeltaS")),
+  distanceCutsTransverse_(iConfig.getParameter<std::vector<double> >("DistanceCutsTransverse")),
+  distanceCutsLongitudinal_(iConfig.getParameter<std::vector<double> >("DistanceCutsLongitudinal")),
   inputVarNames_(iConfig.getParameter<std::vector<std::string> >("VariableNames")),
   inputTrackParameterNames_(iConfig.getParameter<std::vector<std::string> >("TrackParameterNames")),
   singleModules_(iConfig.getParameter<bool>("SingleModules")),
+  mapSectors_(iConfig.getParameter<bool>("MapSectors")),
+  computeDistances_(iConfig.getParameter<bool>("ComputeDistances")),
+  computeCorrelations_(iConfig.getParameter<bool>("ComputeCorrelations")),
   oneOverPtMin_(iConfig.getParameter<double>("OneOverPtMin")),
   oneOverPtMax_(iConfig.getParameter<double>("OneOverPtMax")),
   oneOverPtRegions_(iConfig.getParameter<int>("OneOverPtRegions")),
@@ -177,18 +187,16 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     requiredLayers_.insert(std::make_pair("phi", std::unordered_set<int>(layersPhi_.begin(), layersPhi_.end())));
     requiredLayers_.insert(std::make_pair("R", std::unordered_set<int>(layersR_.begin(), layersR_.end())));
     requiredLayers_.insert(std::make_pair("z", std::unordered_set<int>(layersZ_.begin(), layersZ_.end())));
-
-
-    // LinearFit::singleSector(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_, requiredLayers_,
-    //     distanceCutsPhi_, inputVarNames_, inputTrackParameterNames_);
+    requiredLayers_.insert(std::make_pair("DeltaS", std::unordered_set<int>(layersDeltaS_.begin(), layersDeltaS_.end())));
 
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
-    			   requiredLayers_, distanceCutsPhi_, inputVarNames_, inputTrackParameterNames_, singleModules_, gic);
+    			   requiredLayers_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputTrackParameterNames_,
+			   singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic);
   }
 
   if (testMatrix_) {
     LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
-			  inputVarNames_, inputTrackParameterNames_, distanceCutsPhi_, singleModules_);
+			  inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_, singleModules_);
   }
 
 

@@ -83,6 +83,10 @@ private:
   // void invertCorrelationMatrix(const int nTrackParameters, const int nVars, MatrixXd & D, const MatrixXd & corrPV, const SelfAdjointEigenSolver<MatrixXd> & es);
   void invertCorrelationMatrix(const int nTrackParameters, const int nVars, MatrixXd & D, const MatrixXd & corrPV, const MatrixXd & cov);
   void writeMatrices(const MatrixXd & V, const MatrixXd & D, const std::string & suffix);
+  float ptGEN(const L1TrackTriggerTree * tree, const int k)
+  {
+    return std::sqrt(std::pow(tree->m_stub_pxGEN->at(k), 2) + std::pow(tree->m_stub_pyGEN->at(k), 2));
+  }
 
   // Scale an interval with the passed factor. Returns the scaled interval limits as a pair(min, max).
   template <class T>
@@ -245,13 +249,14 @@ LinearizedTrackFit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 // }
 
 
+
 // Check that the stub is associated to a track with the correct generator-level parmeters.
 // Removes delta-rays and other fake stubs.
 bool LinearizedTrackFit::goodStub(const L1TrackTriggerTree * tree, const int k)
 {
   if (tree->m_stub_pdg->at(k) != -13) return false;
   if (tree->m_stub_PHI0->at(k) < trackSel_.phiMinCut || tree->m_stub_PHI0->at(k) > trackSel_.phiMaxCut) return false;
-  if (tree->m_stub_ptGEN->at(k) == 0. || 1./tree->m_stub_ptGEN->at(k) < trackSel_.invPtMinCut || 1./tree->m_stub_ptGEN->at(k) > trackSel_.invPtMaxCut) return false;
+  if (ptGEN(tree, k) == 0. || 1./ptGEN(tree, k) < trackSel_.invPtMinCut || 1./ptGEN(tree, k) > trackSel_.invPtMaxCut) return false;
   if (tree->m_stub_Z0->at(k) < trackSel_.z0MinCut || tree->m_stub_Z0->at(k) > trackSel_.z0MaxCut) return false;
   if (tree->m_stub_etaGEN->at(k) < trackSel_.etaMinCut || tree->m_stub_etaGEN->at(k) > trackSel_.etaMaxCut) return false;
   return true;
@@ -268,14 +273,16 @@ int LinearizedTrackFit::fillVars(const L1TrackTriggerTree * tree,
 
   int iVt = 0;
   int iVl = 0;
-  int ptGENsize = tree->m_stub_ptGEN->size();
+  int pxGENsize = tree->m_stub_pxGEN->size();
+  int pyGENsize = tree->m_stub_pyGEN->size();
   int etaGENsize = tree->m_stub_etaGEN->size();
   int PHI0size = tree->m_stub_PHI0->size();
   int Z0size = tree->m_stub_Z0->size();
   for (int k=0; k<tree->m_stub; ++k) {
     // Use only stubs from muons
     // if (tree->m_stub_pdg->at(k) == -13) {
-    if (ptGENsize <= k) break;
+    if (pxGENsize <= k) break;
+    if (pyGENsize <= k) break;
     if (etaGENsize <= k) break;
     if (PHI0size <= k) break;
     if (Z0size <= k) break;
@@ -316,12 +323,14 @@ bool LinearizedTrackFit::fillTrackPars(const L1TrackTriggerTree * tree, VectorXd
 {
   int iPt = 0;
   int iPl = 0;
-  int ptGENsize = tree->m_stub_ptGEN->size();
+  int pxGENsize = tree->m_stub_pxGEN->size();
+  int pyGENsize = tree->m_stub_pyGEN->size();
   int etaGENsize = tree->m_stub_etaGEN->size();
   int PHI0size = tree->m_stub_PHI0->size();
   int Z0size = tree->m_stub_Z0->size();
   for (int k=0; k<tree->m_stub; ++k) {
-    if (ptGENsize <= k) return false;
+    if (pxGENsize <= k) return false;
+    if (pyGENsize <= k) return false;
     if (etaGENsize <= k) return false;
     if (PHI0size <= k) return false;
     if (Z0size <= k) return false;
@@ -331,9 +340,9 @@ bool LinearizedTrackFit::fillTrackPars(const L1TrackTriggerTree * tree, VectorXd
     if (goodStub(tree, k)) {
       // Skip the case of a stub with generated track pt == 0. It is not the correct stub.
       // It happened once that the GEN vector was too short. This should be checked in the extractor.
-      if (tree->m_stub_ptGEN->at(k) == 0) return false;
+      if (ptGEN(tree, k) == 0) return false;
       parsTransverse(iPt++) = tree->m_stub_PHI0->at(k);
-      parsTransverse(iPt++) = 1./tree->m_stub_ptGEN->at(k);
+      parsTransverse(iPt++) = 1./ptGEN(tree, k);
       parsLongitudinal(iPl++) = 1./tan(2*atan(exp(-tree->m_stub_etaGEN->at(k))));
       parsLongitudinal(iPl++) = tree->m_stub_Z0->at(k);
       return true;
