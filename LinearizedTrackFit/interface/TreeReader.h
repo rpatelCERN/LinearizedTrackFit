@@ -27,8 +27,11 @@ public:
   std::vector<float> getVariables();
   std::vector<float> getTrackParameters();
 
+  float getPt() const {
+    return std::sqrt(std::pow(tree_->m_stub_pxGEN->at(0), 2) + std::pow(tree_->m_stub_pyGEN->at(0), 2));
+  }
   float getOneOverPt() const {
-    float pt = std::sqrt(std::pow(tree_->m_stub_pxGEN->at(0), 2) + std::pow(tree_->m_stub_pyGEN->at(0), 2));
+    float pt = getPt();
     return pt == 0 ? 0 : 1./pt;
   }
   float getPhi() const { return tree_->m_stub_PHI0->at(0); }

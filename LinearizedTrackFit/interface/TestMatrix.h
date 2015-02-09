@@ -25,6 +25,7 @@ namespace LinearFit
     // Control histograms
     std::unordered_map<int, LinearFitterHistograms> histograms;
     LinearFitterSummaryHistograms summaryHistograms("summary", treeReader.variablesNames(), inputTrackParameterNames);
+    TH2F * hEstimatedChargeVsPt = new TH2F("EstimatedChargeVsPt", "EstimatedChargeVsPt", 1000, 0, 100, 1000, -3., 3.);
 
     while (treeReader.nextTrack()) {
       std::vector<float> vars(treeReader.getVariables());
@@ -48,6 +49,10 @@ namespace LinearFit
             linearFitter.normalizedPrincipalComponents(vars), pars, estimatedPars, normChi2);
         summaryHistograms.fill(vars, linearFitter.principalComponents(vars),
             linearFitter.normalizedPrincipalComponents(vars), pars, estimatedPars, normChi2);
+        if (inputTrackParameterNames.size() == 1 && inputTrackParameterNames[0] == "charge") {
+          // std::cout << "treeReader.getPt() = " << treeReader.getPt() << ", estimatedPars[0] = " << estimatedPars[0] << std::endl;
+          hEstimatedChargeVsPt->Fill(treeReader.getPt(), estimatedPars[0]);
+        }
       }
     }
 
@@ -58,6 +63,7 @@ namespace LinearFit
     for (auto & h : histograms) {
       h.second.write();
     }
+    if (inputTrackParameterNames.size() == 1 && inputTrackParameterNames[0] == "charge") hEstimatedChargeVsPt->Write();
     outputFile.Close();
   }
 }
