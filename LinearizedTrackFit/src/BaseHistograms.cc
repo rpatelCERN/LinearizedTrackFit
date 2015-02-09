@@ -77,6 +77,11 @@ void BaseHistograms::initializeParsHistograms(const std::string name, const std:
       else if (name.find("ParRelError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -0.05, 0.05));
       else histograms_.push_back(new TH1F(hName, hName, bins, -3.15, 3.15));
     }
+    else if (varName == "charge") {
+      if (name.find("ParError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -1., 1.));
+      else if (name.find("ParRelError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -1., 1.));
+      else histograms_.push_back(new TH1F(hName, hName, bins, -3., 3.));
+    }
     else histograms_.push_back(new TH1F(hName, hName, bins, min, max));
   }
 }

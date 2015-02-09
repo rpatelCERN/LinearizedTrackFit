@@ -32,9 +32,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 // user include files
-// #include "LinearizedTrackFit/LinearizedTrackFit/interface/GeometricIndex.h"
-// #include "LinearizedTrackFit/LinearizedTrackFit/interface/BaseHistograms.h"
-// #include "LinearizedTrackFit/LinearizedTrackFit/interface/SingleSector.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitter.h"
 
