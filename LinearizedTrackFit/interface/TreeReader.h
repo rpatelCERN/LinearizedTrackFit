@@ -25,6 +25,7 @@ public:
 
   bool nextTrack();
   std::vector<float> getVariables();
+  std::vector<float> getVariablesCoefficients();
   std::vector<float> getTrackParameters();
 
   float getPt() const {
@@ -81,6 +82,7 @@ private:
   int totalTracks_;
   int trackIndex_;
   std::vector<float> variables_;
+  std::vector<float> variablesCoefficients_;
   std::vector<float> parameters_;
   unsigned int maxRequiredLayers_;
   unsigned int variablesSize_;

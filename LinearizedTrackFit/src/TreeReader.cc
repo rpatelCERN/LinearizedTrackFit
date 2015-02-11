@@ -24,8 +24,12 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   // Store the classes that will return the selected variables for each stub
   for (const std::string varName : varNames) {
     if (varName == "phi") vars_.push_back(std::make_shared<GetVarPhi>(tree_, requiredLayers_["phi"]));
+    else if (varName == "phiOverR") vars_.push_back(std::make_shared<GetVarPhiOverR>(tree_, requiredLayers_["phiOverR"]));
+    else if (varName == "ChargeSignedPhi") vars_.push_back(std::make_shared<GetVarChargeSignedPhi>(tree_, requiredLayers_["ChargeSignedPhi"]));
+    else if (varName == "GenChargeSignedPhi") vars_.push_back(std::make_shared<GetVarGenChargeSignedPhi>(tree_, requiredLayers_["GenChargeSignedPhi"]));
     else if (varName == "z") vars_.push_back(std::make_shared<GetVarZ>(tree_, requiredLayers_["z"]));
     else if (varName == "R") vars_.push_back(std::make_shared<GetVarR>(tree_, requiredLayers_["R"]));
+    else if (varName == "oneOverR") vars_.push_back(std::make_shared<GetVarR>(tree_, requiredLayers_["oneOverR"]));
     else if (varName == "DeltaS") vars_.push_back(std::make_shared<GetVarDeltaS>(tree_, requiredLayers_["DeltaS"]));
     else if (varName == "ChargeCorrectedR") vars_.push_back(std::make_shared<GetVarChargeCorrectedR>(tree_, requiredLayers_["ChargeCorrectedR"]));
     else if (varName == "ChargeSignedR") vars_.push_back(std::make_shared<GetVarChargeSignedR>(tree_, requiredLayers_["ChargeSignedR"]));
@@ -172,6 +176,7 @@ bool TreeReader::goodTrack()
 // Fill the vector of selected variables
 bool TreeReader::readVariables() {
   variables_.clear();
+  variablesCoefficients_.clear();
   stubsRZPhi_.clear();
 
   std::map<int, unsigned int> layersFound;
@@ -188,6 +193,7 @@ bool TreeReader::readVariables() {
     for (const auto &var : vars_) {
       if (var->layer(m.first)) {
         variables_.push_back(var->at(k));
+        variablesCoefficients_.push_back(var->coeff());
       }
     }
 
@@ -222,6 +228,12 @@ void TreeReader::readTrackParameters()
 std::vector<float> TreeReader::getVariables()
 {
   return variables_;
+}
+
+
+std::vector<float> TreeReader::getVariablesCoefficients()
+{
+  return variablesCoefficients_;
 }
 
 

@@ -71,9 +71,9 @@ MatrixReader::MatrixReader(const std::string & inputFileName)
 }
 
 
-float MatrixReader::normChi2(const VectorXd & vars) const
+float MatrixReader::normChi2(const VectorXd & vars, const ArrayXd & varCoeff) const
 {
-  VectorXd principal = V_*(vars - meanValues_);
+  VectorXd principal = V_*(((vars - meanValues_).array()*varCoeff).matrix());
 
   float chi2 = 0.;
   int nDof = 0;
@@ -86,12 +86,12 @@ float MatrixReader::normChi2(const VectorXd & vars) const
 }
 
 
-std::vector<float> MatrixReader::trackParameters(const VectorXd & vars) const
+std::vector<float> MatrixReader::trackParameters(const VectorXd & vars, const ArrayXd & varCoeff) const
 {
   std::vector<float> pars;
 
   // Estimate track parameters
-  VectorXd estimatedPars = D_*(vars - meanValues_) + meanP_;
+  VectorXd estimatedPars = D_*(((vars - meanValues_).array()*varCoeff).matrix()) + meanP_;
 
   for (int i=0; i<nTrackParameters_; ++i) {
     pars.push_back(estimatedPars(i));
@@ -101,11 +101,11 @@ std::vector<float> MatrixReader::trackParameters(const VectorXd & vars) const
 }
 
 
-std::vector<float> MatrixReader::principalComponents(const VectorXd & vars) const
+std::vector<float> MatrixReader::principalComponents(const VectorXd & vars, const ArrayXd & varCoeff) const
 {
   std::vector<float> pcs;
 
-  VectorXd principal = V_*(vars - meanValues_);
+  VectorXd principal = V_*(((vars - meanValues_).array()*varCoeff).matrix());
 
   for (int i=0; i<nVars_; ++i) {
     pcs.push_back(principal(i));
@@ -115,11 +115,11 @@ std::vector<float> MatrixReader::principalComponents(const VectorXd & vars) cons
 }
 
 
-std::vector<float> MatrixReader::normalizedPrincipalComponents(const VectorXd & vars) const
+std::vector<float> MatrixReader::normalizedPrincipalComponents(const VectorXd & vars, const ArrayXd & varCoeff) const
 {
   std::vector<float> npcs;
 
-  VectorXd principal = V_*(vars - meanValues_);
+  VectorXd principal = V_*(((vars - meanValues_).array()*varCoeff).matrix());
 
   for (int i=0; i<nVars_; ++i) {
     npcs.push_back(principal(i)/sqrtEigenvalues_(i));

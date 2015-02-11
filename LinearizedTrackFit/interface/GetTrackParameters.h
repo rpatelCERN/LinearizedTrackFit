@@ -75,9 +75,9 @@ public:
   virtual ~GetParChargeOverPt() {}
   virtual float at(const int k) {
     // For muons, electrons and taus the charge is the opposite of the sign of the pdgId
-    int charge = par_pdg->at(k) > 0 ? -1 : 1;
+    int charge = (par_pdg->at(k) > 0 ? -1 : 1);
     float pt = std::sqrt(std::pow(par_px->at(k), 2) + std::pow(par_py->at(k), 2));
-    return pt > 0 ? charge/pt : 0.;
+    return (pt > 0 ? charge/pt : 0.);
   }
 private:
   std::vector<float> * par_px;

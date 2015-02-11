@@ -3,35 +3,69 @@
 using namespace Eigen;
 
 
-MatrixBuilder::MatrixBuilder(const std::string & name, const unsigned int nVars, const unsigned int nTrackParameters) :
+MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, float> > & varsMeans, const unsigned int nTrackParameters) :
     name_(name),
-    nVars_(nVars),
+    nVars_(varsMeans.size()),
+    varsMeans_(varsMeans),
     nTrackParameters_(nTrackParameters),
-    cov_(MatrixXd::Zero(nVars, nVars)),
-    meanValues_(VectorXd::Zero(nVars)),
-    corrPV_(MatrixXd::Zero(nTrackParameters, nVars)),
+    cov_(MatrixXd::Zero(nVars_, nVars_)),
+    meanValues_(VectorXd::Zero(nVars_)),
+    corrPV_(MatrixXd::Zero(nTrackParameters, nVars_)),
     meanP_(VectorXd::Zero(nTrackParameters)),
     count_(0)
 {
 }
 
 
-void MatrixBuilder::updateMeanAndCov(const std::vector<float> & vars)
+//void MatrixBuilder::updateMeanAndCov(const std::vector<float> & vars)
+//{
+//  for (unsigned int iVar=0; iVar<nVars_; ++iVar) {
+//    // update mean
+//    meanValues_(iVar) += (vars[iVar] - meanValues_(iVar))/count_;
+//
+//    // update covariance matrix
+//    if(count_ == 1) continue; // skip first track
+//    for (unsigned int jVar=0; jVar<nVars_; ++jVar) {
+//      cov_(iVar, jVar) += (vars[iVar] - meanValues_(iVar))*(vars[jVar] - meanValues_(jVar))/(count_-1) - cov_(iVar, jVar)/count_;
+//    }
+//  }
+//}
+
+
+void MatrixBuilder::updateMeanAndCov(const std::vector<float> & vars, const std::vector<float> & varCoeff)
 {
   for (unsigned int iVar=0; iVar<nVars_; ++iVar) {
     // update mean
-    meanValues_(iVar) += (vars[iVar] - meanValues_(iVar))/count_;
+    if (!varsMeans_.at(iVar).first) meanValues_(iVar) += (vars[iVar] - meanValues_(iVar))/count_;
 
     // update covariance matrix
     if(count_ == 1) continue; // skip first track
     for (unsigned int jVar=0; jVar<nVars_; ++jVar) {
-      cov_(iVar, jVar) += (vars[iVar] - meanValues_(iVar))*(vars[jVar] - meanValues_(jVar))/(count_-1) - cov_(iVar, jVar)/count_;
+      cov_(iVar, jVar) += varCoeff[iVar]*(vars[iVar] - meanValues_(iVar))*varCoeff[jVar]*(vars[jVar] - meanValues_(jVar))/(count_-1) - cov_(iVar, jVar)/count_;
     }
   }
 }
 
 
-void MatrixBuilder::updateMeanAndCovParams(const std::vector<float> & vars, const std::vector<float> & pars)
+//void MatrixBuilder::updateMeanAndCovParams(const std::vector<float> & vars, const std::vector<float> & pars)
+//{
+//  // The mean of the values should have already been updated outside this function.
+//
+//  // update covariance matrix
+//  for(unsigned int iPar = 0; iPar != nTrackParameters_; ++iPar) {
+//    // updated mean parameters
+//    meanP_(iPar) += (pars[iPar] - meanP_(iPar))/count_;
+//
+//    // update correlation matrix
+//    if(count_ == 1) continue; // skip first track
+//    for(unsigned int jVar = 0; jVar != nVars_; ++jVar) {
+//      corrPV_(iPar, jVar) += (pars[iPar] - meanP_(iPar))*(vars[jVar] - meanValues_(jVar))/(count_-1) - corrPV_(iPar, jVar)/count_;
+//    }
+//  }
+//}
+
+
+void MatrixBuilder::updateMeanAndCovParams(const std::vector<float> & vars, const std::vector<float> & varCoeff, const std::vector<float> & pars)
 {
   // The mean of the values should have already been updated outside this function.
 
@@ -43,19 +77,21 @@ void MatrixBuilder::updateMeanAndCovParams(const std::vector<float> & vars, cons
     // update correlation matrix
     if(count_ == 1) continue; // skip first track
     for(unsigned int jVar = 0; jVar != nVars_; ++jVar) {
-      corrPV_(iPar, jVar) += (pars[iPar] - meanP_(iPar))*(vars[jVar] - meanValues_(jVar))/(count_-1) - corrPV_(iPar, jVar)/count_;
+      corrPV_(iPar, jVar) += (pars[iPar] - meanP_(iPar))*varCoeff[jVar]*(vars[jVar] - meanValues_(jVar))/(count_-1) - corrPV_(iPar, jVar)/count_;
     }
   }
 }
 
 
-void MatrixBuilder::update(const std::vector<float> & vars, const std::vector<float> & pars)
+void MatrixBuilder::update(const std::vector<float> & vars, const std::vector<float> & varCoeff, const std::vector<float> & pars)
 {
   ++count_;
   // The order of the following calls is important. The updateMeanAndCovParams method does not update the mean of
   // the variables and it assumes this is done outside.
-  updateMeanAndCov(vars);
-  updateMeanAndCovParams(vars, pars);
+//  updateMeanAndCov(vars);
+//  updateMeanAndCovParams(vars, pars);
+  updateMeanAndCov(vars, varCoeff);
+  updateMeanAndCovParams(vars, varCoeff, pars);
 }
 
 

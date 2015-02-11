@@ -29,14 +29,17 @@ namespace LinearFit
 
     while (treeReader.nextTrack()) {
       std::vector<float> vars(treeReader.getVariables());
+      // The coefficients are the result of a separate fit. For simplicity they are done in the treeReader.
+      // For instance we might estimate the charge using the phi coordinates only.
+      std::vector<float> varsCoeff(treeReader.getVariablesCoefficients());
       std::vector<float> pars(treeReader.getTrackParameters());
 
       bool goodFit = false;
       if (singleModules) {
-        goodFit = linearFitter.fit(vars, treeReader.getStubRZPhi(), treeReader.getCharge());
+        goodFit = linearFitter.fit(vars, varsCoeff, treeReader.getStubRZPhi(), treeReader.getCharge());
       }
       else {
-        goodFit = linearFitter.fit(vars, treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getCharge());
+        goodFit = linearFitter.fit(vars, varsCoeff, treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getCharge());
       }
       if (goodFit) {
         float normChi2 = linearFitter.normChi2();
@@ -45,10 +48,10 @@ namespace LinearFit
         if (histograms.count(geomIndex) == 0) {
           histograms.insert({{geomIndex, LinearFitterHistograms(std::to_string(geomIndex), treeReader.variablesNames(), inputTrackParameterNames)}});
         }
-        histograms.find(geomIndex)->second.fill(vars, linearFitter.principalComponents(vars),
-            linearFitter.normalizedPrincipalComponents(vars), pars, estimatedPars, normChi2);
-        summaryHistograms.fill(vars, linearFitter.principalComponents(vars),
-            linearFitter.normalizedPrincipalComponents(vars), pars, estimatedPars, normChi2);
+        histograms.find(geomIndex)->second.fill(vars, linearFitter.principalComponents(vars, varsCoeff),
+            linearFitter.normalizedPrincipalComponents(vars, varsCoeff), pars, estimatedPars, normChi2);
+        summaryHistograms.fill(vars, linearFitter.principalComponents(vars, varsCoeff),
+            linearFitter.normalizedPrincipalComponents(vars, varsCoeff), pars, estimatedPars, normChi2);
         if (inputTrackParameterNames.size() == 1 && inputTrackParameterNames[0] == "charge") {
           // std::cout << "treeReader.getPt() = " << treeReader.getPt() << ", estimatedPars[0] = " << estimatedPars[0] << std::endl;
           hEstimatedChargeVsPt->Fill(treeReader.getPt(), estimatedPars[0]);
