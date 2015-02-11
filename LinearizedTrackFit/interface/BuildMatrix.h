@@ -35,7 +35,7 @@ namespace LinearFit {
         std::cout << "Error: requiredLayers not specified for variable " << varName << std::endl;
         throw;
       }
-      for (int i=0; i < it->second.size(); ++i) {
+      for (unsigned int i=0; i < it->second.size(); ++i) {
         auto jt = inputVariablesMeans.find(varName);
         if (jt == inputVariablesMeans.end()) {
           std::cout << "Error: inputVariablesMeans not specified for variable " << varName << std::endl;
