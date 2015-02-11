@@ -160,17 +160,22 @@ void TestLinearizedTrackFitMatrix::beginJob()
   TH2F * hChi2PosVsChi2Neg_NegTk = new TH2F("Chi2PosVsChi2Neg_NegTk", "Chi2PosVsChi2Neg_NegTk", 1000, 0, 100, 1000, 0, 100);
 
   while (treeReader.nextTrack()) {
+    // Variables
     std::vector<float> vars(treeReader.getVariables());
     VectorXd varsVec(vars.size());
     for (unsigned int i=0; i<vars.size(); ++i) { varsVec(i) = vars[i]; }
+    // Coefficients
+    std::vector<float> varsCoeff(treeReader.getVariablesCoefficients());
+    ArrayXd varsCoeffArray(varsCoeff.size());
+    for (unsigned int i=0; i<varsCoeff.size(); ++i) { varsCoeffArray(i) = varsCoeff[i]; }
 
     // Estimate with negative charge matrix
-    float normChi2Neg = linearFitNegativeCharge.normChi2(varsVec);
-    // std::vector<float> trackParametersNeg(linearFitNegativeCharge.trackParameters(varsVec));
+    float normChi2Neg = linearFitNegativeCharge.normChi2(varsVec, varsCoeffArray);
+    // std::vector<float> trackParametersNeg(linearFitNegativeCharge.trackParameters(varsVec, varsCoeffArray));
 
     // Estimate with positive charge matrix
-    float normChi2Pos = linearFitPositiveCharge.normChi2(varsVec);
-    // std::vector<float> trackParametersPos(linearFitPositiveCharge.trackParameters(varsVec));
+    float normChi2Pos = linearFitPositiveCharge.normChi2(varsVec, varsCoeffArray);
+    // std::vector<float> trackParametersPos(linearFitPositiveCharge.trackParameters(varsVec, varsCoeffArray));
 
     if (treeReader.getOneOverPt() < oneOverPtMin_ || treeReader.getOneOverPt() > oneOverPtMax_) continue;
     if (treeReader.getPhi() < phiMin_ || treeReader.getPhi() > phiMax_) continue;
