@@ -44,9 +44,18 @@ process.demo = cms.EDAnalyzer('BuildLinearizedTrackFitMatrix',
 
                               # Select layers to use for each stub coordinate
                               LayersPhi = cms.vint32(5, 6, 7, 8, 9, 10),
+                              LayersPhiOverR = cms.vint32(5, 6, 7, 8, 9, 10),
+                              LayersChargeSignedPhi = cms.vint32(5, 6, 7, 8, 9, 10),
+                              LayersGenChargeSignedPhi = cms.vint32(5, 6, 7, 8, 9, 10),
                               LayersR = cms.vint32(5, 6, 7, 8, 9, 10),
+                              LayersOneOverR = cms.vint32(5, 6, 7, 8, 9, 10),
+                              LayersChargeCorrectedR = cms.vint32(5, 6, 7, 8, 9, 10),
+                              LayersChargeSignedR = cms.vint32(5, 6, 7, 8, 9, 10),
                               LayersZ = cms.vint32(5, 6, 7, 8, 9, 10),
                               LayersDeltaS = cms.vint32(5, 6, 7, 8, 9, 10),
+
+                              # Fix all phi means to 0 if True
+                              FixMeansPhi = cms.bool(False),
 
                               # To remove outlier stubs. Each number is, for each layer, the maximum allowed distance in cm in
                               # the transverse plane between the stub and the extrapolated generator-level track associated to it.
