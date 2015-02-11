@@ -229,9 +229,12 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     inputVariablesMeans_.insert(std::make_pair("ChargeCorrectedR", meansChargeCorrectedR_));
     inputVariablesMeans_.insert(std::make_pair("ChargeSignedR", meansChargeSignedR_));
 
+//    LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
+//    			   requiredLayers_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputTrackParameterNames_,
+//			   singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic);
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
-    			   requiredLayers_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputTrackParameterNames_,
-			   singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic);
+        requiredLayers_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputVariablesMeans_,
+        inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic);
   }
 
   if (testMatrix_) {
