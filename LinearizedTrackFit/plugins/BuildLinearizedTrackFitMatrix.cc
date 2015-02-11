@@ -63,8 +63,8 @@ private:
   double eventsFractionEndTest_;
   std::vector<int> layersPhi_;
   std::vector<int> layersPhiOverR_;
-  std::vector<int> layersChargeSignedPhiOverR_;
-  std::vector<int> layersGenChargeSignedPhiOverR_;
+  std::vector<int> layersChargeSignedPhi_;
+  std::vector<int> layersGenChargeSignedPhi_;
   std::vector<int> layersR_;
   std::vector<int> layersOneOverR_;
   std::vector<int> layersChargeCorrectedR_;
@@ -119,8 +119,8 @@ BuildLinearizedTrackFitMatrix::BuildLinearizedTrackFitMatrix(const edm::Paramete
   eventsFractionEndTest_(iConfig.getParameter<double>("EventsFractionEndTest")),
   layersPhi_(iConfig.getParameter<std::vector<int> >("LayersPhi")),
   layersPhiOverR_(iConfig.getParameter<std::vector<int> >("LayersPhiOverR")),
-  layersChargeSignedPhiOverR_(iConfig.getParameter<std::vector<int> >("LayersChargeSignedPhiOverR")),
-  layersGenChargeSignedPhiOverR_(iConfig.getParameter<std::vector<int> >("LayersGenChargeSignedPhiOverR")),
+  layersChargeSignedPhi_(iConfig.getParameter<std::vector<int> >("LayersChargeSignedPhiOverR")),
+  layersGenChargeSignedPhi_(iConfig.getParameter<std::vector<int> >("LayersGenChargeSignedPhiOverR")),
   layersR_(iConfig.getParameter<std::vector<int> >("LayersR")),
   layersOneOverR_(iConfig.getParameter<std::vector<int> >("LayersOneOverR")),
   layersChargeCorrectedR_(iConfig.getParameter<std::vector<int> >("LayersChargeCorrectedR")),
