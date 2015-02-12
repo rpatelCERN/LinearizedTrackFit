@@ -130,7 +130,7 @@ public:
   virtual ~GetVarOneOverR() {}
   virtual float at(const int k) {
     float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    return (R > 0 ? R : 0.);
+    return (R > 0 ? 1./R : 0.);
   }
 private:
   std::vector<float> * var_x;
