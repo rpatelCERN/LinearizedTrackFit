@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <set>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GeometricIndex.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
@@ -18,33 +19,48 @@
 namespace LinearFit {
 
   void buildMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers,
+      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars,
       const std::vector<double> & distanceCutsTransverse, const std::vector<double> & distanceCutsLongitudinal,
       const std::vector<std::string> & inputVarNames, const std::unordered_map<std::string, std::vector<std::pair<bool, float> > > & inputVariablesMeans,
       const std::vector<std::string> & inputTrackParameterNames, bool singleModules,
       bool doMapSectors, bool computeDistances, bool computeCorrelations, const GeometricIndex::GeometricIndexConfiguration & gic)
   {
-    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers,
+    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayersForVars,
         distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
 
-    // Build the list of variables means
-    std::vector<std::pair<bool, float> > variablesMeans;
+    // Consistency checks
     for (const auto & varName : inputVarNames) {
-      auto it = requiredLayers.find(varName);
-      if (it == requiredLayers.end()) {
+      auto it = requiredLayersForVars.find(varName);
+      if (it == requiredLayersForVars.end()) {
         std::cout << "Error: requiredLayers not specified for variable " << varName << std::endl;
         throw;
       }
-      for (unsigned int i=0; i < it->second.size(); ++i) {
-        auto jt = inputVariablesMeans.find(varName);
-        if (jt == inputVariablesMeans.end()) {
-          std::cout << "Error: inputVariablesMeans not specified for variable " << varName << std::endl;
-          throw;
-        }
-        variablesMeans.push_back(jt->second.at(i));
+      auto jt = inputVariablesMeans.find(varName);
+      if (jt == inputVariablesMeans.end()) {
+        std::cout << "Error: inputVariablesMeans not specified for variable " << varName << std::endl;
+        throw;
       }
     }
-    // Consistency check
+
+    // Layers to iterate on
+    std::set<int> allRequiredLayers;
+    for (const auto & requiredLayers : requiredLayersForVars) {
+      for (const auto & layer : requiredLayers.second) {
+        allRequiredLayers.insert(layer);
+      }
+    }
+    std::vector<std::pair<bool, float> > variablesMeans;
+    int i=0;
+    for (const auto & layer : allRequiredLayers) {
+      for (const auto &varName : inputVarNames) {
+        if (requiredLayersForVars.find(varName)->second.count(layer) != 0) {
+          variablesMeans.push_back(inputVariablesMeans.find(varName)->second.at(i));
+        }
+      }
+      ++i;
+    }
+
+    // More consistency checks
     if (treeReader.variablesSize() != variablesMeans.size()) {
       std::cout << "Error: inconsistent number of variables (" << treeReader.variablesSize() << ") and variablesMeans (" << variablesMeans.size() << ")." << std::endl;
       throw;

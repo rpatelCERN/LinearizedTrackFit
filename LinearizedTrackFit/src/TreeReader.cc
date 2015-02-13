@@ -44,7 +44,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   }
 
   // Build the full list of names
-  std::unordered_set<int> allRequiredLayers;
+  std::set<int> allRequiredLayers;
   for (const auto & requiredLayers : requiredLayers_) {
     for (const auto & layer : requiredLayers.second) {
       allRequiredLayers.insert(layer);
