@@ -31,13 +31,17 @@ process.demo = cms.EDAnalyzer('BuildLinearizedTrackFitMatrix',
                               # InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Official/Muons_Pt_2_more_Eta_m04p06_Phi_m05p1_3_z0_m15p15/JobFiles/extracted_doubleDigits.root"),
 
                               # Full trigger tower 10 < pt < 30 GeV/c
-                              InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Official/Muons_Pt_10_30_Eta_m04p06_Phi_m05p1_3_z0_m15p15/extracted.root"),
+                              # InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Official/Muons_Pt_10_30_Eta_m04p06_Phi_m05p1_3_z0_m15p15/JobFiles/extracted.root"),
 
                               # Smaller range to cover only a set of single modules
                               # InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Muons_Pt_2_10_Eta_0_04_phi_m025_025_z0_m15p15/extracted.root"),
 
                               # OfficialStub
                               # InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Official/Muons_Pt_2_10_Eta_0_04_phi_m025_025_z0_m1p1/extracted.root"),
+
+                              # Templated input file
+                              InputFileName = cms.string("/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Official/Muons_Pt_2_more_Eta_m04p06_Phi_m05p1_3_z0_m15p15/JobFiles/extracted_doubleDigits.root"),
+
 
                               # Specify to select a single sector (made of single modules)
                               SingleModules = cms.bool(False),
@@ -69,8 +73,8 @@ process.demo = cms.EDAnalyzer('BuildLinearizedTrackFitMatrix',
                               # LayersZ = cms.vint32(5, 6, 7),
 
                               # Geometric cuts
-                              OneOverPtMin = cms.double(1./30.),
-                              OneOverPtMax = cms.double(1./10.),
+                              OneOverPtMin = cms.double(0.2),
+                              OneOverPtMax = cms.double(0.5),
                               OneOverPtRegions = cms.int32(1),
                               PhiMin = cms.double(0.),
                               PhiMax = cms.double(0.8),
