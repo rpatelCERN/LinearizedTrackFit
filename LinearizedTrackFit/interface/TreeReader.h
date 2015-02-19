@@ -23,8 +23,8 @@ public:
       const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<float, float> > & radiusCuts,
       const std::vector<double> & distanceCutsTransverse,  const std::vector<double> & distanceCutsLongitudinal,
       const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames);
-  void reset(const double & eventsFractionStart, const double & eventsFractionEnd);
 
+  void reset(const double & eventsFractionStart, const double & eventsFractionEnd);
   bool nextTrack();
   std::vector<float> getVariables();
   std::vector<float> getVariablesCoefficients();
