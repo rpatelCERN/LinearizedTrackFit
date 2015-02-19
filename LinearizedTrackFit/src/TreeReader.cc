@@ -1,23 +1,20 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
 
 TreeReader::TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-    const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers,
+    const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<float, float> > & radiusCuts,
     const std::vector<double> & distanceCutsTransverse, const std::vector<double> & distanceCutsLongitudinal,
     const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames) :
   tree_(std::make_shared<L1TrackTriggerTree>(inputFileName)),
-  eventsFractionStart_(eventsFractionStart),
-  eventsFractionEnd_(eventsFractionEnd),
   requiredLayers_(requiredLayers),
+  radiusCuts_(radiusCuts),
   parametersSize_(trackParNames.size()),
-  firstTrack_(tree_->n_entries*eventsFractionStart),
-  lastTrack_(tree_->n_entries*eventsFractionEnd),
-  totalTracks_(lastTrack_-firstTrack_),
-  trackIndex_(0),
   maxRequiredLayers_(0),
   variablesSize_(0),
   distanceCutsTransverse_(distanceCutsTransverse),
   distanceCutsLongitudinal_(distanceCutsLongitudinal)
 {
+  reset(eventsFractionStart, eventsFractionEnd);
+
   std::cout << "Requested running from track number " << firstTrack_ << " to track number " << lastTrack_ <<
       " for a total of " << lastTrack_ - firstTrack_ << " tracks." << std::endl;
 
@@ -25,12 +22,17 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   for (const std::string varName : varNames) {
     if (varName == "phi") vars_.push_back(std::make_shared<GetVarPhi>(tree_, requiredLayers_["phi"]));
     else if (varName == "phiOverR") vars_.push_back(std::make_shared<GetVarPhiOverR>(tree_, requiredLayers_["phiOverR"]));
+    else if (varName == "phiR") vars_.push_back(std::make_shared<GetVarPhiR>(tree_, requiredLayers_["phiR"]));
     else if (varName == "ChargeSignedPhi") vars_.push_back(std::make_shared<GetVarChargeSignedPhi>(tree_, requiredLayers_["ChargeSignedPhi"]));
     else if (varName == "GenChargeSignedPhi") vars_.push_back(std::make_shared<GetVarGenChargeSignedPhi>(tree_, requiredLayers_["GenChargeSignedPhi"]));
     else if (varName == "z") vars_.push_back(std::make_shared<GetVarZ>(tree_, requiredLayers_["z"]));
     else if (varName == "R") vars_.push_back(std::make_shared<GetVarR>(tree_, requiredLayers_["R"]));
     else if (varName == "oneOverR") vars_.push_back(std::make_shared<GetVarR>(tree_, requiredLayers_["oneOverR"]));
     else if (varName == "DeltaS") vars_.push_back(std::make_shared<GetVarDeltaS>(tree_, requiredLayers_["DeltaS"]));
+    else if (varName == "DeltaSDeltaR") vars_.push_back(std::make_shared<GetVarDeltaSDeltaR>(tree_, requiredLayers_["DeltaSDeltaR"]));
+    else if (varName == "DeltaSAllDeltaR") vars_.push_back(std::make_shared<GetVarDeltaSAllDeltaR>(tree_, requiredLayers_["DeltaSAllDeltaR"]));
+    else if (varName == "DeltaROverGenPt") vars_.push_back(std::make_shared<GetVarDeltaROverGenPt>(tree_, requiredLayers_["DeltaROverGenPt"]));
+    else if (varName == "DeltaROverGenPtCube") vars_.push_back(std::make_shared<GetVarDeltaROverGenPtCube>(tree_, requiredLayers_["DeltaROverGenPtCube"]));
     else if (varName == "ChargeCorrectedR") vars_.push_back(std::make_shared<GetVarChargeCorrectedR>(tree_, requiredLayers_["ChargeCorrectedR"]));
     else if (varName == "ChargeSignedR") vars_.push_back(std::make_shared<GetVarChargeSignedR>(tree_, requiredLayers_["ChargeSignedR"]));
     else {
@@ -73,6 +75,17 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     }
   }
   assert(pars_.size() == trackParNames.size());
+}
+
+
+void TreeReader::reset(const double & eventsFractionStart, const double & eventsFractionEnd)
+{
+  eventsFractionStart_ = eventsFractionStart;
+  eventsFractionEnd_ = eventsFractionEnd;
+  firstTrack_ = tree_->n_entries*eventsFractionStart;
+  lastTrack_ = tree_->n_entries*eventsFractionEnd;
+  totalTracks_ = lastTrack_-firstTrack_;
+  trackIndex_ = 0;
 }
 
 
@@ -185,15 +198,29 @@ bool TreeReader::readVariables() {
   for (unsigned int k = 0; k < totalStubs; ++k) {
     int layer = tree_->m_stub_layer->at(k);
     if (layersFound.count(layer) != 0) continue;
+    // Cut on the radius of the stub
+    const auto radiusCut = radiusCuts_.find(layer);
+    if (radiusCut != radiusCuts_.end()) {
+      float R = getR(k);
+      if ((R < radiusCut->second.first) || (R > radiusCut->second.second)) continue;
+    }
     layersFound.insert(std::make_pair(layer, k));
   }
 
+  for (const auto & var : vars_) {
+    if (layersFound.size() < var->layersNum()) return false;
+  }
+  // Ladder 76 is outside the range for the outermost layer.
+  lastLadder_ = 76.;
   for (const auto & m : layersFound) {
     unsigned int k = m.second;
     for (const auto &var : vars_) {
       if (var->layer(m.first)) {
-        variables_.push_back(var->at(k));
+        variables_.push_back(var->at(k, layersFound));
         variablesCoefficients_.push_back(var->coeff());
+        if (m.first == 10) {
+          lastLadder_ = tree_->m_stub_ladder->at(k);
+        }
       }
     }
 

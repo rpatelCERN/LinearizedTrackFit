@@ -20,9 +20,10 @@ class TreeReader
 {
 public:
   TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers,
+      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<float, float> > & radiusCuts,
       const std::vector<double> & distanceCutsTransverse,  const std::vector<double> & distanceCutsLongitudinal,
       const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames);
+  void reset(const double & eventsFractionStart, const double & eventsFractionEnd);
 
   bool nextTrack();
   std::vector<float> getVariables();
@@ -42,8 +43,10 @@ public:
   float getX0() const { return tree_->m_stub_X0->at(0); }
   float getY0() const { return tree_->m_stub_Y0->at(0); }
   float getZ0() const { return tree_->m_stub_Z0->at(0); }
+  float getR(const int k) const { return std::sqrt(std::pow(tree_->m_stub_x->at(k), 2) + std::pow(tree_->m_stub_y->at(k), 2)); }
   int getCharge() const { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
   std::vector<StubRZPhi> getStubRZPhi() const { return stubsRZPhi_; }
+  int getLastLadder() { return lastLadder_; }
   unsigned int variablesSize() const { return variablesSize_; }
   unsigned int maxRequiredLayers() const { return maxRequiredLayers_; }
   std::vector<std::string> const variablesNames() const { return variablesNames_; }
@@ -75,6 +78,7 @@ private:
   double eventsFractionStart_;
   double eventsFractionEnd_;
   std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
+  std::unordered_map<int, std::pair<float, float> > radiusCuts_;
   unsigned int parametersSize_;
   std::vector<std::shared_ptr<GetTreeVariable> > vars_;
   std::vector<std::shared_ptr<GetTreeTrackParameter> > pars_;
@@ -93,6 +97,7 @@ private:
   std::vector<double> distanceCutsLongitudinal_;
 
   std::vector<StubRZPhi> stubsRZPhi_;
+  int lastLadder_;
 };
 
 #endif // TREEREADER_H

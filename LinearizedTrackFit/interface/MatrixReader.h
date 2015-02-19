@@ -28,6 +28,7 @@ private:
   VectorXd meanValues_;
   MatrixXd D_;
   VectorXd meanP_;
+  MatrixXd corrPV_;
 };
 
 #endif // MATRIXREADER_H

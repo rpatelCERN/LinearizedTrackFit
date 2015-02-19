@@ -20,13 +20,14 @@ namespace LinearFit {
 
   void buildMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
       const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars,
-      const std::vector<double> & distanceCutsTransverse, const std::vector<double> & distanceCutsLongitudinal,
-      const std::vector<std::string> & inputVarNames, const std::unordered_map<std::string, std::vector<std::pair<bool, float> > > & inputVariablesMeans,
+      std::unordered_map<int, std::pair<float, float> > & radiusCuts,  const std::vector<double> & distanceCutsTransverse,
+      const std::vector<double> & distanceCutsLongitudinal, const std::vector<std::string> & inputVarNames,
+      const std::unordered_map<std::string, std::vector<std::pair<bool, float> > > & inputVariablesMeans,
       const std::vector<std::string> & inputTrackParameterNames, bool singleModules,
       bool doMapSectors, bool computeDistances, bool computeCorrelations, const GeometricIndex::GeometricIndexConfiguration & gic)
   {
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayersForVars,
-        distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
+        radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
 
     // Consistency checks
     for (const auto & varName : inputVarNames) {
@@ -109,18 +110,57 @@ namespace LinearFit {
         // histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), treeReader.maxRequiredLayers())}});
         histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), 6)}});
       }
-      matrices.find(geomIndex)->second.update(vars, varsCoeff, pars);
+//      matrices.find(geomIndex)->second.update(vars, varsCoeff, pars);
+      // matrices.find(geomIndex)->second.update(vars, varsCoeff, pars, treeReader.getLastLadder());
+      matrices.find(geomIndex)->second.update(vars, varsCoeff, treeReader.getLastLadder());
       histograms.find(geomIndex)->second.fill(vars, pars);
       histograms2D.find(geomIndex)->second.fill(treeReader.getStubRZPhi());
       if (computeCorrelations) correlationHistograms.fill(vars, pars, treeReader.getCharge());
     }
+
+    std::cout << "Evaluating eigenvalues:" << std::endl;
+    for (auto &m : matrices) {
+      std::cout << "geomIndex = " << m.first << std::endl;
+      m.second.computeEigenvalueMatrix();
+    }
+
+
+    // Second loop on the tracks to compute the track parameter covariances to the principal components
+    // ------------------------------------------------------------------------------------------------
+    treeReader.reset(eventsFractionStart, eventsFractionEnd);
+//    TreeReader treeReaderSecond(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayersForVars,
+//        radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
+    while (treeReader.nextTrack()) {
+
+      int geomIndex = -1;
+      if (singleModules) {
+        // Use this for the single module
+        geomIndex = geometricIndex(treeReader.getStubRZPhi(), treeReader.getCharge());
+        if (geomIndex == -1) continue;
+      }
+      else {
+        // Use the geometrical index to access the matrix builder corresponding to that geometrical region.
+        geomIndex = geometricIndex(treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getCharge());
+        // A geometrical index of -1 means we are outside the min-max boundaries
+        if (geomIndex == -1) continue;
+      }
+
+      std::vector<float> vars(treeReader.getVariables());
+      std::vector<float> varsCoeff(treeReader.getVariablesCoefficients());
+      std::vector<float> pars(treeReader.getTrackParameters());
+
+      // Update mean and covariance for this linearization region
+      matrices.find(geomIndex)->second.update(vars, varsCoeff, pars, treeReader.getLastLadder());
+    }
+    // -----------------------
+
 
     // Write the geometric index settings to a file
     geometricIndex.write();
 
     // Write the matrices to file
     std::cout << "Matrices built:" << std::endl;
-    for (const auto &m : matrices) {
+    for (auto &m : matrices) {
       std::cout << "geomIndex = " << m.first << std::endl;
       m.second.writeMatrices();
     }

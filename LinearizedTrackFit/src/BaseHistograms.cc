@@ -62,27 +62,33 @@ void BaseHistograms::initializeParsHistograms(const std::string name, const std:
 {
   for (const auto &varName : varNames) {
     TString hName = name + "_" + varName;
-    if (varName == "z0") {
-      if (name.find("ParError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -2., 2.));
-      else if (name.find("ParRelError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -1., 1.));
-      else histograms_.push_back(new TH1F(hName, hName, bins, -20., 20.));
-    }
-    else if (varName == "cotTheta") {
-      if (name.find("ParError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -0.02, 0.02));
-      else if (name.find("ParRelError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -0.5, 0.5));
-      else histograms_.push_back(new TH1F(hName, hName, bins, -1., 1.));
-    }
-    else if (varName == "phi") {
-      if (name.find("ParError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -0.002, 0.002));
-      else if (name.find("ParRelError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -0.05, 0.05));
-      else histograms_.push_back(new TH1F(hName, hName, bins, -3.15, 3.15));
-    }
-    else if (varName == "charge") {
-      if (name.find("ParError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -1., 1.));
-      else if (name.find("ParRelError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -1., 1.));
-      else histograms_.push_back(new TH1F(hName, hName, bins, -3., 3.));
-    }
-    else histograms_.push_back(new TH1F(hName, hName, bins, min, max));
+//    if (varName == "z0") {
+//      if (name.find("ParError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -2., 2.));
+//      else if (name.find("ParRelError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -1., 1.));
+//      else histograms_.push_back(new TH1F(hName, hName, bins, -20., 20.));
+//    }
+//    else if (varName == "cotTheta") {
+//      if (name.find("ParError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -0.02, 0.02));
+//      else if (name.find("ParRelError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -0.5, 0.5));
+//      else histograms_.push_back(new TH1F(hName, hName, bins, -1., 1.));
+//    }
+//    else if (varName == "phi") {
+//      if (name.find("ParError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -0.002, 0.002));
+//      else if (name.find("ParRelError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -0.05, 0.05));
+//      else histograms_.push_back(new TH1F(hName, hName, bins, -3.15, 3.15));
+//    }
+//    else if (varName == "charge") {
+//      if (name.find("ParError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -1., 1.));
+//      else if (name.find("ParRelError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -1., 1.));
+//      else histograms_.push_back(new TH1F(hName, hName, bins, -3., 3.));
+//    }
+//    else if (varName == "charge/pt") {
+//      if (name.find("ParError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -0.01, 0.01));
+//      else if (name.find("ParRelError") != std::string::npos) histograms_.push_back(new TH1F(hName, hName, bins, -1., 1.));
+//      else histograms_.push_back(new TH1F(hName, hName, 10*bins, -0.5, 0.5));
+//    }
+//    else histograms_.push_back(new TH1F(hName, hName, bins, min, max));
+    histograms_.push_back(new TH1F(hName, hName, bins, min, min));
   }
 }
 

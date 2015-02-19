@@ -15,12 +15,13 @@ namespace LinearFit
 {
   void testMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
       const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
-      std::vector<double> & distanceCutsTransverse, std::vector<double> & distanceCutsLongitudinal, bool singleModules)
+      std::vector<double> & distanceCutsTransverse, std::vector<double> & distanceCutsLongitudinal,
+      std::unordered_map<int, std::pair<float, float> > & radiusCuts, bool singleModules, bool phiSymmetricFit)
   {
     LinearFitter linearFitter("");
 
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd,
-        linearFitter.requiredLayers(), distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
+        linearFitter.requiredLayers(), radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
 
     // Control histograms
     std::unordered_map<int, LinearFitterHistograms> histograms;
@@ -35,11 +36,16 @@ namespace LinearFit
       std::vector<float> pars(treeReader.getTrackParameters());
 
       bool goodFit = false;
+      int lastLadder = 77;
+      if (phiSymmetricFit) lastLadder = treeReader.getLastLadder()+1;
       if (singleModules) {
-        goodFit = linearFitter.fit(vars, varsCoeff, treeReader.getStubRZPhi(), treeReader.getCharge());
+        goodFit = linearFitter.fit(vars, varsCoeff, treeReader.getStubRZPhi(), treeReader.getCharge(), lastLadder);
       }
       else {
-        goodFit = linearFitter.fit(vars, varsCoeff, treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getCharge());
+//        std::cout << "generated pt = " << treeReader.getPt() << std::endl;
+//        std::cout << "generated c/pt = " << treeReader.getCharge()*treeReader.getOneOverPt() << std::endl;
+//        std::cout << "generated phi_0 = " << treeReader.getPhi() << std::endl;
+        goodFit = linearFitter.fit(vars, varsCoeff, treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getCharge(), lastLadder);
       }
       if (goodFit) {
         float normChi2 = linearFitter.normChi2();

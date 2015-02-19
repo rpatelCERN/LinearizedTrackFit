@@ -16,17 +16,17 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     else if (trackParameterNames[i] == "d0") d0Index_ = i;
   }
 
-  float ptMin = -200.;
-  float ptMax = 200.;
+  float ptMin = -30.;
+  float ptMax = 30.;
   float etaMin = -1.;
   float etaMax = 1.;
 
   if (ptIndex_ != -1) {
-    hDeltaCurvatureOverCurvatureVsCurvature_ = new TH2F("deltaCurvatureOverCurvatureVsCurvature", "deltaCurvatureOverCurvatureVsCurvature", 240, -0.6, 0.6, 100, -0.1, 0.1);
-    hDeltaCurvatureOverCurvatureVsPt_ = new TH2F("deltaCurvatureOverCurvatureVsPt", "deltaCurvatureOverCurvatureVsPt", 240, ptMin, ptMax, 100, -0.1, 0.1);
-    hDeltaPtOverPtVsPt_ = new TH2F("deltaPtOverPtVsPt", "deltaPtOverPtVsPt", 400, ptMin, ptMax, 100, -0.1, 0.1);
+    hDeltaCurvatureOverCurvatureVsCurvature_ = new TH2F("deltaCurvatureOverCurvatureVsCurvature", "deltaCurvatureOverCurvatureVsCurvature", 240, -0.6, 0.6, 200, -1, 1);
+    hDeltaCurvatureOverCurvatureVsPt_ = new TH2F("deltaCurvatureOverCurvatureVsPt", "deltaCurvatureOverCurvatureVsPt", 240, ptMin, ptMax, 200, -1, 1);
+    hDeltaPtOverPtVsPt_ = new TH2F("deltaPtOverPtVsPt", "deltaPtOverPtVsPt", 400, ptMin, ptMax, 200, -1, 1);
     if (z0Index_ != -1) hDeltaZ0VsPt_ = new TH2F("deltaZ0VsPt", "deltaZ0VsPt", 400, ptMin, ptMax, 100, -0.2, 0.2);
-    if (phiIndex_ != -1) hDeltaPhiVsPt_ = new TH2F("deltaPhiVsPt", "deltaPhiVsPt", 400, ptMin, ptMax, 100, -0.05, 0.05);
+    if (phiIndex_ != -1) hDeltaPhiVsPt_ = new TH2F("deltaPhiVsPt", "deltaPhiVsPt", 400, ptMin, ptMax, 1000, -0.005, 0.005);
     if (d0Index_ != -1) hDeltaD0VsPt_ = new TH2F("deltaD0VsPt", "deltaD0VsPt", 400, ptMin, ptMax, 100, -0.1, 0.1);
     if (cotThetaIndex_ != -1) {
       hDeltaCotThetaVsPt_ = new TH2F("deltaCotThetaVsPt", "deltaCotThetaVsPt", 400, ptMin, ptMax, 100, -0.05, 0.05);

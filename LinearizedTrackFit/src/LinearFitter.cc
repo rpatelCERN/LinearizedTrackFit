@@ -10,17 +10,20 @@ LinearFitter::LinearFitter(const std::string & inputDirName) :
 
 // Find the matrix in the hash-map for the given geometric index (needs the input parameters)
 bool LinearFitter::fit(const std::vector<float> & vars, const std::vector<float> & varsCoeff,
-    const float & genOneOverPt, const float & genPhi, const float & genEta, const float & genZ0, const int charge)
+    const float & genOneOverPt, const float & genPhi, const float & genEta, const float & genZ0,
+    const int charge, const int lastLadder)
 {
-  geomIndex_ = gi_(genOneOverPt, genPhi, genEta, genZ0, charge);
+  if (lastLadder != 77) geomIndex_ = lastLadder;
+  else geomIndex_ = gi_(genOneOverPt, genPhi, genEta, genZ0, charge);
   return fit(vars, varsCoeff);
 }
 
 
 bool LinearFitter::fit(const std::vector<float> & vars, const std::vector<float> & varsCoeff,
-    const std::vector<StubRZPhi> & stubs, const int charge)
+    const std::vector<StubRZPhi> & stubs, const int charge, const int lastLadder)
 {
-  geomIndex_ = gi_(stubs, charge);
+  if (lastLadder != 77) geomIndex_ = lastLadder;
+  else geomIndex_ = gi_(stubs, charge);
   return fit(vars, varsCoeff);
 }
 

@@ -18,9 +18,10 @@ public:
 
   // Fit track parameters
   bool fit(const std::vector<float> & vars, const std::vector<float> & varsCoeff,
-      const float & genOneOverPt, const float & genPhi, const float & genEta, const float & genZ0, const int charge);
+      const float & genOneOverPt, const float & genPhi, const float & genEta,
+      const float & genZ0, const int charge, const int lastLadder);
   bool fit(const std::vector<float> & vars, const std::vector<float> & varsCoeff,
-      const std::vector<StubRZPhi> & stubs, const int charge);
+      const std::vector<StubRZPhi> & stubs, const int charge, const int lastLadder);
   float normChi2() const { return normChi2_; }
   std::vector<float> trackParameters() const { return trackParameters_; }
   int geometricIndex() const { return geomIndex_; }
