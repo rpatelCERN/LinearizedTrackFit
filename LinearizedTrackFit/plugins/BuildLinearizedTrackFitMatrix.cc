@@ -80,6 +80,7 @@ private:
   bool mapSectors_;
   bool computeDistances_;
   bool computeCorrelations_;
+  bool phiSymmetricFit_;
   // Geometric cuts
   double oneOverPtMin_;
   double oneOverPtMax_;
@@ -136,6 +137,7 @@ BuildLinearizedTrackFitMatrix::BuildLinearizedTrackFitMatrix(const edm::Paramete
   mapSectors_(iConfig.getParameter<bool>("MapSectors")),
   computeDistances_(iConfig.getParameter<bool>("ComputeDistances")),
   computeCorrelations_(iConfig.getParameter<bool>("ComputeCorrelations")),
+  phiSymmetricFit_(iConfig.getParameter<bool>("PhiSymmetricFit")),
   oneOverPtMin_(iConfig.getParameter<double>("OneOverPtMin")),
   oneOverPtMax_(iConfig.getParameter<double>("OneOverPtMax")),
   oneOverPtRegions_(iConfig.getParameter<int>("OneOverPtRegions")),
@@ -177,6 +179,23 @@ BuildLinearizedTrackFitMatrix::analyze(const edm::Event& iEvent, const edm::Even
 void BuildLinearizedTrackFitMatrix::beginJob()
 {
   printSelectedNames();
+
+  std::unordered_map<int, std::pair<float, float> > radiusCuts_;
+//  radiusCuts_.insert({5, {0., 21.95}});
+//  radiusCuts_.insert({6, {0., 34.6}});
+//  radiusCuts_.insert({7, {0., 49.7}});
+//  radiusCuts_.insert({8, {0., 67.4}});
+//  radiusCuts_.insert({9, {0., 87.55}});
+//  radiusCuts_.insert({10, {0., 106.75}});
+//  radiusCuts_.insert({5, {21.95, 22.6}});
+//  radiusCuts_.insert({5, {22.6, 23.72}});
+//  radiusCuts_.insert({5, {23.72, 1000.}});
+  radiusCuts_.insert({5, {0., 1000.}});
+  radiusCuts_.insert({6, {0., 1000.}});
+  radiusCuts_.insert({7, {0., 1000.}});
+  radiusCuts_.insert({8, {0., 1000.}});
+  radiusCuts_.insert({9, {0., 1000.}});
+  radiusCuts_.insert({10, {0., 1000.}});
 
   if (buildMatrix_) {
     GeometricIndex::GeometricIndexConfiguration gic;
@@ -229,17 +248,15 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     inputVariablesMeans_.insert(std::make_pair("ChargeCorrectedR", meansChargeCorrectedR_));
     inputVariablesMeans_.insert(std::make_pair("ChargeSignedR", meansChargeSignedR_));
 
-//    LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
-//    			   requiredLayers_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputTrackParameterNames_,
-//			   singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic);
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
-        requiredLayers_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputVariablesMeans_,
-        inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic);
+        requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputVariablesMeans_,
+      inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic);
   }
 
   if (testMatrix_) {
     LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
-			  inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_, singleModules_);
+			  inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
+        radiusCuts_, singleModules_, phiSymmetricFit_);
   }
 
 

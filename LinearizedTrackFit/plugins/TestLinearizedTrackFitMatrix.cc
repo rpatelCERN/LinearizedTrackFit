@@ -142,8 +142,8 @@ void TestLinearizedTrackFitMatrix::beginJob()
   printSelectedNames();
 
   LinearFitter linearFitter("");
-  TreeReader treeReader(inputFileName_, eventsFractionStart_, eventsFractionEnd_,
-			linearFitter.requiredLayers(), distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputTrackParameterNames_);
+  TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd,
+      linearFitter.requiredLayers(), radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
 
   MatrixReader linearFitNegativeCharge("matrixVD_0.txt");
   MatrixReader linearFitPositiveCharge("matrixVD_1.txt");
