@@ -16,8 +16,8 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     else if (trackParameterNames[i] == "d0") d0Index_ = i;
   }
 
-  float ptMin = -30.;
-  float ptMax = 30.;
+  float ptMin = -200.;
+  float ptMax = 200.;
   float etaMin = -1.;
   float etaMax = 1.;
 
