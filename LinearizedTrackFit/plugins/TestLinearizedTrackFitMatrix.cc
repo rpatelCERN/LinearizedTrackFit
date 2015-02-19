@@ -141,9 +141,27 @@ void TestLinearizedTrackFitMatrix::beginJob()
 {
   printSelectedNames();
 
+  // Cuts on the radius of the stubs
+  std::unordered_map<int, std::pair<float, float> > radiusCuts_;
+//  radiusCuts_.insert({5, {0., 21.95}});
+//  radiusCuts_.insert({6, {0., 34.6}});
+//  radiusCuts_.insert({7, {0., 49.7}});
+//  radiusCuts_.insert({8, {0., 67.4}});
+//  radiusCuts_.insert({9, {0., 87.55}});
+//  radiusCuts_.insert({10, {0., 106.75}});
+//  radiusCuts_.insert({5, {21.95, 22.6}});
+//  radiusCuts_.insert({5, {22.6, 23.72}});
+//  radiusCuts_.insert({5, {23.72, 1000.}});
+  radiusCuts_.insert({5, {0., 1000.}});
+  radiusCuts_.insert({6, {0., 1000.}});
+  radiusCuts_.insert({7, {0., 1000.}});
+  radiusCuts_.insert({8, {0., 1000.}});
+  radiusCuts_.insert({9, {0., 1000.}});
+  radiusCuts_.insert({10, {0., 1000.}});
+
   LinearFitter linearFitter("");
-  TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd,
-      linearFitter.requiredLayers(), radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
+  TreeReader treeReader(inputFileName_, eventsFractionStart_, eventsFractionEnd_,
+      linearFitter.requiredLayers(), radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputTrackParameterNames_);
 
   MatrixReader linearFitNegativeCharge("matrixVD_0.txt");
   MatrixReader linearFitPositiveCharge("matrixVD_1.txt");
