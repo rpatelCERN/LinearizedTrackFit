@@ -134,12 +134,13 @@ void MatrixBuilder::update(const std::vector<float> & vars, const std::vector<fl
 }
 
 
-void MatrixBuilder::update(const std::vector<float> & vars, const std::vector<float> & varCoeff, const std::vector<float> & pars, const int lastLadder)
+void MatrixBuilder::update(const std::vector<float> & vars, const std::vector<float> & varCoeff,
+    const std::vector<float> & pars, const int lastLadder, const bool usePcs)
 {
   ++count_;
   // The order of the following calls is important. The updateMeanAndCovParams method does not update the mean of
   // the variables and it assumes this is done outside.
-  updateMeanAndCovParams(vars, varCoeff, pars, true);
+  updateMeanAndCovParams(vars, varCoeff, pars, usePcs);
 }
 
 

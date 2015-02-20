@@ -18,7 +18,7 @@ public:
 //  void update(const std::vector<float> & vars, const std::vector<float> & varCoeff, const std::vector<float> & pars);
 //  void update(const std::vector<float> & vars, const std::vector<float> & varCoeff, const std::vector<float> & pars, const int lastLadder);
   void update(const std::vector<float> & vars, const std::vector<float> & varCoeff, const int lastLadder);
-  void update(const std::vector<float> & vars, const std::vector<float> & varCoeff, const std::vector<float> & pars, const int lastLadder);
+  void update(const std::vector<float> & vars, const std::vector<float> & varCoeff, const std::vector<float> & pars, const int lastLadder, const bool usePcs);
   void computeEigenvalueMatrix();
   void writeMatrices();
 

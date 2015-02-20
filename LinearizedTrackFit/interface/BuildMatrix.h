@@ -24,7 +24,8 @@ namespace LinearFit {
       const std::vector<double> & distanceCutsLongitudinal, const std::vector<std::string> & inputVarNames,
       const std::unordered_map<std::string, std::vector<std::pair<bool, float> > > & inputVariablesMeans,
       const std::vector<std::string> & inputTrackParameterNames, bool singleModules,
-      bool doMapSectors, bool computeDistances, bool computeCorrelations, const GeometricIndex::GeometricIndexConfiguration & gic)
+      bool doMapSectors, bool computeDistances, bool computeCorrelations, const GeometricIndex::GeometricIndexConfiguration & gic,
+      bool usePcs)
   {
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayersForVars,
         radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
@@ -150,10 +151,9 @@ namespace LinearFit {
       std::vector<float> pars(treeReader.getTrackParameters());
 
       // Update mean and covariance for this linearization region
-      matrices.find(geomIndex)->second.update(vars, varsCoeff, pars, treeReader.getLastLadder());
+      matrices.find(geomIndex)->second.update(vars, varsCoeff, pars, treeReader.getLastLadder(), usePcs);
     }
     // -----------------------
-
 
     // Write the geometric index settings to a file
     geometricIndex.write();

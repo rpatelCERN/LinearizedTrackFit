@@ -14,7 +14,7 @@
 class LinearFitter
 {
 public:
-  LinearFitter(const std::string & inputDirName);
+  LinearFitter(const std::string & inputDirName, const bool pcsFit);
 
   // Fit track parameters
   bool fit(const std::vector<float> & vars, const std::vector<float> & varsCoeff,
@@ -43,6 +43,7 @@ private:
   GeometricIndex gi_;
   int geomIndex_;
   unsigned int variablesSize_;
+  bool pcsFit_;
   std::unordered_map<int, MatrixReader> matrices_;
   std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
 };

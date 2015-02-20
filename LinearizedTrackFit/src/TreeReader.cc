@@ -33,8 +33,9 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     else if (varName == "DeltaSAllDeltaR") vars_.push_back(std::make_shared<GetVarDeltaSAllDeltaR>(tree_, requiredLayers_["DeltaSAllDeltaR"]));
     else if (varName == "DeltaROverGenPt") vars_.push_back(std::make_shared<GetVarDeltaROverGenPt>(tree_, requiredLayers_["DeltaROverGenPt"]));
     else if (varName == "DeltaROverGenPtCube") vars_.push_back(std::make_shared<GetVarDeltaROverGenPtCube>(tree_, requiredLayers_["DeltaROverGenPtCube"]));
-    else if (varName == "ChargeCorrectedR") vars_.push_back(std::make_shared<GetVarChargeCorrectedR>(tree_, requiredLayers_["ChargeCorrectedR"]));
     else if (varName == "ChargeSignedR") vars_.push_back(std::make_shared<GetVarChargeSignedR>(tree_, requiredLayers_["ChargeSignedR"]));
+    else if (varName == "ChargeCorrectedR") vars_.push_back(std::make_shared<GetVarChargeCorrectedR>(tree_, requiredLayers_["ChargeCorrectedR"]));
+    else if (varName == "ChargeOverPtCorrectedR") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedR>(tree_, requiredLayers_["ChargeOverPtCorrectedR"]));
     else {
       std::cout << "Error: undefined variable name " << varName << std::endl;
       throw;
