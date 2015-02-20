@@ -396,6 +396,46 @@ private:
 };
 
 
+// estimatedCharge*R variable of the stubs
+class GetVarChargeOverPtCorrectedRCube : public GetTreeVariable
+{
+public:
+  GetVarChargeOverPtCorrectedRCube(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {
+    chargeOverPtPhiMeans_.insert(std::make_pair(5, 1.67968e-05));
+    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.000123609));
+    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.000200134));
+    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.000250304));
+    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.000317223));
+    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.00035855));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(5, 2.54795));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(6, -0.571476));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 0.747191));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(8, -0.771812));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(9, -0.904513));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -1.05755));
+    chargeOverPtMean_ = -0.000483493;
+  }
+  virtual ~GetVarChargeOverPtCorrectedRCube() {}
+  virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
+    float estimatedCharge = 0.;
+    for (const auto & layer : layersFound) {
+      unsigned int l = layer.first;
+      float phi = std::atan2(var_y->at(layer.second), var_x->at(layer.second));
+      estimatedCharge += (phi-chargeOverPtPhiMeans_[l])*chargeOverPtPhiCoeff_[l];
+    }
+    float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    return std::pow(estimatedCharge*R, 3);
+  }
+private:
+  std::vector<float> * var_x;
+  std::vector<float> * var_y;
+  std::unordered_map<unsigned int, float> chargeOverPtPhiMeans_;
+  std::unordered_map<unsigned int, float> chargeOverPtPhiCoeff_;
+  float chargeOverPtMean_;
+};
+
+
 // sign(estimatedCharge)*R variable of the stubs
 class GetVarChargeSignedR : public GetTreeVariable
 {

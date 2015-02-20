@@ -36,6 +36,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     else if (varName == "ChargeSignedR") vars_.push_back(std::make_shared<GetVarChargeSignedR>(tree_, requiredLayers_["ChargeSignedR"]));
     else if (varName == "ChargeCorrectedR") vars_.push_back(std::make_shared<GetVarChargeCorrectedR>(tree_, requiredLayers_["ChargeCorrectedR"]));
     else if (varName == "ChargeOverPtCorrectedR") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedR>(tree_, requiredLayers_["ChargeOverPtCorrectedR"]));
+    else if (varName == "ChargeOverPtCorrectedRCube") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedRCube>(tree_, requiredLayers_["ChargeOverPtCorrectedRCube"]));
     else {
       std::cout << "Error: undefined variable name " << varName << std::endl;
       throw;
