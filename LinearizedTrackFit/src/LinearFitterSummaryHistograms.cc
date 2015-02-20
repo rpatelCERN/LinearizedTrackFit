@@ -16,10 +16,10 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     else if (trackParameterNames[i] == "d0") d0Index_ = i;
   }
 
-  float ptMin = -10.;
-  float ptMax = 10.;
-  float etaMin = -1.;
-  float etaMax = 1.;
+  float ptMin = -200.;
+  float ptMax = 200.;
+  float etaMin = -0.2;
+  float etaMax = 0.2;
 
   if (ptIndex_ != -1) {
     hDeltaCurvatureOverCurvatureVsCurvature_ = new TH2F("deltaCurvatureOverCurvatureVsCurvature", "deltaCurvatureOverCurvatureVsCurvature", 240, -0.6, 0.6, 200, -0.2, 0.2);
