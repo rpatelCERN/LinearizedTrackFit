@@ -68,6 +68,7 @@ private:
   std::vector<int> layersR_;
   std::vector<int> layersOneOverR_;
   std::vector<int> layersChargeCorrectedR_;
+  std::vector<int> layersChargeOverPtCorrectedR_;
   std::vector<int> layersChargeSignedR_;
   std::vector<int> layersZ_;
   std::vector<int> layersDeltaS_;
@@ -223,6 +224,7 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     requiredLayers_.insert(std::make_pair("R", std::unordered_set<int>(layersR_.begin(), layersR_.end())));
     requiredLayers_.insert(std::make_pair("oneOverR", std::unordered_set<int>(layersOneOverR_.begin(), layersOneOverR_.end())));
     requiredLayers_.insert(std::make_pair("ChargeCorrectedR", std::unordered_set<int>(layersChargeCorrectedR_.begin(), layersChargeCorrectedR_.end())));
+    requiredLayers_.insert(std::make_pair("ChargeOverPtCorrectedR", std::unordered_set<int>(layersChargeOverPtCorrectedR_.begin(), layersChargeOverPtCorrectedR_.end())));
     requiredLayers_.insert(std::make_pair("ChargeSignedR", std::unordered_set<int>(layersChargeSignedR_.begin(), layersChargeSignedR_.end())));
     requiredLayers_.insert(std::make_pair("z", std::unordered_set<int>(layersZ_.begin(), layersZ_.end())));
     requiredLayers_.insert(std::make_pair("DeltaS", std::unordered_set<int>(layersDeltaS_.begin(), layersDeltaS_.end())));
@@ -238,6 +240,7 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     std::vector<std::pair<bool, float> > meansZ_(6, {false, 0.});
     std::vector<std::pair<bool, float> > meansDeltaS_(6, {false, 0.});
     std::vector<std::pair<bool, float> > meansChargeCorrectedR_(6, {false, 0.});
+    std::vector<std::pair<bool, float> > meansChargeOverPtCorrectedR_(6, {false, 0.});
     std::vector<std::pair<bool, float> > meansChargeSignedR_(6, {false, 0.});
     inputVariablesMeans_.insert(std::make_pair("phi", meansPhi_));
     inputVariablesMeans_.insert(std::make_pair("phiOverR", meansPhiOverR_));
@@ -248,6 +251,7 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     inputVariablesMeans_.insert(std::make_pair("z", meansZ_));
     inputVariablesMeans_.insert(std::make_pair("DeltaS", meansDeltaS_));
     inputVariablesMeans_.insert(std::make_pair("ChargeCorrectedR", meansChargeCorrectedR_));
+    inputVariablesMeans_.insert(std::make_pair("ChargeOverPtCorrectedR", meansChargeCorrectedR_));
     inputVariablesMeans_.insert(std::make_pair("ChargeSignedR", meansChargeSignedR_));
 
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,

@@ -41,6 +41,7 @@ process.demo = cms.EDAnalyzer('TestLinearizedTrackFitMatrix',
 
                               # Specify to select a single sector (made of single modules)
                               SingleModules = cms.bool(False),
+                              UsePcs = cms.bool(True),
 
                               # Select layers to use for each stub coordinate
                               LayersPhi = cms.vint32(5, 6, 7, 8, 9, 10),

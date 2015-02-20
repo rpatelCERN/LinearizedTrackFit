@@ -69,6 +69,7 @@ private:
   std::vector<std::string> inputVarNames_;
   std::vector<std::string> inputTrackParameterNames_;
   bool singleModules_;
+  bool usePcs_;
   // Geometric cuts
   double oneOverPtMin_;
   double oneOverPtMax_;
@@ -106,6 +107,7 @@ TestLinearizedTrackFitMatrix::TestLinearizedTrackFitMatrix(const edm::ParameterS
   inputVarNames_(iConfig.getParameter<std::vector<std::string> >("VariableNames")),
   inputTrackParameterNames_(iConfig.getParameter<std::vector<std::string> >("TrackParameterNames")),
   singleModules_(iConfig.getParameter<bool>("SingleModules")),
+  usePcs_(iConfig.getParameter<bool>("UsePcs")),
   oneOverPtMin_(iConfig.getParameter<double>("OneOverPtMin")),
   oneOverPtMax_(iConfig.getParameter<double>("OneOverPtMax")),
   phiMin_(iConfig.getParameter<double>("PhiMin")),
@@ -159,9 +161,9 @@ void TestLinearizedTrackFitMatrix::beginJob()
   radiusCuts_.insert({9, {0., 1000.}});
   radiusCuts_.insert({10, {0., 1000.}});
 
-  LinearFitter linearFitter("");
+  LinearFitter linearFitter("", usePcs_);
   TreeReader treeReader(inputFileName_, eventsFractionStart_, eventsFractionEnd_,
-      linearFitter.requiredLayers(), radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputTrackParameterNames_);
+			linearFitter.requiredLayers(), radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputTrackParameterNames_);
 
   MatrixReader linearFitNegativeCharge("matrixVD_0.txt");
   MatrixReader linearFitPositiveCharge("matrixVD_1.txt");
