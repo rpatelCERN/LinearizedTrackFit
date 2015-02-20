@@ -16,7 +16,7 @@ class MatrixReader
 public:
   MatrixReader(const std::string & inputFileName);
   float normChi2(const VectorXd & vars, const ArrayXd & varCoeff) const;
-  std::vector<float> trackParameters(const VectorXd & vars, const ArrayXd & varCoeff) const;
+  std::vector<float> trackParameters(const VectorXd & vars, const ArrayXd & varCoeff, const bool usePcs) const;
   std::vector<float> principalComponents(const VectorXd & vars, const ArrayXd & varCoeff) const;
   std::vector<float> normalizedPrincipalComponents(const VectorXd & vars, const ArrayXd & varCoeff) const;
 

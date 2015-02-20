@@ -81,6 +81,7 @@ private:
   bool computeDistances_;
   bool computeCorrelations_;
   bool phiSymmetricFit_;
+  bool usePcs_;
   // Geometric cuts
   double oneOverPtMin_;
   double oneOverPtMax_;
@@ -138,6 +139,7 @@ BuildLinearizedTrackFitMatrix::BuildLinearizedTrackFitMatrix(const edm::Paramete
   computeDistances_(iConfig.getParameter<bool>("ComputeDistances")),
   computeCorrelations_(iConfig.getParameter<bool>("ComputeCorrelations")),
   phiSymmetricFit_(iConfig.getParameter<bool>("PhiSymmetricFit")),
+  usePcs_(iConfig.getParameter<bool>("UsePcs")),
   oneOverPtMin_(iConfig.getParameter<double>("OneOverPtMin")),
   oneOverPtMax_(iConfig.getParameter<double>("OneOverPtMax")),
   oneOverPtRegions_(iConfig.getParameter<int>("OneOverPtRegions")),
@@ -250,13 +252,13 @@ void BuildLinearizedTrackFitMatrix::beginJob()
 
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
         requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputVariablesMeans_,
-      inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic);
+      inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic, usePcs_);
   }
 
   if (testMatrix_) {
     LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
 			  inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
-        radiusCuts_, singleModules_, phiSymmetricFit_);
+        radiusCuts_, singleModules_, phiSymmetricFit_, usePcs_);
   }
 
 

@@ -321,22 +321,78 @@ class GetVarChargeCorrectedR : public GetTreeVariable
 {
 public:
   GetVarChargeCorrectedR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {
+    chargePhiMeans_.insert(std::make_pair(5, 1.67968e-05));
+    chargePhiMeans_.insert(std::make_pair(6, 0.000123609));
+    chargePhiMeans_.insert(std::make_pair(7, 0.000200134));
+    chargePhiMeans_.insert(std::make_pair(8, 0.000250304));
+    chargePhiMeans_.insert(std::make_pair(9, 0.000317223));
+    chargePhiMeans_.insert(std::make_pair(10, 0.00035855));
+    chargePhiCoeff_.insert(std::make_pair(5, 27.4772));
+    chargePhiCoeff_.insert(std::make_pair(6, 3.57353));
+    chargePhiCoeff_.insert(std::make_pair(7, -23.887));
+    chargePhiCoeff_.insert(std::make_pair(8, -15.6897));
+    chargePhiCoeff_.insert(std::make_pair(9, -5.97704));
+    chargePhiCoeff_.insert(std::make_pair(10, 14.392));
+    chargeMean_ = -0.00115319;
+  }
   virtual ~GetVarChargeCorrectedR() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
-    return std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-  }
-  virtual float coeff() {
-    return (9.97487*std::atan2(var_y->at(0), var_x->at(0))+
-        1.81906*std::atan2(var_y->at(1), var_x->at(1))+
-        -1.3229*std::atan2(var_y->at(2), var_x->at(2))+
-        -8.85192*std::atan2(var_y->at(3), var_x->at(3))+
-        -4.06823*std::atan2(var_y->at(4), var_x->at(4))+
-        2.46418*std::atan2(var_y->at(5), var_x->at(5)));
+    float estimatedCharge = 0.;
+    for (const auto & layer : layersFound) {
+      unsigned int l = layer.first;
+      float phi = std::atan2(var_y->at(layer.second), var_x->at(layer.second));
+      estimatedCharge += (phi-chargePhiMeans_[l])*chargePhiCoeff_[l];
+    }
+    float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    return estimatedCharge*R;
   }
 private:
   std::vector<float> * var_x;
   std::vector<float> * var_y;
+  std::unordered_map<unsigned int, float> chargePhiMeans_;
+  std::unordered_map<unsigned int, float> chargePhiCoeff_;
+  float chargeMean_;
+};
+
+
+// estimatedCharge*R variable of the stubs
+class GetVarChargeOverPtCorrectedR : public GetTreeVariable
+{
+public:
+  GetVarChargeOverPtCorrectedR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {
+    chargeOverPtPhiMeans_.insert(std::make_pair(5, 1.67968e-05));
+    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.000123609));
+    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.000200134));
+    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.000250304));
+    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.000317223));
+    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.00035855));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(5, 2.54795));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(6, -0.571476));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 0.747191));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(8, -0.771812));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(9, -0.904513));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -1.05755));
+    chargeOverPtMean_ = -0.000483493;
+  }
+  virtual ~GetVarChargeOverPtCorrectedR() {}
+  virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
+    float estimatedCharge = 0.;
+    for (const auto & layer : layersFound) {
+      unsigned int l = layer.first;
+      float phi = std::atan2(var_y->at(layer.second), var_x->at(layer.second));
+      estimatedCharge += (phi-chargeOverPtPhiMeans_[l])*chargeOverPtPhiCoeff_[l];
+    }
+    float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    return estimatedCharge*R;
+  }
+private:
+  std::vector<float> * var_x;
+  std::vector<float> * var_y;
+  std::unordered_map<unsigned int, float> chargeOverPtPhiMeans_;
+  std::unordered_map<unsigned int, float> chargeOverPtPhiCoeff_;
+  float chargeOverPtMean_;
 };
 
 
@@ -345,23 +401,39 @@ class GetVarChargeSignedR : public GetTreeVariable
 {
 public:
   GetVarChargeSignedR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {
+    chargePhiMeans_.insert(std::make_pair(5, 1.67968e-05));
+    chargePhiMeans_.insert(std::make_pair(6, 0.000123609));
+    chargePhiMeans_.insert(std::make_pair(7, 0.000200134));
+    chargePhiMeans_.insert(std::make_pair(8, 0.000250304));
+    chargePhiMeans_.insert(std::make_pair(9, 0.000317223));
+    chargePhiMeans_.insert(std::make_pair(10, 0.00035855));
+    chargePhiCoeff_.insert(std::make_pair(5, 27.4772));
+    chargePhiCoeff_.insert(std::make_pair(6, 3.57353));
+    chargePhiCoeff_.insert(std::make_pair(7, -23.887));
+    chargePhiCoeff_.insert(std::make_pair(8, -15.6897));
+    chargePhiCoeff_.insert(std::make_pair(9, -5.97704));
+    chargePhiCoeff_.insert(std::make_pair(10, 14.392));
+    chargeMean_ = -0.00115319;
+  }
   virtual ~GetVarChargeSignedR() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
-    return std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-  }
-  virtual float coeff() {
-    float estimatedCharge = 9.97487*std::atan2(var_y->at(0), var_x->at(0))+
-        1.81906*std::atan2(var_y->at(1), var_x->at(1))+
-        -1.3229*std::atan2(var_y->at(2), var_x->at(2))+
-        -8.85192*std::atan2(var_y->at(3), var_x->at(3))+
-        -4.06823*std::atan2(var_y->at(4), var_x->at(4))+
-        2.46418*std::atan2(var_y->at(5), var_x->at(5));
-    return (estimatedCharge > 0 ? 1. : -1.);
+
+    float estimatedCharge = 0.;
+    for (const auto & layer : layersFound) {
+      unsigned int l = layer.first;
+      float phi = std::atan2(var_y->at(layer.second), var_x->at(layer.second));
+      estimatedCharge += (phi-chargePhiMeans_[l])*chargePhiCoeff_[l];
+    }
+    float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    return (estimatedCharge > 0 ? R : -R);
   }
 private:
   std::vector<float> * var_x;
   std::vector<float> * var_y;
+  std::unordered_map<unsigned int, float> chargePhiMeans_;
+  std::unordered_map<unsigned int, float> chargePhiCoeff_;
+  float chargeMean_;
 };
 
 

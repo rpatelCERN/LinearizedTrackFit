@@ -1,8 +1,8 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitter.h"
 
-LinearFitter::LinearFitter(const std::string & inputDirName) :
+LinearFitter::LinearFitter(const std::string & inputDirName, const bool pcsFit) :
     normChi2_(0.), trackParameters_(0.), inputDirName_(inputDirName), gi_(inputDirName+"GeometricIndex.txt"),
-    geomIndex_(0), variablesSize_(0)
+    geomIndex_(0), variablesSize_(0), pcsFit_(pcsFit)
 {
   readRequiredLayers(inputDirName+"Variables.txt");
 }
@@ -77,7 +77,7 @@ bool LinearFitter::fit(const std::vector<float> & vars, const std::vector<float>
   }
   const auto & matrix = matrices_.find(geomIndex_)->second;
   normChi2_ = matrix.normChi2(varsVec, varsCoeffArray);
-  trackParameters_ = matrix.trackParameters(varsVec, varsCoeffArray);
+  trackParameters_ = matrix.trackParameters(varsVec, varsCoeffArray, pcsFit_);
   return true;
 }
 

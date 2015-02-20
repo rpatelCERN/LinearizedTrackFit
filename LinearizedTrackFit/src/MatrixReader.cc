@@ -103,11 +103,7 @@ float MatrixReader::normChi2(const VectorXd & vars, const ArrayXd & varCoeff) co
 //  std::vector<float> pars;
 //
 //  // Estimate track parameters
-////  std::cout << "vars = " << vars << std::endl;
-////  std::cout << "meanValues_ = " << meanValues_ << std::endl;
-////  std::cout << "meanP_ = " << meanP_ << std::endl;
 //  VectorXd estimatedPars = D_*(((vars - meanValues_).array()*varCoeff).matrix()) + meanP_;
-////  std::cout << "estimatedPars = " << estimatedPars << std::endl;
 //
 //  for (int i=0; i<nTrackParameters_; ++i) {
 //    pars.push_back(estimatedPars(i));
@@ -117,20 +113,28 @@ float MatrixReader::normChi2(const VectorXd & vars, const ArrayXd & varCoeff) co
 //}
 
 
-std::vector<float> MatrixReader::trackParameters(const VectorXd & vars, const ArrayXd & varCoeff) const
+std::vector<float> MatrixReader::trackParameters(const VectorXd & vars, const ArrayXd & varCoeff, const bool usePcs) const
 {
   std::vector<float> pars;
 
-  // Estimate track parameters
-  VectorXd principal = V_*(((vars - meanValues_).array()*varCoeff).matrix());
-  for (int i=0; i<principal.size(); ++i) {
-    principal(i) = principal(i)/(sqrtEigenvalues_(i)*sqrtEigenvalues_(i));
+  if (usePcs) {
+    // Estimate track parameters
+    VectorXd principal = V_ * (((vars - meanValues_).array() * varCoeff).matrix());
+    for (int i = 0; i < principal.size(); ++i) {
+      principal(i) = principal(i) / (sqrtEigenvalues_(i) * sqrtEigenvalues_(i));
+    }
+    //  VectorXd estimatedPars = corrPV_*(((principal.array())*(sqrtEigenvalues_.inverse().array())).matrix());
+    VectorXd estimatedPars = corrPV_ * principal + meanP_;
+    for (int i=0; i<nTrackParameters_; ++i) {
+      pars.push_back(estimatedPars(i));
+    }
   }
-//  VectorXd estimatedPars = corrPV_*(((principal.array())*(sqrtEigenvalues_.inverse().array())).matrix());
-  VectorXd estimatedPars = corrPV_*principal + meanP_;
-
-  for (int i=0; i<nTrackParameters_; ++i) {
-    pars.push_back(estimatedPars(i));
+  else {
+    // Estimate track parameters
+    VectorXd estimatedPars = D_ * (((vars - meanValues_).array() * varCoeff).matrix()) + meanP_;
+    for (int i=0; i<nTrackParameters_; ++i) {
+      pars.push_back(estimatedPars(i));
+    }
   }
 
   return pars;
