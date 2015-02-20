@@ -18,8 +18,8 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
 
   float ptMin = -200.;
   float ptMax = 200.;
-  float etaMin = -1.;
-  float etaMax = 1.;
+  float etaMin = -0.2;
+  float etaMax = 0.2;
 
   if (ptIndex_ != -1) {
     hDeltaCurvatureOverCurvatureVsCurvature_ = new TH2F("deltaCurvatureOverCurvatureVsCurvature", "deltaCurvatureOverCurvatureVsCurvature", 240, -0.6, 0.6, 200, -1, 1);

@@ -96,6 +96,7 @@ process.demo = cms.EDAnalyzer('BuildLinearizedTrackFitMatrix',
                               MapSectors = cms.bool(False),
                               ComputeDistances = cms.bool(False),
                               ComputeCorrelations = cms.bool(True),
+                              PhiSymmetricFit = cms.bool(False),
 
                               TestMatrix = cms.bool(True),
                               EventsFractionStartTest = cms.double(0.5),
