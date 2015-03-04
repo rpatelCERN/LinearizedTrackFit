@@ -6,6 +6,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <unordered_map>
 #include <Eigen/Eigenvalues>
 
 using namespace Eigen;
@@ -27,7 +28,7 @@ private:
 //  void updateMeanAndCov(const std::vector<float> & vars, const std::vector<float> & varCoeff);
   void updateMeanAndCov(const std::vector<float> & vars, const std::vector<float> & varCoeff, const int lastLadder);
   //  void updateMeanAndCovParams(const std::vector<float> & vars, const std::vector<float> & pars);
-  void updateMeanAndCovParams(const std::vector<float> & vars, const std::vector<float> & varCoeff, const std::vector<float> & pars, const bool usePcs);
+  void updateMeanAndCovParams(const std::vector<float> & vars, const std::vector<float> & varCoeff, const std::vector<float> & pars, const int lastLadder, const bool usePcs);
 
   // Data members
   std::string name_;
@@ -35,13 +36,15 @@ private:
   std::vector<std::pair<bool, float> > varsMeans_;
   unsigned int nTrackParameters_;
   MatrixXd cov_;
-  VectorXd meanValues_;
+//  VectorXd meanValues_;
   MatrixXd corrPV_;
-  VectorXd meanP_;
+//  VectorXd meanP_;
   MatrixXd V_;
   VectorXd sqrtEigenvalues_;
-  VectorXd meanValuesVec_;
+//  VectorXd meanValuesVec_;
   int count_;
+  std::unordered_map<int, VectorXd> meanValuesLadders_;
+  std::unordered_map<int, VectorXd> meanPLadders_;
 };
 
 #endif // MATRIXBUILDER_H

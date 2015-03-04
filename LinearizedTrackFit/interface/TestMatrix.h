@@ -36,8 +36,8 @@ namespace LinearFit
       std::vector<float> pars(treeReader.getTrackParameters());
 
       bool goodFit = false;
-      int lastLadder = 77;
-      if (phiSymmetricFit) lastLadder = treeReader.getLastLadder()+1;
+      int lastLadder = -1;
+      if (phiSymmetricFit) lastLadder = treeReader.getLastLadder();
       if (singleModules) {
         goodFit = linearFitter.fit(vars, varsCoeff, treeReader.getStubRZPhi(), treeReader.getCharge(), lastLadder);
       }
@@ -54,10 +54,10 @@ namespace LinearFit
         if (histograms.count(geomIndex) == 0) {
           histograms.insert({{geomIndex, LinearFitterHistograms(std::to_string(geomIndex), treeReader.variablesNames(), inputTrackParameterNames)}});
         }
-        histograms.find(geomIndex)->second.fill(vars, linearFitter.principalComponents(vars, varsCoeff),
-            linearFitter.normalizedPrincipalComponents(vars, varsCoeff), pars, estimatedPars, normChi2);
-        summaryHistograms.fill(vars, linearFitter.principalComponents(vars, varsCoeff),
-            linearFitter.normalizedPrincipalComponents(vars, varsCoeff), pars, estimatedPars, normChi2);
+        histograms.find(geomIndex)->second.fill(vars, linearFitter.principalComponents(vars, varsCoeff, lastLadder),
+            linearFitter.normalizedPrincipalComponents(vars, varsCoeff, lastLadder), pars, estimatedPars, normChi2);
+        summaryHistograms.fill(vars, linearFitter.principalComponents(vars, varsCoeff, lastLadder),
+            linearFitter.normalizedPrincipalComponents(vars, varsCoeff, lastLadder), pars, estimatedPars, normChi2);
         if (inputTrackParameterNames.size() == 1 && inputTrackParameterNames[0] == "charge") {
           // std::cout << "treeReader.getPt() = " << treeReader.getPt() << ", estimatedPars[0] = " << estimatedPars[0] << std::endl;
           hEstimatedChargeVsPt->Fill(treeReader.getPt(), estimatedPars[0]);

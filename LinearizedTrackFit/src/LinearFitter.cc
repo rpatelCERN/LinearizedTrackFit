@@ -13,18 +13,20 @@ bool LinearFitter::fit(const std::vector<float> & vars, const std::vector<float>
     const float & genOneOverPt, const float & genPhi, const float & genEta, const float & genZ0,
     const int charge, const int lastLadder)
 {
-  if (lastLadder != 77) geomIndex_ = lastLadder;
-  else geomIndex_ = gi_(genOneOverPt, genPhi, genEta, genZ0, charge);
-  return fit(vars, varsCoeff);
+//  if (lastLadder != -1) geomIndex_ = lastLadder;
+  // else
+  geomIndex_ = gi_(genOneOverPt, genPhi, genEta, genZ0, charge);
+  return fit(vars, varsCoeff, lastLadder);
 }
 
 
 bool LinearFitter::fit(const std::vector<float> & vars, const std::vector<float> & varsCoeff,
     const std::vector<StubRZPhi> & stubs, const int charge, const int lastLadder)
 {
-  if (lastLadder != 77) geomIndex_ = lastLadder;
-  else geomIndex_ = gi_(stubs, charge);
-  return fit(vars, varsCoeff);
+//  if (lastLadder != -1) geomIndex_ = lastLadder;
+  // else
+  geomIndex_ = gi_(stubs, charge);
+  return fit(vars, varsCoeff, lastLadder);
 }
 
 
@@ -64,7 +66,7 @@ void LinearFitter::readRequiredLayers(const std::string & inputFileName)
 }
 
 
-bool LinearFitter::fit(const std::vector<float> & vars, const std::vector<float> & varsCoeff)
+bool LinearFitter::fit(const std::vector<float> & vars, const std::vector<float> & varsCoeff, const int lastLadder)
 {
   if (geomIndex_ == -1) return false;
   VectorXd varsVec(vars.size());
@@ -76,29 +78,29 @@ bool LinearFitter::fit(const std::vector<float> & vars, const std::vector<float>
         MatrixReader(inputDirName_+"matrixVD_"+std::to_string(geomIndex_)+".txt")));
   }
   const auto & matrix = matrices_.find(geomIndex_)->second;
-  normChi2_ = matrix.normChi2(varsVec, varsCoeffArray);
-  trackParameters_ = matrix.trackParameters(varsVec, varsCoeffArray, pcsFit_);
+  normChi2_ = matrix.normChi2(varsVec, varsCoeffArray, lastLadder);
+  trackParameters_ = matrix.trackParameters(varsVec, varsCoeffArray, lastLadder, pcsFit_);
   return true;
 }
 
 
 // This method must be called only after the fit method to use the correct geomIndex
-std::vector<float> LinearFitter::principalComponents(const std::vector<float> & vars, const std::vector<float> & varsCoeff)
+std::vector<float> LinearFitter::principalComponents(const std::vector<float> & vars, const std::vector<float> & varsCoeff, const int lastLadder)
 {
   VectorXd varsVec(vars.size());
   for (unsigned int i=0; i<vars.size(); ++i) { varsVec(i) = vars[i]; }
   ArrayXd varsCoeffArray(varsCoeff.size());
   for (unsigned int i=0; i<varsCoeff.size(); ++i) { varsCoeffArray(i) = varsCoeff[i]; }
-  return matrices_.find(geomIndex_)->second.principalComponents(varsVec, varsCoeffArray);
+  return matrices_.find(geomIndex_)->second.principalComponents(varsVec, varsCoeffArray, lastLadder);
 }
 
 
 // This method must be called only after the fit method to use the correct geomIndex
-std::vector<float> LinearFitter::normalizedPrincipalComponents(const std::vector<float> & vars, const std::vector<float> & varsCoeff)
+std::vector<float> LinearFitter::normalizedPrincipalComponents(const std::vector<float> & vars, const std::vector<float> & varsCoeff, const int lastLadder)
 {
   VectorXd varsVec(vars.size());
   for (unsigned int i=0; i<vars.size(); ++i) { varsVec(i) = vars[i]; }
   ArrayXd varsCoeffArray(varsCoeff.size());
   for (unsigned int i=0; i<varsCoeff.size(); ++i) { varsCoeffArray(i) = varsCoeff[i]; }
-  return matrices_.find(geomIndex_)->second.normalizedPrincipalComponents(varsVec, varsCoeffArray);
+  return matrices_.find(geomIndex_)->second.normalizedPrincipalComponents(varsVec, varsCoeffArray, lastLadder);
 }

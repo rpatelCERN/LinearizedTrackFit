@@ -37,6 +37,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     else if (varName == "ChargeCorrectedR") vars_.push_back(std::make_shared<GetVarChargeCorrectedR>(tree_, requiredLayers_["ChargeCorrectedR"]));
     else if (varName == "ChargeOverPtCorrectedR") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedR>(tree_, requiredLayers_["ChargeOverPtCorrectedR"]));
     else if (varName == "ChargeOverPtCorrectedRCube") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedRCube>(tree_, requiredLayers_["ChargeOverPtCorrectedRCube"]));
+    else if (varName == "RCotTheta") vars_.push_back(std::make_shared<GetVarRCotTheta>(tree_, requiredLayers_["RCotTheta"]));
     else {
       std::cout << "Error: undefined variable name " << varName << std::endl;
       throw;
@@ -213,15 +214,17 @@ bool TreeReader::readVariables() {
     if (layersFound.size() < var->layersNum()) return false;
   }
   // Ladder 76 is outside the range for the outermost layer.
-  lastLadder_ = 76.;
+  lastLadder_ = 76;
   for (const auto & m : layersFound) {
     unsigned int k = m.second;
     for (const auto &var : vars_) {
       if (var->layer(m.first)) {
         variables_.push_back(var->at(k, layersFound));
         variablesCoefficients_.push_back(var->coeff());
+        // Take the ladder of the outermost layer in the barrel
         if (m.first == 10) {
           lastLadder_ = tree_->m_stub_ladder->at(k);
+//          if (lastLadder_ != 4) return false;
         }
       }
     }

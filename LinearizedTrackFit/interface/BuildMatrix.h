@@ -23,9 +23,9 @@ namespace LinearFit {
       std::unordered_map<int, std::pair<float, float> > & radiusCuts,  const std::vector<double> & distanceCutsTransverse,
       const std::vector<double> & distanceCutsLongitudinal, const std::vector<std::string> & inputVarNames,
       const std::unordered_map<std::string, std::vector<std::pair<bool, float> > > & inputVariablesMeans,
-      const std::vector<std::string> & inputTrackParameterNames, bool singleModules,
-      bool doMapSectors, bool computeDistances, bool computeCorrelations, const GeometricIndex::GeometricIndexConfiguration & gic,
-      bool usePcs)
+      const std::vector<std::string> & inputTrackParameterNames, const bool singleModules,
+      const bool doMapSectors, const bool computeDistances, const bool computeCorrelations,
+      const GeometricIndex::GeometricIndexConfiguration & gic, const bool phiSymmetricFit, const bool usePcs)
   {
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayersForVars,
         radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
@@ -113,7 +113,9 @@ namespace LinearFit {
       }
 //      matrices.find(geomIndex)->second.update(vars, varsCoeff, pars);
       // matrices.find(geomIndex)->second.update(vars, varsCoeff, pars, treeReader.getLastLadder());
-      matrices.find(geomIndex)->second.update(vars, varsCoeff, treeReader.getLastLadder());
+      int lastLadder = -1;
+      if (phiSymmetricFit) lastLadder = treeReader.getLastLadder();
+      matrices.find(geomIndex)->second.update(vars, varsCoeff, lastLadder);
       histograms.find(geomIndex)->second.fill(vars, pars);
       histograms2D.find(geomIndex)->second.fill(treeReader.getStubRZPhi());
       if (computeCorrelations) correlationHistograms.fill(vars, pars, treeReader.getCharge());
@@ -151,7 +153,9 @@ namespace LinearFit {
       std::vector<float> pars(treeReader.getTrackParameters());
 
       // Update mean and covariance for this linearization region
-      matrices.find(geomIndex)->second.update(vars, varsCoeff, pars, treeReader.getLastLadder(), usePcs);
+      int lastLadder = -1;
+      if (phiSymmetricFit) lastLadder = treeReader.getLastLadder();
+      matrices.find(geomIndex)->second.update(vars, varsCoeff, pars, lastLadder, usePcs);
     }
     // -----------------------
 

@@ -397,6 +397,46 @@ private:
 
 
 // estimatedCharge*R variable of the stubs
+class GetVarRCotTheta : public GetTreeVariable
+{
+public:
+  GetVarRCotTheta(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z) {
+    zMeans_.insert(std::make_pair(5, 4.45693));
+    zMeans_.insert(std::make_pair(6, 7.16692));
+    zMeans_.insert(std::make_pair(7, 10.2198));
+    zMeans_.insert(std::make_pair(8, 13.8584));
+    zMeans_.insert(std::make_pair(9, 17.9306));
+    zMeans_.insert(std::make_pair(10, 21.8398));
+    zCoeff_.insert(std::make_pair(5, -0.0174372));
+    zCoeff_.insert(std::make_pair(6,  0.000914154));
+    zCoeff_.insert(std::make_pair(7, 0.017444));
+    zCoeff_.insert(std::make_pair(8, 0.000939208));
+    zCoeff_.insert(std::make_pair(9, 0.00162868));
+    zCoeff_.insert(std::make_pair(10, 0.00230743));
+    cotThetaMean_ = 0.20157;
+  }
+  virtual ~GetVarRCotTheta() {}
+  virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
+    float cotTheta = 0.;
+    for (const auto & layer : layersFound) {
+      unsigned int l = layer.first;
+      cotTheta += (var_z->at(layer.second)-zMeans_[l])*zCoeff_[l];
+    }
+    float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    return R*(cotTheta + cotThetaMean_);
+  }
+private:
+  std::vector<float> * var_x;
+  std::vector<float> * var_y;
+  std::vector<float> * var_z;
+  std::unordered_map<unsigned int, float> zMeans_;
+  std::unordered_map<unsigned int, float> zCoeff_;
+  float cotThetaMean_;
+};
+
+
+// estimatedCharge*R variable of the stubs
 class GetVarChargeOverPtCorrectedRCube : public GetTreeVariable
 {
 public:
