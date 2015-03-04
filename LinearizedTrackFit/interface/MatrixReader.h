@@ -16,10 +16,10 @@ class MatrixReader
 {
 public:
   MatrixReader(const std::string & inputFileName);
-  float normChi2(const VectorXd & vars, const ArrayXd & varCoeff, const int lastLadder) const;
-  std::vector<float> trackParameters(const VectorXd & vars, const ArrayXd & varCoeff, const int lastLadder, const bool usePcs) const;
-  std::vector<float> principalComponents(const VectorXd & vars, const ArrayXd & varCoeff, const int lastLadder) const;
-  std::vector<float> normalizedPrincipalComponents(const VectorXd & vars, const ArrayXd & varCoeff, const int lastLadder) const;
+  float normChi2(const VectorXd & vars, const int lastLadder) const;
+  std::vector<float> trackParameters(const VectorXd & vars, const int lastLadder, const bool usePcs) const;
+  std::vector<float> principalComponents(const VectorXd & vars, const int lastLadder) const;
+  std::vector<float> normalizedPrincipalComponents(const VectorXd & vars, const int lastLadder) const;
 
 private:
   int nVars_;

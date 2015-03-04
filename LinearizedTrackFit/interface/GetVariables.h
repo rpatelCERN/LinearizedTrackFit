@@ -15,52 +15,10 @@ public:
   virtual ~GetTreeVariable() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound) = 0;
   // virtual float at(const int k) = 0;
-  virtual float coeff() { return 1.; }
   virtual bool layer(const int layer) { return layers_.count(layer); }
   unsigned int layersNum() { return layers_.size(); }
 protected:
   std::unordered_set<int> layers_;
-};
-
-
-// Phi variable of the stubs
-class GetVarChargeSignedPhi : public GetTreeVariable
-{
-public:
-  GetVarChargeSignedPhi(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
-  virtual ~GetVarChargeSignedPhi() {}
-  virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {return std::atan2(var_y->at(k), var_x->at(k));}
-  virtual float coeff() {
-    float estimatedCharge = 18.9124*(std::atan2(var_y->at(0), var_x->at(0)) + 0.000227585)+
-        0.367423*(std::atan2(var_y->at(1), var_x->at(1)) + 9.46723e-05)+
-        -12.8677*(std::atan2(var_y->at(2), var_x->at(2)) - 1.48098e-05)+
-        -9.33707*(std::atan2(var_y->at(3), var_x->at(3)) - 0.000104583)+
-        -3.71485*(std::atan2(var_y->at(4), var_x->at(4)) - 0.000215665)+
-        6.55738*(std::atan2(var_y->at(5), var_x->at(5)) - 0.000290815);
-    return (estimatedCharge > 0 ? -1. : 1.);
-  }
-private:
-  std::vector<float> * var_x;
-  std::vector<float> * var_y;
-};
-
-
-// Phi variable of the stubs
-class GetVarGenChargeSignedPhi : public GetTreeVariable
-{
-public:
-  GetVarGenChargeSignedPhi(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), par_pdg(tree->m_stub_pdg) {}
-  virtual ~GetVarGenChargeSignedPhi() {}
-  virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {return std::atan2(var_y->at(k), var_x->at(k));}
-  virtual float coeff() {
-    return ((par_pdg->at(0) > 0) ? -1 : 1);
-  }
-private:
-  std::vector<float> * var_x;
-  std::vector<float> * var_y;
-  std::vector<int> * par_pdg;
 };
 
 
@@ -120,18 +78,6 @@ public:
       GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y),
       var_deltas(tree->m_stub_deltas), var_layer(tree->m_stub_layer)
   {
-//    meanR_.insert(std::make_pair(5, 21.365));
-//    meanR_.insert(std::make_pair(6, 34.15));
-//    meanR_.insert(std::make_pair(7, 49.216));
-//    meanR_.insert(std::make_pair(8, 67.002));
-//    meanR_.insert(std::make_pair(9, 87.191));
-//    meanR_.insert(std::make_pair(10, 106.405));
-//    meanR_.insert(std::make_pair(5, 22.1072));
-//    meanR_.insert(std::make_pair(6, 35.4917));
-//    meanR_.insert(std::make_pair(7, 50.6335));
-//    meanR_.insert(std::make_pair(8, 68.3771));
-//    meanR_.insert(std::make_pair(9, 88.5511));
-//    meanR_.insert(std::make_pair(10, 107.746));
     meanR_.insert(std::make_pair(5, 0.));
     meanR_.insert(std::make_pair(6, 0.));
     meanR_.insert(std::make_pair(7, 0.));
@@ -234,18 +180,6 @@ public:
       GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
       par_pxGEN(tree->m_stub_pxGEN), par_pyGEN(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg)
   {
-//    meanR_.insert(std::make_pair(5, 21.365));
-//    meanR_.insert(std::make_pair(6, 34.15));
-//    meanR_.insert(std::make_pair(7, 49.216));
-//    meanR_.insert(std::make_pair(8, 67.002));
-//    meanR_.insert(std::make_pair(9, 87.191));
-//    meanR_.insert(std::make_pair(10, 106.405));
-//    meanR_.insert(std::make_pair(5, 22.1072));
-//    meanR_.insert(std::make_pair(6, 35.4917));
-//    meanR_.insert(std::make_pair(7, 50.6335));
-//    meanR_.insert(std::make_pair(8, 68.3771));
-//    meanR_.insert(std::make_pair(9, 88.5511));
-//    meanR_.insert(std::make_pair(10, 107.746));
     meanR_.insert(std::make_pair(5, 0.));
     meanR_.insert(std::make_pair(6, 0.));
     meanR_.insert(std::make_pair(7, 0.));

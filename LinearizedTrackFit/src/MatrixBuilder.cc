@@ -24,42 +24,8 @@ MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pa
 }
 
 
-//void MatrixBuilder::updateMeanAndCov(const std::vector<float> & vars)
-//{
-//  for (unsigned int iVar=0; iVar<nVars_; ++iVar) {
-//    // update mean
-//    meanValues_(iVar) += (vars[iVar] - meanValues_(iVar))/count_;
-//
-//    // update covariance matrix
-//    if(count_ == 1) continue; // skip first track
-//    for (unsigned int jVar=0; jVar<nVars_; ++jVar) {
-//      cov_(iVar, jVar) += (vars[iVar] - meanValues_(iVar))*(vars[jVar] - meanValues_(jVar))/(count_-1) - cov_(iVar, jVar)/count_;
-//    }
-//  }
-//}
-
-
-//void MatrixBuilder::updateMeanAndCov(const std::vector<float> & vars, const std::vector<float> & varCoeff)
-//{
-//  for (unsigned int iVar=0; iVar<nVars_; ++iVar) {
-//    // update mean
-//    if (!varsMeans_.at(iVar).first) meanValues_(iVar) += (vars[iVar] - meanValues_(iVar))/count_;
-//
-//    // update covariance matrix
-//    if(count_ == 1) continue; // skip first track
-//    for (unsigned int jVar=0; jVar<nVars_; ++jVar) {
-//      cov_(iVar, jVar) += varCoeff[iVar]*(vars[iVar] - meanValues_(iVar))*varCoeff[jVar]*(vars[jVar] - meanValues_(jVar))/(count_-1) - cov_(iVar, jVar)/count_;
-//    }
-//  }
-//}
-
-
-void MatrixBuilder::updateMeanAndCov(const std::vector<float> & vars, const std::vector<float> & varCoeff, const int lastLadder)
+void MatrixBuilder::updateMeanAndCov(const std::vector<float> & vars, const int lastLadder)
 {
-//  if (meanValuesLadders_.find(lastLadder) == meanValuesLadders_.end()) {
-//    meanValuesLadders_.insert(std::make_pair(lastLadder, VectorXd::Zero(nVars_)));
-//  }
-
   for (unsigned int iVar=0; iVar<nVars_; ++iVar) {
     // update mean
     // if (!varsMeans_.at(iVar).first) meanValues_(iVar) += (vars[iVar] - meanValues_(iVar))/count_;
@@ -69,8 +35,7 @@ void MatrixBuilder::updateMeanAndCov(const std::vector<float> & vars, const std:
     // update covariance matrix
     if(count_ == 1) continue; // skip first track
     for (unsigned int jVar=0; jVar<nVars_; ++jVar) {
-      // cov_(iVar, jVar) += varCoeff[iVar]*(vars[iVar] - meanValues_(iVar))*varCoeff[jVar]*(vars[jVar] - meanValues_(jVar))/(count_-1) - cov_(iVar, jVar)/count_;
-      cov_(iVar, jVar) += varCoeff[iVar]*(vars[iVar] - meanValuesLadders_[lastLadder](iVar))*varCoeff[jVar]*(vars[jVar] -
+      cov_(iVar, jVar) += (vars[iVar] - meanValuesLadders_[lastLadder](iVar))*(vars[jVar] -
           meanValuesLadders_[lastLadder](jVar))/(count_-1) - cov_(iVar, jVar)/count_;
     }
   }
@@ -95,7 +60,7 @@ void MatrixBuilder::updateMeanAndCov(const std::vector<float> & vars, const std:
 //}
 
 
-void MatrixBuilder::updateMeanAndCovParams(const std::vector<float> & vars, const std::vector<float> & varCoeff,
+void MatrixBuilder::updateMeanAndCovParams(const std::vector<float> & vars,
     const std::vector<float> & pars, const int lastLadder, const bool usePcs)
 {
   // The mean of the values should have already been updated outside this function.
@@ -121,9 +86,7 @@ void MatrixBuilder::updateMeanAndCovParams(const std::vector<float> & vars, cons
     }
     else {
       for (unsigned int jVar = 0; jVar != nVars_; ++jVar) {
-        // corrPV_(iPar, jVar) += (pars[iPar] - meanP_(iPar)) * varCoeff[jVar] * (vars[jVar] - meanValues_(jVar)) / (count_ - 1) - corrPV_(iPar, jVar) / count_;
-        // corrPV_(iPar, jVar) += (pars[iPar] - meanP_(iPar)) * varCoeff[jVar] * (vars[jVar] -
-        corrPV_(iPar, jVar) += (pars[iPar] - meanPLadders_[lastLadder](iPar)) * varCoeff[jVar] * (vars[jVar] -
+        corrPV_(iPar, jVar) += (pars[iPar] - meanPLadders_[lastLadder](iPar)) * (vars[jVar] -
             meanValuesLadders_[lastLadder](jVar)) / (count_ - 1) - corrPV_(iPar, jVar) / count_;
       }
     }
@@ -131,34 +94,20 @@ void MatrixBuilder::updateMeanAndCovParams(const std::vector<float> & vars, cons
 }
 
 
-////void MatrixBuilder::update(const std::vector<float> & vars, const std::vector<float> & varCoeff, const std::vector<float> & pars)
-//void MatrixBuilder::update(const std::vector<float> & vars, const std::vector<float> & varCoeff, const std::vector<float> & pars, const int lastLadder)
-//{
-//  ++count_;
-//  // The order of the following calls is important. The updateMeanAndCovParams method does not update the mean of
-//  // the variables and it assumes this is done outside.
-////  updateMeanAndCov(vars);
-////  updateMeanAndCovParams(vars, pars);
-////  updateMeanAndCov(vars, varCoeff);
-//  updateMeanAndCov(vars, varCoeff, lastLadder);
-//  updateMeanAndCovParams(vars, varCoeff, pars, false);
-//}
-
-
-void MatrixBuilder::update(const std::vector<float> & vars, const std::vector<float> & varCoeff, const int lastLadder)
+void MatrixBuilder::update(const std::vector<float> & vars, const int lastLadder)
 {
   ++count_;
-  updateMeanAndCov(vars, varCoeff, lastLadder);
+  updateMeanAndCov(vars, lastLadder);
 }
 
 
-void MatrixBuilder::update(const std::vector<float> & vars, const std::vector<float> & varCoeff,
-    const std::vector<float> & pars, const int lastLadder, const bool usePcs)
+void MatrixBuilder::update(const std::vector<float> & vars, const std::vector<float> & pars,
+    const int lastLadder, const bool usePcs)
 {
   ++count_;
   // The order of the following calls is important. The updateMeanAndCovParams method does not update the mean of
   // the variables and it assumes this is done outside.
-  updateMeanAndCovParams(vars, varCoeff, pars, lastLadder, usePcs);
+  updateMeanAndCovParams(vars, pars, lastLadder, usePcs);
 }
 
 

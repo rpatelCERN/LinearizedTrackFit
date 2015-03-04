@@ -99,7 +99,6 @@ namespace LinearFit {
       if (computeDistances) fillDistances(treeReader, stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms);
 
       std::vector<float> vars(treeReader.getVariables());
-      std::vector<float> varsCoeff(treeReader.getVariablesCoefficients());
       std::vector<float> pars(treeReader.getTrackParameters());
 
       // printTrack(vars, pars, geomIndex);
@@ -115,7 +114,7 @@ namespace LinearFit {
       // matrices.find(geomIndex)->second.update(vars, varsCoeff, pars, treeReader.getLastLadder());
       int lastLadder = -1;
       if (phiSymmetricFit) lastLadder = treeReader.getLastLadder();
-      matrices.find(geomIndex)->second.update(vars, varsCoeff, lastLadder);
+      matrices.find(geomIndex)->second.update(vars, lastLadder);
       histograms.find(geomIndex)->second.fill(vars, pars);
       histograms2D.find(geomIndex)->second.fill(treeReader.getStubRZPhi());
       if (computeCorrelations) correlationHistograms.fill(vars, pars, treeReader.getCharge());
@@ -149,13 +148,12 @@ namespace LinearFit {
       }
 
       std::vector<float> vars(treeReader.getVariables());
-      std::vector<float> varsCoeff(treeReader.getVariablesCoefficients());
       std::vector<float> pars(treeReader.getTrackParameters());
 
       // Update mean and covariance for this linearization region
       int lastLadder = -1;
       if (phiSymmetricFit) lastLadder = treeReader.getLastLadder();
-      matrices.find(geomIndex)->second.update(vars, varsCoeff, pars, lastLadder, usePcs);
+      matrices.find(geomIndex)->second.update(vars, pars, lastLadder, usePcs);
     }
     // -----------------------
 

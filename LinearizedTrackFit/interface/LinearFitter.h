@@ -17,11 +17,9 @@ public:
   LinearFitter(const std::string & inputDirName, const bool pcsFit);
 
   // Fit track parameters
-  bool fit(const std::vector<float> & vars, const std::vector<float> & varsCoeff,
-      const float & genOneOverPt, const float & genPhi, const float & genEta,
-      const float & genZ0, const int charge, const int lastLadder);
-  bool fit(const std::vector<float> & vars, const std::vector<float> & varsCoeff,
-      const std::vector<StubRZPhi> & stubs, const int charge, const int lastLadder);
+  bool fit(const std::vector<float> & vars, const float & genOneOverPt, const float & genPhi,
+      const float & genEta, const float & genZ0, const int charge, const int lastLadder);
+  bool fit(const std::vector<float> & vars, const std::vector<StubRZPhi> & stubs, const int charge, const int lastLadder);
   float normChi2() const { return normChi2_; }
   std::vector<float> trackParameters() const { return trackParameters_; }
   int geometricIndex() const { return geomIndex_; }
@@ -29,11 +27,11 @@ public:
   unsigned int variablesSize() const { return variablesSize_; }
 
   // These are mostly for debugging and validation. They must be called after the fit, otherwise the geomIndex is not updated.
-  std::vector<float> principalComponents(const std::vector<float> & vars, const std::vector<float> & varCoeff, const int lastLadder);
-  std::vector<float> normalizedPrincipalComponents(const std::vector<float> & vars, const std::vector<float> & varCoeff, const int lastLadder);
+  std::vector<float> principalComponents(const std::vector<float> & vars, const int lastLadder);
+  std::vector<float> normalizedPrincipalComponents(const std::vector<float> & vars, const int lastLadder);
 
 private:
-  bool fit(const std::vector<float> & vars, const std::vector<float> & varsCoeff, const int lastLadder);
+  bool fit(const std::vector<float> & vars, const int lastLadder);
   void readRequiredLayers(const std::string & inputFileName);
 
   // Data members

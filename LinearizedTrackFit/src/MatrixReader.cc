@@ -101,11 +101,9 @@ MatrixReader::MatrixReader(const std::string & inputFileName)
 }
 
 
-float MatrixReader::normChi2(const VectorXd & vars, const ArrayXd & varCoeff, const int lastLadder) const
+float MatrixReader::normChi2(const VectorXd & vars, const int lastLadder) const
 {
-  // VectorXd principal = V_*(((vars - meanValues_).array()*varCoeff).matrix());
-  // VectorXd principal = V_*(((vars - meanValues_).array()*varCoeff).matrix());
-  VectorXd principal = V_*(((vars - meanValuesLadders_.find(lastLadder)->second).array()*varCoeff).matrix());
+  VectorXd principal = V_*(vars - meanValuesLadders_.find(lastLadder)->second);
 
   float chi2 = 0.;
   int nDof = 0;
@@ -118,30 +116,13 @@ float MatrixReader::normChi2(const VectorXd & vars, const ArrayXd & varCoeff, co
 }
 
 
-//std::vector<float> MatrixReader::trackParameters(const VectorXd & vars, const ArrayXd & varCoeff) const
-//{
-//  std::vector<float> pars;
-//
-//  // Estimate track parameters
-//  VectorXd estimatedPars = D_*(((vars - meanValues_).array()*varCoeff).matrix()) + meanP_;
-//
-//  for (int i=0; i<nTrackParameters_; ++i) {
-//    pars.push_back(estimatedPars(i));
-//  }
-//
-//  return pars;
-//}
-
-
-std::vector<float> MatrixReader::trackParameters(const VectorXd & vars, const ArrayXd & varCoeff,
-    const int lastLadder, const bool usePcs) const
+std::vector<float> MatrixReader::trackParameters(const VectorXd & vars, const int lastLadder, const bool usePcs) const
 {
   std::vector<float> pars;
 
   if (usePcs) {
     // Estimate track parameters
-//    VectorXd principal = V_ * (((vars - meanValues_).array() * varCoeff).matrix());
-    VectorXd principal = V_ * (((vars - meanValuesLadders_.find(lastLadder)->second).array() * varCoeff).matrix());
+    VectorXd principal = V_ * (vars - meanValuesLadders_.find(lastLadder)->second);
     for (int i = 0; i < principal.size(); ++i) {
       principal(i) = principal(i) / (sqrtEigenvalues_(i) * sqrtEigenvalues_(i));
     }
@@ -154,9 +135,7 @@ std::vector<float> MatrixReader::trackParameters(const VectorXd & vars, const Ar
   }
   else {
     // Estimate track parameters
-//    VectorXd estimatedPars = D_ * (((vars - meanValues_).array() * varCoeff).matrix()) + meanP_;
-    // VectorXd estimatedPars = D_ * (((vars - meanValuesLadders_.find(lastLadder)->second).array() * varCoeff).matrix()) + meanP_;
-    VectorXd estimatedPars = D_ * (((vars - meanValuesLadders_.find(lastLadder)->second).array() * varCoeff).matrix()) + meanPLadders_.find(lastLadder)->second;
+    VectorXd estimatedPars = D_ * (vars - meanValuesLadders_.find(lastLadder)->second) + meanPLadders_.find(lastLadder)->second;
     for (int i=0; i<nTrackParameters_; ++i) {
       pars.push_back(estimatedPars(i));
     }
@@ -166,12 +145,11 @@ std::vector<float> MatrixReader::trackParameters(const VectorXd & vars, const Ar
 }
 
 
-std::vector<float> MatrixReader::principalComponents(const VectorXd & vars, const ArrayXd & varCoeff, const int lastLadder) const
+std::vector<float> MatrixReader::principalComponents(const VectorXd & vars, const int lastLadder) const
 {
   std::vector<float> pcs;
 
-//  VectorXd principal = V_*(((vars - meanValues_).array()*varCoeff).matrix());
-  VectorXd principal = V_*(((vars - meanValuesLadders_.find(lastLadder)->second).array()*varCoeff).matrix());
+  VectorXd principal = V_*(vars - meanValuesLadders_.find(lastLadder)->second);
 
   for (int i=0; i<nVars_; ++i) {
     pcs.push_back(principal(i));
@@ -181,12 +159,11 @@ std::vector<float> MatrixReader::principalComponents(const VectorXd & vars, cons
 }
 
 
-std::vector<float> MatrixReader::normalizedPrincipalComponents(const VectorXd & vars, const ArrayXd & varCoeff, const int lastLadder) const
+std::vector<float> MatrixReader::normalizedPrincipalComponents(const VectorXd & vars, const int lastLadder) const
 {
   std::vector<float> npcs;
 
-//  VectorXd principal = V_*(((vars - meanValues_).array()*varCoeff).matrix());
-  VectorXd principal = V_*(((vars - meanValuesLadders_.find(lastLadder)->second).array()*varCoeff).matrix());
+  VectorXd principal = V_*(vars - meanValuesLadders_.find(lastLadder)->second);
 
   for (int i=0; i<nVars_; ++i) {
     npcs.push_back(principal(i)/sqrtEigenvalues_(i));
