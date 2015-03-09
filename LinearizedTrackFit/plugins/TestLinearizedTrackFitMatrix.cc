@@ -192,8 +192,8 @@ void TestLinearizedTrackFitMatrix::beginJob()
 //    for (unsigned int i=0; i<varsCoeff.size(); ++i) { varsCoeffArray(i) = varsCoeff[i]; }
 
     int lastLadder = -1;
-    if (phiSymmetricFit) lastLadder = treeReader.getLastLadder();
-    
+    if (phiSymmetricFit_) lastLadder = treeReader.getLastLadder();
+
     // Estimate with negative charge matrix
 //    float normChi2Neg = linearFitNegativeCharge.normChi2(varsVec, varsCoeffArray);
 
