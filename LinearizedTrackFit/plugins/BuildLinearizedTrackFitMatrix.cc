@@ -218,6 +218,8 @@ void BuildLinearizedTrackFitMatrix::beginJob()
 
     std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
     requiredLayers_.insert(std::make_pair("phi", std::unordered_set<int>(layersPhi_.begin(), layersPhi_.end())));
+    requiredLayers_.insert(std::make_pair("CorrectedPhi", std::unordered_set<int>(layersPhi_.begin(), layersPhi_.end())));
+    requiredLayers_.insert(std::make_pair("CorrectedPhiSecondOrder", std::unordered_set<int>(layersPhi_.begin(), layersPhi_.end())));
     requiredLayers_.insert(std::make_pair("phiOverR", std::unordered_set<int>(layersPhiOverR_.begin(), layersPhiOverR_.end())));
     requiredLayers_.insert(std::make_pair("ChargeSignedPhi", std::unordered_set<int>(layersChargeSignedPhi_.begin(), layersChargeSignedPhi_.end())));
     requiredLayers_.insert(std::make_pair("GenChargeSignedPhi", std::unordered_set<int>(layersGenChargeSignedPhi_.begin(), layersGenChargeSignedPhi_.end())));
@@ -231,38 +233,39 @@ void BuildLinearizedTrackFitMatrix::beginJob()
 
     // For fixing the mean values. True means fix the mean to the specified value.
     std::unordered_map<std::string, std::vector<std::pair<bool, float> > > inputVariablesMeans_;
-    std::vector<std::pair<bool, float> > meansPhi_(6, {fixMeansPhi_, 0.});
-    std::vector<std::pair<bool, float> > meansPhiOverR_(6, {fixMeansPhi_, 0.});
-    std::vector<std::pair<bool, float> > meansChargeSignedPhi_(6, {fixMeansPhi_, 0.});
-    std::vector<std::pair<bool, float> > meansGenChargeSignedPhi_(6, {fixMeansPhi_, 0.});
-    std::vector<std::pair<bool, float> > meansR_(6, {false, 0.});
-    std::vector<std::pair<bool, float> > meansOneOverR_(6, {false, 0.});
-    std::vector<std::pair<bool, float> > meansZ_(6, {false, 0.});
-    std::vector<std::pair<bool, float> > meansDeltaS_(6, {false, 0.});
-    std::vector<std::pair<bool, float> > meansChargeCorrectedR_(6, {false, 0.});
-    std::vector<std::pair<bool, float> > meansChargeOverPtCorrectedR_(6, {false, 0.});
-    std::vector<std::pair<bool, float> > meansChargeSignedR_(6, {false, 0.});
-    inputVariablesMeans_.insert(std::make_pair("phi", meansPhi_));
-    inputVariablesMeans_.insert(std::make_pair("phiOverR", meansPhiOverR_));
-    inputVariablesMeans_.insert(std::make_pair("ChargeSignedPhi", meansChargeSignedPhi_));
-    inputVariablesMeans_.insert(std::make_pair("GenChargeSignedPhi", meansGenChargeSignedPhi_));
-    inputVariablesMeans_.insert(std::make_pair("R", meansR_));
-    inputVariablesMeans_.insert(std::make_pair("oneOverR", meansOneOverR_));
-    inputVariablesMeans_.insert(std::make_pair("z", meansZ_));
-    inputVariablesMeans_.insert(std::make_pair("DeltaS", meansDeltaS_));
-    inputVariablesMeans_.insert(std::make_pair("ChargeCorrectedR", meansChargeCorrectedR_));
-    inputVariablesMeans_.insert(std::make_pair("ChargeOverPtCorrectedR", meansChargeCorrectedR_));
-    inputVariablesMeans_.insert(std::make_pair("ChargeSignedR", meansChargeSignedR_));
+    std::vector<std::pair<bool, float> > freeMeans_(6, {fixMeansPhi_, 0.});
+    inputVariablesMeans_.insert(std::make_pair("phi", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("CorrectedPhi", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("CorrectedPhiSecondOrder", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("phiOverR", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("ChargeSignedPhi", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("GenChargeSignedPhi", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("R", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("oneOverR", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("z", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("DeltaS", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("ChargeCorrectedR", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("ChargeOverPtCorrectedR", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("ChargeSignedR", freeMeans_));
 
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
         requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputVariablesMeans_,
-      inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic, usePcs_);
+        inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic,
+        phiSymmetricFit_, usePcs_);
+
+    // Test
+//    LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
+//        requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputVariablesMeans_,
+//      inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic, usePcs_);
   }
 
   if (testMatrix_) {
-    LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
-			  inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
-        radiusCuts_, singleModules_, phiSymmetricFit_, usePcs_);
+  LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
+      inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
+      radiusCuts_, singleModules_, phiSymmetricFit_, usePcs_);
+//    LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
+//			  inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
+//        radiusCuts_, singleModules_, phiSymmetricFit_, usePcs_);
   }
 
 
