@@ -375,7 +375,7 @@ public:
     }
     float DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanR_[var_layer->at(k)];
     float RCube = std::pow(std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)), 3);
-    float DeltaRCube = RCube - std::pow(meanR_[var_layer->at(k)], 3);
+//    float DeltaRCube = RCube - std::pow(meanR_[var_layer->at(k)], 3);
     float phi = std::atan2(var_y->at(k), var_x->at(k));
     // return (phi + estimatedCharge*DeltaR*3.8*0.003/2. + DeltaRCube*std::pow(estimatedCharge*3.8*0.003/2., 3)/6.);
     return (phi + estimatedCharge*DeltaR*3.8*0.003/2. + RCube*std::pow(estimatedCharge*3.8*0.003/2., 3)/6.);
