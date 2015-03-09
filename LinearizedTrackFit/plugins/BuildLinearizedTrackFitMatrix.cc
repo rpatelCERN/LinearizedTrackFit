@@ -67,9 +67,10 @@ private:
   std::vector<int> layersGenChargeSignedPhi_;
   std::vector<int> layersR_;
   std::vector<int> layersOneOverR_;
+  std::vector<int> layersChargeSignedR_;
   std::vector<int> layersChargeCorrectedR_;
   std::vector<int> layersChargeOverPtCorrectedR_;
-  std::vector<int> layersChargeSignedR_;
+  std::vector<int> layersChargeOverPtCorrectedRCube_;
   std::vector<int> layersZ_;
   std::vector<int> layersDeltaS_;
   bool fixMeansPhi_;
@@ -126,8 +127,10 @@ BuildLinearizedTrackFitMatrix::BuildLinearizedTrackFitMatrix(const edm::Paramete
   layersGenChargeSignedPhi_(iConfig.getParameter<std::vector<int> >("LayersGenChargeSignedPhi")),
   layersR_(iConfig.getParameter<std::vector<int> >("LayersR")),
   layersOneOverR_(iConfig.getParameter<std::vector<int> >("LayersOneOverR")),
-  layersChargeCorrectedR_(iConfig.getParameter<std::vector<int> >("LayersChargeCorrectedR")),
   layersChargeSignedR_(iConfig.getParameter<std::vector<int> >("LayersChargeSignedR")),
+  layersChargeCorrectedR_(iConfig.getParameter<std::vector<int> >("LayersChargeCorrectedR")),
+  layersChargeOverPtCorrectedR_(iConfig.getParameter<std::vector<int> >("LayersChargeOverPtCorrectedR")),
+  layersChargeOverPtCorrectedRCube_(iConfig.getParameter<std::vector<int> >("LayersChargeOverPtCorrectedRCube")),
   layersZ_(iConfig.getParameter<std::vector<int> >("LayersZ")),
   layersDeltaS_(iConfig.getParameter<std::vector<int> >("LayersDeltaS")),
   fixMeansPhi_(iConfig.getParameter<bool>("FixMeansPhi")),
@@ -223,11 +226,13 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     requiredLayers_.insert(std::make_pair("GenChargeSignedPhi", std::unordered_set<int>(layersGenChargeSignedPhi_.begin(), layersGenChargeSignedPhi_.end())));
     requiredLayers_.insert(std::make_pair("R", std::unordered_set<int>(layersR_.begin(), layersR_.end())));
     requiredLayers_.insert(std::make_pair("oneOverR", std::unordered_set<int>(layersOneOverR_.begin(), layersOneOverR_.end())));
+    requiredLayers_.insert(std::make_pair("ChargeSignedR", std::unordered_set<int>(layersChargeSignedR_.begin(), layersChargeSignedR_.end())));
     requiredLayers_.insert(std::make_pair("ChargeCorrectedR", std::unordered_set<int>(layersChargeCorrectedR_.begin(), layersChargeCorrectedR_.end())));
     requiredLayers_.insert(std::make_pair("ChargeOverPtCorrectedR", std::unordered_set<int>(layersChargeOverPtCorrectedR_.begin(), layersChargeOverPtCorrectedR_.end())));
-    requiredLayers_.insert(std::make_pair("ChargeSignedR", std::unordered_set<int>(layersChargeSignedR_.begin(), layersChargeSignedR_.end())));
+    requiredLayers_.insert(std::make_pair("ChargeOverPtCorrectedRCube", std::unordered_set<int>(layersChargeOverPtCorrectedRCube_.begin(), layersChargeOverPtCorrectedRCube_.end())));
     requiredLayers_.insert(std::make_pair("z", std::unordered_set<int>(layersZ_.begin(), layersZ_.end())));
     requiredLayers_.insert(std::make_pair("DeltaS", std::unordered_set<int>(layersDeltaS_.begin(), layersDeltaS_.end())));
+    requiredLayers_.insert(std::make_pair("DeltaSDeltaR", std::unordered_set<int>(layersR_.begin(), layersR_.end())));
 
     // For fixing the mean values. True means fix the mean to the specified value.
     std::unordered_map<std::string, std::vector<std::pair<bool, float> > > inputVariablesMeans_;
@@ -239,19 +244,22 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     std::vector<std::pair<bool, float> > meansOneOverR_(6, {false, 0.});
     std::vector<std::pair<bool, float> > meansZ_(6, {false, 0.});
     std::vector<std::pair<bool, float> > meansDeltaS_(6, {false, 0.});
+    std::vector<std::pair<bool, float> > meansChargeSignedR_(6, {false, 0.});
     std::vector<std::pair<bool, float> > meansChargeCorrectedR_(6, {false, 0.});
     std::vector<std::pair<bool, float> > meansChargeOverPtCorrectedR_(6, {false, 0.});
-    std::vector<std::pair<bool, float> > meansChargeSignedR_(6, {false, 0.});
+    std::vector<std::pair<bool, float> > meansChargeOverPtCorrectedRCube_(6, {false, 0.});
     inputVariablesMeans_.insert(std::make_pair("phi", meansPhi_));
     inputVariablesMeans_.insert(std::make_pair("phiOverR", meansPhiOverR_));
     inputVariablesMeans_.insert(std::make_pair("ChargeSignedPhi", meansChargeSignedPhi_));
     inputVariablesMeans_.insert(std::make_pair("GenChargeSignedPhi", meansGenChargeSignedPhi_));
     inputVariablesMeans_.insert(std::make_pair("R", meansR_));
+    inputVariablesMeans_.insert(std::make_pair("DeltaSDeltaR", meansR_));
     inputVariablesMeans_.insert(std::make_pair("oneOverR", meansOneOverR_));
     inputVariablesMeans_.insert(std::make_pair("z", meansZ_));
     inputVariablesMeans_.insert(std::make_pair("DeltaS", meansDeltaS_));
     inputVariablesMeans_.insert(std::make_pair("ChargeCorrectedR", meansChargeCorrectedR_));
     inputVariablesMeans_.insert(std::make_pair("ChargeOverPtCorrectedR", meansChargeCorrectedR_));
+    inputVariablesMeans_.insert(std::make_pair("ChargeOverPtCorrectedRCube", meansChargeCorrectedR_));
     inputVariablesMeans_.insert(std::make_pair("ChargeSignedR", meansChargeSignedR_));
 
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
