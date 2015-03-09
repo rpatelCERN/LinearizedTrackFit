@@ -36,6 +36,10 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     else if (varName == "ChargeOverPtCorrectedR") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedR>(tree_, requiredLayers_["ChargeOverPtCorrectedR"]));
     else if (varName == "ChargeOverPtCorrectedRCube") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedRCube>(tree_, requiredLayers_["ChargeOverPtCorrectedRCube"]));
     else if (varName == "RCotTheta") vars_.push_back(std::make_shared<GetVarRCotTheta>(tree_, requiredLayers_["RCotTheta"]));
+    else if (varName == "CorrectedPhi") vars_.push_back(std::make_shared<GetVarCorrectedPhi>(tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrder>(tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiThirdOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrder>(tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiSecondOrderGen") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderGen>(tree_, requiredLayers_["phi"]));
     else {
       std::cout << "Error: undefined variable name " << varName << std::endl;
       throw;
