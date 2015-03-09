@@ -70,6 +70,7 @@ private:
   std::vector<std::string> inputTrackParameterNames_;
   bool singleModules_;
   bool usePcs_;
+  bool phiSymmetricFit_;
   // Geometric cuts
   double oneOverPtMin_;
   double oneOverPtMax_;
@@ -108,6 +109,7 @@ TestLinearizedTrackFitMatrix::TestLinearizedTrackFitMatrix(const edm::ParameterS
   inputTrackParameterNames_(iConfig.getParameter<std::vector<std::string> >("TrackParameterNames")),
   singleModules_(iConfig.getParameter<bool>("SingleModules")),
   usePcs_(iConfig.getParameter<bool>("UsePcs")),
+  phiSymmetricFit_(iConfig.getParameter<bool>("PhiSymmetricFit")),
   oneOverPtMin_(iConfig.getParameter<double>("OneOverPtMin")),
   oneOverPtMax_(iConfig.getParameter<double>("OneOverPtMax")),
   phiMin_(iConfig.getParameter<double>("PhiMin")),
@@ -189,14 +191,18 @@ void TestLinearizedTrackFitMatrix::beginJob()
 //    ArrayXd varsCoeffArray(varsCoeff.size());
 //    for (unsigned int i=0; i<varsCoeff.size(); ++i) { varsCoeffArray(i) = varsCoeff[i]; }
 
+    int lastLadder = -1;
+    if (phiSymmetricFit) lastLadder = treeReader.getLastLadder();
+    
     // Estimate with negative charge matrix
 //    float normChi2Neg = linearFitNegativeCharge.normChi2(varsVec, varsCoeffArray);
-    float normChi2Neg = linearFitNegativeCharge.normChi2(varsVec);
+
+    float normChi2Neg = linearFitNegativeCharge.normChi2(varsVec, lastLadder);
     // std::vector<float> trackParametersNeg(linearFitNegativeCharge.trackParameters(varsVec, varsCoeffArray));
 
     // Estimate with positive charge matrix
 //    float normChi2Pos = linearFitPositiveCharge.normChi2(varsVec, varsCoeffArray);
-    float normChi2Pos = linearFitPositiveCharge.normChi2(varsVec);
+    float normChi2Pos = linearFitPositiveCharge.normChi2(varsVec, lastLadder);
     // std::vector<float> trackParametersPos(linearFitPositiveCharge.trackParameters(varsVec, varsCoeffArray));
 
     if (treeReader.getOneOverPt() < oneOverPtMin_ || treeReader.getOneOverPt() > oneOverPtMax_) continue;
