@@ -229,6 +229,8 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     requiredLayers_.insert(std::make_pair("ChargeOverPtCorrectedR", std::unordered_set<int>(layersChargeOverPtCorrectedR_.begin(), layersChargeOverPtCorrectedR_.end())));
     requiredLayers_.insert(std::make_pair("ChargeSignedR", std::unordered_set<int>(layersChargeSignedR_.begin(), layersChargeSignedR_.end())));
     requiredLayers_.insert(std::make_pair("z", std::unordered_set<int>(layersZ_.begin(), layersZ_.end())));
+    requiredLayers_.insert(std::make_pair("CorrectedZ", std::unordered_set<int>(layersZ_.begin(), layersZ_.end())));
+    requiredLayers_.insert(std::make_pair("CorrectedZSecondOrder", std::unordered_set<int>(layersZ_.begin(), layersZ_.end())));
     requiredLayers_.insert(std::make_pair("DeltaS", std::unordered_set<int>(layersDeltaS_.begin(), layersDeltaS_.end())));
 
     // For fixing the mean values. True means fix the mean to the specified value.
@@ -243,6 +245,8 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     inputVariablesMeans_.insert(std::make_pair("R", freeMeans_));
     inputVariablesMeans_.insert(std::make_pair("oneOverR", freeMeans_));
     inputVariablesMeans_.insert(std::make_pair("z", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("CorrectedZ", freeMeans_));
+    inputVariablesMeans_.insert(std::make_pair("CorrectedZSecondOrder", freeMeans_));
     inputVariablesMeans_.insert(std::make_pair("DeltaS", freeMeans_));
     inputVariablesMeans_.insert(std::make_pair("ChargeCorrectedR", freeMeans_));
     inputVariablesMeans_.insert(std::make_pair("ChargeOverPtCorrectedR", freeMeans_));
