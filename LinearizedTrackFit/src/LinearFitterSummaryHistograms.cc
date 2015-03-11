@@ -18,8 +18,8 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
 
   float ptMin = -200.;
   float ptMax = 200.;
-  float etaMin = -0.2;
-  float etaMax = 0.2;
+  float etaMin = -0.4;
+  float etaMax = 0.4;
 
   if (ptIndex_ != -1) {
     hDeltaCurvatureOverCurvatureVsCurvature_ = new TH2F("deltaCurvatureOverCurvatureVsCurvature", "deltaCurvatureOverCurvatureVsCurvature", 240, -0.6, 0.6, 200, -0.2, 0.2);
@@ -34,15 +34,15 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     }
   }
   if (cotThetaIndex_ != -1) {
-    hDeltaCotThetaVsEta_ = new TH2F("deltaCotThetaVsEta", "deltaCotThetaVsEta", 200, etaMin, etaMax, 100, -0.05, 0.05);
-    hDeltaEtaVsEta_ = new TH2F("deltaEtaVsEta", "deltaEtaVsEta", 200, etaMin, etaMax, 100, -0.05, 0.05);
+    hDeltaCotThetaVsEta_ = new TH2F("deltaCotThetaVsEta", "deltaCotThetaVsEta", 400, etaMin, etaMax, 100, -0.05, 0.05);
+    hDeltaEtaVsEta_ = new TH2F("deltaEtaVsEta", "deltaEtaVsEta", 400, etaMin, etaMax, 100, -0.05, 0.05);
     if (ptIndex_ != -1) {
       hDeltaCurvatureOverCurvatureVsEta_ = new TH2F("deltaCurvatureOverCurvatureVsEta", "deltaCurvatureOverCurvatureVsEta", 240, etaMin, etaMax, 100, -0.1, 0.1);
       hDeltaPtOverPtVsEta_ = new TH2F("deltaPtOverPtVsEta", "deltaPtOverPtVsEta", 100, etaMin, etaMax, 100, -0.1, 0.1);
     }
-    if (z0Index_ != -1) hDeltaZ0VsEta_ = new TH2F("deltaZ0VsEta", "deltaZ0VsEta", 100, etaMin, etaMax, 100, -0.2, 0.2);
-    if (phiIndex_ != -1) hDeltaPhiVsEta_ = new TH2F("deltaPhiVsEta", "deltaPhiVsEta", 100, etaMin, etaMax, 100, -0.05, 0.05);
-    if (d0Index_ != -1) hDeltaD0VsEta_ = new TH2F("deltaD0VsEta", "deltaD0VsEta", 100, etaMin, etaMax, 100, -0.1, 0.1);
+    if (z0Index_ != -1) hDeltaZ0VsEta_ = new TH2F("deltaZ0VsEta", "deltaZ0VsEta", 400, etaMin, etaMax, 200, -0.5, 0.5);
+    if (phiIndex_ != -1) hDeltaPhiVsEta_ = new TH2F("deltaPhiVsEta", "deltaPhiVsEta", 400, etaMin, etaMax, 100, -0.05, 0.05);
+    if (d0Index_ != -1) hDeltaD0VsEta_ = new TH2F("deltaD0VsEta", "deltaD0VsEta", 400, etaMin, etaMax, 100, -0.1, 0.1);
   }
 }
 

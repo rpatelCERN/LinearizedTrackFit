@@ -40,6 +40,8 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     else if (varName == "CorrectedPhiSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrder>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedPhiThirdOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrder>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedPhiSecondOrderGen") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderGen>(tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedZ") vars_.push_back(std::make_shared<GetVarCorrectedZ>(tree_, requiredLayers_["z"]));
+    else if (varName == "CorrectedZSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedZSecondOrder>(tree_, requiredLayers_["z"]));
     else {
       std::cout << "Error: undefined variable name " << varName << std::endl;
       throw;
