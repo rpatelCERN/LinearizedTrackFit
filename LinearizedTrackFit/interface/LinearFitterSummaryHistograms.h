@@ -29,6 +29,7 @@ private:
   TH2F * hDeltaPtOverPtVsEta_;
   TH2F * hDeltaCurvatureOverCurvatureVsEta_;
   TH2F * hDeltaZ0VsEta_;
+  TH2F * hDeltaZ0VsZ0_;
   TH2F * hDeltaPhiVsEta_;
   TH2F * hDeltaCotThetaVsEta_;
   TH2F * hDeltaEtaVsEta_;
