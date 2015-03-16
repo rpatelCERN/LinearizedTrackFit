@@ -87,7 +87,10 @@ void LinearFitterSummaryHistograms::fill(const std::vector<float> & vars, const 
       hDeltaCurvatureOverCurvatureVsEta_->Fill(eta, (curvature-estCurvature)/curvature);
       hDeltaPtOverPtVsEta_->Fill(eta, (pt-estPt)/pt);
     }
-    if (z0Index_ != -1) hDeltaZ0VsEta_->Fill(eta, pars[z0Index_]-estimatedPars[z0Index_]);
+    if (z0Index_ != -1) {
+      hDeltaZ0VsEta_->Fill(eta, pars[z0Index_]-estimatedPars[z0Index_]);
+      hDeltaZ0VsZ0_->Fill(pars[z0Index_], pars[z0Index_]-estimatedPars[z0Index_]);
+    }
     if (phiIndex_ != -1) hDeltaPhiVsEta_->Fill(eta, pars[phiIndex_]-estimatedPars[phiIndex_]);
     if (d0Index_ != -1) hDeltaD0VsEta_->Fill(eta, pars[d0Index_]-estimatedPars[d0Index_]);
   }
@@ -116,7 +119,10 @@ void LinearFitterSummaryHistograms::write()
       hDeltaCurvatureOverCurvatureVsEta_->Write();
       hDeltaPtOverPtVsEta_->Write();
     }
-    if (z0Index_ != -1) hDeltaZ0VsEta_->Write();
+    if (z0Index_ != -1) {
+      hDeltaZ0VsEta_->Write();
+      hDeltaZ0VsZ0_->Write();
+    }
     if (phiIndex_ != -1) hDeltaPhiVsEta_->Write();
     if (d0Index_ != -1) hDeltaD0VsEta_->Write();
   }
