@@ -20,6 +20,8 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
   float ptMax = 200.;
   float etaMin = -0.4;
   float etaMax = 0.4;
+  float z0Min = -20.;
+  float z0Max = 20.;
 
   if (ptIndex_ != -1) {
     hDeltaCurvatureOverCurvatureVsCurvature_ = new TH2F("deltaCurvatureOverCurvatureVsCurvature", "deltaCurvatureOverCurvatureVsCurvature", 240, -0.6, 0.6, 200, -0.2, 0.2);
@@ -27,7 +29,7 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     hDeltaPtOverPtVsPt_ = new TH2F("deltaPtOverPtVsPt", "deltaPtOverPtVsPt", 400, ptMin, ptMax, 200, -0.2, 0.2);
     if (z0Index_ != -1) hDeltaZ0VsPt_ = new TH2F("deltaZ0VsPt", "deltaZ0VsPt", 400, ptMin, ptMax, 100, -0.2, 0.2);
     if (phiIndex_ != -1) hDeltaPhiVsPt_ = new TH2F("deltaPhiVsPt", "deltaPhiVsPt", 400, ptMin, ptMax, 1000, -0.005, 0.005);
-    if (d0Index_ != -1) hDeltaD0VsPt_ = new TH2F("deltaD0VsPt", "deltaD0VsPt", 400, ptMin, ptMax, 100, -0.1, 0.1);
+    if (d0Index_ != -1) hDeltaD0VsPt_ = new TH2F("deltaD0VsPt", "deltaD0VsPt", 400, ptMin, ptMax, 200, -0.1, 0.1);
     if (cotThetaIndex_ != -1) {
       hDeltaCotThetaVsPt_ = new TH2F("deltaCotThetaVsPt", "deltaCotThetaVsPt", 400, ptMin, ptMax, 100, -0.05, 0.05);
       hDeltaEtaVsPt_ = new TH2F("deltaEtaVsPt", "deltaEtaVsPt", 400, ptMin, ptMax, 100, -0.05, 0.05);
@@ -38,9 +40,12 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     hDeltaEtaVsEta_ = new TH2F("deltaEtaVsEta", "deltaEtaVsEta", 400, etaMin, etaMax, 100, -0.05, 0.05);
     if (ptIndex_ != -1) {
       hDeltaCurvatureOverCurvatureVsEta_ = new TH2F("deltaCurvatureOverCurvatureVsEta", "deltaCurvatureOverCurvatureVsEta", 240, etaMin, etaMax, 100, -0.1, 0.1);
-      hDeltaPtOverPtVsEta_ = new TH2F("deltaPtOverPtVsEta", "deltaPtOverPtVsEta", 100, etaMin, etaMax, 100, -0.1, 0.1);
+      hDeltaPtOverPtVsEta_ = new TH2F("deltaPtOverPtVsEta", "deltaPtOverPtVsEta", 400, etaMin, etaMax, 100, -0.1, 0.1);
     }
-    if (z0Index_ != -1) hDeltaZ0VsEta_ = new TH2F("deltaZ0VsEta", "deltaZ0VsEta", 400, etaMin, etaMax, 200, -0.5, 0.5);
+    if (z0Index_ != -1) {
+      hDeltaZ0VsZ0_ = new TH2F("deltaZ0VsZ0", "deltaZ0VsZ0", 400, z0Min, z0Max, 200, -0.5, 0.5);
+      hDeltaZ0VsEta_ = new TH2F("deltaZ0VsEta", "deltaZ0VsEta", 400, etaMin, etaMax, 200, -0.5, 0.5);
+    }
     if (phiIndex_ != -1) hDeltaPhiVsEta_ = new TH2F("deltaPhiVsEta", "deltaPhiVsEta", 400, etaMin, etaMax, 100, -0.05, 0.05);
     if (d0Index_ != -1) hDeltaD0VsEta_ = new TH2F("deltaD0VsEta", "deltaD0VsEta", 400, etaMin, etaMax, 100, -0.1, 0.1);
   }
