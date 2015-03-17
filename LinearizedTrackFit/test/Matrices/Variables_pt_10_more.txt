@@ -1,0 +1,68 @@
+DeltaS 10 9 8 7 6 5 
+
+-
+
+DeltaSDeltaR 10 9 8 7 6 5 
+
+-
+
+CorrectedZ 10 9 8 7 6 5 
+
+-
+
+z 10 9 8 7 6 5 
+
+-
+
+ChargeOverPtCorrectedRCube 10 9 8 7 6 5 
+
+-
+
+ChargeSignedR 10 9 8 7 6 5 
+
+-
+
+oneOverR 10 9 8 7 6 5 
+
+-
+
+CorrectedZSecondOrder 10 9 8 7 6 5 
+
+-
+
+R 10 9 8 7 6 5 
+
+-
+
+GenChargeSignedPhi 10 9 8 7 6 5 
+
+-
+
+ChargeSignedPhi 10 9 8 7 6 5 
+
+-
+
+ChargeOverPtCorrectedR 10 9 8 7 6 5 
+
+-
+
+phiOverR 10 9 8 7 6 5 
+
+-
+
+ChargeCorrectedR 10 9 8 7 6 5 
+
+-
+
+CorrectedPhiSecondOrder 10 9 8 7 6 5 
+
+-
+
+CorrectedPhi 10 9 8 7 6 5 
+
+-
+
+phi 10 9 8 7 6 5 
+
+-
+

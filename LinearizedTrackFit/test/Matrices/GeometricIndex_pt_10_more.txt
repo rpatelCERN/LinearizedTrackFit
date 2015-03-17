@@ -1,0 +1,14 @@
+oneOverPtMin = 0
+oneOverPtMax = 0.1
+oneOverPtRegions = 1
+phiPtMin = 0
+phiPtMax = 0.8
+phiPtRegions = 1
+etaPtMin = -0.3
+etaPtMax = 0.5
+etaPtRegions = 1
+z0PtMin = -15
+z0PtMax = 15
+z0PtRegions = 1
+chargeRegions = 1
+
