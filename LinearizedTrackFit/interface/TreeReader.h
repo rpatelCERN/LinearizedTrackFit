@@ -32,6 +32,11 @@ public:
   float getPt() const {
     return std::sqrt(std::pow(tree_->m_stub_pxGEN->at(0), 2) + std::pow(tree_->m_stub_pyGEN->at(0), 2));
   }
+  float getChargePt() const {
+    return getCharge() > 0 ?
+           std::sqrt(std::pow(tree_->m_stub_pxGEN->at(0), 2) + std::pow(tree_->m_stub_pyGEN->at(0), 2)) :
+           -std::sqrt(std::pow(tree_->m_stub_pxGEN->at(0), 2) + std::pow(tree_->m_stub_pyGEN->at(0), 2));
+  }
   float getOneOverPt() const {
     float pt = getPt();
     return pt == 0 ? 0 : 1./pt;
@@ -43,7 +48,10 @@ public:
   float getY0() const { return tree_->m_stub_Y0->at(0); }
   float getZ0() const { return tree_->m_stub_Z0->at(0); }
   float getR(const int k) const { return std::sqrt(std::pow(tree_->m_stub_x->at(k), 2) + std::pow(tree_->m_stub_y->at(k), 2)); }
+  float getD0() const { return getParD0_->at(0); }
   int getCharge() const { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
+  const std::vector<float> * getVarX() const { return tree_->m_stub_x; }
+  const std::vector<float> * getVarY() const { return tree_->m_stub_y; }
   std::vector<StubRZPhi> getStubRZPhi() const { return stubsRZPhi_; }
   int getLastLadder() { return lastLadder_; }
   unsigned int variablesSize() const { return variablesSize_; }
@@ -54,8 +62,9 @@ public:
       const int charge, const float &B, const float &x1, const float &y1) const;
   float genTrackDistanceLongitudinal(const float &x0, const float &y0, const float &z0, const float &cotTheta,
       const float &r1, const float &z1) const;
-  
-private:
+  std::map<int, unsigned int> layersFound() const { return layersFound_; }
+
+ private:
   bool goodTrack();
 
   // Checks that all the elements of the input vector have the same value.
@@ -95,7 +104,10 @@ private:
   std::vector<double> distanceCutsLongitudinal_;
 
   std::vector<StubRZPhi> stubsRZPhi_;
+  std::map<int, unsigned int> layersFound_;
   int lastLadder_;
+
+  std::shared_ptr<GetParD0> getParD0_;
 };
 
 #endif // TREEREADER_H

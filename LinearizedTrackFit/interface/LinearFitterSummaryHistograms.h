@@ -10,8 +10,11 @@ class LinearFitterSummaryHistograms
 {
 public:
   LinearFitterSummaryHistograms(const std::string & name, const std::vector<std::string> & varNames, const std::vector<std::string> & trackParameterNames);
+//  void fill(const std::vector<float> & vars, const std::vector<float> & pcs, const std::vector<float> & npcs,
+//      const std::vector<float> & pars, const std::vector<float> & estimatedPars, const float & normChi2);
   void fill(const std::vector<float> & vars, const std::vector<float> & pcs, const std::vector<float> & npcs,
-      const std::vector<float> & pars, const std::vector<float> & estimatedPars, const float & normChi2);
+            const std::vector<float> & pars, const std::vector<float> & estimatedPars, const float & normChi2,
+            const double & genPt, const double & genPhi, const double & genEta, const double & genZ0, const double & genD0);
   void write();
 
 private:
@@ -32,8 +35,17 @@ private:
   TH2F * hDeltaZ0VsZ0_;
   TH2F * hDeltaPhiVsEta_;
   TH2F * hDeltaCotThetaVsEta_;
+  TH2F * hDeltaCotThetaVsZ0_;
   TH2F * hDeltaEtaVsEta_;
   TH2F * hDeltaD0VsEta_;
+  // Resolutions vs d0
+  TH2F * hDeltaD0VsD0_;
+  TH2F * hDeltaPtOverPtVsD0_;
+  TH2F * hDeltaPhiVsD0_;
+  TH2F * hDeltaCotThetaVsD0_;
+  TH2F * hDeltaZ0VsD0_;
+  TH2F * hDeltaD0VsZ0_;
+  TH2F * hDeltaD0VsPhi_;
   // Indeces of the parameters
   int ptIndex_;
   int cotThetaIndex_;

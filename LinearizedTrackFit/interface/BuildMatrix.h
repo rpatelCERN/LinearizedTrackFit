@@ -116,7 +116,7 @@ namespace LinearFit {
       if (phiSymmetricFit) lastLadder = treeReader.getLastLadder();
       matrices.find(geomIndex)->second.update(vars, lastLadder);
       histograms.find(geomIndex)->second.fill(vars, pars);
-      histograms2D.find(geomIndex)->second.fill(treeReader.getStubRZPhi());
+      histograms2D.find(geomIndex)->second.fill(treeReader.getStubRZPhi(), treeReader.getX0(), treeReader.getY0());
       if (computeCorrelations) correlationHistograms.fill(vars, pars, treeReader.getCharge());
     }
 
@@ -164,7 +164,7 @@ namespace LinearFit {
     std::cout << "Matrices built:" << std::endl;
     for (auto &m : matrices) {
       std::cout << "geomIndex = " << m.first << std::endl;
-      m.second.writeMatrices();
+      m.second.writeMatrices(usePcs);
     }
 
     // Write histograms to file

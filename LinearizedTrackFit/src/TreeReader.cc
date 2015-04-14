@@ -11,7 +11,8 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   maxRequiredLayers_(0),
   variablesSize_(0),
   distanceCutsTransverse_(distanceCutsTransverse),
-  distanceCutsLongitudinal_(distanceCutsLongitudinal)
+  distanceCutsLongitudinal_(distanceCutsLongitudinal),
+  getParD0_(std::make_shared<GetParD0>(tree_))
 {
   reset(eventsFractionStart, eventsFractionEnd);
 
@@ -72,6 +73,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     if (trackParName == "phi") pars_.push_back(std::make_shared<GetParPhi>(tree_));
     else if (trackParName == "1/pt") pars_.push_back(std::make_shared<GetParOneOverPt>(tree_));
     else if (trackParName == "charge/pt") pars_.push_back(std::make_shared<GetParChargeOverPt>(tree_));
+    else if (trackParName == "charge/ptELC") pars_.push_back(std::make_shared<GetParChargeOverPtEnergyLossCorrected>(tree_));
     else if (trackParName == "charge") pars_.push_back(std::make_shared<GetParCharge>(tree_));
     else if (trackParName == "cotTheta") pars_.push_back(std::make_shared<GetParCotTheta>(tree_));
     else if (trackParName == "z0") pars_.push_back(std::make_shared<GetParZ0>(tree_));
@@ -189,6 +191,13 @@ bool TreeReader::goodTrack()
   if (!goodStubsGenInfo(tree_->m_stub_pdg)) return false;
   if (!goodStubsGenInfo(tree_->m_stub_tp)) return false;
 
+  // Cut on the beamspot to make it a circle
+  // TODO: this cut should be removed once the generator produces a circular flat distribution.
+  // The generated distribution is a square with x0 and y0 between +/- 0.15 cm.
+  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 0.145) return false;
+//  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 0.95) return false;
+  // if (fabs(getParD0_->at(0)) > 0.02) return false;
+
   return true;
 }
 
@@ -197,32 +206,31 @@ bool TreeReader::goodTrack()
 bool TreeReader::readVariables() {
   variables_.clear();
   stubsRZPhi_.clear();
-
-  std::map<int, unsigned int> layersFound;
+  layersFound_.clear();
   // Find how the stub indexes correspond to the layers
   unsigned int totalStubs = tree_->m_stub;
   for (unsigned int k = 0; k < totalStubs; ++k) {
     int layer = tree_->m_stub_layer->at(k);
-    if (layersFound.count(layer) != 0) continue;
+    if (layersFound_.count(layer) != 0) continue;
     // Cut on the radius of the stub
     const auto radiusCut = radiusCuts_.find(layer);
     if (radiusCut != radiusCuts_.end()) {
       float R = getR(k);
       if ((R < radiusCut->second.first) || (R > radiusCut->second.second)) continue;
     }
-    layersFound.insert(std::make_pair(layer, k));
+    layersFound_.insert(std::make_pair(layer, k));
   }
 
   for (const auto & var : vars_) {
-    if (layersFound.size() < var->layersNum()) return false;
+    if (layersFound_.size() < var->layersNum()) return false;
   }
   // Ladder 76 is outside the range for the outermost layer.
   lastLadder_ = 76;
-  for (const auto & m : layersFound) {
+  for (const auto & m : layersFound_) {
     unsigned int k = m.second;
     for (const auto &var : vars_) {
       if (var->layer(m.first)) {
-        variables_.push_back(var->at(k, layersFound));
+        variables_.push_back(var->at(k, layersFound_));
         // Take the ladder of the outermost layer in the barrel
         if (m.first == 10) {
           lastLadder_ = tree_->m_stub_ladder->at(k);

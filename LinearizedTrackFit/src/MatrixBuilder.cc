@@ -139,12 +139,20 @@ void MatrixBuilder::computeEigenvalueMatrix()
 }
 
 
-void MatrixBuilder::writeMatrices()
+void MatrixBuilder::writeMatrices(const bool usePcs)
 {
   // computeEigenvalueMatrix();
   // Invert (diagonal) correlation matrix dividing by eigenvalues.
   // Transformation from coordinates to track parameters
   MatrixXd D = corrPV_*(cov_.inverse());
+
+  if (usePcs) {
+    MatrixXd diagCov_ = MatrixXd::Zero(nVars_, nVars_);
+    for (int i=0; i<nVars_; ++i) {
+      diagCov_(i, i) = sqrtEigenvalues_(i)*sqrtEigenvalues_(i);
+    }
+    D = corrPV_*(diagCov_.inverse())*V_;
+  }
 
   std::cout << std::endl;
   std::cout << "V_"+name_+":" << std::endl;

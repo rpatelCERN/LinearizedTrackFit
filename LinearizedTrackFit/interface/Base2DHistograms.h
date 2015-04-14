@@ -9,13 +9,14 @@ class Base2DHistograms
 {
 public:
   Base2DHistograms(const std::string & name, const int inputSize);
-  void fill(const std::vector<StubRZPhi> & stubsRZPhi);
+  void fill(const std::vector<StubRZPhi> & stubsRZPhi, const float & genX, const float & genY);
   void write();
 
 private:
   int inputSize_;
   TH2F * hRZ_;
   TH2F * hxy_;
+  TH2F * hBeamspot_;
   std::vector<TH2F*> hRPhis_;
 };
 

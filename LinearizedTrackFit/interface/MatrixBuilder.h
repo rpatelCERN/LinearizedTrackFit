@@ -18,7 +18,7 @@ public:
   void update(const std::vector<float> & vars, const int lastLadder);
   void update(const std::vector<float> & vars, const std::vector<float> & pars, const int lastLadder, const bool usePcs);
   void computeEigenvalueMatrix();
-  void writeMatrices();
+  void writeMatrices(const bool usePcs);
 
 private:
   void updateMeanAndCov(const std::vector<float> & vars, const int lastLadder);

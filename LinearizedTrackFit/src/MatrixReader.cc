@@ -88,16 +88,16 @@ MatrixReader::MatrixReader(const std::string & inputFileName)
   std::cout << "D:" << std::endl;
   std::cout << D_ << std::endl;
 
-  // Read variables-parameters correlation matrix
-  corrPV_ = MatrixXd::Zero(nTrackParameters_, nVars_);
-  for (int i = 0; i < nTrackParameters_; ++i) {
-    for (int j = 0; j < nVars_; ++j) {
-      inputFile >> x;
-      corrPV_(i, j) = x;
-    }
-  }
-  std::cout << "corrPV:" << std::endl;
-  std::cout << corrPV_ << std::endl;
+//  // Read variables-parameters correlation matrix
+//  corrPV_ = MatrixXd::Zero(nTrackParameters_, nVars_);
+//  for (int i = 0; i < nTrackParameters_; ++i) {
+//    for (int j = 0; j < nVars_; ++j) {
+//      inputFile >> x;
+//      corrPV_(i, j) = x;
+//    }
+//  }
+//  std::cout << "corrPV:" << std::endl;
+//  std::cout << corrPV_ << std::endl;
 }
 
 
@@ -116,29 +116,43 @@ float MatrixReader::normChi2(const VectorXd & vars, const int lastLadder) const
 }
 
 
-std::vector<float> MatrixReader::trackParameters(const VectorXd & vars, const int lastLadder, const bool usePcs) const
+//std::vector<float> MatrixReader::trackParameters(const VectorXd & vars, const int lastLadder, const bool usePcs) const
+//{
+//  std::vector<float> pars;
+//
+//  if (usePcs) {
+//    // Estimate track parameters
+//    VectorXd principal = V_ * (vars - meanValuesLadders_.find(lastLadder)->second);
+//    for (int i = 0; i < principal.size(); ++i) {
+//      principal(i) = principal(i) / (sqrtEigenvalues_(i) * sqrtEigenvalues_(i));
+//    }
+//    //  VectorXd estimatedPars = corrPV_*(((principal.array())*(sqrtEigenvalues_.inverse().array())).matrix());
+//    // VectorXd estimatedPars = corrPV_ * principal + meanP_;
+//    VectorXd estimatedPars = corrPV_ * principal + meanPLadders_.find(lastLadder)->second;
+//    for (int i=0; i<nTrackParameters_; ++i) {
+//      pars.push_back(estimatedPars(i));
+//    }
+//  }
+//  else {
+//    // Estimate track parameters
+//    VectorXd estimatedPars = D_ * (vars - meanValuesLadders_.find(lastLadder)->second) + meanPLadders_.find(lastLadder)->second;
+//    for (int i=0; i<nTrackParameters_; ++i) {
+//      pars.push_back(estimatedPars(i));
+//    }
+//  }
+//
+//  return pars;
+//}
+
+
+std::vector<float> MatrixReader::trackParameters(const VectorXd & vars, const int lastLadder) const
 {
   std::vector<float> pars;
 
-  if (usePcs) {
-    // Estimate track parameters
-    VectorXd principal = V_ * (vars - meanValuesLadders_.find(lastLadder)->second);
-    for (int i = 0; i < principal.size(); ++i) {
-      principal(i) = principal(i) / (sqrtEigenvalues_(i) * sqrtEigenvalues_(i));
-    }
-    //  VectorXd estimatedPars = corrPV_*(((principal.array())*(sqrtEigenvalues_.inverse().array())).matrix());
-    // VectorXd estimatedPars = corrPV_ * principal + meanP_;
-    VectorXd estimatedPars = corrPV_ * principal + meanPLadders_.find(lastLadder)->second;
-    for (int i=0; i<nTrackParameters_; ++i) {
-      pars.push_back(estimatedPars(i));
-    }
-  }
-  else {
-    // Estimate track parameters
-    VectorXd estimatedPars = D_ * (vars - meanValuesLadders_.find(lastLadder)->second) + meanPLadders_.find(lastLadder)->second;
-    for (int i=0; i<nTrackParameters_; ++i) {
-      pars.push_back(estimatedPars(i));
-    }
+  // Estimate track parameters
+  VectorXd estimatedPars = D_ * (vars - meanValuesLadders_.find(lastLadder)->second) + meanPLadders_.find(lastLadder)->second;
+  for (int i=0; i<nTrackParameters_; ++i) {
+    pars.push_back(estimatedPars(i));
   }
 
   return pars;

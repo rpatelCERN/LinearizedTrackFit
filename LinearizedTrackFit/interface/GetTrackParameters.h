@@ -61,6 +61,25 @@ private:
 };
 
 
+class GetParChargeOverPtEnergyLossCorrected : public GetTreeTrackParameter
+{
+ public:
+  GetParChargeOverPtEnergyLossCorrected(std::shared_ptr<L1TrackTriggerTree> tree) : par_px(tree->m_stub_pxGEN), par_py(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg) {}
+  virtual ~GetParChargeOverPtEnergyLossCorrected() {}
+  virtual float at(const int k) {
+    // For muons, electrons and taus the charge is the opposite of the sign of the pdgId
+    int charge = (par_pdg->at(k) > 0 ? -1 : 1);
+    // Shifting by 4 MeV to compensate for average energy loss
+    float pt = std::sqrt(std::pow(par_px->at(k), 2) + std::pow(par_py->at(k), 2)) - 0.004;
+    return (pt > 0 ? charge/pt : 0.);
+  }
+ private:
+  std::vector<float> * par_px;
+  std::vector<float> * par_py;
+  std::vector<int> * par_pdg;
+};
+
+
 class GetParCharge : public GetTreeTrackParameter
 {
 public:
@@ -110,7 +129,7 @@ public:
   virtual float at(const int k) {
     int charge = (par_pdg->at(k) > 0 ? -1 : 1);
     float pt = std::sqrt(std::pow(par_px->at(k), 2) + std::pow(par_py->at(k), 2));
-    float r = pt / (0.003 * 3.8); // In centimeters (0.3 for meters)
+    float r = pt / (0.003 * 3.8114); // In centimeters (0.3 for meters)
     float xc = charge*r * sin(par_phi->at(k)) + par_x0->at(k);
     float yc = -charge*r * cos(par_phi->at(k)) + par_y0->at(k);
     // The impact parameter is the distance between the trajectory (simplified as a circle in the transverse plane)
@@ -155,17 +174,21 @@ public:
   virtual float at(const int k) {
     int charge = (par_pdg->at(k) > 0 ? -1 : 1);
     double pt = std::sqrt(std::pow(par_px->at(k), 2) + std::pow(par_py->at(k), 2));
-    double r = pt / (0.003 * 3.8); // In centimeters (0.3 for meters)
+    double r = pt / (0.003 * 3.8114); // In centimeters (0.3 for meters)
 //    float xc = charge*r * sin(par_phi->at(k)) + par_x0->at(k);
 //    float yc = -charge*r * cos(par_phi->at(k)) + par_y0->at(k);
+
     double xc = -charge*r * sin(par_phi->at(k)) + par_x0->at(k);
     double yc = charge*r * cos(par_phi->at(k)) + par_y0->at(k);
+
     // The impact parameter is the distance between the trajectory (simplified as a circle in the transverse plane)
     // and the origin (which is the reference point in this case). It will need to be adapted for a beamspot.
 //    std::cout << "xc = " << xc << ", yc = " << yc << std::endl;
 //    std::cout << "r = " << r << ", d0 = " << fabs(r - std::sqrt(xc*xc + yc*yc)) << std::endl;
 //    return fabs(r - std::sqrt(xc*xc + yc*yc));
-    return std::sqrt(xc*xc + yc*yc) - r;
+//    return std::sqrt(xc*xc + yc*yc) - r;
+    // The charge is needed so that it reflects consistently with the variables.
+    return charge*(std::sqrt(xc*xc + yc*yc) - r);
     // float Rc = std::sqrt(xc*xc + yc*yc);
     // float xd = xc*(1-r/Rc);
     // float yd = yc*(1-r/Rc);
@@ -191,7 +214,7 @@ public:
   virtual float at(const int k) {
     int charge = (par_pdg->at(k) > 0 ? -1 : 1);
     double pt = std::sqrt(std::pow(par_px->at(k), 2) + std::pow(par_py->at(k), 2));
-    double r = pt / (0.003 * 3.8); // In centimeters (0.3 for meters)
+    double r = pt / (0.003 * 3.8114); // In centimeters (0.3 for meters)
 //    double xc = charge*r * sin(par_phi->at(k)) + par_x0->at(k);
 //    double yc = -charge*r * cos(par_phi->at(k)) + par_y0->at(k);
     double xc = -charge*r * sin(par_phi->at(k)) + par_x0->at(k);
@@ -207,6 +230,7 @@ public:
     // need to correct for the difference in sign.
 //    double phi_corr = std::atan2(charge*(xc-xd), -charge*(yc-yd));
 //    double phi_corr = std::atan2(xc-xd, -(yc-yd));
+//    double phi_corr = std::atan2(-charge*(xc-xd), charge*(yc-yd));
     double phi_corr = std::atan2(-charge*(xc-xd), charge*(yc-yd));
 //    double phi_corr = -std::atan(xc/yc);
 //    if (phi_corr < 0) phi_corr = phi_corr + M_PI;
