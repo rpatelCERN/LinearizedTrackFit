@@ -32,8 +32,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 // user include files
-#include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
-#include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitter.h"
+// #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/TestFitter.h"
 
 #include "TFile.h"
 #include "TH1F.h"
@@ -163,75 +163,12 @@ void TestLinearizedTrackFitMatrix::beginJob()
   radiusCuts_.insert({9, {0., 1000.}});
   radiusCuts_.insert({10, {0., 1000.}});
 
-  LinearFitter linearFitter("", usePcs_);
-  TreeReader treeReader(inputFileName_, eventsFractionStart_, eventsFractionEnd_,
-			linearFitter.requiredLayers(), radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputTrackParameterNames_);
 
-  MatrixReader linearFitNegativeCharge("matrixVD_0.txt");
-  MatrixReader linearFitPositiveCharge("matrixVD_1.txt");
 
-  // These are filled only with theh smallest chi2 for the two matrices. In the end
-  // they will allow to compute a fraction of tracks where the track would be misidentified
-  // as well as the distribution of the chi2 for those tracks.
-  TH1F * hChi2Pos_PosTk = new TH1F("Chi2Pos_PosTk", "Chi2Pos_PosTk", 1000, 0, 100);
-  TH1F * hChi2Pos_NegTk = new TH1F("Chi2Pos_NegTk", "Chi2Pos_NegTk", 1000, 0, 100);
-  TH1F * hChi2Neg_PosTk = new TH1F("Chi2Neg_PosTk", "Chi2Pos_PosTk", 1000, 0, 100);
-  TH1F * hChi2Neg_NegTk = new TH1F("Chi2Neg_NegTk", "Chi2Pos_NegTk", 1000, 0, 100);
-
-  TH2F * hChi2PosVsChi2Neg_PosTk = new TH2F("Chi2PosVsChi2Neg_PosTk", "Chi2PosVsChi2Neg_PosTk", 1000, 0, 100, 1000, 0, 100);
-  TH2F * hChi2PosVsChi2Neg_NegTk = new TH2F("Chi2PosVsChi2Neg_NegTk", "Chi2PosVsChi2Neg_NegTk", 1000, 0, 100, 1000, 0, 100);
-
-  while (treeReader.nextTrack()) {
-    // Variables
-    std::vector<float> vars(treeReader.getVariables());
-    VectorXd varsVec(vars.size());
-    for (unsigned int i=0; i<vars.size(); ++i) { varsVec(i) = vars[i]; }
-    // Coefficients
-//    std::vector<float> varsCoeff(treeReader.getVariablesCoefficients());
-//    ArrayXd varsCoeffArray(varsCoeff.size());
-//    for (unsigned int i=0; i<varsCoeff.size(); ++i) { varsCoeffArray(i) = varsCoeff[i]; }
-
-    int lastLadder = -1;
-    if (phiSymmetricFit_) lastLadder = treeReader.getLastLadder();
-
-    // Estimate with negative charge matrix
-//    float normChi2Neg = linearFitNegativeCharge.normChi2(varsVec, varsCoeffArray);
-
-    float normChi2Neg = linearFitNegativeCharge.normChi2(varsVec, lastLadder);
-    // std::vector<float> trackParametersNeg(linearFitNegativeCharge.trackParameters(varsVec, varsCoeffArray));
-
-    // Estimate with positive charge matrix
-//    float normChi2Pos = linearFitPositiveCharge.normChi2(varsVec, varsCoeffArray);
-    float normChi2Pos = linearFitPositiveCharge.normChi2(varsVec, lastLadder);
-    // std::vector<float> trackParametersPos(linearFitPositiveCharge.trackParameters(varsVec, varsCoeffArray));
-
-    if (treeReader.getOneOverPt() < oneOverPtMin_ || treeReader.getOneOverPt() > oneOverPtMax_) continue;
-    if (treeReader.getPhi() < phiMin_ || treeReader.getPhi() > phiMax_) continue;
-    if (treeReader.getEta() < etaMin_ || treeReader.getEta() > etaMax_) continue;
-    if (treeReader.getZ0() < z0Min_ || treeReader.getZ0() > z0Max_) continue;
-
-    if (treeReader.getCharge() == -1) {
-      hChi2PosVsChi2Neg_NegTk->Fill(normChi2Pos, normChi2Neg);
-      if (normChi2Pos < normChi2Neg) hChi2Pos_NegTk->Fill(normChi2Pos);
-      else hChi2Neg_NegTk->Fill(normChi2Neg);
-    }
-    else {
-      hChi2PosVsChi2Neg_PosTk->Fill(normChi2Pos, normChi2Neg);
-      if (normChi2Pos < normChi2Neg) hChi2Pos_PosTk->Fill(normChi2Pos);
-      else hChi2Neg_PosTk->Fill(normChi2Neg);
-    }
-  }
-
-  // Write histograms to file
-  TFile outputFile("testLinearizedTrackFitterHistograms.root", "RECREATE");
-  outputFile.cd();
-  hChi2PosVsChi2Neg_NegTk->Write();
-  hChi2PosVsChi2Neg_PosTk->Write();
-  hChi2Neg_PosTk->Write();
-  hChi2Pos_PosTk->Write();
-  hChi2Neg_NegTk->Write();
-  hChi2Pos_NegTk->Write();
-  outputFile.Close();
+  LinearFit::testFitter(inputFileName_, eventsFractionStart_, eventsFractionEnd_,
+			inputVarNames_, inputTrackParameterNames_,
+			distanceCutsTransverse_, distanceCutsLongitudinal_,
+			radiusCuts_, singleModules_, phiSymmetricFit_);
 }
 
 

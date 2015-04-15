@@ -148,7 +148,7 @@ void MatrixBuilder::writeMatrices(const bool usePcs)
 
   if (usePcs) {
     MatrixXd diagCov_ = MatrixXd::Zero(nVars_, nVars_);
-    for (int i=0; i<nVars_; ++i) {
+    for (unsigned int i=0; i<nVars_; ++i) {
       diagCov_(i, i) = sqrtEigenvalues_(i)*sqrtEigenvalues_(i);
     }
     D = corrPV_*(diagCov_.inverse())*V_;

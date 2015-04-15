@@ -272,7 +272,7 @@ void BuildLinearizedTrackFitMatrix::beginJob()
   if (testMatrix_) {
   LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
       inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
-      radiusCuts_, singleModules_, phiSymmetricFit_, usePcs_);
+      radiusCuts_, singleModules_, phiSymmetricFit_);
 //    LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
 //			  inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
 //        radiusCuts_, singleModules_, phiSymmetricFit_, usePcs_);
