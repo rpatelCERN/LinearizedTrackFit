@@ -98,8 +98,8 @@ namespace LinearFit {
       if (doMapSectors) mapSectors(treeReader.getStubRZPhi(), sectors);
       if (computeDistances) fillDistances(treeReader, stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms);
 
-      std::vector<float> vars(treeReader.getVariables());
-      std::vector<float> pars(treeReader.getTrackParameters());
+      std::vector<double> vars(treeReader.getVariables());
+      std::vector<double> pars(treeReader.getTrackParameters());
 
       // printTrack(vars, pars, geomIndex);
 
@@ -147,8 +147,8 @@ namespace LinearFit {
         if (geomIndex == -1) continue;
       }
 
-      std::vector<float> vars(treeReader.getVariables());
-      std::vector<float> pars(treeReader.getTrackParameters());
+      std::vector<double> vars(treeReader.getVariables());
+      std::vector<double> pars(treeReader.getTrackParameters());
 
       // Update mean and covariance for this linearization region
       int lastLadder = -1;

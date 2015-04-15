@@ -115,17 +115,17 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
 //}
 
 
-void LinearFitterSummaryHistograms::fill(const std::vector<float> & vars, const std::vector<float> & pcs, const std::vector<float> & npcs,
-                                         const std::vector<float> & pars, const std::vector<float> & estimatedPars, const float & normChi2,
+void LinearFitterSummaryHistograms::fill(const std::vector<double> & vars, const std::vector<double> & pcs, const std::vector<double> & npcs,
+                                         const std::vector<double> & pars, const std::vector<double> & estimatedPars, const double & normChi2,
                                          const double & genPt, const double & genPhi, const double & genEta, const double & genZ0, const double & genD0)
 {
   linearFitterHistograms.fill(vars, pcs, npcs, pars, estimatedPars, normChi2);
 
   if (ptIndex_ != -1) {
-    float curvature = pars[ptIndex_];
-    float pt = curvature == 0. ? 10000. : 1./curvature;
-    float estCurvature = estimatedPars[ptIndex_];
-    float estPt = estCurvature == 0. ? 10000. : 1./estCurvature;
+    double curvature = pars[ptIndex_];
+    double pt = curvature == 0. ? 10000. : 1./curvature;
+    double estCurvature = estimatedPars[ptIndex_];
+    double estPt = estCurvature == 0. ? 10000. : 1./estCurvature;
     hDeltaCurvatureOverCurvatureVsCurvature_->Fill(curvature, (curvature-estCurvature)/curvature);
     hDeltaCurvatureOverCurvatureVsPt_->Fill(pt, (curvature-estCurvature)/curvature);
     hDeltaPtOverPtVsPt_->Fill(pt, (pt-estPt)/pt);
@@ -149,9 +149,9 @@ void LinearFitterSummaryHistograms::fill(const std::vector<float> & vars, const 
   }
 
   if (cotThetaIndex_ != -1) {
-    float eta = (pars[cotThetaIndex_] == 0.) ? 0. : -log(fabs(tan(atan(1/pars[cotThetaIndex_])/2.)));
+    double eta = (pars[cotThetaIndex_] == 0.) ? 0. : -log(fabs(tan(atan(1/pars[cotThetaIndex_])/2.)));
     if (pars[cotThetaIndex_] < 0.) eta = -eta;
-    float estEta = (estimatedPars[cotThetaIndex_] == 0) ? 0. : -log(fabs(tan(atan(1/estimatedPars[cotThetaIndex_])/2.)));
+    double estEta = (estimatedPars[cotThetaIndex_] == 0) ? 0. : -log(fabs(tan(atan(1/estimatedPars[cotThetaIndex_])/2.)));
     if (estimatedPars[cotThetaIndex_] < 0.) estEta = -estEta;
     hDeltaCotThetaVsEta_->Fill(eta, pars[cotThetaIndex_]-estimatedPars[cotThetaIndex_]);
     hDeltaEtaVsEta_->Fill(eta, eta-estEta);
@@ -199,7 +199,6 @@ void LinearFitterSummaryHistograms::write()
     hDeltaZ0VsZ0_->Write();
     hDeltaCotThetaVsZ0_->Write();
     hDeltaZ0VsPt_->Write();
-    hDeltaD0VsD0_->Write();
   }
   if (d0Index_ != -1) {
     hDeltaD0VsD0_->Write();

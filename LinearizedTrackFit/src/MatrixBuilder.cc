@@ -24,7 +24,7 @@ MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pa
 }
 
 
-void MatrixBuilder::updateMeanAndCov(const std::vector<float> & vars, const int lastLadder)
+void MatrixBuilder::updateMeanAndCov(const std::vector<double> & vars, const int lastLadder)
 {
   for (unsigned int iVar=0; iVar<nVars_; ++iVar) {
     // update mean
@@ -60,8 +60,8 @@ void MatrixBuilder::updateMeanAndCov(const std::vector<float> & vars, const int 
 //}
 
 
-void MatrixBuilder::updateMeanAndCovParams(const std::vector<float> & vars,
-    const std::vector<float> & pars, const int lastLadder, const bool usePcs)
+void MatrixBuilder::updateMeanAndCovParams(const std::vector<double> & vars,
+    const std::vector<double> & pars, const int lastLadder, const bool usePcs)
 {
   // The mean of the values should have already been updated outside this function.
 
@@ -94,14 +94,14 @@ void MatrixBuilder::updateMeanAndCovParams(const std::vector<float> & vars,
 }
 
 
-void MatrixBuilder::update(const std::vector<float> & vars, const int lastLadder)
+void MatrixBuilder::update(const std::vector<double> & vars, const int lastLadder)
 {
   ++count_;
   updateMeanAndCov(vars, lastLadder);
 }
 
 
-void MatrixBuilder::update(const std::vector<float> & vars, const std::vector<float> & pars,
+void MatrixBuilder::update(const std::vector<double> & vars, const std::vector<double> & pars,
     const int lastLadder, const bool usePcs)
 {
   ++count_;

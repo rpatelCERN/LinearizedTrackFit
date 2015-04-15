@@ -26,29 +26,29 @@ public:
 
   void reset(const double & eventsFractionStart, const double & eventsFractionEnd);
   bool nextTrack();
-  std::vector<float> getVariables();
-  std::vector<float> getTrackParameters();
+  std::vector<double> getVariables();
+  std::vector<double> getTrackParameters();
 
-  float getPt() const {
+  double getPt() const {
     return std::sqrt(std::pow(tree_->m_stub_pxGEN->at(0), 2) + std::pow(tree_->m_stub_pyGEN->at(0), 2));
   }
-  float getChargePt() const {
+  double getChargePt() const {
     return getCharge() > 0 ?
            std::sqrt(std::pow(tree_->m_stub_pxGEN->at(0), 2) + std::pow(tree_->m_stub_pyGEN->at(0), 2)) :
            -std::sqrt(std::pow(tree_->m_stub_pxGEN->at(0), 2) + std::pow(tree_->m_stub_pyGEN->at(0), 2));
   }
-  float getOneOverPt() const {
-    float pt = getPt();
+  double getOneOverPt() const {
+    double pt = getPt();
     return pt == 0 ? 0 : 1./pt;
   }
-  float getPhi() const { return tree_->m_stub_PHI0->at(0); }
-  float getEta() const { return tree_->m_stub_etaGEN->at(0); }
-  float getCotTheta() const { return 1./tan(2*atan(exp(-tree_->m_stub_etaGEN->at(0)))); }
-  float getX0() const { return tree_->m_stub_X0->at(0); }
-  float getY0() const { return tree_->m_stub_Y0->at(0); }
-  float getZ0() const { return tree_->m_stub_Z0->at(0); }
-  float getR(const int k) const { return std::sqrt(std::pow(tree_->m_stub_x->at(k), 2) + std::pow(tree_->m_stub_y->at(k), 2)); }
-  float getD0() const { return getParD0_->at(0); }
+  double getPhi() const { return tree_->m_stub_PHI0->at(0); }
+  double getEta() const { return tree_->m_stub_etaGEN->at(0); }
+  double getCotTheta() const { return 1./tan(2*atan(exp(-tree_->m_stub_etaGEN->at(0)))); }
+  double getX0() const { return tree_->m_stub_X0->at(0); }
+  double getY0() const { return tree_->m_stub_Y0->at(0); }
+  double getZ0() const { return tree_->m_stub_Z0->at(0); }
+  double getR(const int k) const { return std::sqrt(std::pow(tree_->m_stub_x->at(k), 2) + std::pow(tree_->m_stub_y->at(k), 2)); }
+  double getD0() const { return getParD0_->at(0); }
   int getCharge() const { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
   const std::vector<float> * getVarX() const { return tree_->m_stub_x; }
   const std::vector<float> * getVarY() const { return tree_->m_stub_y; }
@@ -58,10 +58,10 @@ public:
   unsigned int maxRequiredLayers() const { return maxRequiredLayers_; }
   std::vector<std::string> const variablesNames() const { return variablesNames_; }
   void writeConfiguration();
-  float genTrackDistanceTransverse(const float &pt, const float &phi, const float &x0, const float &y0,
-      const int charge, const float &B, const float &x1, const float &y1) const;
-  float genTrackDistanceLongitudinal(const float &x0, const float &y0, const float &z0, const float &cotTheta,
-      const float &r1, const float &z1) const;
+  double genTrackDistanceTransverse(const double &pt, const double &phi, const double &x0, const double &y0,
+      const int charge, const double &B, const double &x1, const double &y1) const;
+  double genTrackDistanceLongitudinal(const double &x0, const double &y0, const double &z0, const double &cotTheta,
+      const double &r1, const double &z1) const;
   std::map<int, unsigned int> layersFound() const { return layersFound_; }
 
  private:
@@ -94,8 +94,8 @@ public:
   int lastTrack_;
   int totalTracks_;
   int trackIndex_;
-  std::vector<float> variables_;
-  std::vector<float> parameters_;
+  std::vector<double> variables_;
+  std::vector<double> parameters_;
   unsigned int maxRequiredLayers_;
   unsigned int variablesSize_;
   // This is the full list of names ordered as the variables are in variables_

@@ -12,8 +12,8 @@ public:
   LinearFitterSummaryHistograms(const std::string & name, const std::vector<std::string> & varNames, const std::vector<std::string> & trackParameterNames);
 //  void fill(const std::vector<float> & vars, const std::vector<float> & pcs, const std::vector<float> & npcs,
 //      const std::vector<float> & pars, const std::vector<float> & estimatedPars, const float & normChi2);
-  void fill(const std::vector<float> & vars, const std::vector<float> & pcs, const std::vector<float> & npcs,
-            const std::vector<float> & pars, const std::vector<float> & estimatedPars, const float & normChi2,
+  void fill(const std::vector<double> & vars, const std::vector<double> & pcs, const std::vector<double> & npcs,
+            const std::vector<double> & pars, const std::vector<double> & estimatedPars, const double & normChi2,
             const double & genPt, const double & genPhi, const double & genEta, const double & genZ0, const double & genD0);
   void write();
 

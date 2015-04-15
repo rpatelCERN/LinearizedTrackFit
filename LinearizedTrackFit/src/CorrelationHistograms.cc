@@ -19,7 +19,7 @@ CorrelationHistograms::CorrelationHistograms(const std::vector<std::string> & va
 }
 
 
-void CorrelationHistograms::fill(const std::vector<float> & vars, const std::vector<float> & pars, const int charge)
+void CorrelationHistograms::fill(const std::vector<double> & vars, const std::vector<double> & pars, const int charge)
 {
   int i=0;
   for (const auto & var : vars) {

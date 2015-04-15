@@ -29,10 +29,10 @@ namespace LinearFit
     TH2F * hEstimatedChargeVsPt = new TH2F("EstimatedChargeVsPt", "EstimatedChargeVsPt", 1000, 0, 100, 1000, -3., 3.);
 
     while (treeReader.nextTrack()) {
-      std::vector<float> vars(treeReader.getVariables());
+      std::vector<double> vars(treeReader.getVariables());
       // The coefficients are the result of a separate fit. For simplicity they are done in the treeReader.
       // For instance we might estimate the charge using the phi coordinates only.
-      std::vector<float> pars(treeReader.getTrackParameters());
+      std::vector<double> pars(treeReader.getTrackParameters());
 
       bool goodFit = false;
       int lastLadder = -1;
@@ -47,8 +47,8 @@ namespace LinearFit
         goodFit = linearFitter.fit(vars, treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getCharge(), lastLadder);
       }
       if (goodFit) {
-        float normChi2 = linearFitter.normChi2();
-        std::vector<float> estimatedPars = linearFitter.trackParameters();
+        double normChi2 = linearFitter.normChi2();
+        std::vector<double> estimatedPars = linearFitter.trackParameters();
         int geomIndex = linearFitter.geometricIndex();
         if (histograms.count(geomIndex) == 0) {
           histograms.insert({{geomIndex, LinearFitterHistograms(std::to_string(geomIndex), treeReader.variablesNames(), inputTrackParameterNames)}});

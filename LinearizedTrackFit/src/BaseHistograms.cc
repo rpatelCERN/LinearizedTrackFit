@@ -1,6 +1,6 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/BaseHistograms.h"
 
-BaseHistograms::BaseHistograms(const std::string & name, const int inputSize, const int bins, const float & min, const float & max) :
+BaseHistograms::BaseHistograms(const std::string & name, const int inputSize, const int bins, const double & min, const double & max) :
     inputSize_(inputSize)
 {
   for (int i=0; i<inputSize_; ++i) {
@@ -10,7 +10,7 @@ BaseHistograms::BaseHistograms(const std::string & name, const int inputSize, co
 }
 
 
-BaseHistograms::BaseHistograms(const std::string & name, const std::vector<std::string> & varNames, const int bins, const float & min, const float & max) :
+BaseHistograms::BaseHistograms(const std::string & name, const std::vector<std::string> & varNames, const int bins, const double & min, const double & max) :
     inputSize_(varNames.size())
 {
   if (name.find("vars") != std::string::npos) initializeVarsHistograms(name, varNames, bins, min, max);
@@ -22,7 +22,7 @@ BaseHistograms::BaseHistograms(const std::string & name, const std::vector<std::
 }
 
 
-void BaseHistograms::initializeVarsHistograms(const std::string name, const std::vector<std::string> & varNames, const int bins, const float & min, const float & max)
+void BaseHistograms::initializeVarsHistograms(const std::string name, const std::vector<std::string> & varNames, const int bins, const double & min, const double & max)
 {
   int iPhi = 0;
   int iZ = 0;
@@ -58,7 +58,7 @@ void BaseHistograms::initializeVarsHistograms(const std::string name, const std:
 }
 
 
-void BaseHistograms::initializeParsHistograms(const std::string name, const std::vector<std::string> & varNames, const int bins, const float & min, const float & max)
+void BaseHistograms::initializeParsHistograms(const std::string name, const std::vector<std::string> & varNames, const int bins, const double & min, const double & max)
 {
   for (const auto &varName : varNames) {
     TString hName = name + "_" + varName;
@@ -93,7 +93,7 @@ void BaseHistograms::initializeParsHistograms(const std::string name, const std:
 }
 
 
-void BaseHistograms::fill(const std::vector<float> & input)
+void BaseHistograms::fill(const std::vector<double> & input)
 {
   for (int i=0; i<inputSize_; ++i) {
     histograms_[i]->Fill(input[i]);
