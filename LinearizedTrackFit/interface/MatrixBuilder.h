@@ -15,14 +15,14 @@ class MatrixBuilder
 {
 public:
   MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, float> > & varsMeans, const unsigned int nTrackParameters);
-  void update(const std::vector<float> & vars, const int lastLadder);
-  void update(const std::vector<float> & vars, const std::vector<float> & pars, const int lastLadder, const bool usePcs);
+  void update(const std::vector<double> & vars, const int lastLadder);
+  void update(const std::vector<double> & vars, const std::vector<double> & pars, const int lastLadder, const bool usePcs);
   void computeEigenvalueMatrix();
-  void writeMatrices();
+  void writeMatrices(const bool usePcs);
 
 private:
-  void updateMeanAndCov(const std::vector<float> & vars, const int lastLadder);
-  void updateMeanAndCovParams(const std::vector<float> & vars, const std::vector<float> & pars, const int lastLadder, const bool usePcs);
+  void updateMeanAndCov(const std::vector<double> & vars, const int lastLadder);
+  void updateMeanAndCovParams(const std::vector<double> & vars, const std::vector<double> & pars, const int lastLadder, const bool usePcs);
 
   // Data members
   std::string name_;

@@ -13,19 +13,19 @@ LinearFitterHistograms::LinearFitterHistograms(const std::string & name, const s
 }
 
 
-void LinearFitterHistograms::fill(const std::vector<float> & vars, const std::vector<float> & pcs, const std::vector<float> & npcs,
-    const std::vector<float> & pars, const std::vector<float> & estimatedPars, const float & normChi2)
+void LinearFitterHistograms::fill(const std::vector<double> & vars, const std::vector<double> & pcs, const std::vector<double> & npcs,
+    const std::vector<double> & pars, const std::vector<double> & estimatedPars, const double & normChi2)
 {
   MatrixBuilderHistograms::fill(vars, pars);
   hPC_.fill(pcs);
   hNPC_.fill(npcs);
   hEstimatedPars_.fill(estimatedPars);
 
-  std::vector<float> estimatedParErrors(estimatedPars.size(), 0.);
-  std::transform(pars.begin(), pars.end(), estimatedPars.begin(), estimatedParErrors.begin(), std::minus<float>());
+  std::vector<double> estimatedParErrors(estimatedPars.size(), 0.);
+  std::transform(pars.begin(), pars.end(), estimatedPars.begin(), estimatedParErrors.begin(), std::minus<double>());
   hEstimatedParErrors_.fill(estimatedParErrors);
 
-  std::vector<float> estimatedParRelErrors(estimatedPars.size(), 0.);
+  std::vector<double> estimatedParRelErrors(estimatedPars.size(), 0.);
   for (unsigned int i=0; i<estimatedPars.size(); ++i) { estimatedParRelErrors[i] = (pars[i] == 0.) ? 0. : estimatedParErrors[i]/pars[i]; }
   // std::transform(estimatedParErrors.begin(), estimatedParErrors.end(), pars.begin(), estimatedParRelErrors.begin(), std::divides<float>());
   hEstimatedParRelErrors_.fill(estimatedParRelErrors);

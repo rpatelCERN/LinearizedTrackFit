@@ -16,20 +16,19 @@ class MatrixReader
 {
 public:
   MatrixReader(const std::string & inputFileName);
-  float normChi2(const VectorXd & vars, const int lastLadder) const;
-  std::vector<float> trackParameters(const VectorXd & vars, const int lastLadder, const bool usePcs) const;
-  std::vector<float> principalComponents(const VectorXd & vars, const int lastLadder) const;
-  std::vector<float> normalizedPrincipalComponents(const VectorXd & vars, const int lastLadder) const;
+  double normChi2(const VectorXd & vars, const int lastLadder = -1) const;
+  std::vector<double> trackParameters(const VectorXd & vars, const int lastLadder = -1) const;
+  std::vector<double> principalComponents(const VectorXd & vars, const int lastLadder = -1) const;
+  std::vector<double> normalizedPrincipalComponents(const VectorXd & vars, const int lastLadder = -1) const;
+  int nDof() { return nDof_; }
 
 private:
   int nVars_;
   int nTrackParameters_;
+  int nDof_;
   VectorXd sqrtEigenvalues_;
   MatrixXd V_;
-//  VectorXd meanValues_;
   MatrixXd D_;
-//  VectorXd meanP_;
-  MatrixXd corrPV_;
   std::unordered_map<int, VectorXd> meanValuesLadders_;
   std::unordered_map<int, VectorXd> meanPLadders_;
 };

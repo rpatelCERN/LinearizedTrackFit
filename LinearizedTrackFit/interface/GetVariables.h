@@ -5,6 +5,7 @@
 #include <math.h>
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/L1TrackTriggerTree.h"
 
 // Abstract base class
@@ -64,7 +65,7 @@ public:
       GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
   virtual ~GetVarPhiR() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
-    float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return (std::atan2(var_y->at(k), var_x->at(k))*R);
   }
 private:
@@ -130,13 +131,13 @@ public:
   virtual ~GetVarDeltaSAllDeltaR() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound)
   {
-    float cOverPt = 0.0122948*(var_deltas->at(layersFound.find(5)->second))+
+    double cOverPt = 0.0122948*(var_deltas->at(layersFound.find(5)->second))+
         0.0129433*(var_deltas->at(layersFound.find(6)->second))+
         0.0177245*(var_deltas->at(layersFound.find(7)->second))+
         0.0244785*(var_deltas->at(layersFound.find(8)->second))+
         0.0265403*(var_deltas->at(layersFound.find(9)->second))+
         0.0285807*(var_deltas->at(layersFound.find(10)->second));
-    float DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return (cOverPt*DeltaR);
   }
 private:
@@ -176,8 +177,8 @@ public:
   virtual ~GetVarDeltaROverGenPt() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound)
   {
-    float DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanR_[var_layer->at(k)];
-    float genPt = std::sqrt(std::pow(par_pxGEN->at(0), 2) + std::pow(par_pyGEN->at(0), 2));
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanR_[var_layer->at(k)];
+    double genPt = std::sqrt(std::pow(par_pxGEN->at(0), 2) + std::pow(par_pyGEN->at(0), 2));
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     return (charge*DeltaR/genPt);
   }
@@ -210,8 +211,8 @@ public:
   virtual ~GetVarDeltaROverGenPtCube() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound)
   {
-    float DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanR_[var_layer->at(k)];
-    float genPt = std::sqrt(std::pow(par_pxGEN->at(k), 2) + std::pow(par_pyGEN->at(0), 2));
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanR_[var_layer->at(k)];
+    double genPt = std::sqrt(std::pow(par_pxGEN->at(k), 2) + std::pow(par_pyGEN->at(0), 2));
     int charge = ((par_pdg->at(k) > 0) ? -1 : 1);
     return std::pow(charge*DeltaR/genPt, 3);
   }
@@ -261,7 +262,7 @@ public:
       GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
   virtual ~GetVarOneOverR() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
-    float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return (R > 0 ? 1./R : 0.);
   }
 private:
@@ -292,13 +293,13 @@ public:
   }
   virtual ~GetVarChargeCorrectedR() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
-    float estimatedCharge = 0.;
+    double estimatedCharge = 0.;
     for (const auto & layer : layersFound) {
       unsigned int l = layer.first;
       float phi = std::atan2(var_y->at(layer.second), var_x->at(layer.second));
       estimatedCharge += (phi-chargePhiMeans_[l])*chargePhiCoeff_[l];
     }
-    float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return estimatedCharge*R;
   }
 private:
@@ -327,6 +328,20 @@ public:
     chargeOverPtPhiCoeff_.insert(std::make_pair(9, 1.24224));
     chargeOverPtPhiCoeff_.insert(std::make_pair(10, -3.72572));
     chargeOverPtMean_ = 6.63953e-05;
+
+//    chargeOverPtPhiMeans_.insert(std::make_pair(5, 0.399842));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.400179));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.400072));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.400082));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.400142));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.400183));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(5, 1.51914));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(6, 0.784844));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 0.336084));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(8, -0.438823));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(9, -0.773466));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -1.42569));
+//    chargeOverPtMean_ = -0.000476828;
   }
   double chargeOverPt(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
     double estimatedChargeOverPt = 0.;
@@ -334,6 +349,16 @@ public:
       unsigned int l = layer.first;
       float phi = std::atan2(var_y->at(layer.second), var_x->at(layer.second));
       estimatedChargeOverPt += (phi-chargeOverPtPhiMeans_[l])*chargeOverPtPhiCoeff_[l];
+    }
+    // When it is estimated the mean value is subtracted. We add it back.
+    return (estimatedChargeOverPt + chargeOverPtMean_);
+  }
+  template <class T>
+  double chargeOverPt(const T & var_phi)
+  {
+    double estimatedChargeOverPt = 0.;
+    for (int i=0; i<var_phi.size(); ++i) {
+      estimatedChargeOverPt += (var_phi[i]-chargeOverPtPhiMeans_[i+5])*chargeOverPtPhiCoeff_[i+5];
     }
     // When it is estimated the mean value is subtracted. We add it back.
     return (estimatedChargeOverPt + chargeOverPtMean_);
@@ -354,10 +379,11 @@ public:
   }
   virtual ~GetVarCorrectedPhi() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
-    float estimatedCharge = chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
-    float DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
+    double estimatedCharge = chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
     float phi = std::atan2(var_y->at(k), var_x->at(k));
-    return (phi + estimatedCharge*DeltaR*3.8*0.003/2.);
+//    return (phi + estimatedCharge*DeltaR*3.8*0.003/2.);
+    return (phi + estimatedCharge*DeltaR*3.8114*0.003/2.);
   }
 private:
   std::vector<float> * var_x;
@@ -376,13 +402,15 @@ public:
   }
   virtual ~GetVarCorrectedPhiSecondOrder() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
-    float estimatedCharge = chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
-    float DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
-    float RCube = std::pow(std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)), 3);
+    double estimatedChargeOverPt = chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
+    double RCube = std::pow(std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)), 3);
     // float DeltaRCube = RCube - std::pow(meanR_[var_layer->at(k)], 3);
-    float phi = std::atan2(var_y->at(k), var_x->at(k));
+    double phi = std::atan2(var_y->at(k), var_x->at(k));
     // return (phi + estimatedCharge*DeltaR*3.8*0.003/2. + DeltaRCube*std::pow(estimatedCharge*3.8*0.003/2., 3)/6.);
-    return (phi + estimatedCharge*DeltaR*3.8*0.003/2. + RCube*std::pow(estimatedCharge*3.8*0.003/2., 3)/6.);
+//   return (phi + estimatedChargeOverPt*DeltaR*3.8*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8*0.003/2., 3)/6.);
+//    return (phi + estimatedChargeOverPt*DeltaR*3.8*0.003/2. + 1.2*RCube*std::pow(estimatedChargeOverPt*3.8*0.003/2., 3)/6.);
+    return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
   }
 private:
   std::vector<float> * var_x;
@@ -401,16 +429,16 @@ public:
   }
   virtual ~GetVarCorrectedPhiThirdOrder() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
-    float estimatedCharge = chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
-    float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    float DeltaR = R - meanRadius(var_layer->at(k));
-    float RCube = std::pow(R, 3);
-    float RFifth = std::pow(R, 5);
+    double estimatedCharge = chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
+    double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    double DeltaR = R - meanRadius(var_layer->at(k));
+    double RCube = std::pow(R, 3);
+    double RFifth = std::pow(R, 5);
     // float DeltaRCube = RCube - std::pow(meanR_[var_layer->at(k)], 3);
     // float DeltaRFifth = RFifth - std::pow(meanR_[var_layer->at(k)], 5);
     float phi = std::atan2(var_y->at(k), var_x->at(k));
     // return (phi + estimatedCharge*DeltaR*3.8*0.003/2. + DeltaRCube*std::pow(estimatedCharge*3.8*0.003/2., 3)/6.);
-    return (phi + estimatedCharge*DeltaR*3.8*0.003/2. + RCube*std::pow(estimatedCharge*3.8*0.003/2., 3)/6. + RFifth*std::pow(estimatedCharge*3.8*0.003/2., 5)*3./40.);
+    return (phi + estimatedCharge*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedCharge*3.8114*0.003/2., 3)/6. + RFifth*std::pow(estimatedCharge*3.8114*0.003/2., 5)*3./40.);
   }
 private:
   std::vector<float> * var_x;
@@ -431,17 +459,18 @@ public:
   virtual ~GetVarCorrectedPhiSecondOrderGen() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
-    float estimatedCharge = charge/std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0));
-    float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    float DeltaR = R - meanRadius(var_layer->at(k));
-    float RCube = std::pow(R, 3);
-    float RFifth = std::pow(R, 5);
+    double estimatedChargeOverPt = charge/std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0));
+    double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    double DeltaR = R - meanRadius(var_layer->at(k));
+    double RCube = std::pow(R, 3);
+    double RFifth = std::pow(R, 5);
     // float DeltaRCube = std::pow(std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)), 3) - std::pow(meanR_[var_layer->at(k)], 3);
-    float phi = std::atan2(var_y->at(k), var_x->at(k));
+    double phi = std::atan2(var_y->at(k), var_x->at(k));
 //     return (phi + estimatedCharge*DeltaR*3.8*0.003/2. + DeltaRCube*std::pow(estimatedCharge*3.8*0.003/2., 3)/6.);
-//    return (phi + estimatedCharge*DeltaR*3.8*0.003/2. + RCube*std::pow(estimatedCharge*3.8*0.003/2., 3)/6.);
-    return (phi + estimatedCharge*DeltaR*3.8*0.003/2. + RCube*std::pow(estimatedCharge*3.8*0.003/2., 3)/6. + RFifth*std::pow(estimatedCharge*3.8*0.003/2., 5)*3./40.);
-    // return (phi + std::asin(estimatedCharge*R*3.8*0.003/2.) - std::asin(estimatedCharge*meanR_[var_layer->at(k)]*3.8*0.003/2.));
+     return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
+//    return (phi + estimatedChargeOverPt*DeltaR*3.8*0.003/2. + 1.2*RCube*std::pow(estimatedChargeOverPt*3.8*0.003/2., 3)/6.);
+    // return (phi + estimatedChargeOverPt*DeltaR*3.8*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8*0.003/2., 3)/6. + RFifth*std::pow(estimatedChargeOverPt*3.8*0.003/2., 5)*3./40.);
+    // return (phi + std::asin(estimatedChargeOverPt*R*3.8*0.003/2.) - std::asin(estimatedChargeOverPt*meanRadius(var_layer->at(k))*3.8*0.003/2.));
     // return (phi + std::asin(estimatedCharge*R*3.8*0.003/2.) + std::asin(estimatedCharge*meanR_[var_layer->at(k)]*3.8*0.003/2.));
 //    return (phi + std::asin(estimatedCharge*R*3.8*0.003/2.));
   }
@@ -464,8 +493,8 @@ public:
   }
   virtual ~GetVarChargeOverPtCorrectedR() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
-    float estimatedCharge = chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
-    float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    double estimatedCharge = chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
+    double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return estimatedCharge*R;
   }
 private:
@@ -479,25 +508,62 @@ class CotThetaEstimator
 {
 public:
   CotThetaEstimator() {
-    zMeans_.insert(std::make_pair(5, 4.45693));
-    zMeans_.insert(std::make_pair(6, 7.16692));
-    zMeans_.insert(std::make_pair(7, 10.2198));
-    zMeans_.insert(std::make_pair(8, 13.8584));
-    zMeans_.insert(std::make_pair(9, 17.9306));
-    zMeans_.insert(std::make_pair(10, 21.8398));
-    zCoeff_.insert(std::make_pair(5, -0.0174372));
-    zCoeff_.insert(std::make_pair(6,  0.000914154));
-    zCoeff_.insert(std::make_pair(7, 0.017444));
-    zCoeff_.insert(std::make_pair(8, 0.000939208));
-    zCoeff_.insert(std::make_pair(9, 0.00162868));
-    zCoeff_.insert(std::make_pair(10, 0.00230743));
-    cotThetaMean_ = 0.20157;
+//    zMeans_.insert(std::make_pair(5, 4.45693));
+//    zMeans_.insert(std::make_pair(6, 7.16692));
+//    zMeans_.insert(std::make_pair(7, 10.2198));
+//    zMeans_.insert(std::make_pair(8, 13.8584));
+//    zMeans_.insert(std::make_pair(9, 17.9306));
+//    zMeans_.insert(std::make_pair(10, 21.8398));
+//    zCoeff_.insert(std::make_pair(5, -0.0174372));
+//    zCoeff_.insert(std::make_pair(6,  0.000914154));
+//    zCoeff_.insert(std::make_pair(7, 0.017444));
+//    zCoeff_.insert(std::make_pair(8, 0.000939208));
+//    zCoeff_.insert(std::make_pair(9, 0.00162868));
+//    zCoeff_.insert(std::make_pair(10, 0.00230743));
+//    cotThetaMean_ = 0.20157;
+
+//    zMeans_.insert(std::make_pair(5, 0.010245));
+//    zMeans_.insert(std::make_pair(6, 0.0116309));
+//    zMeans_.insert(std::make_pair(7, 0.0139186));
+//    zMeans_.insert(std::make_pair(8, -0.0102434));
+//    zMeans_.insert(std::make_pair(9, -0.0122877));
+//    zMeans_.insert(std::make_pair(10, -0.0137043));
+//    zCoeff_.insert(std::make_pair(5, -0.02924));
+//    zCoeff_.insert(std::make_pair(6, -0.0005328));
+//    zCoeff_.insert(std::make_pair(7, 0.02589));
+//    zCoeff_.insert(std::make_pair(8, 0.000797));
+//    zCoeff_.insert(std::make_pair(9, 0.001234));
+//    zCoeff_.insert(std::make_pair(10, 0.001883));
+//    cotThetaMean_ = 0.000127483;
+
+    zMeans_.insert(std::make_pair(5, 0.010245));
+    zMeans_.insert(std::make_pair(6, 0.0116309));
+    zMeans_.insert(std::make_pair(7, 0.0139186));
+    zMeans_.insert(std::make_pair(8, -0.0102434));
+    zMeans_.insert(std::make_pair(9, -0.0122877));
+    zMeans_.insert(std::make_pair(10, -0.0137043));
+    zCoeff_.insert(std::make_pair(5, -0.0286994));
+    zCoeff_.insert(std::make_pair(6, -0.00101947));
+    zCoeff_.insert(std::make_pair(7, 0.0256568));
+    zCoeff_.insert(std::make_pair(8, 0.000839378));
+    zCoeff_.insert(std::make_pair(9, 0.00129111));
+    zCoeff_.insert(std::make_pair(10, 0.00196343));
+    cotThetaMean_ = 0.000127483;
   }
   float cotTheta(const std::vector<float> * var_z, const std::map<int, unsigned int> & layersFound) {
-    float cotTheta = 0.;
+    double cotTheta = 0.;
     for (const auto &layer : layersFound) {
       unsigned int l = layer.first;
       cotTheta += (var_z->at(layer.second) - zMeans_[l]) * zCoeff_[l];
+    }
+    // When it is estimated the mean value is subtracted. We add it back.
+    return (cotTheta + cotThetaMean_);
+  }
+  template <class T>
+  double cotTheta(const T & var_z) {
+    double cotTheta = 0.;
+    for (unsigned int i=0; i<6; ++i) {
+      cotTheta += (var_z[i] - zMeans_[i+5]) * zCoeff_[i+5];
     }
     // When it is estimated the mean value is subtracted. We add it back.
     return (cotTheta + cotThetaMean_);
@@ -526,7 +592,6 @@ private:
   std::vector<float> * var_y;
   std::vector<float> * var_z;
   std::vector<int> * var_layer;
-  ChargeOverPtEstimator chargeOverPtEstimator_;
   CotThetaEstimator cotThetaEstimator_;
 };
 
@@ -542,10 +607,10 @@ public:
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     double DeltaR = R - meanRadius(var_layer->at(k));
     double cotTheta = cotThetaEstimator_.cotTheta(var_z, layersFound);
-    double oneOverRho = (3.8*0.003)*chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
-    // return (var_z->at(k) - (DeltaR + 1/24.*std::pow(R, 3)*(oneOverRho*oneOverRho))*cotTheta);
-    double DeltaRCube = std::pow(R, 3) - std::pow(meanRadius(var_layer->at(k)), 3);
-    return (var_z->at(k) - (DeltaR + 1/24.*DeltaRCube*(oneOverRho*oneOverRho))*cotTheta);
+    double oneOverRho = (3.8114*0.003)*chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
+    return (var_z->at(k) - (DeltaR + 1/24.*std::pow(R, 3)*(oneOverRho*oneOverRho))*cotTheta);
+    // double DeltaRCube = std::pow(R, 3) - std::pow(meanRadius(var_layer->at(k)), 3);
+    // return (var_z->at(k) - (DeltaR + 1/24.*DeltaRCube*(oneOverRho*oneOverRho))*cotTheta);
   }
 private:
   std::vector<float> * var_x;
@@ -566,8 +631,8 @@ public:
   }
   virtual ~GetVarRCotTheta() {}
   virtual float at(const int k, const std::map<int, unsigned int> & layersFound) {
-    float cotTheta = cotThetaEstimator_.cotTheta(var_z, layersFound);
-    float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    double cotTheta = cotThetaEstimator_.cotTheta(var_z, layersFound);
+    double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return R*(cotTheta);
   }
 private:
@@ -603,10 +668,10 @@ public:
     float estimatedCharge = 0.;
     for (const auto & layer : layersFound) {
       unsigned int l = layer.first;
-      float phi = std::atan2(var_y->at(layer.second), var_x->at(layer.second));
+      double phi = std::atan2(var_y->at(layer.second), var_x->at(layer.second));
       estimatedCharge += (phi-chargeOverPtPhiMeans_[l])*chargeOverPtPhiCoeff_[l];
     }
-    float R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return std::pow(estimatedCharge*R, 3);
   }
 private:
@@ -655,7 +720,7 @@ private:
   std::vector<float> * var_y;
   std::unordered_map<unsigned int, float> chargePhiMeans_;
   std::unordered_map<unsigned int, float> chargePhiCoeff_;
-  float chargeMean_;
+  double chargeMean_;
 };
 
 

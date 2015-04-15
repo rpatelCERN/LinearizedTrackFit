@@ -100,7 +100,7 @@ bool GeometricIndex::filter(const std::vector<StubRZPhi> & stubs)
 //  if (stubs[4].module() != 12 || stubs[4].ladder() != 2) return false;
 //  if (stubs[5].module() != 12 || stubs[5].ladder() != 3) return false;
 
-  if (stubs[5].ladder() != 20) return false;
+  // if (stubs[5].ladder() != 20) return false;
 
   return true;
 }

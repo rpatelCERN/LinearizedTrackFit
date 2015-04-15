@@ -14,34 +14,33 @@
 class LinearFitter
 {
 public:
-  LinearFitter(const std::string & inputDirName, const bool pcsFit);
+  LinearFitter(const std::string & inputDirName);
 
   // Fit track parameters
-  bool fit(const std::vector<float> & vars, const float & genOneOverPt, const float & genPhi,
-      const float & genEta, const float & genZ0, const int charge, const int lastLadder);
-  bool fit(const std::vector<float> & vars, const std::vector<StubRZPhi> & stubs, const int charge, const int lastLadder);
-  float normChi2() const { return normChi2_; }
-  std::vector<float> trackParameters() const { return trackParameters_; }
+  bool fit(const std::vector<double> & vars, const double & genOneOverPt, const double & genPhi,
+      const double & genEta, const double & genZ0, const int charge, const int lastLadder);
+  bool fit(const std::vector<double> & vars, const std::vector<StubRZPhi> & stubs, const int charge, const int lastLadder);
+  double normChi2() const { return normChi2_; }
+  std::vector<double> trackParameters() const { return trackParameters_; }
   int geometricIndex() const { return geomIndex_; }
   std::unordered_map<std::string, std::unordered_set<int> > requiredLayers() const { return requiredLayers_; }
   unsigned int variablesSize() const { return variablesSize_; }
 
   // These are mostly for debugging and validation. They must be called after the fit, otherwise the geomIndex is not updated.
-  std::vector<float> principalComponents(const std::vector<float> & vars, const int lastLadder);
-  std::vector<float> normalizedPrincipalComponents(const std::vector<float> & vars, const int lastLadder);
+  std::vector<double> principalComponents(const std::vector<double> & vars, const int lastLadder);
+  std::vector<double> normalizedPrincipalComponents(const std::vector<double> & vars, const int lastLadder);
 
 private:
-  bool fit(const std::vector<float> & vars, const int lastLadder);
+  bool fit(const std::vector<double> & vars, const int lastLadder);
   void readRequiredLayers(const std::string & inputFileName);
 
   // Data members
-  float normChi2_;
-  std::vector<float> trackParameters_;
+  double normChi2_;
+  std::vector<double> trackParameters_;
   std::string inputDirName_;
   GeometricIndex gi_;
   int geomIndex_;
   unsigned int variablesSize_;
-  bool pcsFit_;
   std::unordered_map<int, MatrixReader> matrices_;
   std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
 };

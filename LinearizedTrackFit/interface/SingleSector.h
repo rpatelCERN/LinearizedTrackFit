@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <map>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/BaseHistograms.h"
 #include "TString.h"
 #include "TFile.h"
 
@@ -13,13 +14,13 @@ namespace LinearFit {
 
   void fillDistances(const TreeReader & treeReader, BaseHistograms & histogramsTransverse, BaseHistograms & histogramsLongitudinal)
   {
-    std::vector<float> distancesTransverse;
-    std::vector<float> distancesLongitudinal;
+    std::vector<double> distancesTransverse;
+    std::vector<double> distancesLongitudinal;
     for (const auto &s : treeReader.getStubRZPhi()) {
-      float distTransverse = treeReader.genTrackDistanceTransverse(1. / treeReader.getOneOverPt(), treeReader.getPhi(),
+      double distTransverse = treeReader.genTrackDistanceTransverse(1. / treeReader.getOneOverPt(), treeReader.getPhi(),
           treeReader.getX0(), treeReader.getY0(), treeReader.getCharge(), 3.8, s.x(), s.y());
       distancesTransverse.push_back(distTransverse);
-      float distLongitudinal = treeReader.genTrackDistanceLongitudinal(treeReader.getX0(), treeReader.getY0(), treeReader.getZ0(),
+      double distLongitudinal = treeReader.genTrackDistanceLongitudinal(treeReader.getX0(), treeReader.getY0(), treeReader.getZ0(),
           treeReader.getCotTheta(), s.R(), s.z());
       distancesLongitudinal.push_back(distLongitudinal);
     }

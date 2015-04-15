@@ -7,7 +7,7 @@ MatrixBuilderHistograms::MatrixBuilderHistograms(const std::string & name, const
 }
 
 
-void MatrixBuilderHistograms::fill(const std::vector<float> & vars, const std::vector<float> & pars)
+void MatrixBuilderHistograms::fill(const std::vector<double> & vars, const std::vector<double> & pars)
 {
   hVars_.fill(vars);
   hPars_.fill(pars);
