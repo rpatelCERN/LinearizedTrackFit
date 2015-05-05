@@ -1,26 +1,31 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
 
 using namespace Eigen;
-
+// using namespace mpfr;
 
 MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, double> > & varsMeans, const unsigned int nTrackParameters) :
     name_(name),
     nVars_(varsMeans.size()),
     varsMeans_(varsMeans),
     nTrackParameters_(nTrackParameters),
-    cov_(MatrixXd::Zero(nVars_, nVars_)),
-//    meanValues_(VectorXd::Zero(nVars_)),
-    corrPV_(MatrixXd::Zero(nTrackParameters, nVars_)),
-//    meanP_(VectorXd::Zero(nTrackParameters)),
-    V_(MatrixXd::Zero(nVars_, nVars_)),
-    sqrtEigenvalues_(VectorXd::Zero(nVars_)),
-//    meanValuesVec_(VectorXd::Zero(nVars_)),
+    cov_(Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic>::Zero(nVars_, nVars_)),
+//    meanValues_(Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic>::Zero(nVars_)),
+    corrPV_(Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic>::Zero(nTrackParameters, nVars_)),
+//    meanP_(Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic>::Zero(nTrackParameters)),
+    V_(Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic>::Zero(nVars_, nVars_)),
+    sqrtEigenvalues_(Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic>::Zero(nVars_)),
+//    meanValuesVec_(Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic>::Zero(nVars_)),
     count_(0)
 {
   for (int ladder=-1; ladder<77; ++ladder) {
-    meanValuesLadders_.insert(std::make_pair(ladder, VectorXd::Zero(nVars_)));
-    meanPLadders_.insert(std::make_pair(ladder, VectorXd::Zero(nTrackParameters_)));
+    meanValuesLadders_.insert(std::make_pair(ladder, Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic>::Zero(nVars_)));
+    meanPLadders_.insert(std::make_pair(ladder, Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic>::Zero(nTrackParameters_)));
   };
+//  // Declare matrix and vector types with multi-precision scalar type
+//  typedef Matrix<mpreal,Dynamic,Dynamic>  MatrixXmp;
+//  typedef Matrix<mpreal,Dynamic,1>        VectorXmp;
+//  MatrixXmp A = MatrixXmp::Random(100,100);
+//  VectorXmp b = VectorXmp::Random(100);
 }
 
 
@@ -75,10 +80,10 @@ void MatrixBuilder::updateMeanAndCovParams(const std::vector<double> & vars,
     if(count_ == 1) continue; // skip first track
 
     if (usePcs) {
-      VectorXd varsVec(nVars_);
+      Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic> varsVec(nVars_);
       for (unsigned int i=0; i<nVars_; ++i) { varsVec(i) = vars[i]; }
-      // VectorXd principal = V_*(varsVec - meanValues_);
-      VectorXd principal = V_*(varsVec - meanValuesLadders_[lastLadder]);
+      // Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic> principal = V_*(varsVec - meanValues_);
+      Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic> principal = V_*(varsVec - meanValuesLadders_[lastLadder]);
       for (unsigned int jVar = 0; jVar != nVars_; ++jVar) {
         // corrPV_(iPar, jVar) += (pars[iPar] - meanP_(iPar)) * (principal[jVar]) / (count_ - 1) - corrPV_(iPar, jVar) / count_;
         corrPV_(iPar, jVar) += (pars[iPar] - meanPLadders_[lastLadder](iPar)) * (principal[jVar]) / (count_ - 1) - corrPV_(iPar, jVar) / count_;
@@ -111,7 +116,7 @@ void MatrixBuilder::update(const std::vector<double> & vars, const std::vector<d
 }
 
 
-//void MatrixBuilder::invertCorrelationMatrix(const int nTrackParameters, const int nVars, MatrixXd & D, const MatrixXd & corrPV, const MatrixXd & cov)
+//void MatrixBuilder::invertCorrelationMatrix(const int nTrackParameters, const int nVars, Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic> & D, const Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic> & corrPV, const Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic> & cov)
 //{
 //  D = corrPV*(cov.inverse());
 //}
@@ -120,13 +125,16 @@ void MatrixBuilder::update(const std::vector<double> & vars, const std::vector<d
 void MatrixBuilder::computeEigenvalueMatrix()
 {
   // Diagonalize covariance matrix to find principal components
-  SelfAdjointEigenSolver<MatrixXd> es(cov_);
+  SelfAdjointEigenSolver<Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic>> es(cov_);
   std::cout << "Sqrt(eigenvalues) of cov:" << std::endl;
-  sqrtEigenvalues_ = VectorXd::Zero(nVars_);
+  sqrtEigenvalues_ = Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic>::Zero(nVars_);
   for(unsigned int i = 0; i != nVars_; ++i) {
-    double eigenvalue = es.eigenvalues()[i] != 0. ? es.eigenvalues()[i] : 1000000.;
-    sqrtEigenvalues_(i) = std::sqrt(eigenvalue);
-    std::cout << " " << std::sqrt(es.eigenvalues()[i]);
+    // double eigenvalue = es.eigenvalues()[i] != 0. ? es.eigenvalues()[i] : 1000000.;
+    // sqrtEigenvalues_(i) = std::sqrt(eigenvalue);
+    // std::cout << " " << std::sqrt(es.eigenvalues()[i]);
+    boost::multiprecision::cpp_dec_float_100 eigenvalue = es.eigenvalues()[i] != 0. ? es.eigenvalues()[i] : 1000000.;
+    sqrtEigenvalues_(i) = boost::multiprecision::sqrt(eigenvalue);
+    std::cout << " " << sqrtEigenvalues_(i);
   }
   std::cout << std::endl;
 
@@ -144,10 +152,13 @@ void MatrixBuilder::writeMatrices(const bool usePcs)
   // computeEigenvalueMatrix();
   // Invert (diagonal) correlation matrix dividing by eigenvalues.
   // Transformation from coordinates to track parameters
-  MatrixXd D = corrPV_*(cov_.inverse());
 
+  // Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic> D = corrPV_*(cov_.inverse());
+  Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic> D = corrPV_*(cov_.inverse());
+
+  
   if (usePcs) {
-    MatrixXd diagCov_ = MatrixXd::Zero(nVars_, nVars_);
+    Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic> diagCov_ = Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic>::Zero(nVars_, nVars_);
     for (unsigned int i=0; i<nVars_; ++i) {
       diagCov_(i, i) = sqrtEigenvalues_(i)*sqrtEigenvalues_(i);
     }
