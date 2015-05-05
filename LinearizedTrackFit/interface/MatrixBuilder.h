@@ -37,6 +37,7 @@ private:
   MatrixXd corrPV_;
   MatrixXd V_;
   VectorXd sqrtEigenvalues_;
+  MatrixXd diagCov_;
   int count_;
   std::unordered_map<int, VectorXd> meanValuesLadders_;
   std::unordered_map<int, VectorXd> meanPLadders_;

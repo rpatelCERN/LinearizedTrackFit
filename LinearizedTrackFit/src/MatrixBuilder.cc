@@ -1,7 +1,6 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
 
 using namespace Eigen;
-// using namespace mpfr;
 
 MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, double> > & varsMeans, const unsigned int nTrackParameters) :
     name_(name),
@@ -21,11 +20,6 @@ MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pa
     meanValuesLadders_.insert(std::make_pair(ladder, VectorXd::Zero(nVars_)));
     meanPLadders_.insert(std::make_pair(ladder, VectorXd::Zero(nTrackParameters_)));
   };
-//  // Declare matrix and vector types with multi-precision scalar type
-//  typedef Matrix<mpreal,Dynamic,Dynamic>  MatrixXmp;
-//  typedef Matrix<mpreal,Dynamic,1>        VectorXmp;
-//  MatrixXmp A = MatrixXmp::Random(100,100);
-//  VectorXmp b = VectorXmp::Random(100);
 }
 
 
@@ -128,10 +122,12 @@ void MatrixBuilder::computeEigenvalueMatrix()
   SelfAdjointEigenSolver<MatrixXd> es(cov_);
   std::cout << "Sqrt(eigenvalues) of cov:" << std::endl;
   sqrtEigenvalues_ = VectorXd::Zero(nVars_);
+  diagCov_ = MatrixXd::Zero(nVars_, nVars_);
   for(unsigned int i = 0; i != nVars_; ++i) {
-    double eigenvalue = es.eigenvalues()[i] != 0. ? es.eigenvalues()[i] : 1000000.;
+    double eigenvalue = es.eigenvalues()[i] != 0. ? es.eigenvalues()[i] : 10000000.;
+    diagCov_(i, i) = 1./eigenvalue;
     sqrtEigenvalues_(i) = std::sqrt(eigenvalue);
-    std::cout << " " << std::sqrt(es.eigenvalues()[i]);
+    std::cout << " " << std::sqrt(eigenvalue);
   }
   std::cout << std::endl;
 
@@ -153,11 +149,8 @@ void MatrixBuilder::writeMatrices(const bool usePcs)
 
   
   if (usePcs) {
-    MatrixXd diagCov_ = MatrixXd::Zero(nVars_, nVars_);
-    for (unsigned int i=0; i<nVars_; ++i) {
-      diagCov_(i, i) = sqrtEigenvalues_(i)*sqrtEigenvalues_(i);
-    }
-    D = corrPV_*(diagCov_.inverse())*V_;
+//    D = corrPV_*(diagCov_.inverse())*V_;
+    D = corrPV_*diagCov_*V_;
   }
 
   std::cout << std::endl;
