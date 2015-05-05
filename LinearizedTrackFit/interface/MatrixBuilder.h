@@ -14,10 +14,6 @@
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
 using namespace Eigen;
-// using namespace mpfr;
-
-// set precision to 256 bits (double has only 53 bits)
-// mpreal::set_default_prec(256);
 
 class MatrixBuilder
 {
@@ -37,15 +33,13 @@ private:
   unsigned int nVars_;
   std::vector<std::pair<bool, double> > varsMeans_;
   unsigned int nTrackParameters_;
-  // Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic> cov_;
-  Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic> cov_;
-  Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic> corrPV_;
-  Matrix<boost::multiprecision::cpp_dec_float_100, Dynamic, Dynamic> V_;
-  // Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic> sqrtEigenvalues_;
-  Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic> sqrtEigenvalues_;
+  MatrixXd cov_;
+  MatrixXd corrPV_;
+  MatrixXd V_;
+  VectorXd sqrtEigenvalues_;
   int count_;
-  std::unordered_map<int, Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic>> meanValuesLadders_;
-  std::unordered_map<int, Matrix<boost::multiprecision::cpp_dec_float_100, 1, Dynamic>> meanPLadders_;
+  std::unordered_map<int, VectorXd> meanValuesLadders_;
+  std::unordered_map<int, VectorXd> meanPLadders_;
 };
 
 #endif // MATRIXBUILDER_H
