@@ -46,6 +46,8 @@ private:
   TH2F * hDeltaZ0VsD0_;
   TH2F * hDeltaD0VsZ0_;
   TH2F * hDeltaD0VsPhi_;
+  // Plots to monitor generator-level correlations
+  TH2F * hD0VsPhi_;
   // Indeces of the parameters
   int ptIndex_;
   int cotThetaIndex_;

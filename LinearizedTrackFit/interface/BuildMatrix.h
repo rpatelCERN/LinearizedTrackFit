@@ -16,13 +16,18 @@
 #include "TString.h"
 #include "TFile.h"
 
+
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterHistograms.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterSummaryHistograms.h"
+
+
 namespace LinearFit {
 
   void buildMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
       const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars,
-      std::unordered_map<int, std::pair<float, float> > & radiusCuts,  const std::vector<double> & distanceCutsTransverse,
+      std::unordered_map<int, std::pair<double, double> > & radiusCuts,  const std::vector<double> & distanceCutsTransverse,
       const std::vector<double> & distanceCutsLongitudinal, const std::vector<std::string> & inputVarNames,
-      const std::unordered_map<std::string, std::vector<std::pair<bool, float> > > & inputVariablesMeans,
+      const std::unordered_map<std::string, std::vector<std::pair<bool, double> > > & inputVariablesMeans,
       const std::vector<std::string> & inputTrackParameterNames, const bool singleModules,
       const bool doMapSectors, const bool computeDistances, const bool computeCorrelations,
       const GeometricIndex::GeometricIndexConfiguration & gic, const bool phiSymmetricFit, const bool usePcs)
@@ -51,7 +56,7 @@ namespace LinearFit {
         allRequiredLayers.insert(layer);
       }
     }
-    std::vector<std::pair<bool, float> > variablesMeans;
+    std::vector<std::pair<bool, double> > variablesMeans;
     int i=0;
     for (const auto & layer : allRequiredLayers) {
       for (const auto &varName : inputVarNames) {

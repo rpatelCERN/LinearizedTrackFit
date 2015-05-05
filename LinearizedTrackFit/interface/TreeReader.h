@@ -20,7 +20,7 @@ class TreeReader
 {
 public:
   TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<float, float> > & radiusCuts,
+      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
       const std::vector<double> & distanceCutsTransverse,  const std::vector<double> & distanceCutsLongitudinal,
       const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames);
 
@@ -41,12 +41,14 @@ public:
     double pt = getPt();
     return pt == 0 ? 0 : 1./pt;
   }
-  double getPhi() const { return tree_->m_stub_PHI0->at(0); }
+  // double getPhi() const { return tree_->m_stub_PHI0->at(0); }
+  double getPhi() const { return getParPhi0_->at(0); }
   double getEta() const { return tree_->m_stub_etaGEN->at(0); }
   double getCotTheta() const { return 1./tan(2*atan(exp(-tree_->m_stub_etaGEN->at(0)))); }
   double getX0() const { return tree_->m_stub_X0->at(0); }
   double getY0() const { return tree_->m_stub_Y0->at(0); }
-  double getZ0() const { return tree_->m_stub_Z0->at(0); }
+  // double getZ0() const { return tree_->m_stub_Z0->at(0); }
+  double getZ0() const { return getParZ0_->at(0); }
   double getR(const int k) const { return std::sqrt(std::pow(tree_->m_stub_x->at(k), 2) + std::pow(tree_->m_stub_y->at(k), 2)); }
   double getD0() const { return getParD0_->at(0); }
   int getCharge() const { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
@@ -86,7 +88,7 @@ public:
   double eventsFractionStart_;
   double eventsFractionEnd_;
   std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
-  std::unordered_map<int, std::pair<float, float> > radiusCuts_;
+  std::unordered_map<int, std::pair<double, double> > radiusCuts_;
   unsigned int parametersSize_;
   std::vector<std::shared_ptr<GetTreeVariable> > vars_;
   std::vector<std::shared_ptr<GetTreeTrackParameter> > pars_;
@@ -100,6 +102,7 @@ public:
   unsigned int variablesSize_;
   // This is the full list of names ordered as the variables are in variables_
   std::vector<std::string> variablesNames_;
+  std::vector<std::string> parametersNames_;
   std::vector<double> distanceCutsTransverse_;
   std::vector<double> distanceCutsLongitudinal_;
 
@@ -107,7 +110,12 @@ public:
   std::map<int, unsigned int> layersFound_;
   int lastLadder_;
 
+  std::shared_ptr<GetParPhi> getParPhi0_;
+  std::shared_ptr<GetParZ0> getParZ0_;
   std::shared_ptr<GetParD0> getParD0_;
+
+  unsigned int phiIndex_;
+  bool phiDiscontinuous_;
 };
 
 #endif // TREEREADER_H

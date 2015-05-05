@@ -1,7 +1,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
 
 TreeReader::TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-    const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<float, float> > & radiusCuts,
+    const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
     const std::vector<double> & distanceCutsTransverse, const std::vector<double> & distanceCutsLongitudinal,
     const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames) :
   tree_(std::make_shared<L1TrackTriggerTree>(inputFileName)),
@@ -10,9 +10,13 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   parametersSize_(trackParNames.size()),
   maxRequiredLayers_(0),
   variablesSize_(0),
+  parametersNames_(trackParNames),
   distanceCutsTransverse_(distanceCutsTransverse),
   distanceCutsLongitudinal_(distanceCutsLongitudinal),
-  getParD0_(std::make_shared<GetParD0>(tree_))
+  getParPhi0_(std::make_shared<GetParPhi>(tree_)),
+  getParZ0_(std::make_shared<GetParZ0>(tree_)),
+  getParD0_(std::make_shared<GetParD0>(tree_)),
+  phiDiscontinuous_(false)
 {
   reset(eventsFractionStart, eventsFractionEnd);
 
@@ -39,8 +43,13 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     else if (varName == "RCotTheta") vars_.push_back(std::make_shared<GetVarRCotTheta>(tree_, requiredLayers_["RCotTheta"]));
     else if (varName == "CorrectedPhi") vars_.push_back(std::make_shared<GetVarCorrectedPhi>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedPhiSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrder>(tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiSecondOrderWithD0") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderWithD0>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedPhiThirdOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrder>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedPhiSecondOrderGen") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderGen>(tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiExactWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiExactWithD0Gen>(tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiFirstOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiFirstOrderWithD0Gen>(tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiSecondOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderWithD0Gen>(tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiThirdOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrderWithD0Gen>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedZ") vars_.push_back(std::make_shared<GetVarCorrectedZ>(tree_, requiredLayers_["z"]));
     else if (varName == "CorrectedZSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedZSecondOrder>(tree_, requiredLayers_["z"]));
     else {
@@ -84,6 +93,25 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     }
   }
   assert(pars_.size() == trackParNames.size());
+
+  // Avoid discontinuity in phi between +pi and -pi
+  int countPhiNames = 0;
+  for (unsigned int i=0; i<varNames.size(); ++i) {
+    if (varNames[i] == "phi" ||
+        varNames[i] == "CorrectedPhi" ||
+        varNames[i] == "CorrectedPhiSecondOrder" ||
+        varNames[i] == "CorrectedPhiSecondOrderWithD0" ||
+        varNames[i] == "CorrectedPhiThirdOrder" ||
+        varNames[i] == "CorrectedPhiSecondOrderGen" ||
+        varNames[i] == "CorrectedPhiExactWithD0Gen" ||
+        varNames[i] == "CorrectedPhiFirstOrderWithD0Gen" ||
+        varNames[i] == "CorrectedPhiSecondOrderWithD0Gen" ||
+        varNames[i] == "CorrectedPhiThirdOrderWithD0Gen") {
+      phiIndex_ = i;
+      ++countPhiNames;
+    }
+  }
+  assert(countPhiNames == 0 || countPhiNames == 1);
 }
 
 
@@ -121,6 +149,7 @@ bool TreeReader::nextTrack()
     }
   }
 
+  // This should stay after the readVariables() call to ensure proper treatment of the phi discontinuity
   readTrackParameters();
 
   return true;
@@ -152,7 +181,7 @@ bool TreeReader::closeDistanceFromGenTrack()
 {
   int i = 0;
   for (const auto & s : stubsRZPhi_) {
-    if (genTrackDistanceTransverse(1. / getOneOverPt(), getPhi(), getX0(), getY0(), getCharge(), 3.8, s.x(), s.y()) > distanceCutsTransverse_[i]) return false;
+    if (genTrackDistanceTransverse(1. / getOneOverPt(), getPhi(), getX0(), getY0(), getCharge(), 3.8114, s.x(), s.y()) > distanceCutsTransverse_[i]) return false;
     if (fabs(genTrackDistanceLongitudinal(getX0(), getY0(), getZ0(), getCotTheta(), s.R(), s.z())) > distanceCutsLongitudinal_[i]) return false;
     ++i;
   }
@@ -194,9 +223,20 @@ bool TreeReader::goodTrack()
   // Cut on the beamspot to make it a circle
   // TODO: this cut should be removed once the generator produces a circular flat distribution.
   // The generated distribution is a square with x0 and y0 between +/- 0.15 cm.
-  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 0.145) return false;
+//  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 0.145) return false;
 //  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 0.95) return false;
+//  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 9.5) return false;
   // if (fabs(getParD0_->at(0)) > 0.02) return false;
+//  if (fabs(getParD0_->at(0)) > 0.1) return false;
+//  if (fabs(getParD0_->at(0)) < 0.4) return false;
+//  if (fabs(getParD0_->at(0)) > 0.25) return false;
+//  if (fabs(getParD0_->at(0)) > 0.5) return false;
+//  if (getParD0_->at(0) < 0.4) return false;
+//  if (getParD0_->at(0) > 0.5) return false;
+  // if (getParD0_->at(0) > 0) return false;
+//  if (fabs(getParD0_->at(0)) > 0.8) return false;
+//   if (tree_->m_stub_pdg->at(0) < 0) return false;
+//  if (fabs(getParD0_->at(0)) > 8.) return false;
 
   return true;
 }
@@ -215,7 +255,7 @@ bool TreeReader::readVariables() {
     // Cut on the radius of the stub
     const auto radiusCut = radiusCuts_.find(layer);
     if (radiusCut != radiusCuts_.end()) {
-      float R = getR(k);
+      double R = getR(k);
       if ((R < radiusCut->second.first) || (R > radiusCut->second.second)) continue;
     }
     layersFound_.insert(std::make_pair(layer, k));
@@ -248,6 +288,26 @@ bool TreeReader::readVariables() {
   // Check the distance of the stubs from the generated track
   if (!closeDistanceFromGenTrack()) return false;
 
+  // Avoid discontinuity in phi
+  phiDiscontinuous_ = false;
+  double firstPhi = variables_[phiIndex_];
+  // To avoid the change of sign around 0, which is continuous
+  if (fabs(firstPhi) > M_PI_2) {
+    for (unsigned int i = phiIndex_ + vars_.size(); i < variables_.size(); i += vars_.size()) {
+      if (firstPhi * variables_[i] < 0.) {
+        phiDiscontinuous_ = true;
+        break;
+      }
+    }
+  }
+  if (phiDiscontinuous_) {
+    for (unsigned int i = phiIndex_; i < variables_.size(); i += vars_.size()) {
+      // std::cout << "discontinuous phi["<<i<<"] = " << variables_[i] << " ";
+      if (variables_[i] < 0.) variables_[i] += 2 * M_PI;
+      // std::cout << "changed to phi["<<i<<"] = " << variables_[i] << std::endl;
+    }
+  }
+
   return true;
 }
 
@@ -259,8 +319,19 @@ void TreeReader::readTrackParameters()
   // Loop on pars_ and fill a vector of parameters. We validated the collection
   // such that it does not have stubs pointing to other generator level parameters
   // so we can use the first element.
+  int i = 0;
   for (const auto & par : pars_) {
     parameters_.push_back(par->at(0)); // This could be improved avoiding to clear the vector and simply overwriting it.
+    // Adjust for discontinuity if the parameter phi is in the left hemisphere and it does not have the same sign
+    // as the phi coordinates (which have already been adjusted in this hemisphere).
+    if (parametersNames_[i] == "phi" && parameters_[i] * variables_[phiIndex_] < 0.) {
+      //  ((phiDiscontinuous_ && parameters_[i] < -M_PI_2) || (fabs(parameters_[i]) < M_PI_2 && parameters_[i] * variables_[phiIndex_] < 0.)) {
+      // std::cout << "discontinuous PHI0 = " << parameters_[i] << " ";
+      if (parameters_[i] > M_PI_2) parameters_[i] -= 2*M_PI;
+      else if (parameters_[i] < -M_PI_2) parameters_[i] += 2*M_PI;
+      // std::cout << "changed to PHI0 = " << parameters_[i] << std::endl;
+    }
+    ++i;
   }
 
   assert(parameters_.size() == parametersSize_);

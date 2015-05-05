@@ -1,7 +1,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearizedTrackFitter.h"
 
 LinearizedTrackFitter::LinearizedTrackFitter() :
-    linearFitLowPt_(std::make_shared<MatrixReader>("matrixVD_0_pT2_10.txt")),
+    linearFitLowPt_(std::make_shared<MatrixReader>("matrixVD_0_pT_2_10.txt")),
     linearFitHighPt_(std::make_shared<MatrixReader>("matrixVD_0_pT10.txt")),
     linearFitLongitudinal_(std::make_shared<MatrixReader>("matrixVD_0_zCotTheta_SecondOrder_Final.txt")),
     meanRadius_{22.1072, 35.4917, 50.6335, 68.3771, 88.5511, 107.746},

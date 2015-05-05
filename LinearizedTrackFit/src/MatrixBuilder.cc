@@ -3,7 +3,7 @@
 using namespace Eigen;
 
 
-MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, float> > & varsMeans, const unsigned int nTrackParameters) :
+MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, double> > & varsMeans, const unsigned int nTrackParameters) :
     name_(name),
     nVars_(varsMeans.size()),
     varsMeans_(varsMeans),
@@ -170,32 +170,33 @@ void MatrixBuilder::writeMatrices(const bool usePcs)
     std::cout << "error opening matrixVD_"+name_+".txt" << std::endl;
     return;
   }
+  IOFormat fullPrec(FullPrecision, 0, " ");
   // Write also the number of variables and track parameters used
   outfile << nVars_ << std::endl;
   outfile << nTrackParameters_ << std::endl;
   outfile << std::endl;
-  outfile << sqrtEigenvalues_;
+  outfile << sqrtEigenvalues_.format(fullPrec);
   outfile << std::endl << std::endl;
-  outfile << V_;
+  outfile << V_.format(fullPrec);
   outfile << std::endl << std::endl;
   for (int ladder=-1; ladder<77; ++ladder) {
-    outfile << meanValuesLadders_[ladder];
+    outfile << meanValuesLadders_[ladder].format(fullPrec);
     outfile << std::endl << std::endl;
-    outfile << meanPLadders_[ladder];
+    outfile << meanPLadders_[ladder].format(fullPrec);
     outfile << std::endl << std::endl;
   }
-  outfile << D;
+  outfile << D.format(fullPrec);
   outfile << std::endl << std::endl;
-  outfile << corrPV_;
+  outfile << corrPV_.format(fullPrec);
   outfile << std::endl << std::endl;
   outfile << "cov:" << std::endl;
-  outfile << cov_;
+  outfile << cov_.format(fullPrec);
   outfile << std::endl << std::endl;
   outfile << "cov.inverse():" << std::endl;
-  outfile << cov_.inverse();
+  outfile << cov_.inverse().format(fullPrec);
   outfile << std::endl << std::endl;
   outfile << "cov*(cov_.inverse()):" << std::endl;
-  outfile << cov_*(cov_.inverse());
+  outfile << (cov_*(cov_.inverse())).format(fullPrec);
   outfile << std::endl;
   outfile.close();
 }

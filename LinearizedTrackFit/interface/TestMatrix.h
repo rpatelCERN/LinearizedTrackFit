@@ -16,7 +16,7 @@ namespace LinearFit
   void testMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
       const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
       std::vector<double> & distanceCutsTransverse, std::vector<double> & distanceCutsLongitudinal,
-      std::unordered_map<int, std::pair<float, float> > & radiusCuts, bool singleModules, bool phiSymmetricFit)
+      std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit)
   {
     LinearFitter linearFitter("");
 

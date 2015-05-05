@@ -6,7 +6,7 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     hDeltaPtOverPtVsPt_(nullptr), hDeltaCurvatureOverCurvatureVsPt_(nullptr), hDeltaZ0VsPt_(nullptr), hDeltaPhiVsPt_(nullptr),
     hDeltaCotThetaVsPt_(nullptr), hDeltaEtaVsPt_(nullptr), hDeltaD0VsPt_(nullptr), hDeltaPtOverPtVsEta_(nullptr),
     hDeltaCurvatureOverCurvatureVsEta_(nullptr), hDeltaZ0VsEta_(nullptr), hDeltaPhiVsEta_(nullptr), hDeltaCotThetaVsEta_(nullptr),
-    hDeltaEtaVsEta_(nullptr), hDeltaD0VsEta_(nullptr), hDeltaD0VsPhi_(nullptr),
+    hDeltaEtaVsEta_(nullptr), hDeltaD0VsEta_(nullptr), hDeltaD0VsPhi_(nullptr), hD0VsPhi_(nullptr),
     ptIndex_(-1), cotThetaIndex_(-1), phiIndex_(-1), z0Index_(-1), d0Index_(-1)
 {
   for (unsigned int i=0; i<trackParameterNames.size(); ++i) {
@@ -17,16 +17,20 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     else if (trackParameterNames[i] == "d0") d0Index_ = i;
   }
 
-  float ptMin = -200.;
-  float ptMax = 200.;
-  float phiMin = 0.;
-  float phiMax = 0.8;
-  float etaMin = -0.5;
-  float etaMax = 0.5;
-  float z0Min = -20.;
-  float z0Max = 20.;
-  float d0Min = -0.15;
-  float d0Max = 0.15;
+  double ptMin = -200.;
+  double ptMax = 200.;
+//  double phiMin = 0.;
+//  double phiMax = 0.8;
+  double phiMin = -3.14;
+  double phiMax = 3.14;
+  double etaMin = -0.5;
+  double etaMax = 0.5;
+  double z0Min = -20.;
+  double z0Max = 20.;
+//  double d0Min = -0.15;
+//  double d0Max = 0.15;
+  double d0Min = -1.;
+  double d0Max = 1.;
 
   if (ptIndex_ != -1) {
     hDeltaCurvatureOverCurvatureVsCurvature_ = new TH2F("deltaCurvatureOverCurvatureVsCurvature", "deltaCurvatureOverCurvatureVsCurvature", 240, -0.6, 0.6, 200, -0.2, 0.2);
@@ -38,8 +42,8 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
   }
   if (phiIndex_ != -1) {
     hDeltaPhiVsEta_ = new TH2F("deltaPhiVsEta", "deltaPhiVsEta", 400, etaMin, etaMax, 100, -0.05, 0.05);
-    hDeltaPhiVsPt_ = new TH2F("deltaPhiVsPt", "deltaPhiVsPt", 400, ptMin, ptMax, 1000, -0.005, 0.005);
-    hDeltaPhiVsD0_ = new TH2F("deltaPhiVsD0", "deltaPhiVsD0", 200, d0Min, d0Max, 1000, -0.005, 0.005);
+    hDeltaPhiVsPt_ = new TH2F("deltaPhiVsPt", "deltaPhiVsPt", 400, ptMin, ptMax, 200, -0.010, 0.010);
+    hDeltaPhiVsD0_ = new TH2F("deltaPhiVsD0", "deltaPhiVsD0", 200, d0Min, d0Max, 200, -0.010, 0.010);
   }
   if (cotThetaIndex_ != -1) {
     hDeltaCotThetaVsPt_ = new TH2F("deltaCotThetaVsPt", "deltaCotThetaVsPt", 400, ptMin, ptMax, 100, -0.05, 0.05);
@@ -62,57 +66,8 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     hDeltaD0VsZ0_ = new TH2F("deltaD0VsZ0", "deltaD0VsZ0", 400, z0Min, z0Max, 200, -0.1, 0.1);
     hDeltaD0VsPhi_ = new TH2F("deltaD0VsPhi", "deltaD0VsPhi", 400, phiMin, phiMax, 200, -0.1, 0.1);
   }
+  hD0VsPhi_ = new TH2F("d0VsPhi", "d0VsPhi", 400, 0, 0, 400, 0, 0);
 }
-
-//void LinearFitterSummaryHistograms::fill(const std::vector<float> & vars, const std::vector<float> & pcs, const std::vector<float> & npcs,
-//    const std::vector<float> & pars, const std::vector<float> & estimatedPars, const float & normChi2)
-//{
-//  linearFitterHistograms.fill(vars, pcs, npcs, pars, estimatedPars, normChi2);
-//
-//  if (ptIndex_ != -1) {
-//    float curvature = pars[ptIndex_];
-//    float pt = curvature == 0. ? 10000. : 1./curvature;
-//    float estCurvature = estimatedPars[ptIndex_];
-//    float estPt = estCurvature == 0. ? 10000. : 1./estCurvature;
-//    hDeltaCurvatureOverCurvatureVsCurvature_->Fill(curvature, (curvature-estCurvature)/curvature);
-//    hDeltaCurvatureOverCurvatureVsPt_->Fill(pt, (curvature-estCurvature)/curvature);
-//    hDeltaPtOverPtVsPt_->Fill(pt, (pt-estPt)/pt);
-//    if (z0Index_ != -1) hDeltaZ0VsPt_->Fill(pt, pars[z0Index_]-estimatedPars[z0Index_]);
-//    if (phiIndex_ != -1) hDeltaPhiVsPt_->Fill(pt, pars[phiIndex_]-estimatedPars[phiIndex_]);
-//    if (d0Index_ != -1) hDeltaD0VsPt_->Fill(pt, pars[d0Index_]-estimatedPars[d0Index_]);
-//    if (cotThetaIndex_ != -1) {
-//      float eta = (pars[cotThetaIndex_] == 0.) ? 0. : -log(fabs(tan(atan(1/pars[cotThetaIndex_])/2.)));
-//      if (pars[cotThetaIndex_] < 0.) eta = -eta;
-//      float estEta = (estimatedPars[cotThetaIndex_] == 0) ? 0. : -log(fabs(tan(atan(1/estimatedPars[cotThetaIndex_])/2.)));
-//      if (estimatedPars[cotThetaIndex_] < 0.) estEta = -estEta;
-//      hDeltaCotThetaVsPt_->Fill(pt, pars[cotThetaIndex_]-estimatedPars[cotThetaIndex_]);
-//      hDeltaEtaVsPt_->Fill(pt, eta-estEta);
-//    }
-//  }
-//  if (cotThetaIndex_ != -1) {
-//    float eta = (pars[cotThetaIndex_] == 0.) ? 0. : -log(fabs(tan(atan(1/pars[cotThetaIndex_])/2.)));
-//    if (pars[cotThetaIndex_] < 0.) eta = -eta;
-//    float estEta = (estimatedPars[cotThetaIndex_] == 0) ? 0. : -log(fabs(tan(atan(1/estimatedPars[cotThetaIndex_])/2.)));
-//    if (estimatedPars[cotThetaIndex_] < 0.) estEta = -estEta;
-//    hDeltaCotThetaVsEta_->Fill(eta, pars[cotThetaIndex_]-estimatedPars[cotThetaIndex_]);
-//    hDeltaEtaVsEta_->Fill(eta, eta-estEta);
-//    if (ptIndex_ != -1) {
-//      float curvature = pars[ptIndex_];
-//      float pt = curvature == 0. ? 10000. : 1./curvature;
-//      float estCurvature = estimatedPars[ptIndex_];
-//      float estPt = estCurvature == 0. ? 10000. : 1./estCurvature;
-//      hDeltaCurvatureOverCurvatureVsEta_->Fill(eta, (curvature-estCurvature)/curvature);
-//      hDeltaPtOverPtVsEta_->Fill(eta, (pt-estPt)/pt);
-//    }
-//    if (z0Index_ != -1) {
-//      hDeltaZ0VsEta_->Fill(eta, pars[z0Index_]-estimatedPars[z0Index_]);
-//      hDeltaZ0VsZ0_->Fill(pars[z0Index_], pars[z0Index_]-estimatedPars[z0Index_]);
-//      hDeltaCotThetaVsZ0_->Fill(pars[z0Index_], pars[cotThetaIndex_]-estimatedPars[cotThetaIndex_]);
-//    }
-//    if (phiIndex_ != -1) hDeltaPhiVsEta_->Fill(eta, pars[phiIndex_]-estimatedPars[phiIndex_]);
-//    if (d0Index_ != -1) hDeltaD0VsEta_->Fill(eta, pars[d0Index_]-estimatedPars[d0Index_]);
-//  }
-//}
 
 
 void LinearFitterSummaryHistograms::fill(const std::vector<double> & vars, const std::vector<double> & pcs, const std::vector<double> & npcs,
@@ -138,6 +93,7 @@ void LinearFitterSummaryHistograms::fill(const std::vector<double> & vars, const
     hDeltaPhiVsPt_->Fill(genPt, pars[phiIndex_]-estimatedPars[phiIndex_]);
     hDeltaPhiVsEta_->Fill(genEta, pars[phiIndex_]-estimatedPars[phiIndex_]);
     hDeltaPhiVsD0_->Fill(genD0, pars[phiIndex_]-estimatedPars[phiIndex_]);
+    // std::cout << "genPhi = " << pars[phiIndex_] << " = " << genPhi << std::endl;
   }
 
   if (d0Index_ != -1) {
@@ -146,6 +102,7 @@ void LinearFitterSummaryHistograms::fill(const std::vector<double> & vars, const
     hDeltaD0VsEta_->Fill(genEta, pars[d0Index_]-estimatedPars[d0Index_]);
     hDeltaD0VsZ0_->Fill(genZ0, pars[d0Index_]-estimatedPars[d0Index_]);
     hDeltaD0VsPhi_->Fill(genPhi, pars[d0Index_]-estimatedPars[d0Index_]);
+    // std::cout << "genD0 = " << pars[d0Index_] << " = " << genD0 << std::endl;
   }
 
   if (cotThetaIndex_ != -1) {
@@ -167,6 +124,8 @@ void LinearFitterSummaryHistograms::fill(const std::vector<double> & vars, const
     hDeltaZ0VsPt_->Fill(genPt, pars[z0Index_]-estimatedPars[z0Index_]);
     hDeltaZ0VsD0_->Fill(genD0, pars[z0Index_]-estimatedPars[z0Index_]);
   }
+
+  hD0VsPhi_->Fill(genPhi, genD0);
 }
 
 
@@ -207,4 +166,5 @@ void LinearFitterSummaryHistograms::write()
     hDeltaD0VsZ0_->Write();
     hDeltaD0VsPhi_->Write();
   }
+  hD0VsPhi_->Write();
 }

@@ -27,34 +27,34 @@ public:
         chargeRegions(1)
     {}
 
-    float oneOverPtMin, oneOverPtMax;
+    double oneOverPtMin, oneOverPtMax;
     int oneOverPtRegions;
-    float phiMin, phiMax;
+    double phiMin, phiMax;
     int phiRegions;
-    float etaMin, etaMax;
+    double etaMin, etaMax;
     int etaRegions;
-    float z0Min, z0Max;
+    double z0Min, z0Max;
     int z0Regions;
     int chargeRegions;
   };
 
   GeometricIndex(const std::string & inputFileName);
   GeometricIndex(const GeometricIndexConfiguration & gic);
-  int operator() (const float & oneOverPt, const float & phi, const float & eta, const float & z0, const int charge);
+  int operator() (const double & oneOverPt, const double & phi, const double & eta, const double & z0, const int charge);
   int operator() (const std::vector<StubRZPhi> & stubs, const int charge);
   void write();
 
 private:
   void initialize();
-  bool filter(const float & oneOverPt, const float & phi, const float & eta, const float & z0);
+  bool filter(const double & oneOverPt, const double & phi, const double & eta, const double & z0);
   bool filter(const std::vector<StubRZPhi> & stubs);
-  int regionIndex(const float & value, const float & min, const float & regionSize) {
+  int regionIndex(const double & value, const double & min, const double & regionSize) {
     return int((value - min)/regionSize);
   }
-  std::function<int(float)> oneOverPtRegionIndex;
-  std::function<int(float)> phiRegionIndex;
-  std::function<int(float)> etaRegionIndex;
-  std::function<int(float)> z0RegionIndex;
+  std::function<int(double)> oneOverPtRegionIndex;
+  std::function<int(double)> phiRegionIndex;
+  std::function<int(double)> etaRegionIndex;
+  std::function<int(double)> z0RegionIndex;
   int chargeRegionIndex(const int & charge) {
     if (gic_.chargeRegions == 1) return 0;
     return charge < 0 ? 0 : 1;
@@ -62,10 +62,10 @@ private:
   std::string readValue(std::ifstream & inputFile);
 
   GeometricIndexConfiguration gic_;
-  float oneOverPtRegionSize_;
-  float phiRegionSize_;
-  float etaRegionSize_;
-  float z0RegionSize_;
+  double oneOverPtRegionSize_;
+  double phiRegionSize_;
+  double etaRegionSize_;
+  double z0RegionSize_;
 };
 
 #endif // GEOMETRIXINDEX_H

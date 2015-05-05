@@ -71,6 +71,10 @@ L1TrackTriggerTree::L1TrackTriggerTree(const TString & fileName)
   L1TT->SetBranchAddress("L1TkSTUB_Y0",        &m_stub_Y0);
   L1TT->SetBranchAddress("L1TkSTUB_Z0",        &m_stub_Z0);
 
+  L1TT->SetBranchAddress("L1TkSTUB_PHI0Extrapolated",  &m_stub_PHI0Extrapolated);
+  L1TT->SetBranchAddress("L1TkSTUB_d0GEN",             &m_stub_d0GEN);
+  L1TT->SetBranchAddress("L1TkSTUB_z0GENExtrapolated", &m_stub_z0GENExtrapolated);
+
   n_entries = L1TT->GetEntries();
 }
 

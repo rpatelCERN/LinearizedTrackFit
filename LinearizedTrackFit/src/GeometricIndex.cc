@@ -47,11 +47,11 @@ void GeometricIndex::initialize()
   etaRegionIndex = std::bind(&GeometricIndex::regionIndex, this, _1, gic_.etaMin, etaRegionSize_);
   z0RegionIndex = std::bind(&GeometricIndex::regionIndex, this, _1, gic_.z0Min, z0RegionSize_);
   // Could also do this
-  // oneOverPtRegionIndex = [=](float & oneOverPt) { return this->regionIndex(oneOverPt, gic_.oneOverPtMin, oneOverPtRegionSize_); };
+  // oneOverPtRegionIndex = [=](double & oneOverPt) { return this->regionIndex(oneOverPt, gic_.oneOverPtMin, oneOverPtRegionSize_); };
 }
 
 
-bool GeometricIndex::filter(const float & oneOverPt, const float & phi, const float & eta, const float & z0)
+bool GeometricIndex::filter(const double & oneOverPt, const double & phi, const double & eta, const double & z0)
 {
   if (oneOverPt < gic_.oneOverPtMin || oneOverPt >= gic_.oneOverPtMax ||
       phi < gic_.phiMin || phi > gic_.phiMax ||
@@ -61,7 +61,7 @@ bool GeometricIndex::filter(const float & oneOverPt, const float & phi, const fl
 }
 
 
-int GeometricIndex::operator() (const float & oneOverPt, const float & phi, const float & eta, const float & z0, const int charge)
+int GeometricIndex::operator() (const double & oneOverPt, const double & phi, const double & eta, const double & z0, const int charge)
 {
   if (!filter(oneOverPt, phi, eta, z0)) return -1;
   return (oneOverPtRegionIndex(oneOverPt) + gic_.oneOverPtRegions*(phiRegionIndex(phi) +

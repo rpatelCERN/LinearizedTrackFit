@@ -14,7 +14,7 @@ using namespace Eigen;
 class MatrixBuilder
 {
 public:
-  MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, float> > & varsMeans, const unsigned int nTrackParameters);
+  MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, double> > & varsMeans, const unsigned int nTrackParameters);
   void update(const std::vector<double> & vars, const int lastLadder);
   void update(const std::vector<double> & vars, const std::vector<double> & pars, const int lastLadder, const bool usePcs);
   void computeEigenvalueMatrix();
@@ -27,7 +27,7 @@ private:
   // Data members
   std::string name_;
   unsigned int nVars_;
-  std::vector<std::pair<bool, float> > varsMeans_;
+  std::vector<std::pair<bool, double> > varsMeans_;
   unsigned int nTrackParameters_;
   MatrixXd cov_;
   MatrixXd corrPV_;

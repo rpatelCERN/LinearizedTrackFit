@@ -95,7 +95,7 @@ double MatrixReader::normChi2(const VectorXd & vars, const int lastLadder) const
 {
   VectorXd principal = V_*(vars - meanValuesLadders_.find(lastLadder)->second);
 
-  float chi2 = 0.;
+  double chi2 = 0.;
   // Use only the constraints to evaluate a chi2
   for (int i=0; i<nDof_; ++i) {
     chi2 += (principal(i)/sqrtEigenvalues_[i])*(principal(i)/sqrtEigenvalues_[i]);

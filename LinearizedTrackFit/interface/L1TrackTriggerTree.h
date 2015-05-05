@@ -51,6 +51,10 @@ public:
   std::vector<int>    *m_stub_pdg;
   std::vector<int>    *m_stub_tp;
   // std::vector<int>    *m_stub_pid;
+
+  std::vector<float>  *m_stub_PHI0Extrapolated;
+  std::vector<float>  *m_stub_d0GEN;
+  std::vector<float>  *m_stub_z0GENExtrapolated;
 };
 
 #endif // L1TRACKTRIGGERTREE_H

@@ -34,7 +34,8 @@ void BaseHistograms::initializeVarsHistograms(const std::string name, const std:
     if (varName == "phi") {
       hName+="_"+std::to_string(iPhi++);
       // histograms_.push_back(new TH1F(hName, hName, bins, -3.15, 3.15));
-      histograms_.push_back(new TH1F(hName, hName, bins, -1.57, 1.57));
+      // histograms_.push_back(new TH1F(hName, hName, bins, -1.57, 1.57));
+      histograms_.push_back(new TH1F(hName, hName, bins, min, max));
     }
     else if (varName == "z") {
       hName+="_"+std::to_string(iZ++);
