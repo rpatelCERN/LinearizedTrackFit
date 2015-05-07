@@ -124,6 +124,10 @@ void TreeReader::reset(const double & eventsFractionStart, const double & events
   lastTrack_ = tree_->n_entries*eventsFractionEnd;
   totalTracks_ = lastTrack_-firstTrack_;
   trackIndex_ = 0;
+
+  for(auto var : vars_) {
+    var->resetSeed();
+  }
 }
 
 

@@ -19,6 +19,7 @@ public:
   // virtual double at(const int k) = 0;
   virtual bool layer(const int layer) { return layers_.count(layer); }
   unsigned int layersNum() { return layers_.size(); }
+  void resetSeed() { generator_.seed(0); }
   // Simple function to return the value of the mean radius for each layer
   double meanRadius(const int layer) {
     switch (layer) {
@@ -41,6 +42,7 @@ public:
   }
 protected:
   std::unordered_set<int> layers_;
+  std::default_random_engine generator_;
 };
 
 
@@ -752,6 +754,7 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
     getParD0_ = std::make_shared<GetParD0>(tree);
     getParPhi_ = std::make_shared<GetParPhi>(tree);
     distribution_ = new std::normal_distribution<double>(0.,0.002);
+    generator_.seed(0);
   }
   virtual ~GetVarCorrectedPhiExactWithD0Gen() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
@@ -836,19 +839,19 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
     if (layer == 9) value = 2.;
     if (layer == 10) value = 1.;
 
-    double Rvalue = 22.1072;
-    if (layer == 6) Rvalue = 35.4917;
-    if (layer == 7) Rvalue = 50.6335;
-    if (layer == 8) Rvalue = 68.3771;
-    if (layer == 9) Rvalue = 88.5511;
-    if (layer == 10) Rvalue = 107.746;
+//    double Rvalue = 22.1072;
+//    if (layer == 6) Rvalue = 35.4917;
+//    if (layer == 7) Rvalue = 50.6335;
+//    if (layer == 8) Rvalue = 68.3771;
+//    if (layer == 9) Rvalue = 88.5511;
+//    if (layer == 10) Rvalue = 107.746;
 
-//    double Rvalue = 107.746;
-//    if (layer == 6) Rvalue = 88.5511;
-//    if (layer == 7) Rvalue = 68.3771;
-//    if (layer == 8) Rvalue = 50.6335;
-//    if (layer == 9) Rvalue = 35.4917;
-//    if (layer == 10) Rvalue = 22.1072;
+    double Rvalue = 107.746;
+    if (layer == 6) Rvalue = 88.5511;
+    if (layer == 7) Rvalue = 68.3771;
+    if (layer == 8) Rvalue = 50.6335;
+    if (layer == 9) Rvalue = 35.4917;
+    if (layer == 10) Rvalue = 22.1072;
 
 
 //      double xc = -rho * sin(getParPhi_->at(0) ) + par_x0->at(0);
@@ -880,8 +883,8 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
     // Phi and d0
 //    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - 200*d0/meanR);
 //    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0/meanR);
-    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0/Rvalue);
-    //    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0*meanR);
+//    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0/Rvalue);
+//        double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0*meanR);
 //    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0*Rvalue);
 
     // Phi, pT and d0
@@ -897,8 +900,12 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 //    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0/meanR);
 
     // Random noise
-//    double noise = (*distribution_)(generator_);
+    double noise = (*distribution_)(generator_);
 //    double correctedPhi = (getParPhi_->at(0) - d0/meanR + noise);
+
+    double correctedPhi = (getParPhi_->at(0) + noise);
+
+//    double correctedPhi = (getParPhi_->at(0) - d0/Rvalue + noise);
 //    double correctedPhi = (getParPhi_->at(0) - 10*d0/meanR + noise);
 //    double correctedPhi = (getParPhi_->at(0) - estimatedChargeOverRho*meanR + noise);
 //    double correctedPhi = (getParPhi_->at(0) + noise);
@@ -964,7 +971,6 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
   std::shared_ptr<GetParPhi> getParPhi_;
   std::vector<float> * par_x0;
   std::vector<float> * par_y0;
-  std::default_random_engine generator_;
   std::normal_distribution<double> * distribution_;
 };
 
