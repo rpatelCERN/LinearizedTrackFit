@@ -836,19 +836,19 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
     if (layer == 9) value = 2.;
     if (layer == 10) value = 1.;
 
-//    double Rvalue = 22.1072;
-//    if (layer == 6) Rvalue = 35.4917;
-//    if (layer == 7) Rvalue = 50.6335;
-//    if (layer == 8) Rvalue = 68.3771;
-//    if (layer == 9) Rvalue = 88.5511;
-//    if (layer == 10) Rvalue = 107.746;
-
     double Rvalue = 22.1072;
     if (layer == 6) Rvalue = 35.4917;
     if (layer == 7) Rvalue = 50.6335;
     if (layer == 8) Rvalue = 68.3771;
     if (layer == 9) Rvalue = 88.5511;
     if (layer == 10) Rvalue = 107.746;
+
+//    double Rvalue = 107.746;
+//    if (layer == 6) Rvalue = 88.5511;
+//    if (layer == 7) Rvalue = 68.3771;
+//    if (layer == 8) Rvalue = 50.6335;
+//    if (layer == 9) Rvalue = 35.4917;
+//    if (layer == 10) Rvalue = 22.1072;
 
 
 //      double xc = -rho * sin(getParPhi_->at(0) ) + par_x0->at(0);
@@ -879,8 +879,10 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 //     double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - meanR/(2*rho));
     // Phi and d0
 //    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - 200*d0/meanR);
-    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0/meanR);
-//    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0*meanR);
+//    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0/meanR);
+    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0/Rvalue);
+    //    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0*meanR);
+//    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0*Rvalue);
 
     // Phi, pT and d0
 //    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - meanR/(2*rho) - d0/meanR);

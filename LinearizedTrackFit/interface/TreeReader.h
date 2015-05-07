@@ -116,6 +116,7 @@ public:
 
   unsigned int phiIndex_;
   bool phiDiscontinuous_;
+  bool adjustDiscontinuity_;
 };
 
 #endif // TREEREADER_H

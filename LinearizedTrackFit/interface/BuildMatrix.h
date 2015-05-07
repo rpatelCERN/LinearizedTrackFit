@@ -84,46 +84,7 @@ namespace LinearFit {
     std::unordered_map<std::string, int> sectors;
     BaseHistograms stubDistanceTransverseHistograms("stubDistanceTransverse", 6, 1000, 0., 5.);
     BaseHistograms stubDistanceLongitudinalHistograms("stubDistanceLongitudinal", 6, 1000, -10., 10.);
-
-
-
-
-    // Zero order to compute the means
-    while (treeReader.nextTrack()) {
-      int geomIndex = -1;
-      if (singleModules) {
-        // Use this for the single module
-        geomIndex = geometricIndex(treeReader.getStubRZPhi(), treeReader.getCharge());
-        if (geomIndex == -1) continue;
-      }
-      else {
-        // Use the geometrical index to access the matrix builder corresponding to that geometrical region.
-        geomIndex = geometricIndex(treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getCharge());
-        // A geometrical index of -1 means we are outside the min-max boundaries
-        if (geomIndex == -1) continue;
-      }
-      std::vector<double> vars(treeReader.getVariables());
-      std::vector<double> pars(treeReader.getTrackParameters());
-
-      if (matrices.count(geomIndex) == 0) {
-        matrices.insert({{geomIndex, MatrixBuilder(std::to_string(geomIndex), variablesMeans, inputTrackParameterNames.size())}});
-        histograms.insert({{geomIndex, MatrixBuilderHistograms(std::to_string(geomIndex), treeReader.variablesNames(), inputTrackParameterNames)}});
-        histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), 6)}});
-      }
-      int lastLadder = -1;
-      if (phiSymmetricFit) lastLadder = treeReader.getLastLadder();
-      matrices.find(geomIndex)->second.updateMeans(vars, pars, lastLadder);
-    }
-
-    for (auto &m : matrices) {
-      std::cout << "geomIndex = " << m.first << std::endl;
-      m.second.resetCount();
-    }
-    treeReader.reset(eventsFractionStart, eventsFractionEnd);
-
-
-
-
+    
     while (treeReader.nextTrack()) {
 
       int geomIndex = -1;
@@ -147,13 +108,13 @@ namespace LinearFit {
 
       // printTrack(vars, pars, geomIndex);
 
-//      // Update mean and covariance for this linearization region
-//      if (matrices.count(geomIndex) == 0) {
-//        matrices.insert({{geomIndex, MatrixBuilder(std::to_string(geomIndex), variablesMeans, inputTrackParameterNames.size())}});
-//        histograms.insert({{geomIndex, MatrixBuilderHistograms(std::to_string(geomIndex), treeReader.variablesNames(), inputTrackParameterNames)}});
-//        // histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), treeReader.maxRequiredLayers())}});
-//        histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), 6)}});
-//      }
+      // Update mean and covariance for this linearization region
+      if (matrices.count(geomIndex) == 0) {
+        matrices.insert({{geomIndex, MatrixBuilder(std::to_string(geomIndex), variablesMeans, inputTrackParameterNames.size())}});
+        histograms.insert({{geomIndex, MatrixBuilderHistograms(std::to_string(geomIndex), treeReader.variablesNames(), inputTrackParameterNames)}});
+        // histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), treeReader.maxRequiredLayers())}});
+        histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), 6)}});
+      }
 
 //      matrices.find(geomIndex)->second.update(vars, varsCoeff, pars);
       // matrices.find(geomIndex)->second.update(vars, varsCoeff, pars, treeReader.getLastLadder());

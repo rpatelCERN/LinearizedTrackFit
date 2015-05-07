@@ -23,29 +23,16 @@ MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pa
 }
 
 
-//void MatrixBuilder::updateMeanAndCov(const std::vector<double> & vars, const int lastLadder)
-//{
-//  for (unsigned int iVar=0; iVar<nVars_; ++iVar) {
-//    // update mean
-//    // if (!varsMeans_.at(iVar).first) meanValues_(iVar) += (vars[iVar] - meanValues_(iVar))/count_;
-//    if (!varsMeans_.at(iVar).first)
-//      meanValuesLadders_[lastLadder](iVar) += (vars[iVar] - meanValuesLadders_[lastLadder](iVar)) / count_;
-//    // else meanValues_(iVar) = lastLadder*2*3.14159265359/76.;
-//  }
-//
-//  for (unsigned int iVar=0; iVar<nVars_; ++iVar) {
-//    // update covariance matrix
-//    if(count_ == 1) continue; // skip first track
-//    for (unsigned int jVar=0; jVar<nVars_; ++jVar) {
-//      cov_(iVar, jVar) += (vars[iVar] - meanValuesLadders_[lastLadder](iVar))*(vars[jVar] -
-//          meanValuesLadders_[lastLadder](jVar))/(count_-1) - cov_(iVar, jVar)/count_;
-//    }
-//  }
-//}
-
-
 void MatrixBuilder::updateMeanAndCov(const std::vector<double> & vars, const int lastLadder)
 {
+  for (unsigned int iVar=0; iVar<nVars_; ++iVar) {
+    // update mean
+    // if (!varsMeans_.at(iVar).first) meanValues_(iVar) += (vars[iVar] - meanValues_(iVar))/count_;
+    if (!varsMeans_.at(iVar).first)
+      meanValuesLadders_[lastLadder](iVar) += (vars[iVar] - meanValuesLadders_[lastLadder](iVar)) / count_;
+    // else meanValues_(iVar) = lastLadder*2*3.14159265359/76.;
+  }
+
   for (unsigned int iVar=0; iVar<nVars_; ++iVar) {
     // update covariance matrix
     if(count_ == 1) continue; // skip first track
@@ -75,57 +62,8 @@ void MatrixBuilder::updateMeanAndCov(const std::vector<double> & vars, const int
 //}
 
 
-//void MatrixBuilder::updateMeanAndCovParams(const std::vector<double> & vars,
-//    const std::vector<double> & pars, const int lastLadder, const bool usePcs)
-//{
-//  // The mean of the values should have already been updated outside this function.
-//
-//  // update covariance matrix
-//  for(unsigned int iPar = 0; iPar != nTrackParameters_; ++iPar) {
-//    // updated mean parameters
-//    // meanP_(iPar) += (pars[iPar] - meanP_(iPar))/count_;
-//    meanPLadders_[lastLadder](iPar) += (pars[iPar] - meanPLadders_[lastLadder](iPar))/count_;
-//
-//    // update correlation matrix
-//    if(count_ == 1) continue; // skip first track
-//
-//    if (usePcs) {
-//      VectorXd varsVec(nVars_);
-//      for (unsigned int i=0; i<nVars_; ++i) { varsVec(i) = vars[i]; }
-//      // VectorXd principal = V_*(varsVec - meanValues_);
-//      VectorXd principal = V_*(varsVec - meanValuesLadders_[lastLadder]);
-//      for (unsigned int jVar = 0; jVar != nVars_; ++jVar) {
-//        // corrPV_(iPar, jVar) += (pars[iPar] - meanP_(iPar)) * (principal[jVar]) / (count_ - 1) - corrPV_(iPar, jVar) / count_;
-//        corrPV_(iPar, jVar) += (pars[iPar] - meanPLadders_[lastLadder](iPar)) * (principal[jVar]) / (count_ - 1) - corrPV_(iPar, jVar) / count_;
-//      }
-//    }
-//    else {
-//      for (unsigned int jVar = 0; jVar != nVars_; ++jVar) {
-//        corrPV_(iPar, jVar) += (pars[iPar] - meanPLadders_[lastLadder](iPar)) * (vars[jVar] -
-//            meanValuesLadders_[lastLadder](jVar)) / (count_ - 1) - corrPV_(iPar, jVar) / count_;
-//      }
-//    }
-//  }
-//}
-
-
-void MatrixBuilder::updateMeans(const std::vector<double> & vars,
-                                const std::vector<double> & pars, const int lastLadder)
-{
-  ++count_;
-
-  for (unsigned int iVar=0; iVar<nVars_; ++iVar) {
-    if (!varsMeans_.at(iVar).first)
-      meanValuesLadders_[lastLadder](iVar) += (vars[iVar] - meanValuesLadders_[lastLadder](iVar)) / count_;
-  }
-  for(unsigned int iPar = 0; iPar != nTrackParameters_; ++iPar) {
-    meanPLadders_[lastLadder](iPar) += (pars[iPar] - meanPLadders_[lastLadder](iPar))/count_;
-  }
-}
-
-
 void MatrixBuilder::updateMeanAndCovParams(const std::vector<double> & vars,
-                                           const std::vector<double> & pars, const int lastLadder, const bool usePcs)
+    const std::vector<double> & pars, const int lastLadder, const bool usePcs)
 {
   // The mean of the values should have already been updated outside this function.
 
@@ -133,7 +71,7 @@ void MatrixBuilder::updateMeanAndCovParams(const std::vector<double> & vars,
   for(unsigned int iPar = 0; iPar != nTrackParameters_; ++iPar) {
     // updated mean parameters
     // meanP_(iPar) += (pars[iPar] - meanP_(iPar))/count_;
-//    meanPLadders_[lastLadder](iPar) += (pars[iPar] - meanPLadders_[lastLadder](iPar))/count_;
+    meanPLadders_[lastLadder](iPar) += (pars[iPar] - meanPLadders_[lastLadder](iPar))/count_;
 
     // update correlation matrix
     if(count_ == 1) continue; // skip first track
@@ -151,7 +89,7 @@ void MatrixBuilder::updateMeanAndCovParams(const std::vector<double> & vars,
     else {
       for (unsigned int jVar = 0; jVar != nVars_; ++jVar) {
         corrPV_(iPar, jVar) += (pars[iPar] - meanPLadders_[lastLadder](iPar)) * (vars[jVar] -
-                                                                                 meanValuesLadders_[lastLadder](jVar)) / (count_ - 1) - corrPV_(iPar, jVar) / count_;
+            meanValuesLadders_[lastLadder](jVar)) / (count_ - 1) - corrPV_(iPar, jVar) / count_;
       }
     }
   }

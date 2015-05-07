@@ -8,10 +8,6 @@
 #include <string>
 #include <unordered_map>
 #include <Eigen/Eigenvalues>
-// #include <unsupported/Eigen/MPRealSupport>
-// #include <unsupported/mpreal.h>
-
-#include <boost/multiprecision/cpp_dec_float.hpp>
 
 using namespace Eigen;
 
@@ -24,7 +20,6 @@ public:
   void computeEigenvalueMatrix();
   void writeMatrices(const bool usePcs);
   void resetCount() { count_ = 0; }
-  void updateMeans(const std::vector<double> & vars, const std::vector<double> & pars, const int lastLadder);
 
 private:
   void updateMeanAndCov(const std::vector<double> & vars, const int lastLadder);

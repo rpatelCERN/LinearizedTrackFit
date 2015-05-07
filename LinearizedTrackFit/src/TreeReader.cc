@@ -16,7 +16,8 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   getParPhi0_(std::make_shared<GetParPhi>(tree_)),
   getParZ0_(std::make_shared<GetParZ0>(tree_)),
   getParD0_(std::make_shared<GetParD0>(tree_)),
-  phiDiscontinuous_(false)
+  phiDiscontinuous_(false),
+  adjustDiscontinuity_(false)
 {
   reset(eventsFractionStart, eventsFractionEnd);
 
@@ -288,23 +289,25 @@ bool TreeReader::readVariables() {
   // Check the distance of the stubs from the generated track
   if (!closeDistanceFromGenTrack()) return false;
 
-  // Avoid discontinuity in phi
-  phiDiscontinuous_ = false;
-  double firstPhi = variables_[phiIndex_];
-  // To avoid the change of sign around 0, which is continuous
-  if (fabs(firstPhi) > M_PI_2) {
-    for (unsigned int i = phiIndex_ + vars_.size(); i < variables_.size(); i += vars_.size()) {
-      if (firstPhi * variables_[i] < 0.) {
-        phiDiscontinuous_ = true;
-        break;
+  if (adjustDiscontinuity_) {
+    // Avoid discontinuity in phi
+    phiDiscontinuous_ = false;
+    double firstPhi = variables_[phiIndex_];
+    // To avoid the change of sign around 0, which is continuous
+    if (fabs(firstPhi) > M_PI_2) {
+      for (unsigned int i = phiIndex_ + vars_.size(); i < variables_.size(); i += vars_.size()) {
+        if (firstPhi * variables_[i] < 0.) {
+          phiDiscontinuous_ = true;
+          break;
+        }
       }
     }
-  }
-  if (phiDiscontinuous_) {
-    for (unsigned int i = phiIndex_; i < variables_.size(); i += vars_.size()) {
-      // std::cout << "discontinuous phi["<<i<<"] = " << variables_[i] << " ";
-      if (variables_[i] < 0.) variables_[i] += 2 * M_PI;
-      // std::cout << "changed to phi["<<i<<"] = " << variables_[i] << std::endl;
+    if (phiDiscontinuous_) {
+      for (unsigned int i = phiIndex_; i < variables_.size(); i += vars_.size()) {
+        // std::cout << "discontinuous phi["<<i<<"] = " << variables_[i] << " ";
+        if (variables_[i] < 0.) variables_[i] += 2 * M_PI;
+        // std::cout << "changed to phi["<<i<<"] = " << variables_[i] << std::endl;
+      }
     }
   }
 
@@ -322,15 +325,19 @@ void TreeReader::readTrackParameters()
   int i = 0;
   for (const auto & par : pars_) {
     parameters_.push_back(par->at(0)); // This could be improved avoiding to clear the vector and simply overwriting it.
-    // Adjust for discontinuity if the parameter phi is in the left hemisphere and it does not have the same sign
-    // as the phi coordinates (which have already been adjusted in this hemisphere).
-    if (parametersNames_[i] == "phi" && parameters_[i] * variables_[phiIndex_] < 0.) {
-      //  ((phiDiscontinuous_ && parameters_[i] < -M_PI_2) || (fabs(parameters_[i]) < M_PI_2 && parameters_[i] * variables_[phiIndex_] < 0.)) {
-      // std::cout << "discontinuous PHI0 = " << parameters_[i] << " ";
-      if (parameters_[i] > M_PI_2) parameters_[i] -= 2*M_PI;
-      else if (parameters_[i] < -M_PI_2) parameters_[i] += 2*M_PI;
-      // std::cout << "changed to PHI0 = " << parameters_[i] << std::endl;
+
+    if (adjustDiscontinuity_) {
+      // Adjust for discontinuity if the parameter phi is in the left hemisphere and it does not have the same sign
+      // as the phi coordinates (which have already been adjusted in this hemisphere).
+      if (parametersNames_[i] == "phi" && parameters_[i] * variables_[phiIndex_] < 0.) {
+        //  ((phiDiscontinuous_ && parameters_[i] < -M_PI_2) || (fabs(parameters_[i]) < M_PI_2 && parameters_[i] * variables_[phiIndex_] < 0.)) {
+        // std::cout << "discontinuous PHI0 = " << parameters_[i] << " ";
+        if (parameters_[i] > M_PI_2) parameters_[i] -= 2 * M_PI;
+        else if (parameters_[i] < -M_PI_2) parameters_[i] += 2 * M_PI;
+        // std::cout << "changed to PHI0 = " << parameters_[i] << std::endl;
+      }
     }
+
     ++i;
   }
 
