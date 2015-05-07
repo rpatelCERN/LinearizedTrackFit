@@ -23,6 +23,8 @@ public:
   void update(const std::vector<double> & vars, const std::vector<double> & pars, const int lastLadder, const bool usePcs);
   void computeEigenvalueMatrix();
   void writeMatrices(const bool usePcs);
+  void resetCount() { count_ = 0; }
+  void updateMeans(const std::vector<double> & vars, const std::vector<double> & pars, const int lastLadder);
 
 private:
   void updateMeanAndCov(const std::vector<double> & vars, const int lastLadder);
