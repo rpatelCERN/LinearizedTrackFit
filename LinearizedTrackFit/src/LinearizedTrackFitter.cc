@@ -21,8 +21,10 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars)
   unsigned int varsNum = 6;
   varsR_.clear();
   varsR_.reserve(varsNum);
-  correctedVarsPhi_ = VectorXd(varsNum);
-  correctedVarsZ_ = VectorXd(varsNum);
+//  correctedVarsPhi_ = VectorXd(varsNum);
+//  correctedVarsZ_ = VectorXd(varsNum);
+  correctedVarsPhi_ = Matrix<long double, Dynamic, 1>(varsNum);
+  correctedVarsZ_ = Matrix<long double, Dynamic, 1>(varsNum);
   for (unsigned int i=0; i<varsNum; ++i) { correctedVarsPhi_(i) = vars[i*3]; }
   for (unsigned int i=0; i<varsNum; ++i) { varsR_[i] = vars[i*3+1]; }
   for (unsigned int i=0; i<varsNum; ++i) { correctedVarsZ_(i) = vars[i*3+2]; }

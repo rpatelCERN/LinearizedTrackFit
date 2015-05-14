@@ -1,24 +1,26 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
 
 using namespace Eigen;
+using namespace mpfr;
 
 MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, double> > & varsMeans, const unsigned int nTrackParameters) :
     name_(name),
     nVars_(varsMeans.size()),
     varsMeans_(varsMeans),
     nTrackParameters_(nTrackParameters),
-    cov_(MatrixXd::Zero(nVars_, nVars_)),
-//    meanValues_(VectorXd::Zero(nVars_)),
-    corrPV_(MatrixXd::Zero(nTrackParameters, nVars_)),
-//    meanP_(VectorXd::Zero(nTrackParameters)),
-    V_(MatrixXd::Zero(nVars_, nVars_)),
-    sqrtEigenvalues_(VectorXd::Zero(nVars_)),
-//    meanValuesVec_(VectorXd::Zero(nVars_)),
+    cov_(Matrix<mpreal, Dynamic, Dynamic>::Zero(nVars_, nVars_)),
+//    meanValues_(Matrix<mpreal, Dynamic, 1>::Zero(nVars_)),
+    corrPV_(Matrix<mpreal, Dynamic, Dynamic>::Zero(nTrackParameters, nVars_)),
+//    meanP_(Matrix<mpreal, Dynamic, 1>::Zero(nTrackParameters)),
+    V_(Matrix<mpreal, Dynamic, Dynamic>::Zero(nVars_, nVars_)),
+    sqrtEigenvalues_(Matrix<mpreal, Dynamic, 1>::Zero(nVars_)),
+//    meanValuesVec_(Matrix<mpreal, Dynamic, 1>::Zero(nVars_)),
     count_(0)
 {
   for (int ladder=-1; ladder<77; ++ladder) {
-    meanValuesLadders_.insert(std::make_pair(ladder, VectorXd::Zero(nVars_)));
-    meanPLadders_.insert(std::make_pair(ladder, VectorXd::Zero(nTrackParameters_)));
+    meanValuesLadders_.insert(std::make_pair(ladder, Matrix<mpreal, Dynamic, 1>::Zero(nVars_)));
+    meanPLadders_.insert(std::make_pair(ladder, Matrix<mpreal, Dynamic, 1>::Zero(nTrackParameters_)));
+    mpreal::set_default_prec(256);
   };
 }
 
@@ -67,6 +69,12 @@ void MatrixBuilder::updateMeanAndCovParams(const std::vector<double> & vars,
 {
   // The mean of the values should have already been updated outside this function.
 
+//  // Store the coordinates
+//  coordinates_.push_back(vars);
+//  // The phi0
+//  parameters_.push_back(pars[1]);
+
+
   // update covariance matrix
   for(unsigned int iPar = 0; iPar != nTrackParameters_; ++iPar) {
     // updated mean parameters
@@ -77,10 +85,10 @@ void MatrixBuilder::updateMeanAndCovParams(const std::vector<double> & vars,
     if(count_ == 1) continue; // skip first track
 
     if (usePcs) {
-      VectorXd varsVec(nVars_);
+      Matrix<mpreal, Dynamic, 1> varsVec(nVars_);
       for (unsigned int i=0; i<nVars_; ++i) { varsVec(i) = vars[i]; }
-      // VectorXd principal = V_*(varsVec - meanValues_);
-      VectorXd principal = V_*(varsVec - meanValuesLadders_[lastLadder]);
+      // Matrix<mpreal, Dynamic, 1> principal = V_*(varsVec - meanValues_);
+      Matrix<mpreal, Dynamic, 1> principal = V_*(varsVec - meanValuesLadders_[lastLadder]);
       for (unsigned int jVar = 0; jVar != nVars_; ++jVar) {
         // corrPV_(iPar, jVar) += (pars[iPar] - meanP_(iPar)) * (principal[jVar]) / (count_ - 1) - corrPV_(iPar, jVar) / count_;
         corrPV_(iPar, jVar) += (pars[iPar] - meanPLadders_[lastLadder](iPar)) * (principal[jVar]) / (count_ - 1) - corrPV_(iPar, jVar) / count_;
@@ -113,7 +121,7 @@ void MatrixBuilder::update(const std::vector<double> & vars, const std::vector<d
 }
 
 
-//void MatrixBuilder::invertCorrelationMatrix(const int nTrackParameters, const int nVars, MatrixXd & D, const MatrixXd & corrPV, const MatrixXd & cov)
+//void MatrixBuilder::invertCorrelationMatrix(const int nTrackParameters, const int nVars, Matrix<mpreal, Dynamic, Dynamic> & D, const Matrix<mpreal, Dynamic, Dynamic> & corrPV, const Matrix<mpreal, Dynamic, Dynamic> & cov)
 //{
 //  D = corrPV*(cov.inverse());
 //}
@@ -122,18 +130,20 @@ void MatrixBuilder::update(const std::vector<double> & vars, const std::vector<d
 void MatrixBuilder::computeEigenvalueMatrix()
 {
   // Diagonalize covariance matrix to find principal components
-   SelfAdjointEigenSolver<MatrixXd> es(cov_);
-//  JacobiSVD<MatrixXd> es(cov_, ComputeThinU | ComputeThinV);
+   SelfAdjointEigenSolver<Matrix<mpreal, Dynamic, Dynamic>> es(cov_);
+//  JacobiSVD<Matrix<mpreal, Dynamic, Dynamic>> es(cov_, ComputeThinU | ComputeThinV);
 
   std::cout << "Sqrt(eigenvalues) of cov:" << std::endl;
-  sqrtEigenvalues_ = VectorXd::Zero(nVars_);
-  diagCov_ = MatrixXd::Zero(nVars_, nVars_);
+  sqrtEigenvalues_ = Matrix<mpreal, Dynamic, 1>::Zero(nVars_);
+  diagCov_ = Matrix<mpreal, Dynamic, Dynamic>::Zero(nVars_, nVars_);
   for(unsigned int i = 0; i != nVars_; ++i) {
-    double eigenvalue = es.eigenvalues()[i] != 0. ? es.eigenvalues()[i] : 10000000.;
-//    double eigenvalue = es.singularValues()[i] != 0. ? fabs(es.singularValues()[i]) : 10000000.;
+    mpreal eigenvalue = es.eigenvalues()[i] != 0. ? es.eigenvalues()[i] : 10000000.;
+//    mpreal eigenvalue = es.singularValues()[i] != 0. ? fabs(es.singularValues()[i]) : 10000000.;
     diagCov_(i, i) = 1./eigenvalue;
-    sqrtEigenvalues_(i) = std::sqrt(eigenvalue);
-    std::cout << " " << std::sqrt(eigenvalue);
+//    sqrtEigenvalues_(i) = std::sqrt(eigenvalue);
+//    std::cout << " " << std::sqrt(eigenvalue);
+    sqrtEigenvalues_(i) = sqrt(eigenvalue);
+    std::cout << " " << sqrt(eigenvalue);
   }
   std::cout << std::endl;
 
@@ -154,7 +164,7 @@ void MatrixBuilder::writeMatrices(const bool usePcs)
   // computeEigenvalueMatrix();
   // Invert (diagonal) correlation matrix dividing by eigenvalues.
   // Transformation from coordinates to track parameters
-  MatrixXd D = corrPV_*(cov_.inverse());
+  Matrix<mpreal, Dynamic, Dynamic> D = corrPV_*(cov_.inverse());
 
   
   if (usePcs) {
@@ -207,4 +217,19 @@ void MatrixBuilder::writeMatrices(const bool usePcs)
   outfile << (cov_*(cov_.inverse())).format(fullPrec);
   outfile << std::endl;
   outfile.close();
+
+
+//  MatrixXd coordinatesM(coordinates_.size(), 6);
+//  for (unsigned int i=0; i<coordinates_.size(); ++i) {
+//    for (unsigned int j=0; j<6; ++j) {
+//      coordinatesM(i, j) = coordinates_[i][j];
+//    }
+//  }
+//  VectorXd parametersM(parameters_.size());
+//  for (unsigned int i=0; i<parameters_.size(); ++i) {
+//    parametersM(i) = parameters_[i];
+//  }
+//  std::cout << "The least-squares solution is:\n"
+//  << coordinatesM.jacobiSvd(ComputeThinU | ComputeThinV).solve(parametersM) << std::endl;
+
 }

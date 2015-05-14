@@ -64,7 +64,8 @@ void LinearFitter::readRequiredLayers(const std::string & inputFileName)
 bool LinearFitter::fit(const std::vector<double> & vars, const int lastLadder)
 {
   if (geomIndex_ == -1) return false;
-  VectorXd varsVec(vars.size());
+//  VectorXd varsVec(vars.size());
+  Matrix<long double, Dynamic, 1> varsVec(vars.size());
   for (unsigned int i=0; i<vars.size(); ++i) { varsVec(i) = vars[i]; }
   if (matrices_.count(geomIndex_) == 0) {
     matrices_.insert(std::make_pair(geomIndex_, MatrixReader(inputDirName_+"matrixVD_"+std::to_string(geomIndex_)+".txt")));
@@ -79,7 +80,8 @@ bool LinearFitter::fit(const std::vector<double> & vars, const int lastLadder)
 // This method must be called only after the fit method to use the correct geomIndex
 std::vector<double> LinearFitter::principalComponents(const std::vector<double> & vars, const int lastLadder)
 {
-  VectorXd varsVec(vars.size());
+//  VectorXd varsVec(vars.size());
+  Matrix<long double, Dynamic, 1> varsVec(vars.size());
   for (unsigned int i=0; i<vars.size(); ++i) { varsVec(i) = vars[i]; }
   return matrices_.find(geomIndex_)->second.principalComponents(varsVec, lastLadder);
 }
@@ -88,7 +90,8 @@ std::vector<double> LinearFitter::principalComponents(const std::vector<double> 
 // This method must be called only after the fit method to use the correct geomIndex
 std::vector<double> LinearFitter::normalizedPrincipalComponents(const std::vector<double> & vars, const int lastLadder)
 {
-  VectorXd varsVec(vars.size());
+//  VectorXd varsVec(vars.size());
+  Matrix<long double, Dynamic, 1> varsVec(vars.size());
   for (unsigned int i=0; i<vars.size(); ++i) { varsVec(i) = vars[i]; }
   return matrices_.find(geomIndex_)->second.normalizedPrincipalComponents(varsVec, lastLadder);
 }

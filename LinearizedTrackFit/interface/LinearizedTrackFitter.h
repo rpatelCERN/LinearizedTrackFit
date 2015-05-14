@@ -25,8 +25,10 @@ class LinearizedTrackFitter
   std::shared_ptr<MatrixReader> linearFitHighPt_;
   std::shared_ptr<MatrixReader> linearFitLongitudinal_;
   std::vector<double> varsR_;
-  VectorXd correctedVarsPhi_;
-  VectorXd correctedVarsZ_;
+//  VectorXd correctedVarsPhi_;
+//  VectorXd correctedVarsZ_;
+  Matrix<long double, Dynamic, 1> correctedVarsPhi_;
+  Matrix<long double, Dynamic, 1> correctedVarsZ_;
   std::vector<double> meanRadius_;
   ChargeOverPtEstimator chargeOverPtEstimator_;
   CotThetaEstimator cotThetaEstimator_;

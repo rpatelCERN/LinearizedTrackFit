@@ -8,8 +8,10 @@
 #include <string>
 #include <unordered_map>
 #include <Eigen/Eigenvalues>
+#include <unsupported/Eigen/MPRealSupport>
 
 using namespace Eigen;
+using namespace mpfr;
 
 class MatrixBuilder
 {
@@ -30,14 +32,18 @@ private:
   unsigned int nVars_;
   std::vector<std::pair<bool, double> > varsMeans_;
   unsigned int nTrackParameters_;
-  MatrixXd cov_;
-  MatrixXd corrPV_;
-  MatrixXd V_;
-  VectorXd sqrtEigenvalues_;
-  MatrixXd diagCov_;
-  int count_;
-  std::unordered_map<int, VectorXd> meanValuesLadders_;
-  std::unordered_map<int, VectorXd> meanPLadders_;
+  Matrix<mpreal, Dynamic, Dynamic> cov_;
+  Matrix<mpreal, Dynamic, Dynamic> corrPV_;
+  Matrix<mpreal, Dynamic, Dynamic> V_;
+  Matrix<mpreal, Dynamic, 1> sqrtEigenvalues_;
+  Matrix<mpreal, Dynamic, Dynamic> diagCov_;
+  // int count_;
+  mpreal count_;
+  std::unordered_map<int, Matrix<mpreal, Dynamic, 1>> meanValuesLadders_;
+  std::unordered_map<int, Matrix<mpreal, Dynamic, 1>> meanPLadders_;
+
+//  std::vector<std::vector<double> > coordinates_;
+//  std::vector<double> parameters_;
 };
 
 #endif // MATRIXBUILDER_H

@@ -231,7 +231,7 @@ bool TreeReader::goodTrack()
 //  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 0.145) return false;
 //  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 0.95) return false;
 //  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 9.5) return false;
-  // if (fabs(getParD0_->at(0)) > 0.02) return false;
+//   if (fabs(getParD0_->at(0)) > 0.02) return false;
 //  if (fabs(getParD0_->at(0)) > 0.01) return false;
 //  if (fabs(getParD0_->at(0)) < 0.4) return false;
 //  if (fabs(getParD0_->at(0)) > 0.25) return false;

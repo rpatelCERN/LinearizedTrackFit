@@ -398,19 +398,49 @@ class ChargeOverPtWithD0Estimator
 {
  public:
   ChargeOverPtWithD0Estimator() {
-    chargeOverPtPhiMeans_.insert(std::make_pair(5, 0.400502));
-    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.400758));
-    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.400765));
-    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.400846));
-    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.400966));
-    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.401059));
-    chargeOverPtPhiCoeff_.insert(std::make_pair(5, -1.34609));
-    chargeOverPtPhiCoeff_.insert(std::make_pair(6, 1.73073));
-    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 2.14793));
-    chargeOverPtPhiCoeff_.insert(std::make_pair(8, 1.40667));
-    chargeOverPtPhiCoeff_.insert(std::make_pair(9, -0.903758));
-    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -3.03612));
-    chargeOverPtMean_ = -0.000905562;
+//    chargeOverPtPhiMeans_.insert(std::make_pair(5, 0.400502));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.400758));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.400765));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.400846));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.400966));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.401059));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(5, -1.34609));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(6, 1.73073));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 2.14793));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(8, 1.40667));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(9, -0.903758));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -3.03612));
+//    chargeOverPtMean_ = -0.000905562;
+
+    // |d0| < 1 cm
+    chargeOverPtPhiMeans_.insert(std::make_pair(5, 0.40032522325223113268677));
+    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.40057371916980744064318));
+    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.40057900582205602235675));
+    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.400654897397742737474857));
+    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.400763948893061883183009));
+    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.400849008549969187953366));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(5, -1.82328763076674267982457));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(6, 1.84821551890804270594547));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 2.47027347884622055880717));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(8, 1.75207504030461963422431));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(9, -0.91153163475437831886590));
+    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -3.33649698656054408972268));
+    chargeOverPtMean_ = -0.00081110782353305114524;
+
+//    // |d0| < 0.2 cm
+//    chargeOverPtPhiMeans_.insert(std::make_pair(5, 0.40050332076896710820080));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.40072004864805960133722));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.40067700086456337071894));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.40070706322708576907488));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.40076725001873425568988));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.40080684271199285007015));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(5, 0.11320990502681195252166));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(6, 1.24562354677895963379573));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 1.21434225097952716374149));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(8, 0.51048313537575567638868));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(9, -0.88231148971637456866706));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -2.20187472407080068176867));
+//    chargeOverPtMean_ = -0.00042595046451577038473;
   }
   double chargeOverPt(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
     double estimatedChargeOverPt = 0.;
@@ -443,19 +473,19 @@ class D0Estimator
 {
  public:
   D0Estimator() {
-    d0PhiMeans_.insert(std::make_pair(5, 0.400502));
-    d0PhiMeans_.insert(std::make_pair(6, 0.400758));
-    d0PhiMeans_.insert(std::make_pair(7, 0.400765));
-    d0PhiMeans_.insert(std::make_pair(8, 0.400846));
-    d0PhiMeans_.insert(std::make_pair(9, 0.400966));
-    d0PhiMeans_.insert(std::make_pair(10, 0.401059));
-    d0PhiCoeff_.insert(std::make_pair(5, -42.0822));
-    d0PhiCoeff_.insert(std::make_pair(6, 14.0051));
-    d0PhiCoeff_.insert(std::make_pair(7, 26.9299));
-    d0PhiCoeff_.insert(std::make_pair(8, 25.8845));
-    d0PhiCoeff_.insert(std::make_pair(9, -0.722654));
-    d0PhiCoeff_.insert(std::make_pair(10, -24.0181));
-    d0Mean_ = -0.000504234;
+//    d0PhiMeans_.insert(std::make_pair(5, 0.400502));
+//    d0PhiMeans_.insert(std::make_pair(6, 0.400758));
+//    d0PhiMeans_.insert(std::make_pair(7, 0.400765));
+//    d0PhiMeans_.insert(std::make_pair(8, 0.400846));
+//    d0PhiMeans_.insert(std::make_pair(9, 0.400966));
+//    d0PhiMeans_.insert(std::make_pair(10, 0.401059));
+//    d0PhiCoeff_.insert(std::make_pair(5, -42.0822));
+//    d0PhiCoeff_.insert(std::make_pair(6, 14.0051));
+//    d0PhiCoeff_.insert(std::make_pair(7, 26.9299));
+//    d0PhiCoeff_.insert(std::make_pair(8, 25.8845));
+//    d0PhiCoeff_.insert(std::make_pair(9, -0.722654));
+//    d0PhiCoeff_.insert(std::make_pair(10, -24.0181));
+//    d0Mean_ = -0.000504234;
 
     // Values derived after the 2nd order corrections are applied to phi
 //    d0PhiMeans_.insert(std::make_pair(5, 0.400505));
@@ -471,6 +501,36 @@ class D0Estimator
 //    d0PhiCoeff_.insert(std::make_pair(9, -7.1993));
 //    d0PhiCoeff_.insert(std::make_pair(10, 45.2433));
 //    d0Mean_ = -0.000504234;
+
+//    // |d0| < 1 cm
+    d0PhiMeans_.insert(std::make_pair(5, 0.40032522325223113268677));
+    d0PhiMeans_.insert(std::make_pair(6, 0.40057371916980744064318));
+    d0PhiMeans_.insert(std::make_pair(7, 0.40057900582205602235675));
+    d0PhiMeans_.insert(std::make_pair(8, 0.400654897397742737474857));
+    d0PhiMeans_.insert(std::make_pair(9, 0.400763948893061883183009));
+    d0PhiMeans_.insert(std::make_pair(10, 0.400849008549969187953366));
+    d0PhiCoeff_.insert(std::make_pair(5, -48.93154534728752922868617));
+    d0PhiCoeff_.insert(std::make_pair(6, 15.11870568755399863605054));
+    d0PhiCoeff_.insert(std::make_pair(7, 31.88153823687208520275651));
+    d0PhiCoeff_.insert(std::make_pair(8, 31.34936688701379230068528));
+    d0PhiCoeff_.insert(std::make_pair(9, -0.71559871775281983466268));
+    d0PhiCoeff_.insert(std::make_pair(10, -28.70855064944160578491853));
+    d0Mean_ = 0.00073785206387983468587;
+
+    // |d0| < 0.2 cm
+//    d0PhiMeans_.insert(std::make_pair(5, 0.40050332076896710820080));
+//    d0PhiMeans_.insert(std::make_pair(6, 0.40072004864805960133722));
+//    d0PhiMeans_.insert(std::make_pair(7, 0.40067700086456337071894));
+//    d0PhiMeans_.insert(std::make_pair(8, 0.40070706322708576907488));
+//    d0PhiMeans_.insert(std::make_pair(9, 0.40076725001873425568988));
+//    d0PhiMeans_.insert(std::make_pair(10, 0.40080684271199285007015));
+//    d0PhiCoeff_.insert(std::make_pair(5, -20.55435253964247395508340));
+//    d0PhiCoeff_.insert(std::make_pair(6, 7.01604564680319025120781));
+//    d0PhiCoeff_.insert(std::make_pair(7, 13.08972494186337109176230));
+//    d0PhiCoeff_.insert(std::make_pair(8, 12.45595289494059020152596));
+//    d0PhiCoeff_.insert(std::make_pair(9,  -0.43268263876333898025435));
+//    d0PhiCoeff_.insert(std::make_pair(10, -11.57603603263926028114379));
+//    d0Mean_ = -6.32701952779852754991854e-06;
   }
   double d0(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
     double estimatedD0 = 0.;
@@ -480,7 +540,8 @@ class D0Estimator
       estimatedD0 += (phi-d0PhiMeans_[l])*d0PhiCoeff_[l];
     }
     // When it is estimated the mean value is subtracted. We add it back.
-    return (estimatedD0 + d0Mean_);
+    return (estimatedD0 + d0Mean_)/(1-0.1565);
+//    return (estimatedD0 + d0Mean_)/(1-1.223);
   }
   template <class T>
   double d0(const T & var_phi)
@@ -490,12 +551,58 @@ class D0Estimator
       estimatedD0 += (var_phi[i]-d0PhiMeans_[i+5])*d0PhiCoeff_[i+5];
     }
     // When it is estimated the mean value is subtracted. We add it back.
-    return (estimatedD0 + d0Mean_);
+    return (estimatedD0 + d0Mean_)/(1-0.1565);
+//    return (estimatedD0 + d0Mean_)/(1-1.223);
   }
  private:
   std::unordered_map<unsigned int, double> d0PhiMeans_;
   std::unordered_map<unsigned int, double> d0PhiCoeff_;
   double d0Mean_;
+};
+
+
+class Phi0Estimator
+{
+ public:
+  Phi0Estimator() {
+    phi0PhiMeans_.insert(std::make_pair(5, 0.40032522325223113268677));
+    phi0PhiMeans_.insert(std::make_pair(6, 0.40057371916980744064318));
+    phi0PhiMeans_.insert(std::make_pair(7, 0.40057900582205602235675));
+    phi0PhiMeans_.insert(std::make_pair(8, 0.400654897397742737474857));
+    phi0PhiMeans_.insert(std::make_pair(9, 0.400763948893061883183009));
+    phi0PhiMeans_.insert(std::make_pair(10, 0.400849008549969187953366));
+    phi0PhiCoeff_.insert(std::make_pair(5, -1.509896416351359450244351));
+    phi0PhiCoeff_.insert(std::make_pair(6, 1.149522598207252147509493));
+    phi0PhiCoeff_.insert(std::make_pair(7, 1.722313801566987185169448));
+    phi0PhiCoeff_.insert(std::make_pair(8, 1.432053623249046392538983));
+    phi0PhiCoeff_.insert(std::make_pair(9, -0.170008269978561763512634));
+    phi0PhiCoeff_.insert(std::make_pair(10, -1.624473267568149425350500));
+    phi0Mean_ = 0.40043961916558845626213;
+  }
+  double phi0(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
+    double estimatedPhi0 = 0.;
+    for (const auto & layer : layersFound) {
+      unsigned int l = layer.first;
+      double phi = std::atan2(var_y->at(layer.second), var_x->at(layer.second));
+      estimatedPhi0 += (phi-phi0PhiMeans_[l])*phi0PhiCoeff_[l];
+    }
+    // When it is estimated the mean value is subtracted. We add it back.
+    return (estimatedPhi0 + phi0Mean_);
+  }
+  template <class T>
+  double phi0(const T & var_phi)
+  {
+    double estimatedPhi0 = 0.;
+    for (int i=0; i<var_phi.size(); ++i) {
+      estimatedPhi0 += (var_phi[i]-phi0PhiMeans_[i+5])*phi0PhiCoeff_[i+5];
+    }
+    // When it is estimated the mean value is subtracted. We add it back.
+    return (estimatedPhi0 + phi0Mean_);
+  }
+ private:
+  std::unordered_map<unsigned int, double> phi0PhiMeans_;
+  std::unordered_map<unsigned int, double> phi0PhiCoeff_;
+  double phi0Mean_;
 };
 
 
@@ -554,6 +661,7 @@ class GetVarCorrectedPhiSecondOrderWithD0 : public GetTreeVariable
  public:
   GetVarCorrectedPhiSecondOrderWithD0(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
       GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer) {
+    getParD0_ = std::make_shared<GetParD0>(tree);
   }
   virtual ~GetVarCorrectedPhiSecondOrderWithD0() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
@@ -564,7 +672,10 @@ class GetVarCorrectedPhiSecondOrderWithD0 : public GetTreeVariable
     double d0Correction = estimatedD0*(1/R - 1/meanRadius(var_layer->at(k)));
     double phi = std::atan2(var_y->at(k), var_x->at(k));
     double cOverTwoRho = estimatedChargeOverPt*3.8114*0.003/2.;
-    return (phi + cOverTwoRho*DeltaR + std::pow(R*cOverTwoRho, 3)/6. + d0Correction);
+    // return (phi + cOverTwoRho*DeltaR + std::pow(R*cOverTwoRho, 3)/6. + d0Correction);
+     return (phi + cOverTwoRho*DeltaR + std::pow(R*cOverTwoRho, 3)/6. + estimatedD0/R);
+//    return (phi + cOverTwoRho*DeltaR + std::pow(R*cOverTwoRho, 3)/6. + getParD0_->at(0)/R);
+//     return (estimatedD0);
   }
  private:
   std::vector<float> * var_x;
@@ -572,6 +683,7 @@ class GetVarCorrectedPhiSecondOrderWithD0 : public GetTreeVariable
   std::vector<int> * var_layer;
   ChargeOverPtWithD0Estimator chargeOverPtWithD0Estimator_;
   D0Estimator d0Estimator_;
+  std::shared_ptr<GetParD0> getParD0_;
 };
 
 
@@ -694,7 +806,8 @@ class GetVarCorrectedPhiSecondOrderWithD0Gen : public GetTreeVariable
     double estimatedChargeOverRho = 1./rho;
     double phi = std::atan2(var_y->at(k), var_x->at(k));
     // double correctedPhi = (phi + estimatedChargeOverRho*DeltaR/2. + d0Correction + std::pow(R*estimatedChargeOverRho/2., 3)/6. + d0*(R/(4*rho*rho))/2.);
-    double correctedPhi = (phi + estimatedChargeOverRho*DeltaR/2. + d0Correction + std::pow(R*estimatedChargeOverRho/2., 3)/6.);
+//    double correctedPhi = (phi + estimatedChargeOverRho*DeltaR/2. + d0Correction + std::pow(R*estimatedChargeOverRho/2., 3)/6.);
+    double correctedPhi = (phi + estimatedChargeOverRho*DeltaR/2. + d0/R + std::pow(R*estimatedChargeOverRho/2., 3)/6.);
     return correctedPhi;
   }
  private:
@@ -825,33 +938,33 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 //    if (k > 1) return 0;
     // d0 only
 
-    int layer = var_layer->at(k);
-//    double value = 1.;
-//    if (layer == 6) value = 2.;
-//    if (layer == 7) value = 3.;
-//    if (layer == 8) value = 4.;
-//    if (layer == 9) value = 5.;
-//    if (layer == 10) value = 6.;
-    double value = 6.;
-    if (layer == 6) value = 5.;
-    if (layer == 7) value = 4.;
-    if (layer == 8) value = 3.;
-    if (layer == 9) value = 2.;
-    if (layer == 10) value = 1.;
-
-//    double Rvalue = 22.1072;
-//    if (layer == 6) Rvalue = 35.4917;
-//    if (layer == 7) Rvalue = 50.6335;
-//    if (layer == 8) Rvalue = 68.3771;
-//    if (layer == 9) Rvalue = 88.5511;
-//    if (layer == 10) Rvalue = 107.746;
-
-    double Rvalue = 107.746;
-    if (layer == 6) Rvalue = 88.5511;
-    if (layer == 7) Rvalue = 68.3771;
-    if (layer == 8) Rvalue = 50.6335;
-    if (layer == 9) Rvalue = 35.4917;
-    if (layer == 10) Rvalue = 22.1072;
+//    int layer = var_layer->at(k);
+////    double value = 1.;
+////    if (layer == 6) value = 2.;
+////    if (layer == 7) value = 3.;
+////    if (layer == 8) value = 4.;
+////    if (layer == 9) value = 5.;
+////    if (layer == 10) value = 6.;
+//    double value = 6.;
+//    if (layer == 6) value = 5.;
+//    if (layer == 7) value = 4.;
+//    if (layer == 8) value = 3.;
+//    if (layer == 9) value = 2.;
+//    if (layer == 10) value = 1.;
+//
+////    double Rvalue = 22.1072;
+////    if (layer == 6) Rvalue = 35.4917;
+////    if (layer == 7) Rvalue = 50.6335;
+////    if (layer == 8) Rvalue = 68.3771;
+////    if (layer == 9) Rvalue = 88.5511;
+////    if (layer == 10) Rvalue = 107.746;
+//
+//    double Rvalue = 107.746;
+//    if (layer == 6) Rvalue = 88.5511;
+//    if (layer == 7) Rvalue = 68.3771;
+//    if (layer == 8) Rvalue = 50.6335;
+//    if (layer == 9) Rvalue = 35.4917;
+//    if (layer == 10) Rvalue = 22.1072;
 
 
 //      double xc = -rho * sin(getParPhi_->at(0) ) + par_x0->at(0);
@@ -875,7 +988,7 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 
 
 
-    // double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - getParPhi_->at(0) - d0/meanR);
+//     double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - getParPhi_->at(0) - d0/meanR);
     // Pt only
 //     double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - getParPhi_->at(0) - meanR/(2*rho));
     // Phi and pt
@@ -886,9 +999,11 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 //    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0/Rvalue);
 //        double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0*meanR);
 //    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0*Rvalue);
+    // Pt and d0
+//    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - getParPhi_->at(0) - meanR/(2*rho) - d0/meanR);
 
     // Phi, pT and d0
-//    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - meanR/(2*rho) - d0/meanR);
+    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - meanR/(2*rho) - d0/meanR);
 
 
 
@@ -900,10 +1015,11 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 //    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - d0/meanR);
 
     // Random noise
-    double noise = (*distribution_)(generator_);
+//    double noise = (*distribution_)(generator_);
 //    double correctedPhi = (getParPhi_->at(0) - d0/meanR + noise);
+//    double correctedPhi = (getParPhi_->at(0) + noise);
 
-    double correctedPhi = (getParPhi_->at(0) + noise);
+//    double correctedPhi = (getParPhi_->at(0) + noise);
 
 //    double correctedPhi = (getParPhi_->at(0) - d0/Rvalue + noise);
 //    double correctedPhi = (getParPhi_->at(0) - 10*d0/meanR + noise);
