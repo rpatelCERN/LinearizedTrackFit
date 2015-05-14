@@ -3,7 +3,7 @@
 TreeReader::TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
     const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
     const std::vector<double> & distanceCutsTransverse, const std::vector<double> & distanceCutsLongitudinal,
-    const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames) :
+    const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames, const std::string & firstOrderCoefficientsFileName) :
   tree_(std::make_shared<L1TrackTriggerTree>(inputFileName)),
   requiredLayers_(requiredLayers),
   radiusCuts_(radiusCuts),
@@ -39,20 +39,20 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     else if (varName == "DeltaROverGenPtCube") vars_.push_back(std::make_shared<GetVarDeltaROverGenPtCube>(tree_, requiredLayers_["DeltaROverGenPtCube"]));
     else if (varName == "ChargeSignedR") vars_.push_back(std::make_shared<GetVarChargeSignedR>(tree_, requiredLayers_["ChargeSignedR"]));
     else if (varName == "ChargeCorrectedR") vars_.push_back(std::make_shared<GetVarChargeCorrectedR>(tree_, requiredLayers_["ChargeCorrectedR"]));
-    else if (varName == "ChargeOverPtCorrectedR") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedR>(tree_, requiredLayers_["ChargeOverPtCorrectedR"]));
+    else if (varName == "ChargeOverPtCorrectedR") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedR>(tree_, requiredLayers_["ChargeOverPtCorrectedR"], firstOrderCoefficientsFileName));
     else if (varName == "ChargeOverPtCorrectedRCube") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedRCube>(tree_, requiredLayers_["ChargeOverPtCorrectedRCube"]));
     else if (varName == "RCotTheta") vars_.push_back(std::make_shared<GetVarRCotTheta>(tree_, requiredLayers_["RCotTheta"]));
-    else if (varName == "CorrectedPhi") vars_.push_back(std::make_shared<GetVarCorrectedPhi>(tree_, requiredLayers_["phi"]));
-    else if (varName == "CorrectedPhiSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrder>(tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhi") vars_.push_back(std::make_shared<GetVarCorrectedPhi>(tree_, requiredLayers_["phi"], firstOrderCoefficientsFileName));
+    else if (varName == "CorrectedPhiSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrder>(tree_, requiredLayers_["phi"], firstOrderCoefficientsFileName));
     else if (varName == "CorrectedPhiSecondOrderWithD0") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderWithD0>(tree_, requiredLayers_["phi"]));
-    else if (varName == "CorrectedPhiThirdOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrder>(tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiThirdOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrder>(tree_, requiredLayers_["phi"], firstOrderCoefficientsFileName));
     else if (varName == "CorrectedPhiSecondOrderGen") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderGen>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedPhiExactWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiExactWithD0Gen>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedPhiFirstOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiFirstOrderWithD0Gen>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedPhiSecondOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderWithD0Gen>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedPhiThirdOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrderWithD0Gen>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedZ") vars_.push_back(std::make_shared<GetVarCorrectedZ>(tree_, requiredLayers_["z"]));
-    else if (varName == "CorrectedZSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedZSecondOrder>(tree_, requiredLayers_["z"]));
+    else if (varName == "CorrectedZSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedZSecondOrder>(tree_, requiredLayers_["z"], firstOrderCoefficientsFileName));
     else {
       std::cout << "Error: undefined variable name " << varName << std::endl;
       throw;

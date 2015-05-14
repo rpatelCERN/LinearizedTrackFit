@@ -3,19 +3,23 @@
 using namespace Eigen;
 using namespace mpfr;
 
-MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, double> > & varsMeans, const unsigned int nTrackParameters) :
+MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, double> > & varsMeans,
+                             const std::vector<std::string> & trackParametersNames,
+                             const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars) :
     name_(name),
     nVars_(varsMeans.size()),
     varsMeans_(varsMeans),
-    nTrackParameters_(nTrackParameters),
+    nTrackParameters_(trackParametersNames.size()),
+    trackParametersNames_(trackParametersNames),
     cov_(Matrix<mpreal, Dynamic, Dynamic>::Zero(nVars_, nVars_)),
 //    meanValues_(Matrix<mpreal, Dynamic, 1>::Zero(nVars_)),
-    corrPV_(Matrix<mpreal, Dynamic, Dynamic>::Zero(nTrackParameters, nVars_)),
+    corrPV_(Matrix<mpreal, Dynamic, Dynamic>::Zero(trackParametersNames.size(), nVars_)),
 //    meanP_(Matrix<mpreal, Dynamic, 1>::Zero(nTrackParameters)),
     V_(Matrix<mpreal, Dynamic, Dynamic>::Zero(nVars_, nVars_)),
     sqrtEigenvalues_(Matrix<mpreal, Dynamic, 1>::Zero(nVars_)),
 //    meanValuesVec_(Matrix<mpreal, Dynamic, 1>::Zero(nVars_)),
-    count_(0)
+    count_(0),
+    requiredLayersForVars_(requiredLayersForVars)
 {
   for (int ladder=-1; ladder<77; ++ladder) {
     meanValuesLadders_.insert(std::make_pair(ladder, Matrix<mpreal, Dynamic, 1>::Zero(nVars_)));
@@ -217,6 +221,42 @@ void MatrixBuilder::writeMatrices(const bool usePcs)
   outfile << (cov_*(cov_.inverse())).format(fullPrec);
   outfile << std::endl;
   outfile.close();
+
+  // Write the files for the pre-estimate
+  for (int p=0; p<nTrackParameters_; ++p) {
+    std::ofstream outfilePar;
+    std::string name = name_+"_pre_"+trackParametersNames_[p];
+    name = std::regex_replace(name, std::regex("/p"), "OverP");
+    outfilePar.open("matrixVD_"+name+".txt");
+    if(!outfilePar) {
+      std::cout << "error opening matrixVD_"+name+".txt" << std::endl;
+      return;
+    }
+    outfilePar << nVars_ << std::endl << std::endl;
+    // Required layers
+    std::vector<int> layers;
+    for (auto l : requiredLayersForVars_) {
+      for (auto v : l.second) {
+        layers.push_back(v);
+      }
+      break;
+    }
+    std::sort(layers.begin(), layers.end());
+    for (auto l : layers) {
+      outfilePar << l << " ";
+    }
+    outfilePar << std::endl << std::endl;
+    // Mean values
+    outfilePar << meanValuesLadders_[-1].format(fullPrec);
+    outfilePar << std::endl << std::endl;
+    outfilePar << meanPLadders_[-1][p];
+    outfilePar << std::endl << std::endl;
+    // Coefficients
+    for (int v=0; v<nVars_; ++v) {
+      outfilePar << D(p, v) << std::endl;
+    }
+    outfilePar.close();
+  };
 
 
 //  MatrixXd coordinatesM(coordinates_.size(), 6);

@@ -16,12 +16,14 @@ namespace LinearFit
   void testMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
       const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
       std::vector<double> & distanceCutsTransverse, std::vector<double> & distanceCutsLongitudinal,
-      std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit)
+      std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit,
+      const std::string & firstOrderCoefficientsFileName)
   {
     LinearFitter linearFitter("");
 
-    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd,
-        linearFitter.requiredLayers(), radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
+    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, linearFitter.requiredLayers(),
+                          radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames,
+                          inputTrackParameterNames, firstOrderCoefficientsFileName);
 
     // Control histograms
     std::unordered_map<int, LinearFitterHistograms> histograms;

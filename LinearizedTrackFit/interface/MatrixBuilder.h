@@ -6,7 +6,9 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <unordered_set>
 #include <unordered_map>
+#include <regex>
 #include <Eigen/Eigenvalues>
 #include <unsupported/Eigen/MPRealSupport>
 
@@ -16,7 +18,9 @@ using namespace mpfr;
 class MatrixBuilder
 {
 public:
-  MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, double> > & varsMeans, const unsigned int nTrackParameters);
+  MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, double> > & varsMeans,
+                const std::vector<std::string> & trackParametersNames,
+                const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars);
   void update(const std::vector<double> & vars, const int lastLadder);
   void update(const std::vector<double> & vars, const std::vector<double> & pars, const int lastLadder, const bool usePcs);
   void computeEigenvalueMatrix();
@@ -32,6 +36,7 @@ private:
   unsigned int nVars_;
   std::vector<std::pair<bool, double> > varsMeans_;
   unsigned int nTrackParameters_;
+  std::vector<std::string> trackParametersNames_;
   Matrix<mpreal, Dynamic, Dynamic> cov_;
   Matrix<mpreal, Dynamic, Dynamic> corrPV_;
   Matrix<mpreal, Dynamic, Dynamic> V_;
@@ -41,6 +46,7 @@ private:
   mpreal count_;
   std::unordered_map<int, Matrix<mpreal, Dynamic, 1>> meanValuesLadders_;
   std::unordered_map<int, Matrix<mpreal, Dynamic, 1>> meanPLadders_;
+  std::unordered_map<std::string, std::unordered_set<int> > requiredLayersForVars_;
 
 //  std::vector<std::vector<double> > coordinates_;
 //  std::vector<double> parameters_;

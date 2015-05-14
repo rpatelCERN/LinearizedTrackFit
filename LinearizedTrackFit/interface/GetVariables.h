@@ -6,6 +6,7 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <fstream>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/L1TrackTriggerTree.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GetTrackParameters.h"
 
@@ -335,37 +336,136 @@ private:
 };
 
 
+//class ChargeOverPtEstimator
+//{
+//public:
+//  ChargeOverPtEstimator() {
+//    chargeOverPtPhiMeans_.insert(std::make_pair(5, 0.399854));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.399922));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.399942));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.399955));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.39996));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.399966));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(5, 0.46392));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(6, 0.615171));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 0.683068));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(8, 0.721298));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(9, 1.24224));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -3.72572));
+//    chargeOverPtMean_ = 6.63953e-05;
+//
+////    chargeOverPtPhiMeans_.insert(std::make_pair(5, 0.399842));
+////    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.400179));
+////    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.400072));
+////    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.400082));
+////    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.400142));
+////    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.400183));
+////    chargeOverPtPhiCoeff_.insert(std::make_pair(5, 1.51914));
+////    chargeOverPtPhiCoeff_.insert(std::make_pair(6, 0.784844));
+////    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 0.336084));
+////    chargeOverPtPhiCoeff_.insert(std::make_pair(8, -0.438823));
+////    chargeOverPtPhiCoeff_.insert(std::make_pair(9, -0.773466));
+////    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -1.42569));
+////    chargeOverPtMean_ = -0.000476828;
+//  }
+//  double chargeOverPt(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
+//    double estimatedChargeOverPt = 0.;
+//    for (const auto & layer : layersFound) {
+//      unsigned int l = layer.first;
+//      double phi = std::atan2(var_y->at(layer.second), var_x->at(layer.second));
+//      estimatedChargeOverPt += (phi-chargeOverPtPhiMeans_[l])*chargeOverPtPhiCoeff_[l];
+//    }
+//    // When it is estimated the mean value is subtracted. We add it back.
+//    return (estimatedChargeOverPt + chargeOverPtMean_);
+//  }
+//  template <class T>
+//  double chargeOverPt(const T & var_phi)
+//  {
+//    double estimatedChargeOverPt = 0.;
+//    for (int i=0; i<var_phi.size(); ++i) {
+//      estimatedChargeOverPt += (var_phi[i]-chargeOverPtPhiMeans_[i+5])*chargeOverPtPhiCoeff_[i+5];
+//    }
+//    // When it is estimated the mean value is subtracted. We add it back.
+//    return (estimatedChargeOverPt + chargeOverPtMean_);
+//  }
+//private:
+//  std::unordered_map<unsigned int, double> chargeOverPtPhiMeans_;
+//  std::unordered_map<unsigned int, double> chargeOverPtPhiCoeff_;
+//  double chargeOverPtMean_;
+//};
+
+
 class ChargeOverPtEstimator
 {
-public:
-  ChargeOverPtEstimator() {
-    chargeOverPtPhiMeans_.insert(std::make_pair(5, 0.399854));
-    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.399922));
-    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.399942));
-    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.399955));
-    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.39996));
-    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.399966));
-    chargeOverPtPhiCoeff_.insert(std::make_pair(5, 0.46392));
-    chargeOverPtPhiCoeff_.insert(std::make_pair(6, 0.615171));
-    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 0.683068));
-    chargeOverPtPhiCoeff_.insert(std::make_pair(8, 0.721298));
-    chargeOverPtPhiCoeff_.insert(std::make_pair(9, 1.24224));
-    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -3.72572));
-    chargeOverPtMean_ = 6.63953e-05;
+ public:
+  ChargeOverPtEstimator(const std::string & inputFileName) {
+    // All 6 layers
+//    std::string inputFileName("matrixVD_pre_chargeOverPt.txt");
+    // Removed layer 10
+//    std::string inputFileName("matrixVD_pre_layer_5_off_chargeOverPt.txt");
+//    std::string inputFileName("matrixVD_pre_layer_6_off_chargeOverPt.txt");
+//    std::string inputFileName("matrixVD_pre_layer_7_off_chargeOverPt.txt");
+//    std::string inputFileName("matrixVD_pre_layer_8_off_chargeOverPt.txt");
+//    std::string inputFileName("matrixVD_pre_layer_9_off_chargeOverPt.txt");
+//    std::string inputFileName("matrixVD_pre_layer_10_off_chargeOverPt.txt");
+    // open matrix file and read V and D arrays
+    std::cout << "opening "+inputFileName+" for reading" << std::endl;
 
-//    chargeOverPtPhiMeans_.insert(std::make_pair(5, 0.399842));
-//    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.400179));
-//    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.400072));
-//    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.400082));
-//    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.400142));
-//    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.400183));
-//    chargeOverPtPhiCoeff_.insert(std::make_pair(5, 1.51914));
-//    chargeOverPtPhiCoeff_.insert(std::make_pair(6, 0.784844));
-//    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 0.336084));
-//    chargeOverPtPhiCoeff_.insert(std::make_pair(8, -0.438823));
-//    chargeOverPtPhiCoeff_.insert(std::make_pair(9, -0.773466));
-//    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -1.42569));
-//    chargeOverPtMean_ = -0.000476828;
+    std::ifstream inputFile;
+    inputFile.open(inputFileName);
+    if (!inputFile) {
+      std::cout << "MatrixReader: Error opening "+inputFileName << std::endl;
+      throw;
+    }
+
+    // Read number of variables and number of track parameters
+    int nVars = 0;
+    inputFile >> nVars;
+
+    // Read required layers
+    int l;
+    std::vector<int> layers;
+    for (int v=0; v<nVars; ++v) {
+      inputFile >> l;
+      layers.push_back(l);
+    }
+
+    // Read mean values
+    double x;
+    for (int i=0; i<nVars; ++i) {
+      inputFile >> x;
+      chargeOverPtPhiMeans_.insert(std::make_pair(layers[i], x));
+    }
+    // Read parameter mean value
+    inputFile >> chargeOverPtMean_;
+
+    // Read coefficients
+    for (int i=0; i<nVars; ++i) {
+      inputFile >> x;
+      chargeOverPtPhiCoeff_.insert(std::make_pair(layers[i], x));
+    }
+
+    for (auto l : layers) {
+      std::cout << "chargeOverPtPhiMeans_["<<l<<"] = " << chargeOverPtPhiMeans_[l] << std::endl;
+    }
+    std::cout << "chargeOverPtMean_ = " << chargeOverPtMean_ << std::endl;
+    for (auto l : layers) {
+      std::cout << "chargeOverPtPhiCoeff_["<<l<<"] = " << chargeOverPtPhiCoeff_[l] << std::endl;
+    }
+
+//    chargeOverPtPhiMeans_.insert(std::make_pair(5, 0.399854));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.399922));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.399942));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.399955));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.39996));
+//    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.399966));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(5, 0.46392));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(6, 0.615171));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 0.683068));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(8, 0.721298));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(9, 1.24224));
+//    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -3.72572));
+//    chargeOverPtMean_ = 6.63953e-05;
   }
   double chargeOverPt(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
     double estimatedChargeOverPt = 0.;
@@ -387,7 +487,7 @@ public:
     // When it is estimated the mean value is subtracted. We add it back.
     return (estimatedChargeOverPt + chargeOverPtMean_);
   }
-private:
+ private:
   std::unordered_map<unsigned int, double> chargeOverPtPhiMeans_;
   std::unordered_map<unsigned int, double> chargeOverPtPhiCoeff_;
   double chargeOverPtMean_;
@@ -610,8 +710,10 @@ class Phi0Estimator
 class GetVarCorrectedPhi : public GetTreeVariable
 {
 public:
-  GetVarCorrectedPhi(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer) {
+  GetVarCorrectedPhi(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+                     const std::string & firstOrderCoefficientsFileName) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
+      chargeOverPtEstimator_(firstOrderCoefficientsFileName) {
   }
   virtual ~GetVarCorrectedPhi() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
@@ -633,8 +735,10 @@ private:
 class GetVarCorrectedPhiSecondOrder : public GetTreeVariable
 {
 public:
-  GetVarCorrectedPhiSecondOrder(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer) {
+  GetVarCorrectedPhiSecondOrder(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+                                const std::string & firstOrderCoefficientsFileName) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
+      chargeOverPtEstimator_(firstOrderCoefficientsFileName){
   }
   virtual ~GetVarCorrectedPhiSecondOrder() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
@@ -691,8 +795,10 @@ class GetVarCorrectedPhiSecondOrderWithD0 : public GetTreeVariable
 class GetVarCorrectedPhiThirdOrder : public GetTreeVariable
 {
 public:
-  GetVarCorrectedPhiThirdOrder(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer) {
+  GetVarCorrectedPhiThirdOrder(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+                               const std::string & firstOrderCoefficientsFileName) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
+      chargeOverPtEstimator_(firstOrderCoefficientsFileName) {
   }
   virtual ~GetVarCorrectedPhiThirdOrder() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
@@ -1095,9 +1201,11 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 class GetVarChargeOverPtCorrectedR : public GetTreeVariable
 {
 public:
-  GetVarChargeOverPtCorrectedR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {
-  }
+  GetVarChargeOverPtCorrectedR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+                               const std::string & firstOrderCoefficientsFileName) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y),
+      chargeOverPtEstimator_(firstOrderCoefficientsFileName)
+  {}
   virtual ~GetVarChargeOverPtCorrectedR() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
     double estimatedCharge = chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
@@ -1206,9 +1314,11 @@ private:
 class GetVarCorrectedZSecondOrder : public GetTreeVariable
 {
 public:
-  GetVarCorrectedZSecondOrder(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer) {
-  }
+  GetVarCorrectedZSecondOrder(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+                              const std::string & firstOrderCoefficientsFileName) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+      chargeOverPtEstimator_(firstOrderCoefficientsFileName)
+  {}
   virtual ~GetVarCorrectedZSecondOrder() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));

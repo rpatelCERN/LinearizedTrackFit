@@ -30,10 +30,12 @@ namespace LinearFit {
       const std::unordered_map<std::string, std::vector<std::pair<bool, double> > > & inputVariablesMeans,
       const std::vector<std::string> & inputTrackParameterNames, const bool singleModules,
       const bool doMapSectors, const bool computeDistances, const bool computeCorrelations,
-      const GeometricIndex::GeometricIndexConfiguration & gic, const bool phiSymmetricFit, const bool usePcs)
+      const GeometricIndex::GeometricIndexConfiguration & gic, const bool phiSymmetricFit, const bool usePcs,
+      const std::string & firstOrderCoefficientsFileName)
   {
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayersForVars,
-        radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
+                          radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames,
+                          inputTrackParameterNames, firstOrderCoefficientsFileName);
 
     // Consistency checks
     for (const auto & varName : inputVarNames) {
@@ -110,7 +112,7 @@ namespace LinearFit {
 
       // Update mean and covariance for this linearization region
       if (matrices.count(geomIndex) == 0) {
-        matrices.insert({{geomIndex, MatrixBuilder(std::to_string(geomIndex), variablesMeans, inputTrackParameterNames.size())}});
+        matrices.insert({{geomIndex, MatrixBuilder(std::to_string(geomIndex), variablesMeans, inputTrackParameterNames, requiredLayersForVars)}});
         histograms.insert({{geomIndex, MatrixBuilderHistograms(std::to_string(geomIndex), treeReader.variablesNames(), inputTrackParameterNames)}});
         // histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), treeReader.maxRequiredLayers())}});
         histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), 6)}});

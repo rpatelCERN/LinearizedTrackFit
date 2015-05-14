@@ -18,7 +18,8 @@ namespace LinearFit
   void testFitter(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
       const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
       std::vector<double> & distanceCutsTransverse, std::vector<double> & distanceCutsLongitudinal,
-      std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit)
+      std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit,
+      const std::string & firstOrderCoefficientsFileName)
   {
     std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
     std::unordered_map<std::string, std::unordered_set<int> > requiredLayers;
@@ -26,8 +27,9 @@ namespace LinearFit
     requiredLayers.insert(std::make_pair("R", std::unordered_set<int>(layersAll_.begin(), layersAll_.end())));
     requiredLayers.insert(std::make_pair("z", std::unordered_set<int>(layersAll_.begin(), layersAll_.end())));
 
-    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd,
-        requiredLayers, radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
+    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers, radiusCuts,
+                          distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames,
+                          firstOrderCoefficientsFileName);
 
     // Control histograms
     LinearFitterHistograms linearFitterHistograms("0", treeReader.variablesNames(), inputTrackParameterNames);
