@@ -1,7 +1,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
 
 using namespace Eigen;
-using namespace mpfr;
+// using namespace mpfr;
 
 MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, double> > & varsMeans,
                              const std::vector<std::string> & trackParametersNames,
@@ -11,20 +11,23 @@ MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pa
     varsMeans_(varsMeans),
     nTrackParameters_(trackParametersNames.size()),
     trackParametersNames_(trackParametersNames),
-    cov_(Matrix<mpreal, Dynamic, Dynamic>::Zero(nVars_, nVars_)),
-//    meanValues_(Matrix<mpreal, Dynamic, 1>::Zero(nVars_)),
-    corrPV_(Matrix<mpreal, Dynamic, Dynamic>::Zero(trackParametersNames.size(), nVars_)),
-//    meanP_(Matrix<mpreal, Dynamic, 1>::Zero(nTrackParameters)),
-    V_(Matrix<mpreal, Dynamic, Dynamic>::Zero(nVars_, nVars_)),
-    sqrtEigenvalues_(Matrix<mpreal, Dynamic, 1>::Zero(nVars_)),
-//    meanValuesVec_(Matrix<mpreal, Dynamic, 1>::Zero(nVars_)),
+//    cov_(Matrix<mpreal, Dynamic, Dynamic>::Zero(nVars_, nVars_)),
+//    corrPV_(Matrix<mpreal, Dynamic, Dynamic>::Zero(trackParametersNames.size(), nVars_)),
+//    V_(Matrix<mpreal, Dynamic, Dynamic>::Zero(nVars_, nVars_)),
+//    sqrtEigenvalues_(Matrix<mpreal, Dynamic, 1>::Zero(nVars_)),
+    cov_(MatrixXd::Zero(nVars_, nVars_)),
+    corrPV_(MatrixXd::Zero(trackParametersNames.size(), nVars_)),
+    V_(MatrixXd::Zero(nVars_, nVars_)),
+    sqrtEigenvalues_(VectorXd::Zero(nVars_)),
     count_(0),
     requiredLayersForVars_(requiredLayersForVars)
 {
   for (int ladder=-1; ladder<77; ++ladder) {
-    meanValuesLadders_.insert(std::make_pair(ladder, Matrix<mpreal, Dynamic, 1>::Zero(nVars_)));
-    meanPLadders_.insert(std::make_pair(ladder, Matrix<mpreal, Dynamic, 1>::Zero(nTrackParameters_)));
-    mpreal::set_default_prec(256);
+//    meanValuesLadders_.insert(std::make_pair(ladder, Matrix<mpreal, Dynamic, 1>::Zero(nVars_)));
+//    meanPLadders_.insert(std::make_pair(ladder, Matrix<mpreal, Dynamic, 1>::Zero(nTrackParameters_)));
+//    mpreal::set_default_prec(256);
+    meanValuesLadders_.insert(std::make_pair(ladder, VectorXd::Zero(nVars_)));
+    meanPLadders_.insert(std::make_pair(ladder, VectorXd::Zero(nTrackParameters_)));
   };
 }
 
@@ -89,10 +92,12 @@ void MatrixBuilder::updateMeanAndCovParams(const std::vector<double> & vars,
     if(count_ == 1) continue; // skip first track
 
     if (usePcs) {
-      Matrix<mpreal, Dynamic, 1> varsVec(nVars_);
+//      Matrix<mpreal, Dynamic, 1> varsVec(nVars_);
+      VectorXd varsVec(nVars_);
       for (unsigned int i=0; i<nVars_; ++i) { varsVec(i) = vars[i]; }
       // Matrix<mpreal, Dynamic, 1> principal = V_*(varsVec - meanValues_);
-      Matrix<mpreal, Dynamic, 1> principal = V_*(varsVec - meanValuesLadders_[lastLadder]);
+//      Matrix<mpreal, Dynamic, 1> principal = V_*(varsVec - meanValuesLadders_[lastLadder]);
+      VectorXd principal = V_*(varsVec - meanValuesLadders_[lastLadder]);
       for (unsigned int jVar = 0; jVar != nVars_; ++jVar) {
         // corrPV_(iPar, jVar) += (pars[iPar] - meanP_(iPar)) * (principal[jVar]) / (count_ - 1) - corrPV_(iPar, jVar) / count_;
         corrPV_(iPar, jVar) += (pars[iPar] - meanPLadders_[lastLadder](iPar)) * (principal[jVar]) / (count_ - 1) - corrPV_(iPar, jVar) / count_;
@@ -134,20 +139,24 @@ void MatrixBuilder::update(const std::vector<double> & vars, const std::vector<d
 void MatrixBuilder::computeEigenvalueMatrix()
 {
   // Diagonalize covariance matrix to find principal components
-   SelfAdjointEigenSolver<Matrix<mpreal, Dynamic, Dynamic>> es(cov_);
+//   SelfAdjointEigenSolver<Matrix<mpreal, Dynamic, Dynamic>> es(cov_);
+  SelfAdjointEigenSolver<MatrixXd> es(cov_);
 //  JacobiSVD<Matrix<mpreal, Dynamic, Dynamic>> es(cov_, ComputeThinU | ComputeThinV);
 
   std::cout << "Sqrt(eigenvalues) of cov:" << std::endl;
-  sqrtEigenvalues_ = Matrix<mpreal, Dynamic, 1>::Zero(nVars_);
-  diagCov_ = Matrix<mpreal, Dynamic, Dynamic>::Zero(nVars_, nVars_);
+//  sqrtEigenvalues_ = Matrix<mpreal, Dynamic, 1>::Zero(nVars_);
+//  diagCov_ = Matrix<mpreal, Dynamic, Dynamic>::Zero(nVars_, nVars_);
+  sqrtEigenvalues_ = VectorXd::Zero(nVars_);
+  diagCov_ = MatrixXd::Zero(nVars_, nVars_);
   for(unsigned int i = 0; i != nVars_; ++i) {
-    mpreal eigenvalue = es.eigenvalues()[i] != 0. ? es.eigenvalues()[i] : 10000000.;
+//    mpreal eigenvalue = es.eigenvalues()[i] != 0. ? es.eigenvalues()[i] : 10000000.;
+    double eigenvalue = es.eigenvalues()[i] != 0. ? es.eigenvalues()[i] : 10000000.;
 //    mpreal eigenvalue = es.singularValues()[i] != 0. ? fabs(es.singularValues()[i]) : 10000000.;
     diagCov_(i, i) = 1./eigenvalue;
-//    sqrtEigenvalues_(i) = std::sqrt(eigenvalue);
-//    std::cout << " " << std::sqrt(eigenvalue);
-    sqrtEigenvalues_(i) = sqrt(eigenvalue);
-    std::cout << " " << sqrt(eigenvalue);
+//    sqrtEigenvalues_(i) = sqrt(eigenvalue);
+//    std::cout << " " << sqrt(eigenvalue);
+    sqrtEigenvalues_(i) = std::sqrt(eigenvalue);
+    std::cout << " " << std::sqrt(eigenvalue);
   }
   std::cout << std::endl;
 
@@ -168,7 +177,8 @@ void MatrixBuilder::writeMatrices(const bool usePcs)
   // computeEigenvalueMatrix();
   // Invert (diagonal) correlation matrix dividing by eigenvalues.
   // Transformation from coordinates to track parameters
-  Matrix<mpreal, Dynamic, Dynamic> D = corrPV_*(cov_.inverse());
+//  Matrix<mpreal, Dynamic, Dynamic> D = corrPV_*(cov_.inverse());
+  MatrixXd D = corrPV_*(cov_.inverse());
 
   
   if (usePcs) {

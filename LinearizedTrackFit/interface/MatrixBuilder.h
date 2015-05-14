@@ -10,10 +10,10 @@
 #include <unordered_map>
 #include <regex>
 #include <Eigen/Eigenvalues>
-#include <unsupported/Eigen/MPRealSupport>
+// #include <unsupported/Eigen/MPRealSupport>
 
 using namespace Eigen;
-using namespace mpfr;
+// using namespace mpfr;
 
 class MatrixBuilder
 {
@@ -37,15 +37,22 @@ private:
   std::vector<std::pair<bool, double> > varsMeans_;
   unsigned int nTrackParameters_;
   std::vector<std::string> trackParametersNames_;
-  Matrix<mpreal, Dynamic, Dynamic> cov_;
-  Matrix<mpreal, Dynamic, Dynamic> corrPV_;
-  Matrix<mpreal, Dynamic, Dynamic> V_;
-  Matrix<mpreal, Dynamic, 1> sqrtEigenvalues_;
-  Matrix<mpreal, Dynamic, Dynamic> diagCov_;
-  // int count_;
-  mpreal count_;
-  std::unordered_map<int, Matrix<mpreal, Dynamic, 1>> meanValuesLadders_;
-  std::unordered_map<int, Matrix<mpreal, Dynamic, 1>> meanPLadders_;
+//  Matrix<mpreal, Dynamic, Dynamic> cov_;
+//  Matrix<mpreal, Dynamic, Dynamic> corrPV_;
+//  Matrix<mpreal, Dynamic, Dynamic> V_;
+//  Matrix<mpreal, Dynamic, 1> sqrtEigenvalues_;
+//  Matrix<mpreal, Dynamic, Dynamic> diagCov_;
+//  mpreal count_;
+//  std::unordered_map<int, Matrix<mpreal, Dynamic, 1>> meanValuesLadders_;
+//  std::unordered_map<int, Matrix<mpreal, Dynamic, 1>> meanPLadders_;
+  MatrixXd cov_;
+  MatrixXd corrPV_;
+  MatrixXd V_;
+  VectorXd sqrtEigenvalues_;
+  MatrixXd diagCov_;
+  int count_;
+  std::unordered_map<int, VectorXd> meanValuesLadders_;
+  std::unordered_map<int, VectorXd> meanPLadders_;
   std::unordered_map<std::string, std::unordered_set<int> > requiredLayersForVars_;
 
 //  std::vector<std::vector<double> > coordinates_;
