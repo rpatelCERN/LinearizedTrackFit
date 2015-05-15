@@ -119,7 +119,8 @@ TestLinearizedTrackFitMatrix::TestLinearizedTrackFitMatrix(const edm::ParameterS
   etaMax_(iConfig.getParameter<double>("EtaMax")),
   z0Min_(iConfig.getParameter<double>("Z0Min")),
   z0Max_(iConfig.getParameter<double>("Z0Max")),
-  firstOrderCoefficientsFileName_(iConfig.getParameter<std::string>("FirstOrderCoefficientsFileName"))
+  firstOrderChargeOverPtCoefficientsFileName_(iConfig.getParameter<std::string>("FirstOrderChargeOverPtCoefficientsFileName")),
+  firstOrderCotThetaCoefficientsFileName_(iConfig.getParameter<std::string>("FirstOrderCotThetaCoefficientsFileName"))
 {
 }
 
@@ -170,7 +171,7 @@ void TestLinearizedTrackFitMatrix::beginJob()
   LinearFit::testFitter(inputFileName_, eventsFractionStart_, eventsFractionEnd_,
 			inputVarNames_, inputTrackParameterNames_,
 			distanceCutsTransverse_, distanceCutsLongitudinal_,
-			radiusCuts_, singleModules_, phiSymmetricFit_, firstOrderCoefficientsFileName_);
+			radiusCuts_, singleModules_, phiSymmetricFit_, firstOrderChargeOverPtCoefficientsFileName_, firstOrderCotThetaCoefficientsFileName_);
 }
 
 
