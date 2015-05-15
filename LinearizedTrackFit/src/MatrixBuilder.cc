@@ -1,3 +1,4 @@
+#include <TString.h>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
 
 using namespace Eigen;
@@ -235,8 +236,9 @@ void MatrixBuilder::writeMatrices(const bool usePcs)
   // Write the files for the pre-estimate
   for (unsigned int p=0; p<nTrackParameters_; ++p) {
     std::ofstream outfilePar;
-    std::string name = name_+"_pre_"+trackParametersNames_[p];
-    name = std::regex_replace(name, std::regex("/p"), std::string("OverP"));
+    TString name(name_+"_pre_"+trackParametersNames_[p]);
+    name.ReplaceAll("/p", "OverP");
+    // name = std::regex_replace(name, std::regex("/p"), std::string("OverP"));
     outfilePar.open("matrixVD_"+name+".txt");
     if(!outfilePar) {
       std::cout << "error opening matrixVD_"+name+".txt" << std::endl;
