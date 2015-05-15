@@ -160,10 +160,10 @@ private:
 };
 
 
-class ChargeOverPtEstimator
+class Estimator
 {
  public:
-  ChargeOverPtEstimator(const std::string & inputFileName) {
+  Estimator(const std::string & inputFileName) {
     // open matrix file and read V and D arrays
     std::cout << "opening "+inputFileName+" for reading" << std::endl;
 
@@ -190,64 +190,151 @@ class ChargeOverPtEstimator
     double x;
     for (int i=0; i<nVars; ++i) {
       inputFile >> x;
-      chargeOverPtPhiMeans_.insert(std::make_pair(layers[i], x));
+      means_.insert(std::make_pair(layers[i], x));
     }
     // Read parameter mean value
-    inputFile >> chargeOverPtMean_;
+    inputFile >> parameterMean_;
 
     // Read coefficients
     for (int i=0; i<nVars; ++i) {
       inputFile >> x;
-      chargeOverPtPhiCoeff_.insert(std::make_pair(layers[i], x));
+      coeff_.insert(std::make_pair(layers[i], x));
     }
 
     for (auto l : layers) {
-      std::cout << "chargeOverPtPhiMeans_["<<l<<"] = " << chargeOverPtPhiMeans_[l] << std::endl;
+      std::cout << "Estimator variable mean["<<l<<"] = " << means_[l] << std::endl;
     }
-    std::cout << "chargeOverPtMean_ = " << chargeOverPtMean_ << std::endl;
+    std::cout << "Estimator parameter mean = " << parameterMean_ << std::endl;
     for (auto l : layers) {
-      std::cout << "chargeOverPtPhiCoeff_["<<l<<"] = " << chargeOverPtPhiCoeff_[l] << std::endl;
+      std::cout << "Estimator coefficient ["<<l<<"] = " << coeff_[l] << std::endl;
     }
-
-//    chargeOverPtPhiMeans_.insert(std::make_pair(5, 0.399854));
-//    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.399922));
-//    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.399942));
-//    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.399955));
-//    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.39996));
-//    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.399966));
-//    chargeOverPtPhiCoeff_.insert(std::make_pair(5, 0.46392));
-//    chargeOverPtPhiCoeff_.insert(std::make_pair(6, 0.615171));
-//    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 0.683068));
-//    chargeOverPtPhiCoeff_.insert(std::make_pair(8, 0.721298));
-//    chargeOverPtPhiCoeff_.insert(std::make_pair(9, 1.24224));
-//    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -3.72572));
-//    chargeOverPtMean_ = 6.63953e-05;
   }
-  double chargeOverPt(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
-    double estimatedChargeOverPt = 0.;
-    for (const auto & layer : layersFound) {
+
+  double estimate(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
+    double estimatedParameter = 0.;
+    for (const auto &layer : layersFound) {
       unsigned int l = layer.first;
       double phi = std::atan2(var_y->at(layer.second), var_x->at(layer.second));
-      estimatedChargeOverPt += (phi-chargeOverPtPhiMeans_[l])*chargeOverPtPhiCoeff_[l];
+      estimatedParameter += (phi - means_[l]) * coeff_[l];
     }
     // When it is estimated the mean value is subtracted. We add it back.
-    return (estimatedChargeOverPt + chargeOverPtMean_);
+    return (estimatedParameter + parameterMean_);
   }
-  template <class T>
-  double chargeOverPt(const T & var_phi)
-  {
-    double estimatedChargeOverPt = 0.;
-    for (int i=0; i<var_phi.size(); ++i) {
-      estimatedChargeOverPt += (var_phi[i]-chargeOverPtPhiMeans_[i+5])*chargeOverPtPhiCoeff_[i+5];
+
+  double estimate(const std::vector<float> * var_z, const std::map<int, unsigned int> & layersFound) {
+    double estimatedParameter = 0.;
+    for (const auto &layer : layersFound) {
+      unsigned int l = layer.first;
+      estimatedParameter += (var_z->at(layer.second) - means_[l]) * coeff_[l];
     }
     // When it is estimated the mean value is subtracted. We add it back.
-    return (estimatedChargeOverPt + chargeOverPtMean_);
+    return (estimatedParameter + parameterMean_);
+  }
+
+  template <class T>
+  double estimate(const T & var) {
+    double estimatedParameter = 0.;
+    for (int i=0; i<var.size(); ++i) {
+      estimatedParameter += (var[i]-means_[i+5])*coeff_[i+5];
+    }
+    // When it is estimated the mean value is subtracted. We add it back.
+    return (estimatedParameter + parameterMean_);
   }
  private:
-  std::unordered_map<unsigned int, double> chargeOverPtPhiMeans_;
-  std::unordered_map<unsigned int, double> chargeOverPtPhiCoeff_;
-  double chargeOverPtMean_;
+  std::unordered_map<unsigned int, double> means_;
+  std::unordered_map<unsigned int, double> coeff_;
+  double parameterMean_;
 };
+
+
+//class ChargeOverPtEstimator
+//{
+// public:
+//  ChargeOverPtEstimator(const std::string & inputFileName) {
+//    // open matrix file and read V and D arrays
+//    std::cout << "opening "+inputFileName+" for reading" << std::endl;
+//
+//    std::ifstream inputFile;
+//    inputFile.open(inputFileName);
+//    if (!inputFile) {
+//      std::cout << "MatrixReader: Error opening "+inputFileName << std::endl;
+//      throw;
+//    }
+//
+//    // Read number of variables and number of track parameters
+//    int nVars = 0;
+//    inputFile >> nVars;
+//
+//    // Read required layers
+//    int l;
+//    std::vector<int> layers;
+//    for (int v=0; v<nVars; ++v) {
+//      inputFile >> l;
+//      layers.push_back(l);
+//    }
+//
+//    // Read mean values
+//    double x;
+//    for (int i=0; i<nVars; ++i) {
+//      inputFile >> x;
+//      chargeOverPtPhiMeans_.insert(std::make_pair(layers[i], x));
+//    }
+//    // Read parameter mean value
+//    inputFile >> chargeOverPtMean_;
+//
+//    // Read coefficients
+//    for (int i=0; i<nVars; ++i) {
+//      inputFile >> x;
+//      chargeOverPtPhiCoeff_.insert(std::make_pair(layers[i], x));
+//    }
+//
+//    for (auto l : layers) {
+//      std::cout << "chargeOverPtPhiMeans_["<<l<<"] = " << chargeOverPtPhiMeans_[l] << std::endl;
+//    }
+//    std::cout << "chargeOverPtMean_ = " << chargeOverPtMean_ << std::endl;
+//    for (auto l : layers) {
+//      std::cout << "chargeOverPtPhiCoeff_["<<l<<"] = " << chargeOverPtPhiCoeff_[l] << std::endl;
+//    }
+//
+////    chargeOverPtPhiMeans_.insert(std::make_pair(5, 0.399854));
+////    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.399922));
+////    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.399942));
+////    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.399955));
+////    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.39996));
+////    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.399966));
+////    chargeOverPtPhiCoeff_.insert(std::make_pair(5, 0.46392));
+////    chargeOverPtPhiCoeff_.insert(std::make_pair(6, 0.615171));
+////    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 0.683068));
+////    chargeOverPtPhiCoeff_.insert(std::make_pair(8, 0.721298));
+////    chargeOverPtPhiCoeff_.insert(std::make_pair(9, 1.24224));
+////    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -3.72572));
+////    chargeOverPtMean_ = 6.63953e-05;
+//  }
+//  double chargeOverPt(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
+//    double estimatedChargeOverPt = 0.;
+//    for (const auto & layer : layersFound) {
+//      unsigned int l = layer.first;
+//      double phi = std::atan2(var_y->at(layer.second), var_x->at(layer.second));
+//      estimatedChargeOverPt += (phi-chargeOverPtPhiMeans_[l])*chargeOverPtPhiCoeff_[l];
+//    }
+//    // When it is estimated the mean value is subtracted. We add it back.
+//    return (estimatedChargeOverPt + chargeOverPtMean_);
+//  }
+//  template <class T>
+//  double chargeOverPt(const T & var_phi)
+//  {
+//    double estimatedChargeOverPt = 0.;
+//    for (int i=0; i<var_phi.size(); ++i) {
+//      estimatedChargeOverPt += (var_phi[i]-chargeOverPtPhiMeans_[i+5])*chargeOverPtPhiCoeff_[i+5];
+//    }
+//    // When it is estimated the mean value is subtracted. We add it back.
+//    return (estimatedChargeOverPt + chargeOverPtMean_);
+//  }
+// private:
+//  std::unordered_map<unsigned int, double> chargeOverPtPhiMeans_;
+//  std::unordered_map<unsigned int, double> chargeOverPtPhiCoeff_;
+//  double chargeOverPtMean_;
+//};
 
 
 class ChargeOverPtWithD0Estimator
@@ -473,7 +560,7 @@ public:
   }
   virtual ~GetVarCorrectedPhi() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
-    double estimatedCharge = chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
+    double estimatedCharge = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
     double phi = std::atan2(var_y->at(k), var_x->at(k));
 //    return (phi + estimatedCharge*DeltaR*3.8*0.003/2.);
@@ -483,7 +570,7 @@ private:
   std::vector<float> * var_x;
   std::vector<float> * var_y;
   std::vector<int> * var_layer;
-  ChargeOverPtEstimator chargeOverPtEstimator_;
+  Estimator chargeOverPtEstimator_;
 };
 
 
@@ -498,7 +585,7 @@ public:
   }
   virtual ~GetVarCorrectedPhiSecondOrder() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
-    double estimatedChargeOverPt = chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
+    double estimatedChargeOverPt = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
     double RCube = std::pow(std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)), 3);
     // double DeltaRCube = RCube - std::pow(meanR_[var_layer->at(k)], 3);
@@ -512,7 +599,7 @@ private:
   std::vector<float> * var_x;
   std::vector<float> * var_y;
   std::vector<int> * var_layer;
-  ChargeOverPtEstimator chargeOverPtEstimator_;
+  Estimator chargeOverPtEstimator_;
 };
 
 
@@ -556,7 +643,7 @@ public:
   }
   virtual ~GetVarCorrectedPhiThirdOrder() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
-    double estimatedCharge = chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
+    double estimatedCharge = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     double DeltaR = R - meanRadius(var_layer->at(k));
     double RCube = std::pow(R, 3);
@@ -571,7 +658,7 @@ private:
   std::vector<float> * var_x;
   std::vector<float> * var_y;
   std::vector<int> * var_layer;
-  ChargeOverPtEstimator chargeOverPtEstimator_;
+  Estimator chargeOverPtEstimator_;
 };
 
 
@@ -962,98 +1049,73 @@ public:
   {}
   virtual ~GetVarChargeOverPtCorrectedR() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
-    double estimatedCharge = chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
+    double estimatedCharge = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return estimatedCharge*R;
   }
 private:
   std::vector<float> * var_x;
   std::vector<float> * var_y;
-  ChargeOverPtEstimator chargeOverPtEstimator_;
+  Estimator chargeOverPtEstimator_;
 };
 
 
-class CotThetaEstimator
-{
-public:
-  CotThetaEstimator() {
-//    zMeans_.insert(std::make_pair(5, 4.45693));
-//    zMeans_.insert(std::make_pair(6, 7.16692));
-//    zMeans_.insert(std::make_pair(7, 10.2198));
-//    zMeans_.insert(std::make_pair(8, 13.8584));
-//    zMeans_.insert(std::make_pair(9, 17.9306));
-//    zMeans_.insert(std::make_pair(10, 21.8398));
-//    zCoeff_.insert(std::make_pair(5, -0.0174372));
-//    zCoeff_.insert(std::make_pair(6,  0.000914154));
-//    zCoeff_.insert(std::make_pair(7, 0.017444));
-//    zCoeff_.insert(std::make_pair(8, 0.000939208));
-//    zCoeff_.insert(std::make_pair(9, 0.00162868));
-//    zCoeff_.insert(std::make_pair(10, 0.00230743));
-//    cotThetaMean_ = 0.20157;
-
+//class CotThetaEstimator
+//{
+//public:
+//  CotThetaEstimator() {
 //    zMeans_.insert(std::make_pair(5, 0.010245));
 //    zMeans_.insert(std::make_pair(6, 0.0116309));
 //    zMeans_.insert(std::make_pair(7, 0.0139186));
 //    zMeans_.insert(std::make_pair(8, -0.0102434));
 //    zMeans_.insert(std::make_pair(9, -0.0122877));
 //    zMeans_.insert(std::make_pair(10, -0.0137043));
-//    zCoeff_.insert(std::make_pair(5, -0.02924));
-//    zCoeff_.insert(std::make_pair(6, -0.0005328));
-//    zCoeff_.insert(std::make_pair(7, 0.02589));
-//    zCoeff_.insert(std::make_pair(8, 0.000797));
-//    zCoeff_.insert(std::make_pair(9, 0.001234));
-//    zCoeff_.insert(std::make_pair(10, 0.001883));
+//    zCoeff_.insert(std::make_pair(5, -0.0286994));
+//    zCoeff_.insert(std::make_pair(6, -0.00101947));
+//    zCoeff_.insert(std::make_pair(7, 0.0256568));
+//    zCoeff_.insert(std::make_pair(8, 0.000839378));
+//    zCoeff_.insert(std::make_pair(9, 0.00129111));
+//    zCoeff_.insert(std::make_pair(10, 0.00196343));
 //    cotThetaMean_ = 0.000127483;
-
-    zMeans_.insert(std::make_pair(5, 0.010245));
-    zMeans_.insert(std::make_pair(6, 0.0116309));
-    zMeans_.insert(std::make_pair(7, 0.0139186));
-    zMeans_.insert(std::make_pair(8, -0.0102434));
-    zMeans_.insert(std::make_pair(9, -0.0122877));
-    zMeans_.insert(std::make_pair(10, -0.0137043));
-    zCoeff_.insert(std::make_pair(5, -0.0286994));
-    zCoeff_.insert(std::make_pair(6, -0.00101947));
-    zCoeff_.insert(std::make_pair(7, 0.0256568));
-    zCoeff_.insert(std::make_pair(8, 0.000839378));
-    zCoeff_.insert(std::make_pair(9, 0.00129111));
-    zCoeff_.insert(std::make_pair(10, 0.00196343));
-    cotThetaMean_ = 0.000127483;
-  }
-  double cotTheta(const std::vector<float> * var_z, const std::map<int, unsigned int> & layersFound) {
-    double cotTheta = 0.;
-    for (const auto &layer : layersFound) {
-      unsigned int l = layer.first;
-      cotTheta += (var_z->at(layer.second) - zMeans_[l]) * zCoeff_[l];
-    }
-    // When it is estimated the mean value is subtracted. We add it back.
-    return (cotTheta + cotThetaMean_);
-  }
-  template <class T>
-  double cotTheta(const T & var_z) {
-    double cotTheta = 0.;
-    for (unsigned int i=0; i<6; ++i) {
-      cotTheta += (var_z[i] - zMeans_[i+5]) * zCoeff_[i+5];
-    }
-    // When it is estimated the mean value is subtracted. We add it back.
-    return (cotTheta + cotThetaMean_);
-  }
-private:
-  std::unordered_map<unsigned int, double> zMeans_;
-  std::unordered_map<unsigned int, double> zCoeff_;
-  double cotThetaMean_;
-};
+//  }
+//  double cotTheta(const std::vector<float> * var_z, const std::map<int, unsigned int> & layersFound) {
+//    double cotTheta = 0.;
+//    for (const auto &layer : layersFound) {
+//      unsigned int l = layer.first;
+//      cotTheta += (var_z->at(layer.second) - zMeans_[l]) * zCoeff_[l];
+//    }
+//    // When it is estimated the mean value is subtracted. We add it back.
+//    return (cotTheta + cotThetaMean_);
+//  }
+//  template <class T>
+//  double cotTheta(const T & var_z) {
+//    double cotTheta = 0.;
+//    for (unsigned int i=0; i<6; ++i) {
+//      cotTheta += (var_z[i] - zMeans_[i+5]) * zCoeff_[i+5];
+//    }
+//    // When it is estimated the mean value is subtracted. We add it back.
+//    return (cotTheta + cotThetaMean_);
+//  }
+//private:
+//  std::unordered_map<unsigned int, double> zMeans_;
+//  std::unordered_map<unsigned int, double> zCoeff_;
+//  double cotThetaMean_;
+//};
 
 
 class GetVarCorrectedZ : public GetTreeVariable
 {
 public:
-  GetVarCorrectedZ(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer) {
+  GetVarCorrectedZ(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+                   const std::string & firstOrderCotThetaCoefficientsFileName) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+      cotThetaEstimator_(firstOrderCotThetaCoefficientsFileName)
+  {
   }
   virtual ~GetVarCorrectedZ() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
-    double cotTheta = cotThetaEstimator_.cotTheta(var_z, layersFound);
+    double cotTheta = cotThetaEstimator_.estimate(var_z, layersFound);
     return (var_z->at(k) - DeltaR*cotTheta);
   }
 private:
@@ -1061,7 +1123,7 @@ private:
   std::vector<float> * var_y;
   std::vector<float> * var_z;
   std::vector<int> * var_layer;
-  CotThetaEstimator cotThetaEstimator_;
+  Estimator cotThetaEstimator_;
 };
 
 
@@ -1069,16 +1131,17 @@ class GetVarCorrectedZSecondOrder : public GetTreeVariable
 {
 public:
   GetVarCorrectedZSecondOrder(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
-                              const std::string & firstOrderCoefficientsFileName) :
+                              const std::string & firstOrderChargeOverPtCoefficientsFileName,
+                              const std::string & firstOrderCotThetaCoefficientsFileName) :
       GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
-      chargeOverPtEstimator_(firstOrderCoefficientsFileName)
+      chargeOverPtEstimator_(firstOrderChargeOverPtCoefficientsFileName), cotThetaEstimator_(firstOrderCotThetaCoefficientsFileName)
   {}
   virtual ~GetVarCorrectedZSecondOrder() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     double DeltaR = R - meanRadius(var_layer->at(k));
-    double cotTheta = cotThetaEstimator_.cotTheta(var_z, layersFound);
-    double oneOverRho = (3.8114*0.003)*chargeOverPtEstimator_.chargeOverPt(var_x, var_y, layersFound);
+    double cotTheta = cotThetaEstimator_.estimate(var_z, layersFound);
+    double oneOverRho = (3.8114*0.003)*chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
     return (var_z->at(k) - (DeltaR + 1/24.*std::pow(R, 3)*(oneOverRho*oneOverRho))*cotTheta);
     // double DeltaRCube = std::pow(R, 3) - std::pow(meanRadius(var_layer->at(k)), 3);
     // return (var_z->at(k) - (DeltaR + 1/24.*DeltaRCube*(oneOverRho*oneOverRho))*cotTheta);
@@ -1088,8 +1151,8 @@ private:
   std::vector<float> * var_y;
   std::vector<float> * var_z;
   std::vector<int> * var_layer;
-  ChargeOverPtEstimator chargeOverPtEstimator_;
-  CotThetaEstimator cotThetaEstimator_;
+  Estimator chargeOverPtEstimator_;
+  Estimator cotThetaEstimator_;
 };
 
 
@@ -1097,12 +1160,14 @@ private:
 class GetVarRCotTheta : public GetTreeVariable
 {
 public:
-  GetVarRCotTheta(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z) {
+  GetVarRCotTheta(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+                  const std::string & firstOrderCotThetaCoefficientsFileName) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z),
+      cotThetaEstimator_(firstOrderCotThetaCoefficientsFileName) {
   }
   virtual ~GetVarRCotTheta() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
-    double cotTheta = cotThetaEstimator_.cotTheta(var_z, layersFound);
+    double cotTheta = cotThetaEstimator_.estimate(var_z, layersFound);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return R*(cotTheta);
   }
@@ -1110,7 +1175,7 @@ private:
   std::vector<float> * var_x;
   std::vector<float> * var_y;
   std::vector<float> * var_z;
-  CotThetaEstimator cotThetaEstimator_;
+  Estimator cotThetaEstimator_;
 };
 
 

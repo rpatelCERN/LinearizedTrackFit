@@ -19,7 +19,7 @@ namespace LinearFit
       const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
       std::vector<double> & distanceCutsTransverse, std::vector<double> & distanceCutsLongitudinal,
       std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit,
-      const std::string & firstOrderCoefficientsFileName)
+      const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName)
   {
     std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
     std::unordered_map<std::string, std::unordered_set<int> > requiredLayers;
@@ -29,7 +29,7 @@ namespace LinearFit
 
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers, radiusCuts,
                           distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames,
-                          firstOrderCoefficientsFileName);
+                          firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName);
 
     // Control histograms
     LinearFitterHistograms linearFitterHistograms("0", treeReader.variablesNames(), inputTrackParameterNames);

@@ -20,9 +20,10 @@ class TreeReader
 {
 public:
   TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
-      const std::vector<double> & distanceCutsTransverse,  const std::vector<double> & distanceCutsLongitudinal,
-      const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames, const std::string & firstOrderCoefficientsFileName);
+             const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
+             const std::vector<double> & distanceCutsTransverse,  const std::vector<double> & distanceCutsLongitudinal,
+             const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames,
+             const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName);
 
   void reset(const double & eventsFractionStart, const double & eventsFractionEnd);
   bool nextTrack();

@@ -30,8 +30,8 @@ class LinearizedTrackFitter
   Matrix<long double, Dynamic, 1> correctedVarsPhi_;
   Matrix<long double, Dynamic, 1> correctedVarsZ_;
   std::vector<double> meanRadius_;
-  ChargeOverPtEstimator chargeOverPtEstimator_;
-  CotThetaEstimator cotThetaEstimator_;
+  Estimator chargeOverPtEstimator_;
+  Estimator cotThetaEstimator_;
   double preEstimatedPt_;
   double ptSplitValue_;
   std::vector<double> estimatedPars_;

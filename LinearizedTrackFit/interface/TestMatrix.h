@@ -17,13 +17,13 @@ namespace LinearFit
       const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
       std::vector<double> & distanceCutsTransverse, std::vector<double> & distanceCutsLongitudinal,
       std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit,
-      const std::string & firstOrderCoefficientsFileName)
+      const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName)
   {
     LinearFitter linearFitter("");
 
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, linearFitter.requiredLayers(),
                           radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames,
-                          inputTrackParameterNames, firstOrderCoefficientsFileName);
+                          inputTrackParameterNames, firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName);
 
     // Control histograms
     std::unordered_map<int, LinearFitterHistograms> histograms;

@@ -6,6 +6,7 @@ LinearizedTrackFitter::LinearizedTrackFitter() :
     linearFitLongitudinal_(std::make_shared<MatrixReader>("matrixVD_0_zCotTheta_SecondOrder_Final.txt")),
     meanRadius_{22.1072, 35.4917, 50.6335, 68.3771, 88.5511, 107.746},
     chargeOverPtEstimator_("matrixVD_pre_chargeOverPt.txt"),
+    cotThetaEstimator_("matrixVD_pre_cotTheta.txt"),
     preEstimatedPt_(0.),
     ptSplitValue_(10.)
 {
@@ -31,9 +32,9 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars)
   for (unsigned int i=0; i<varsNum; ++i) { correctedVarsZ_(i) = vars[i*3+2]; }
 
   // Correct the input variables and split them between phi and z vectors
-  preEstimatedPt_ = 1./fabs(chargeOverPtEstimator_.chargeOverPt(correctedVarsPhi_));
-  double oneOverTwoRho = (3.8114*0.003)*chargeOverPtEstimator_.chargeOverPt(correctedVarsPhi_)/2.;
-  double cotTheta = cotThetaEstimator_.cotTheta(correctedVarsZ_);
+  preEstimatedPt_ = 1./fabs(chargeOverPtEstimator_.estimate(correctedVarsPhi_));
+  double oneOverTwoRho = (3.8114*0.003)*chargeOverPtEstimator_.estimate(correctedVarsPhi_)/2.;
+  double cotTheta = cotThetaEstimator_.estimate(correctedVarsZ_);
   for (unsigned int i=0; i<varsNum; ++i) {
     double DeltaR = varsR_[i] - meanRadius_[i];
     double RCube = std::pow(varsR_[i], 3);

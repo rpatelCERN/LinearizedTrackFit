@@ -100,7 +100,8 @@ private:
   int chargeRegions_;
   bool buildMatrix_;
   bool testMatrix_;
-  std::string firstOrderCoefficientsFileName_;
+  std::string firstOrderChargeOverPtCoefficientsFileName_;
+  std::string firstOrderCotThetaCoefficientsFileName_;
 };
 
 //
@@ -160,7 +161,8 @@ BuildLinearizedTrackFitMatrix::BuildLinearizedTrackFitMatrix(const edm::Paramete
   chargeRegions_(iConfig.getParameter<int>("ChargeRegions")),
   buildMatrix_(iConfig.getParameter<bool>("BuildMatrix")),
   testMatrix_(iConfig.getParameter<bool>("TestMatrix")),
-  firstOrderCoefficientsFileName_(iConfig.getParameter<std::string>("FirstOrderCoefficientsFileName"))
+  firstOrderChargeOverPtCoefficientsFileName_(iConfig.getParameter<std::string>("FirstOrderChargeOverPtCoefficientsFileName")),
+  firstOrderCotThetaCoefficientsFileName_(iConfig.getParameter<std::string>("FirstOrderCotThetaCoefficientsFileName"))
 {
 }
 
@@ -263,7 +265,7 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
 			   requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputVariablesMeans_,
 			   inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic,
-			   phiSymmetricFit_, usePcs_, firstOrderCoefficientsFileName_);
+			   phiSymmetricFit_, usePcs_, firstOrderChargeOverPtCoefficientsFileName_, firstOrderCotThetaCoefficientsFileName_);
 
     // Test
 //    LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
@@ -274,7 +276,7 @@ void BuildLinearizedTrackFitMatrix::beginJob()
   if (testMatrix_) {
   LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
 			inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
-			radiusCuts_, singleModules_, phiSymmetricFit_, firstOrderCoefficientsFileName_);
+			radiusCuts_, singleModules_, phiSymmetricFit_, firstOrderChargeOverPtCoefficientsFileName_, firstOrderCotThetaCoefficientsFileName_);
 //    LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
 //			  inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
 //        radiusCuts_, singleModules_, phiSymmetricFit_, usePcs_);

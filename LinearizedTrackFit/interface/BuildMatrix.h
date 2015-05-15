@@ -31,11 +31,11 @@ namespace LinearFit {
       const std::vector<std::string> & inputTrackParameterNames, const bool singleModules,
       const bool doMapSectors, const bool computeDistances, const bool computeCorrelations,
       const GeometricIndex::GeometricIndexConfiguration & gic, const bool phiSymmetricFit, const bool usePcs,
-      const std::string & firstOrderCoefficientsFileName)
+      const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName)
   {
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayersForVars,
                           radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames,
-                          inputTrackParameterNames, firstOrderCoefficientsFileName);
+                          inputTrackParameterNames, firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName);
 
     // Consistency checks
     for (const auto & varName : inputVarNames) {
