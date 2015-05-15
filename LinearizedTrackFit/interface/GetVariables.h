@@ -520,16 +520,15 @@ class GetVarCorrectedPhiSecondOrderWithD0 : public GetTreeVariable
 {
  public:
   GetVarCorrectedPhiSecondOrderWithD0(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer) {
-    getParD0_ = std::make_shared<GetParD0>(tree);
-  }
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer)
+  {}
   virtual ~GetVarCorrectedPhiSecondOrderWithD0() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
     double estimatedChargeOverPt = chargeOverPtWithD0Estimator_.chargeOverPt(var_x, var_y, layersFound);
     double estimatedD0 = d0Estimator_.d0(var_x, var_y, layersFound);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     double DeltaR = R - meanRadius(var_layer->at(k));
-    double d0Correction = estimatedD0*(1/R - 1/meanRadius(var_layer->at(k)));
+    // double d0Correction = estimatedD0*(1/R - 1/meanRadius(var_layer->at(k)));
     double phi = std::atan2(var_y->at(k), var_x->at(k));
     double cOverTwoRho = estimatedChargeOverPt*3.8114*0.003/2.;
     // return (phi + cOverTwoRho*DeltaR + std::pow(R*cOverTwoRho, 3)/6. + d0Correction);
@@ -543,7 +542,6 @@ class GetVarCorrectedPhiSecondOrderWithD0 : public GetTreeVariable
   std::vector<int> * var_layer;
   ChargeOverPtWithD0Estimator chargeOverPtWithD0Estimator_;
   D0Estimator d0Estimator_;
-  std::shared_ptr<GetParD0> getParD0_;
 };
 
 
