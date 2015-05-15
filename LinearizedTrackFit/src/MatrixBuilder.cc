@@ -236,7 +236,7 @@ void MatrixBuilder::writeMatrices(const bool usePcs)
   for (unsigned int p=0; p<nTrackParameters_; ++p) {
     std::ofstream outfilePar;
     std::string name = name_+"_pre_"+trackParametersNames_[p];
-    name = std::regex_replace(name, std::regex("/p"), "OverP");
+    name = std::regex_replace(name, std::regex("/p"), std::string("OverP"));
     outfilePar.open("matrixVD_"+name+".txt");
     if(!outfilePar) {
       std::cout << "error opening matrixVD_"+name+".txt" << std::endl;
