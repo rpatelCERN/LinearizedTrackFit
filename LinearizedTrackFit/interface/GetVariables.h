@@ -18,7 +18,7 @@ public:
   virtual ~GetTreeVariable() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) = 0;
   // virtual double at(const int k) = 0;
-  virtual bool layer(const int layer) { return layers_.count(layer); }
+  virtual bool layer(const int layer) { return (layers_.count(layer) != 0); }
   unsigned int layersNum() { return layers_.size(); }
   void resetSeed() { generator_.seed(0); }
   // Simple function to return the value of the mean radius for each layer
@@ -53,8 +53,8 @@ class ParametrizedMagneticField
   ParametrizedMagneticField():
       c1(3.8114),
       b0(-3.94991e-06),
-      b1(7.53701e-06),
-      a (2.43878e-11)
+      b1(7.53701e-06)
+      // , a (2.43878e-11)
   {}
   inline double B0Z(const double z) const {
     return b0*z*z + b1*z + c1;
@@ -64,7 +64,7 @@ class ParametrizedMagneticField
   double c1;
   double b0;
   double b1;
-  double a;
+  // double a;
 };
 
 
@@ -660,8 +660,8 @@ class GetVarCorrectedPhiSecondOrderWithD0Gen : public GetTreeVariable
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     double DeltaR = R - meanRadius(var_layer->at(k));
     double d0 = getParD0_->at(0);
-    double meanR = meanRadius(var_layer->at(k));
-    double d0Correction = d0*(1/R-1/meanR);
+    // double meanR = meanRadius(var_layer->at(k));
+    // double d0Correction = d0*(1/R-1/meanR);
     double rho = charge*std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
     double estimatedChargeOverRho = 1./rho;
     double phi = std::atan2(var_y->at(k), var_x->at(k));
@@ -695,7 +695,7 @@ class GetVarCorrectedPhiThirdOrderWithD0Gen : public GetTreeVariable
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     double DeltaR = R - meanRadius(var_layer->at(k));
-    double RCube = std::pow(R, 3);
+    // double RCube = std::pow(R, 3);
     double d0 = getParD0_->at(0);
     double meanR = meanRadius(var_layer->at(k));
     double d0Correction = d0*(1/R-1/meanR);
@@ -733,19 +733,19 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    double DeltaR = R - meanRadius(var_layer->at(k));
-    double RCube = std::pow(R, 3);
+    // double DeltaR = R - meanRadius(var_layer->at(k));
+    // double RCube = std::pow(R, 3);
 //    double DeltaRCube = RCube - std::pow(meanRadius(var_layer->at(k)), 3);
 //    double estimatedChargeOverPt = charge/std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0));
     double d0 = getParD0_->at(0);
 //    double d0 = fabs(getParD0_->at(0));
     double meanR = meanRadius(var_layer->at(k));
-    double d0Correction = d0*(1/R-1/meanR);
+    // double d0Correction = d0*(1/R-1/meanR);
     // double rho = std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
     double rho = charge*std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
 //    double estimatedChargeOverRho = charge/rho;
     // double estimatedChargeOverRho = 1./(rho+d0);
-    double estimatedChargeOverRho = 1./rho;
+    // double estimatedChargeOverRho = 1./rho;
     //    double estimatedChargeOverRho = charge/(rho+d0);
     double phi = std::atan2(var_y->at(k), var_x->at(k));
     // return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6. + getParD0_->at(0)*(1/R-1/meanRadius(var_layer->at(k))));

@@ -5,9 +5,9 @@ LinearizedTrackFitter::LinearizedTrackFitter() :
     linearFitHighPt_(std::make_shared<MatrixReader>("matrixVD_0_pT10.txt")),
     linearFitLongitudinal_(std::make_shared<MatrixReader>("matrixVD_0_zCotTheta_SecondOrder_Final.txt")),
     meanRadius_{22.1072, 35.4917, 50.6335, 68.3771, 88.5511, 107.746},
+    chargeOverPtEstimator_("matrixVD_pre_chargeOverPt.txt"),
     preEstimatedPt_(0.),
-    ptSplitValue_(10.),
-    chargeOverPtEstimator_("matrixVD_pre_chargeOverPt.txt")
+    ptSplitValue_(10.)
 {
 }
 
