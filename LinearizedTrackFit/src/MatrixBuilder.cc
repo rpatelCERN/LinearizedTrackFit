@@ -233,7 +233,7 @@ void MatrixBuilder::writeMatrices(const bool usePcs)
   outfile.close();
 
   // Write the files for the pre-estimate
-  for (int p=0; p<nTrackParameters_; ++p) {
+  for (unsigned int p=0; p<nTrackParameters_; ++p) {
     std::ofstream outfilePar;
     std::string name = name_+"_pre_"+trackParametersNames_[p];
     name = std::regex_replace(name, std::regex("/p"), "OverP");
@@ -262,7 +262,7 @@ void MatrixBuilder::writeMatrices(const bool usePcs)
     outfilePar << meanPLadders_[-1][p];
     outfilePar << std::endl << std::endl;
     // Coefficients
-    for (int v=0; v<nVars_; ++v) {
+    for (unsigned int v=0; v<nVars_; ++v) {
       outfilePar << D(p, v) << std::endl;
     }
     outfilePar.close();
