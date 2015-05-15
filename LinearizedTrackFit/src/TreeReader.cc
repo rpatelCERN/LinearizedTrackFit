@@ -33,12 +33,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     else if (varName == "R") vars_.push_back(std::make_shared<GetVarR>(tree_, requiredLayers_["R"]));
     else if (varName == "oneOverR") vars_.push_back(std::make_shared<GetVarR>(tree_, requiredLayers_["oneOverR"]));
     else if (varName == "DeltaS") vars_.push_back(std::make_shared<GetVarDeltaS>(tree_, requiredLayers_["DeltaS"]));
-    else if (varName == "DeltaSDeltaR") vars_.push_back(std::make_shared<GetVarDeltaSDeltaR>(tree_, requiredLayers_["DeltaSDeltaR"]));
-    else if (varName == "DeltaSAllDeltaR") vars_.push_back(std::make_shared<GetVarDeltaSAllDeltaR>(tree_, requiredLayers_["DeltaSAllDeltaR"]));
-    else if (varName == "DeltaROverGenPt") vars_.push_back(std::make_shared<GetVarDeltaROverGenPt>(tree_, requiredLayers_["DeltaROverGenPt"]));
-    else if (varName == "DeltaROverGenPtCube") vars_.push_back(std::make_shared<GetVarDeltaROverGenPtCube>(tree_, requiredLayers_["DeltaROverGenPtCube"]));
     else if (varName == "ChargeSignedR") vars_.push_back(std::make_shared<GetVarChargeSignedR>(tree_, requiredLayers_["ChargeSignedR"]));
-    else if (varName == "ChargeCorrectedR") vars_.push_back(std::make_shared<GetVarChargeCorrectedR>(tree_, requiredLayers_["ChargeCorrectedR"]));
     else if (varName == "ChargeOverPtCorrectedR") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedR>(tree_, requiredLayers_["ChargeOverPtCorrectedR"], firstOrderCoefficientsFileName));
     else if (varName == "ChargeOverPtCorrectedRCube") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedRCube>(tree_, requiredLayers_["ChargeOverPtCorrectedRCube"]));
     else if (varName == "RCotTheta") vars_.push_back(std::make_shared<GetVarRCotTheta>(tree_, requiredLayers_["RCotTheta"]));
