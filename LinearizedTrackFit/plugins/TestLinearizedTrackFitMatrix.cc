@@ -80,7 +80,8 @@ private:
   double etaMax_;
   double z0Min_;
   double z0Max_;
-  std::string firstOrderCoefficientsFileName_;
+  std::string firstOrderChargeOverPtCoefficientsFileName_;
+  std::string firstOrderCotThetaCoefficientsFileName_;
 };
 
 //
