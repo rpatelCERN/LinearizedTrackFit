@@ -60,7 +60,9 @@ process.RandomNumberGeneratorService.VtxSmeared.initialSeed     = VTXSMEAREDSEED
 process.RandomNumberGeneratorService.g4SimHits.initialSeed      = G4SIMHITSSEED
 process.RandomNumberGeneratorService.mix.initialSeed            = MIXSEED
 
-# Generate particle gun events
+# To extrapolate the generated tracks and get the genD0 and other quantities at the point of closest appraoch.
+process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
+
 
 # Generate particle gun events
 process.generator = cms.EDProducer("FlatRandomOneOverPtGunProducer",

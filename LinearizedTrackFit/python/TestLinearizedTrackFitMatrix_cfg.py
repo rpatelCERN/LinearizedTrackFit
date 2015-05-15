@@ -71,7 +71,9 @@ process.demo = cms.EDAnalyzer('TestLinearizedTrackFitMatrix',
                               Z0Max = cms.double(15),
                               
                               EventsFractionStart = cms.double(0.5),
-                              EventsFractionEnd = cms.double(0.5001)
+                              EventsFractionEnd = cms.double(0.5001),
+
+                              FirstOrderCoefficientsFileName = cms.string("")
 )
 
 

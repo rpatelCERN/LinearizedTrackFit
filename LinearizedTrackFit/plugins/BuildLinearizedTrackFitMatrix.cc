@@ -100,6 +100,7 @@ private:
   int chargeRegions_;
   bool buildMatrix_;
   bool testMatrix_;
+  std::string firstOrderCoefficientsFileName_;
 };
 
 //
@@ -158,7 +159,8 @@ BuildLinearizedTrackFitMatrix::BuildLinearizedTrackFitMatrix(const edm::Paramete
   z0Regions_(iConfig.getParameter<int>("Z0Regions")),
   chargeRegions_(iConfig.getParameter<int>("ChargeRegions")),
   buildMatrix_(iConfig.getParameter<bool>("BuildMatrix")),
-  testMatrix_(iConfig.getParameter<bool>("TestMatrix"))
+  testMatrix_(iConfig.getParameter<bool>("TestMatrix")),
+  firstOrderCoefficientsFileName_(iConfig.getParameter<std::string>("FirstOrderCoefficientsFileName"))
 {
 }
 
@@ -186,7 +188,7 @@ void BuildLinearizedTrackFitMatrix::beginJob()
 {
   printSelectedNames();
 
-  std::unordered_map<int, std::pair<float, float> > radiusCuts_;
+  std::unordered_map<int, std::pair<double, double> > radiusCuts_;
 //  radiusCuts_.insert({5, {0., 21.95}});
 //  radiusCuts_.insert({6, {0., 34.6}});
 //  radiusCuts_.insert({7, {0., 49.7}});
@@ -239,8 +241,8 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     requiredLayers_.insert(std::make_pair("DeltaSDeltaR", std::unordered_set<int>(layersR_.begin(), layersR_.end())));
 
     // For fixing the mean values. True means fix the mean to the specified value.
-    std::unordered_map<std::string, std::vector<std::pair<bool, float> > > inputVariablesMeans_;
-    std::vector<std::pair<bool, float> > freeMeans_(6, {fixMeansPhi_, 0.});
+    std::unordered_map<std::string, std::vector<std::pair<bool, double> > > inputVariablesMeans_;
+    std::vector<std::pair<bool, double> > freeMeans_(6, {fixMeansPhi_, 0.});
     inputVariablesMeans_.insert(std::make_pair("phi", freeMeans_));
     inputVariablesMeans_.insert(std::make_pair("CorrectedPhi", freeMeans_));
     inputVariablesMeans_.insert(std::make_pair("CorrectedPhiSecondOrder", freeMeans_));
@@ -259,9 +261,9 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     inputVariablesMeans_.insert(std::make_pair("ChargeSignedR", freeMeans_));
 
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
-        requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputVariablesMeans_,
-        inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic,
-        phiSymmetricFit_, usePcs_);
+			   requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputVariablesMeans_,
+			   inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic,
+			   phiSymmetricFit_, usePcs_, firstOrderCoefficientsFileName_);
 
     // Test
 //    LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
@@ -271,8 +273,8 @@ void BuildLinearizedTrackFitMatrix::beginJob()
 
   if (testMatrix_) {
   LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
-      inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
-      radiusCuts_, singleModules_, phiSymmetricFit_);
+			inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
+			radiusCuts_, singleModules_, phiSymmetricFit_, firstOrderCoefficientsFileName_);
 //    LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
 //			  inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
 //        radiusCuts_, singleModules_, phiSymmetricFit_, usePcs_);

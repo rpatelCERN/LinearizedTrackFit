@@ -80,6 +80,7 @@ private:
   double etaMax_;
   double z0Min_;
   double z0Max_;
+  std::string firstOrderCoefficientsFileName_;
 };
 
 //
@@ -117,7 +118,8 @@ TestLinearizedTrackFitMatrix::TestLinearizedTrackFitMatrix(const edm::ParameterS
   etaMin_(iConfig.getParameter<double>("EtaMin")),
   etaMax_(iConfig.getParameter<double>("EtaMax")),
   z0Min_(iConfig.getParameter<double>("Z0Min")),
-  z0Max_(iConfig.getParameter<double>("Z0Max"))
+  z0Max_(iConfig.getParameter<double>("Z0Max")),
+  firstOrderCoefficientsFileName_(iConfig.getParameter<std::string>("FirstOrderCoefficientsFileName"))
 {
 }
 
@@ -146,7 +148,7 @@ void TestLinearizedTrackFitMatrix::beginJob()
   printSelectedNames();
 
   // Cuts on the radius of the stubs
-  std::unordered_map<int, std::pair<float, float> > radiusCuts_;
+  std::unordered_map<int, std::pair<double, double> > radiusCuts_;
 //  radiusCuts_.insert({5, {0., 21.95}});
 //  radiusCuts_.insert({6, {0., 34.6}});
 //  radiusCuts_.insert({7, {0., 49.7}});
@@ -168,7 +170,7 @@ void TestLinearizedTrackFitMatrix::beginJob()
   LinearFit::testFitter(inputFileName_, eventsFractionStart_, eventsFractionEnd_,
 			inputVarNames_, inputTrackParameterNames_,
 			distanceCutsTransverse_, distanceCutsLongitudinal_,
-			radiusCuts_, singleModules_, phiSymmetricFit_);
+			radiusCuts_, singleModules_, phiSymmetricFit_, firstOrderCoefficientsFileName_);
 }
 
 
