@@ -25,8 +25,8 @@ namespace LinearFit {
 
   void buildMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
       const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars,
-      std::unordered_map<int, std::pair<double, double> > & radiusCuts,  const std::vector<double> & distanceCutsTransverse,
-      const std::vector<double> & distanceCutsLongitudinal, const std::vector<std::string> & inputVarNames,
+      std::unordered_map<int, std::pair<double, double> > & radiusCuts,  const std::unordered_map<int, double> & distanceCutsTransverse,
+      const std::unordered_map<int, double> & distanceCutsLongitudinal, const std::vector<std::string> & inputVarNames,
       const std::unordered_map<std::string, std::vector<std::pair<bool, double> > > & inputVariablesMeans,
       const std::vector<std::string> & inputTrackParameterNames, const bool singleModules,
       const bool doMapSectors, const bool computeDistances, const bool computeCorrelations,
@@ -84,8 +84,8 @@ namespace LinearFit {
 
     // Extra, not necessarily used
     std::unordered_map<std::string, int> sectors;
-    BaseHistograms stubDistanceTransverseHistograms("stubDistanceTransverse", 6, 1000, 0., 5.);
-    BaseHistograms stubDistanceLongitudinalHistograms("stubDistanceLongitudinal", 6, 1000, -10., 10.);
+    BaseHistograms stubDistanceTransverseHistograms("stubDistanceTransverse", 6, 1000, 0, 0);
+    BaseHistograms stubDistanceLongitudinalHistograms("stubDistanceLongitudinal", 6, 1000, 0, 0);
     
     while (treeReader.nextTrack()) {
 

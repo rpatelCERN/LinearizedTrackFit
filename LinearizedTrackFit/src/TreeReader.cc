@@ -2,7 +2,7 @@
 
 TreeReader::TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
                        const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
-                       const std::vector<double> & distanceCutsTransverse, const std::vector<double> & distanceCutsLongitudinal,
+                       const std::unordered_map<int, double> & distanceCutsTransverse, const std::unordered_map<int, double> & distanceCutsLongitudinal,
                        const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames,
                        const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName) :
   tree_(std::make_shared<L1TrackTriggerTree>(inputFileName)),
@@ -60,13 +60,12 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   }
 
   // Build the full list of names
-  std::set<int> allRequiredLayers;
   for (const auto & requiredLayers : requiredLayers_) {
     for (const auto & layer : requiredLayers.second) {
-      allRequiredLayers.insert(layer);
+      allRequiredLayers_.insert(layer);
     }
   }
-  for (const auto & layer : allRequiredLayers) {
+  for (const auto & layer : allRequiredLayers_) {
     for (const auto & varName : varNames) {
       if (requiredLayers_[varName].count(layer) != 0) {
         variablesNames_.push_back(varName);
@@ -84,6 +83,10 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     else if (trackParName == "cotTheta") pars_.push_back(std::make_shared<GetParCotTheta>(tree_));
     else if (trackParName == "z0") pars_.push_back(std::make_shared<GetParZ0>(tree_));
     else if (trackParName == "d0") pars_.push_back(std::make_shared<GetParD0>(tree_));
+    else if (trackParName == "z0TgTheta") pars_.push_back(std::make_shared<GetParZ0TgTheta>(tree_));
+    else if (trackParName == "tgTheta") pars_.push_back(std::make_shared<GetParTgTheta>(tree_));
+    else if (trackParName == "chargeOverPz") pars_.push_back(std::make_shared<GetParChargeOverPz>(tree_));
+    else if (trackParName == "phi0PlusChargeZ0Over2RhoZ") pars_.push_back(std::make_shared<GetParPhi0PlusChargeZ0Over2RhoZ>(tree_));
     else {
       std::cout << "Error: undefined track parameter name " << trackParName << std::endl;
       throw;
@@ -157,34 +160,43 @@ bool TreeReader::nextTrack()
 }
 
 
-double TreeReader::genTrackDistanceTransverse(const double &pt, const double &phi, const double &x0, const double &y0,
+double TreeReader::genTrackDistanceTransverse(const double &pt, const double &phi0, const double &d0,
                                               const int charge, const double &B, const double &x1, const double &y1) const
 {
-  double r = pt / (0.003 * B); // In centimeters (0.3 for meters)
-  double deltaXc = x1 - (charge*r * sin(phi) + x0);
-  double deltaYc = y1 - (-charge*r * cos(phi) + y0);
-  return fabs(std::sqrt(deltaXc * deltaXc + deltaYc * deltaYc) - r);
+//  double r = pt / (0.003 * B); // In centimeters (0.3 for meters)
+//  double deltaXc = x1 - (charge*r * sin(phi) + x0);
+//  double deltaYc = y1 - (-charge*r * cos(phi) + y0);
+//  return fabs(std::sqrt(deltaXc * deltaXc + deltaYc * deltaYc) - r);
+  double phi = std::atan2(y1, x1);
+  double R = std::sqrt(x1*x1 + y1*y1);
+  double rho = charge*pt/(B*0.003);
+  double phiGen = phi0 - asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0)));
+  double deltaPhi = (phi - phiGen);
+  if (deltaPhi > M_PI) deltaPhi -= M_PI;
+  else if (deltaPhi < -M_PI) deltaPhi += M_PI;
+  return deltaPhi;
 }
 
 
-double TreeReader::genTrackDistanceLongitudinal(const double &x0, const double &y0, const double &z0, const double &cotTheta,
-    const double &r1, const double &z1) const
+double TreeReader::genTrackDistanceLongitudinal(const double &z0, const double &cotTheta, const double &pt, const double &d0,
+                                                const int charge, const double &B, const double &R, const double &z1) const
 {
-  if (cotTheta == 0) return z1;
-  double r0 = std::sqrt(x0*x0 + y0*y0);
-  // The point r, z0 is the point the track goes through, 1/cotTheta = tan(theta) = m in z = m*r + c.
-  // c = z0 - m*r0
-  return (z1 - z0 - (r1-r0)*cotTheta);
+//  if (cotTheta == 0) return z1;
+//  double r0 = std::sqrt(x0*x0 + y0*y0);
+//  // The point r, z0 is the point the track goes through, 1/cotTheta = tan(theta) = m in z = m*r + c.
+//  // c = z0 - m*r0
+//  return (z1 - z0 - (r1-r0)*cotTheta);
+  double rho = charge*pt/(B*0.003);
+  double zGen = z0 + 2*rho*cotTheta*asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0)));
+  return (z1 - zGen);
 }
 
 
 bool TreeReader::closeDistanceFromGenTrack()
 {
-  int i = 0;
   for (const auto & s : stubsRZPhi_) {
-    if (genTrackDistanceTransverse(1. / getOneOverPt(), getPhi(), getX0(), getY0(), getCharge(), 3.8114, s.x(), s.y()) > distanceCutsTransverse_[i]) return false;
-    if (fabs(genTrackDistanceLongitudinal(getX0(), getY0(), getZ0(), getCotTheta(), s.R(), s.z())) > distanceCutsLongitudinal_[i]) return false;
-    ++i;
+    if (genTrackDistanceTransverse(getPt(), getPhi(), getD0(), getCharge(), 3.8114, s.x(), s.y()) > distanceCutsTransverse_[s.layer()]) return false;
+    if (fabs(genTrackDistanceLongitudinal(getZ0(), getCotTheta(), getPt(), getD0(), getCharge(), 3.8114, s.R(), s.z())) > distanceCutsLongitudinal_[s.layer()]) return false;
   }
   return true;
 }
@@ -222,7 +234,6 @@ bool TreeReader::goodTrack()
   if (!goodStubsGenInfo(tree_->m_stub_tp)) return false;
 
   // Cut on the beamspot to make it a circle
-  // TODO: this cut should be removed once the generator produces a circular flat distribution.
   // The generated distribution is a square with x0 and y0 between +/- 0.15 cm.
 //  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 0.145) return false;
 //  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 0.95) return false;
@@ -251,6 +262,8 @@ bool TreeReader::readVariables() {
   // Find how the stub indexes correspond to the layers
   unsigned int totalStubs = tree_->m_stub;
   for (unsigned int k = 0; k < totalStubs; ++k) {
+    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
+                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
     int layer = tree_->m_stub_layer->at(k);
     if (layersFound_.count(layer) != 0) continue;
     // Cut on the radius of the stub
@@ -260,6 +273,11 @@ bool TreeReader::readVariables() {
       if ((R < radiusCut->second.first) || (R > radiusCut->second.second)) continue;
     }
     layersFound_.insert(std::make_pair(layer, k));
+    // Only store stubs in layers required by at least one variable.
+//    if (allRequiredLayers_.find(layer) != allRequiredLayers_.end()) {
+//      stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
+//                                      tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k)));
+//    }
   }
 
   for (const auto & var : vars_) {
@@ -279,9 +297,6 @@ bool TreeReader::readVariables() {
         }
       }
     }
-
-    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
-        tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k)));
   }
 
   if (variables_.size() != variablesSize_) return false;

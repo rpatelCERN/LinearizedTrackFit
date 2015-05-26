@@ -36,6 +36,34 @@ public:
         return 88.5511;
       case 10:
         return 107.746;
+      // Endcaps
+      case 11:
+        return 35.4917;
+      case 12:
+        return 50.6335;
+      case 13:
+        return 68.3771;
+      case 14:
+        return 88.5511;
+      case 15:
+        return 107.746;
+      default:
+        std::cout << "Unknown layer " << layer << std::endl;
+        throw;
+    }
+  }
+  double meanZ(const int layer) {
+    switch (layer) {
+      case 11:
+        return 130.4493136613383;
+      case 12:
+        return 156.3789770495511;
+      case 13:
+        return 185.3729401262328;
+      case 14:
+        return 220.1296985845544;
+      case 15:
+        return 261.5181256117242;
       default:
         std::cout << "Unknown layer " << layer << std::endl;
         throw;
@@ -808,9 +836,9 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 {
  public:
   GetVarCorrectedPhiExactWithD0Gen(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
-      par_pxGEN(tree->m_stub_pxGEN), par_pyGEN(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg), par_d0_(tree->m_stub_d0GEN),
-      par_x0(tree->m_stub_X0), par_y0(tree->m_stub_Y0) {
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+      par_pxGEN(tree->m_stub_pxGEN), par_pyGEN(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg),
+      par_d0_(tree->m_stub_d0GEN), par_x0(tree->m_stub_X0), par_y0(tree->m_stub_Y0), par_z0(tree->m_stub_Z0),  par_eta(tree->m_stub_etaGEN) {
     getParD0_ = std::make_shared<GetParD0>(tree);
     getParPhi_ = std::make_shared<GetParPhi>(tree);
     distribution_ = new std::normal_distribution<double>(0.,0.002);
@@ -826,7 +854,7 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 //    double estimatedChargeOverPt = charge/std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0));
     double d0 = getParD0_->at(0);
 //    double d0 = fabs(getParD0_->at(0));
-    double meanR = meanRadius(var_layer->at(k));
+    // double meanR = meanRadius(var_layer->at(k));
     // double d0Correction = d0*(1/R-1/meanR);
     // double rho = std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
     double rho = charge*std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
@@ -834,7 +862,8 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
     // double estimatedChargeOverRho = 1./(rho+d0);
     // double estimatedChargeOverRho = 1./rho;
     //    double estimatedChargeOverRho = charge/(rho+d0);
-    double phi = std::atan2(var_y->at(k), var_x->at(k));
+    // double phi = std::atan2(var_y->at(k), var_x->at(k));
+
     // return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6. + getParD0_->at(0)*(1/R-1/meanRadius(var_layer->at(k))));
     // return (phi + estimatedChargeOverRho*DeltaR/2. + RCube*std::pow(estimatedChargeOverRho/2., 3)/6. - d0Correction);
     // double correctedPhi = (phi + charge*asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - charge*asin((d0*d0 + 2*d0*rho + meanR*meanR)/(2*meanR*(rho+d0))));
@@ -950,7 +979,7 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 //    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - getParPhi_->at(0) - meanR/(2*rho) - d0/meanR);
 
     // Phi, pT and d0
-    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - meanR/(2*rho) - d0/meanR);
+//    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - meanR/(2*rho) - d0/meanR);
 
 
 
@@ -1019,12 +1048,26 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 //    std::cout << "second order pt and d0 phi(R) term = " << (R/(2*rho)+d0/R) + RCube*std::pow(1./(2.*rho), 3)/6. + 1/2.*d0*R/(4*rho*rho) << std::endl;
 //    std::cout << "----------------- second order pt and d0 phi0 estimated = " << phi + (R/(2*rho)+d0/R) + RCube*std::pow(1./(2.*rho), 3)/6. + 1/2.*d0*R/(4*rho*rho) << std::endl;
     // std::cout << "phi(meanR) term = " << charge*asin((d0*d0 + 2*d0*rho + meanR*meanR)/(2*meanR*(rho+d0))) << std::endl;
-    return correctedPhi;
-    // return (phi + estimatedChargeOverRho*DeltaR/2. - DeltaRCube*std::pow(estimatedChargeOverRho/2., 3)/6. - d0Correction);
+
+
+
+    // Study the endcaps
+    // double theMeanZ = meanZ(var_layer->at(k));
+//    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - getParPhi_->at(0));
+//    theMeanZ/(2*rho));
+
+//    return correctedPhi;
+
+    double cotTheta = 1./tan(2*atan(exp(-par_eta->at(k))));
+
+    double correctedZ = (var_z->at(k) - 2*rho*cotTheta*asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - par_z0->at(k));
+
+    return correctedZ;
   }
  private:
   std::vector<float> * var_x;
   std::vector<float> * var_y;
+  std::vector<float> * var_z;
   std::vector<int> * var_layer;
   std::vector<float> * par_pxGEN;
   std::vector<float> * par_pyGEN;
@@ -1034,6 +1077,8 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
   std::shared_ptr<GetParPhi> getParPhi_;
   std::vector<float> * par_x0;
   std::vector<float> * par_y0;
+  std::vector<float> * par_z0;
+  std::vector<float> * par_eta;
   std::normal_distribution<double> * distribution_;
 };
 

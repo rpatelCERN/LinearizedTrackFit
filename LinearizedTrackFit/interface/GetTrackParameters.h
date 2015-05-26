@@ -338,7 +338,7 @@ class GetParPhi : public GetTreeTrackParameter
 {
  public:
   GetParPhi(std::shared_ptr<L1TrackTriggerTree> tree) :
-    par_phi0(tree->m_stub_PHI0Extrapolated) {}
+      par_phi0(tree->m_stub_PHI0Extrapolated) {}
   virtual ~GetParPhi() {}
   virtual double at(const int k) {
 //    std::cout << "extrapolated phi0 = " << par_phi0->at(k) << std::endl;
@@ -347,4 +347,78 @@ class GetParPhi : public GetTreeTrackParameter
  private:
   std::vector<float> * par_phi0;
 };
+
+
+// Endcap parameters
+class GetParZ0TgTheta : public GetTreeTrackParameter
+{
+ public:
+  GetParZ0TgTheta(std::shared_ptr<L1TrackTriggerTree> tree) :
+      par_z0(tree->m_stub_Z0), par_eta(tree->m_stub_etaGEN) {}
+  virtual ~GetParZ0TgTheta() {}
+  virtual double at(const int k) {
+    return par_z0->at(k)*tan(2*atan(exp(-par_eta->at(k))));
+  }
+ private:
+  std::vector<float> * par_z0;
+  std::vector<float> * par_eta;
+};
+
+
+class GetParTgTheta : public GetTreeTrackParameter
+{
+ public:
+  GetParTgTheta(std::shared_ptr<L1TrackTriggerTree> tree) :
+      par_eta(tree->m_stub_etaGEN) {}
+  virtual ~GetParTgTheta() {}
+  virtual double at(const int k) {
+    return tan(2*atan(exp(-par_eta->at(k))));
+  }
+ private:
+  std::vector<float> * par_eta;
+};
+
+
+class GetParChargeOverPz : public GetTreeTrackParameter
+{
+ public:
+  GetParChargeOverPz(std::shared_ptr<L1TrackTriggerTree> tree) :
+      par_px(tree->m_stub_pxGEN), par_py(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg), par_eta(tree->m_stub_etaGEN) {}
+  virtual ~GetParChargeOverPz() {}
+  virtual double at(const int k) {
+    // For muons, electrons and taus the charge is the opposite of the sign of the pdgId
+    int charge = (par_pdg->at(k) > 0 ? -1 : 1);
+    double pz = std::sqrt(std::pow(par_px->at(k), 2) + std::pow(par_py->at(k), 2))*tan(2*atan(exp(-par_eta->at(k))));
+    return (pz > 0 ? charge/pz : 0.);
+  }
+ private:
+  std::vector<float> * par_px;
+  std::vector<float> * par_py;
+  std::vector<int> * par_pdg;
+  std::vector<float> * par_eta;
+};
+
+
+class GetParPhi0PlusChargeZ0Over2RhoZ : public GetTreeTrackParameter
+{
+ public:
+  GetParPhi0PlusChargeZ0Over2RhoZ(std::shared_ptr<L1TrackTriggerTree> tree) :
+      par_px(tree->m_stub_pxGEN), par_py(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg),
+      par_z0(tree->m_stub_Z0), par_eta(tree->m_stub_etaGEN), par_phi0(tree->m_stub_PHI0Extrapolated) {}
+  virtual ~GetParPhi0PlusChargeZ0Over2RhoZ() {}
+  virtual double at(const int k) {
+    // For muons, electrons and taus the charge is the opposite of the sign of the pdgId
+    int charge = (par_pdg->at(k) > 0 ? -1 : 1);
+    double pz = std::sqrt(std::pow(par_px->at(k), 2) + std::pow(par_py->at(k), 2))*tan(2*atan(exp(-par_eta->at(k))));
+    return (pz > 0 ? par_phi0->at(k) + par_z0->at(k)*3.8114*0.003/2.*charge/pz : 0.);
+  }
+ private:
+  std::vector<float> * par_px;
+  std::vector<float> * par_py;
+  std::vector<int> * par_pdg;
+  std::vector<float> * par_z0;
+  std::vector<float> * par_eta;
+  std::vector<float> * par_phi0;
+};
+
 #endif // GETTRACKPARAMETERS_H

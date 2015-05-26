@@ -17,11 +17,13 @@ namespace LinearFit {
     std::vector<double> distancesTransverse;
     std::vector<double> distancesLongitudinal;
     for (const auto &s : treeReader.getStubRZPhi()) {
-      double distTransverse = treeReader.genTrackDistanceTransverse(1. / treeReader.getOneOverPt(), treeReader.getPhi(),
-          treeReader.getX0(), treeReader.getY0(), treeReader.getCharge(), 3.8, s.x(), s.y());
+      double distTransverse = treeReader.genTrackDistanceTransverse(treeReader.getPt(), treeReader.getPhi(),
+                                                                    treeReader.getD0(), treeReader.getCharge(),
+                                                                    3.8114, s.x(), s.y());
       distancesTransverse.push_back(distTransverse);
-      double distLongitudinal = treeReader.genTrackDistanceLongitudinal(treeReader.getX0(), treeReader.getY0(), treeReader.getZ0(),
-          treeReader.getCotTheta(), s.R(), s.z());
+      double distLongitudinal = treeReader.genTrackDistanceLongitudinal(treeReader.getZ0(), treeReader.getCotTheta(),
+                                                                        treeReader.getPt(), treeReader.getD0(),
+                                                                        treeReader.getCharge(), 3.8114, s.R(), s.z());
       distancesLongitudinal.push_back(distLongitudinal);
     }
     histogramsTransverse.fill(distancesTransverse);

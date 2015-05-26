@@ -2,7 +2,9 @@
 #define BASE2DHISTOGRAMS_H
 
 #include <vector>
+#include <map>
 #include "TH2F.h"
+#include "TH3F.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/StubRZPhi.h"
 
 class Base2DHistograms
@@ -14,10 +16,13 @@ public:
 
 private:
   int inputSize_;
+  TString name_;
   TH2F * hRZ_;
   TH2F * hxy_;
+  // TH3F * hxyz_;
   TH2F * hBeamspot_;
   std::vector<TH2F*> hRPhis_;
+  std::map<int, TH2F*> hxy_layer_;
 };
 
 #endif // BASEHISTOGRAMS_H

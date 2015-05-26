@@ -16,10 +16,12 @@
 namespace LinearFit
 {
   void testFitter(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-      const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
-      std::vector<double> & distanceCutsTransverse, std::vector<double> & distanceCutsLongitudinal,
-      std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit,
-      const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName)
+                  const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
+                  std::unordered_map<int, double> & distanceCutsTransverse, std::unordered_map<int, double> & distanceCutsLongitudinal,
+                  std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit,
+                  const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName,
+                  const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
+                  const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_)
   {
     std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
     std::unordered_map<std::string, std::unordered_set<int> > requiredLayers;
@@ -39,6 +41,16 @@ namespace LinearFit
     // Perform linearized track fit
     LinearizedTrackFitter linearizedTrackFitter;
     while (treeReader.nextTrack()) {
+
+      if (treeReader.getOneOverPt() < oneOverPtMin_) continue;
+      if (treeReader.getOneOverPt() > oneOverPtMax_) continue;
+      if (treeReader.getPhi() < phiMin_) continue;
+      if (treeReader.getPhi() > phiMax_) continue;
+      if (treeReader.getEta() < etaMin_) continue;
+      if (treeReader.getEta() > etaMax_) continue;
+      if (treeReader.getZ0() < z0Min_) continue;
+      if (treeReader.getZ0() > z0Max_) continue;
+
       std::vector<double> vars(treeReader.getVariables());
       std::vector<double> pars(treeReader.getTrackParameters());
 

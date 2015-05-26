@@ -21,7 +21,7 @@ class TreeReader
 public:
   TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
              const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
-             const std::vector<double> & distanceCutsTransverse,  const std::vector<double> & distanceCutsLongitudinal,
+             const std::unordered_map<int, double> & distanceCutsTransverse,  const std::unordered_map<int, double> & distanceCutsLongitudinal,
              const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames,
              const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName);
 
@@ -61,10 +61,10 @@ public:
   unsigned int maxRequiredLayers() const { return maxRequiredLayers_; }
   std::vector<std::string> const variablesNames() const { return variablesNames_; }
   void writeConfiguration();
-  double genTrackDistanceTransverse(const double &pt, const double &phi, const double &x0, const double &y0,
+  double genTrackDistanceTransverse(const double &pt, const double &phi0, const double &d0,
       const int charge, const double &B, const double &x1, const double &y1) const;
-  double genTrackDistanceLongitudinal(const double &x0, const double &y0, const double &z0, const double &cotTheta,
-      const double &r1, const double &z1) const;
+  double genTrackDistanceLongitudinal(const double &z0, const double &cotTheta, const double &pt, const double &d0,
+                                      const int charge, const double &B, const double &R, const double &z1) const;
   std::map<int, unsigned int> layersFound() const { return layersFound_; }
 
  private:
@@ -89,6 +89,7 @@ public:
   double eventsFractionStart_;
   double eventsFractionEnd_;
   std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
+  std::set<int> allRequiredLayers_;
   std::unordered_map<int, std::pair<double, double> > radiusCuts_;
   unsigned int parametersSize_;
   std::vector<std::shared_ptr<GetTreeVariable> > vars_;
@@ -104,8 +105,8 @@ public:
   // This is the full list of names ordered as the variables are in variables_
   std::vector<std::string> variablesNames_;
   std::vector<std::string> parametersNames_;
-  std::vector<double> distanceCutsTransverse_;
-  std::vector<double> distanceCutsLongitudinal_;
+  std::unordered_map<int, double> distanceCutsTransverse_;
+  std::unordered_map<int, double> distanceCutsLongitudinal_;
 
   std::vector<StubRZPhi> stubsRZPhi_;
   std::map<int, unsigned int> layersFound_;
