@@ -46,6 +46,16 @@ private:
   TH2F * hDeltaZ0VsD0_;
   TH2F * hDeltaD0VsZ0_;
   TH2F * hDeltaD0VsPhi_;
+  // Endcap plots
+  TH2F * hDeltaZ0TgThetaVsPt_;
+  TH2F * hDeltaZ0TgThetaVsEta_;
+  TH2F * hDeltaZ0TgThetaVsZ0_;
+  TH2F * hDeltaZ0TgThetaVsD0_;
+  TH2F * hDeltaTgThetaVsPt_;
+  TH2F * hDeltaTgThetaVsEta_;
+  TH2F * hDeltaTgThetaVsZ0_;
+  TH2F * hDeltaTgThetaVsD0_;
+
   // Plots to monitor generator-level correlations
   TH2F * hD0VsPhi_;
   // Indeces of the parameters
@@ -54,6 +64,9 @@ private:
   int phiIndex_;
   int z0Index_;
   int d0Index_;
+  // Endcaps
+  int z0TgThetaIndex_;
+  int tgThetaIndex_;
 };
 
 

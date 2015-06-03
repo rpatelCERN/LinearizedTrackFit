@@ -1,13 +1,16 @@
-#ifndef TESTFITTER_H
-#define TESTFITTER_H
+//
+// Created by Marco De Mattia on 6/2/15.
+//
+
+#ifndef REMOTEPROJECTS_TESTFITTERENDCAPS_H
+#define REMOTEPROJECTS_TESTFITTERENDCAPS_H
 
 #include <vector>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
-// #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitter.h"
-#include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearizedTrackFitter.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearizedTrackFitterEndcaps.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterHistograms.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterSummaryHistograms.h"
 #include "TString.h"
@@ -15,15 +18,15 @@
 
 namespace LinearFit
 {
-  void testFitter(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-                  const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
-                  std::unordered_map<int, double> & distanceCutsTransverse, std::unordered_map<int, double> & distanceCutsLongitudinal,
-                  std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit,
-                  const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName,
-                  const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
-                  const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_)
+  void testFitterEndcaps(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
+                         const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
+                         std::unordered_map<int, double> & distanceCutsTransverse, std::unordered_map<int, double> & distanceCutsLongitudinal,
+                         std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit,
+                         const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName,
+                         const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
+                         const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_)
   {
-    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
+    std::vector<int> layersAll_{11, 12, 13, 14, 15};
     std::unordered_map<std::string, std::unordered_set<int> > requiredLayers;
     requiredLayers.insert(std::make_pair("phi", std::unordered_set<int>(layersAll_.begin(), layersAll_.end())));
     requiredLayers.insert(std::make_pair("R", std::unordered_set<int>(layersAll_.begin(), layersAll_.end())));
@@ -39,7 +42,7 @@ namespace LinearFit
 
 
     // Perform linearized track fit
-    LinearizedTrackFitter linearizedTrackFitter;
+    LinearizedTrackFitterEndcaps linearizedTrackFitter;
     while (treeReader.nextTrack()) {
 
       if (treeReader.getOneOverPt() < oneOverPtMin_) continue;
@@ -74,4 +77,4 @@ namespace LinearFit
   }
 }
 
-#endif // TESTFITTER_H
+#endif //REMOTEPROJECTS_TESTFITTERENDCAPS_H

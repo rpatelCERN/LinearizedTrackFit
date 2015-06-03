@@ -86,7 +86,8 @@ namespace LinearFit {
     std::unordered_map<std::string, int> sectors;
     BaseHistograms stubDistanceTransverseHistograms("stubDistanceTransverse", 6, 1000, 0, 0);
     BaseHistograms stubDistanceLongitudinalHistograms("stubDistanceLongitudinal", 6, 1000, 0, 0);
-    
+    BaseHistograms stubDistanceLongitudinalHistogramsR("stubDistanceLongitudinalR", 6, 1000, 0, 0);
+
     while (treeReader.nextTrack()) {
 
       int geomIndex = -1;
@@ -103,7 +104,8 @@ namespace LinearFit {
       }
 
       if (doMapSectors) mapSectors(treeReader.getStubRZPhi(), sectors);
-      if (computeDistances) fillDistances(treeReader, stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms);
+      if (computeDistances) fillDistances(treeReader, stubDistanceTransverseHistograms,
+                                          stubDistanceLongitudinalHistograms, stubDistanceLongitudinalHistogramsR);
 
       std::vector<double> vars(treeReader.getVariables());
       std::vector<double> pars(treeReader.getTrackParameters());
@@ -186,7 +188,7 @@ namespace LinearFit {
     treeReader.writeConfiguration();
 
     if (doMapSectors) writeSectorsMap(sectors);
-    if (computeDistances) writeDistances(stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms);
+    if (computeDistances) writeDistances(stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms, stubDistanceLongitudinalHistogramsR);
 
     if (computeCorrelations) {
       TFile outputCorrelationsFile("correlationHistograms.root", "RECREATE");

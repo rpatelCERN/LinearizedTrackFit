@@ -19,7 +19,8 @@ private:
   TString name_;
   TH2F * hRZ_;
   TH2F * hxy_;
-  // TH3F * hxyz_;
+  TH2F * hRZCorr_;
+  TH2F * hxyCorr_;
   TH2F * hBeamspot_;
   std::vector<TH2F*> hRPhis_;
   std::map<int, TH2F*> hxy_layer_;

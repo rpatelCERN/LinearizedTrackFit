@@ -12,10 +12,12 @@
 namespace LinearFit {
 
 
-  void fillDistances(const TreeReader & treeReader, BaseHistograms & histogramsTransverse, BaseHistograms & histogramsLongitudinal)
+  void fillDistances(const TreeReader & treeReader, BaseHistograms & histogramsTransverse,
+                     BaseHistograms & histogramsLongitudinal, BaseHistograms & histogramsLongitudinalR)
   {
     std::vector<double> distancesTransverse;
     std::vector<double> distancesLongitudinal;
+    std::vector<double> distancesLongitudinalR;
     for (const auto &s : treeReader.getStubRZPhi()) {
       double distTransverse = treeReader.genTrackDistanceTransverse(treeReader.getPt(), treeReader.getPhi(),
                                                                     treeReader.getD0(), treeReader.getCharge(),
@@ -25,18 +27,23 @@ namespace LinearFit {
                                                                         treeReader.getPt(), treeReader.getD0(),
                                                                         treeReader.getCharge(), 3.8114, s.R(), s.z());
       distancesLongitudinal.push_back(distLongitudinal);
+
+      distancesLongitudinalR.push_back(distLongitudinal/treeReader.getCotTheta());
     }
     histogramsTransverse.fill(distancesTransverse);
     histogramsLongitudinal.fill(distancesLongitudinal);
+    histogramsLongitudinalR.fill(distancesLongitudinalR);
   }
 
 
-  void writeDistances(BaseHistograms & histogramsTransverse, BaseHistograms & histogramsLongitudinal)
+  void writeDistances(BaseHistograms & histogramsTransverse, BaseHistograms & histogramsLongitudinal,
+                      BaseHistograms & histogramsLongitudinalR)
   {
     TFile outputFile("StubDistanceFromGenTrack.root", "RECREATE");
     outputFile.cd();
     histogramsTransverse.write();
     histogramsLongitudinal.write();
+    histogramsLongitudinalR.write();
     outputFile.Close();
   }
 

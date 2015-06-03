@@ -17,6 +17,8 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   getParPhi0_(std::make_shared<GetParPhi>(tree_)),
   getParZ0_(std::make_shared<GetParZ0>(tree_)),
   getParD0_(std::make_shared<GetParD0>(tree_)),
+  phiIndex_(-1),
+  zIndex_(-1),
   phiDiscontinuous_(false),
   adjustDiscontinuity_(false)
 {
@@ -49,6 +51,8 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     else if (varName == "CorrectedPhiThirdOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrderWithD0Gen>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedZ") vars_.push_back(std::make_shared<GetVarCorrectedZ>(tree_, requiredLayers_["z"], firstOrderCotThetaCoefficientsFileName));
     else if (varName == "CorrectedZSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedZSecondOrder>(tree_, requiredLayers_["z"], firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName));
+    else if (varName == "CorrectedRExactWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedRExactWithD0Gen>(tree_, requiredLayers_["R"]));
+    else if (varName == "CorrectedR") vars_.push_back(std::make_shared<GetVarCorrectedR>(tree_, requiredLayers_["R"]));
     else {
       std::cout << "Error: undefined variable name " << varName << std::endl;
       throw;
@@ -96,6 +100,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
 
   // Avoid discontinuity in phi between +pi and -pi
   int countPhiNames = 0;
+  int countZNames = 0;
   for (unsigned int i=0; i<varNames.size(); ++i) {
     if (varNames[i] == "phi" ||
         varNames[i] == "CorrectedPhi" ||
@@ -110,8 +115,15 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
       phiIndex_ = i;
       ++countPhiNames;
     }
+    if (varNames[i] == "z" ||
+        varNames[i] == "CorrectedZ" ||
+        varNames[i] == "CorrectedZSecondOrder") {
+      zIndex_ = i;
+      ++countZNames;
+    }
   }
   assert(countPhiNames == 0 || countPhiNames == 1);
+  assert(countZNames == 0 || countZNames == 1);
 }
 
 
@@ -196,7 +208,9 @@ bool TreeReader::closeDistanceFromGenTrack()
 {
   for (const auto & s : stubsRZPhi_) {
     if (genTrackDistanceTransverse(getPt(), getPhi(), getD0(), getCharge(), 3.8114, s.x(), s.y()) > distanceCutsTransverse_[s.layer()]) return false;
-    if (fabs(genTrackDistanceLongitudinal(getZ0(), getCotTheta(), getPt(), getD0(), getCharge(), 3.8114, s.R(), s.z())) > distanceCutsLongitudinal_[s.layer()]) return false;
+    double distanceCutLongitudinal = distanceCutsLongitudinal_[s.layer()];
+    if (s.layer() >= 11 && s.R() < 61.) distanceCutLongitudinal = distanceCutsLongitudinal_[s.layer()*10];
+    if (fabs(genTrackDistanceLongitudinal(getZ0(), getCotTheta(), getPt(), getD0(), getCharge(), 3.8114, s.R(), s.z())) > distanceCutLongitudinal) return false;
   }
   return true;
 }
@@ -243,6 +257,7 @@ bool TreeReader::goodTrack()
 //  if (fabs(getParD0_->at(0)) < 0.4) return false;
 //  if (fabs(getParD0_->at(0)) > 0.25) return false;
 //  if (fabs(getParD0_->at(0)) > 0.5) return false;
+//  if (fabs(getParD0_->at(0)) < 0.2) return false;
 //  if (getParD0_->at(0) < 0.4) return false;
 //  if (getParD0_->at(0) > 0.5) return false;
   // if (getParD0_->at(0) > 0) return false;
@@ -262,21 +277,22 @@ bool TreeReader::readVariables() {
   // Find how the stub indexes correspond to the layers
   unsigned int totalStubs = tree_->m_stub;
   for (unsigned int k = 0; k < totalStubs; ++k) {
-    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
-                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
     int layer = tree_->m_stub_layer->at(k);
-    if (layersFound_.count(layer) != 0) continue;
     // Cut on the radius of the stub
     const auto radiusCut = radiusCuts_.find(layer);
     if (radiusCut != radiusCuts_.end()) {
       double R = getR(k);
       if ((R < radiusCut->second.first) || (R > radiusCut->second.second)) continue;
     }
-    layersFound_.insert(std::make_pair(layer, k));
+    if (allRequiredLayers_.find(layer) == allRequiredLayers_.end()) continue;
+    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
+                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
+    if (layersFound_.count(layer) != 0) continue;
     // Only store stubs in layers required by at least one variable.
+    layersFound_.insert(std::make_pair(layer, k));
 //    if (allRequiredLayers_.find(layer) != allRequiredLayers_.end()) {
 //      stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
-//                                      tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k)));
+//                                      tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
 //    }
   }
 
@@ -296,6 +312,14 @@ bool TreeReader::readVariables() {
 //          if (lastLadder_ != 4) return false;
         }
       }
+    }
+
+    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
+                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
+    if (vars_[0]->layer(m.first)) {
+      if (phiIndex_ != -1) stubsRZPhi_.back().setCorrPhi(vars_[phiIndex_]->at(k, layersFound_));
+      if (zIndex_ != -1) stubsRZPhi_.back().setCorrZ(vars_[zIndex_]->at(k, layersFound_));
+      stubsRZPhi_.back().setMeanR(vars_[0]->meanRadius(m.first));
     }
   }
 

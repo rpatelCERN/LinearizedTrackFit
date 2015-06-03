@@ -52,8 +52,34 @@ public:
         throw;
     }
   }
-  double meanZ(const int layer) {
+  double meanZ(const int layer, const int region) {
     switch (layer) {
+      case 5:
+        switch (region) {
+          case 0:
+            return 103.8201987475974;
+          case 1:
+            return 91.11502665669214;
+          case 2:
+            return 76.86502023001647;
+          case 3:
+            return 64.15146180224865;
+          case 4:
+            return 55.18041855235778;
+          default:
+            std::cout << "Unknown region for layer 5: " << layer << std::endl;
+            throw;
+        }
+      case 6:
+        switch (region) {
+          case 3:
+            return 100.6838178000041;
+          case 4:
+            return 87.59561827803246;
+          default:
+            std::cout << "Unknown region for layer 6: " << layer << std::endl;
+            throw;
+        }
       case 11:
         return 130.4493136613383;
       case 12:
@@ -68,6 +94,21 @@ public:
         std::cout << "Unknown layer " << layer << std::endl;
         throw;
     }
+  }
+  int getRegion(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
+    auto l = layersFound.find(15);
+    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
+      return 0;
+    l = layersFound.find(14);
+    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
+      return 1;
+    l = layersFound.find(13);
+    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
+      return 2;
+    l = layersFound.find(12);
+    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
+      return 3;
+    return 4;
   }
 protected:
   std::unordered_set<int> layers_;
@@ -259,11 +300,24 @@ class Estimator
     return (estimatedParameter + parameterMean_);
   }
 
+  // This specific version is made for the endcaps. The pre-estimate uses only the disks
+  double estimate(const std::map<int, unsigned int> & layersFound, const std::vector<float> * var_x, const std::vector<float> * var_y) {
+    double estimatedParameter = 0.;
+    for (const auto &layer : layersFound) {
+      unsigned int l = layer.first;
+      if (l<11) continue;
+      double R = std::sqrt(std::pow(var_x->at(layer.second), 2) + std::pow(var_y->at(layer.second), 2));
+      estimatedParameter += (R - means_[l]) * coeff_[l];
+    }
+    // When it is estimated the mean value is subtracted. We add it back.
+    return (estimatedParameter + parameterMean_);
+  }
+
   template <class T>
   double estimate(const T & var) {
     double estimatedParameter = 0.;
     for (int i=0; i<var.size(); ++i) {
-      estimatedParameter += (var[i]-means_[i+5])*coeff_[i+5];
+      estimatedParameter += (var[i]-means_[i+11])*coeff_[i+11];
     }
     // When it is estimated the mean value is subtracted. We add it back.
     return (estimatedParameter + parameterMean_);
@@ -272,6 +326,68 @@ class Estimator
   std::unordered_map<unsigned int, double> means_;
   std::unordered_map<unsigned int, double> coeff_;
   double parameterMean_;
+};
+
+
+class EstimatorEndcaps
+{
+ public:
+  EstimatorEndcaps() :
+      estimatorRegion0_("matrixVD_0_endcaps_region_0_R.txt"),
+      estimatorRegion1_("matrixVD_0_endcaps_region_1_R.txt"),
+      estimatorRegion2_("matrixVD_0_endcaps_region_2_R.txt"),
+//      estimatorRegion3_("matrixVD_0_endcaps_region_3_R.txt"),
+//      estimatorRegion4_("matrixVD_0_endcaps_region_4_R.txt")
+      estimatorRegion3_("matrixVD_0_endcaps_region_3_R_4Disks.txt"),
+      estimatorRegion4_("matrixVD_0_endcaps_region_4_R_4Disks.txt")
+  {}
+
+//  double estimate(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
+//    auto l = layersFound.find(15);
+//    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
+//      return estimatorRegion0_.estimate(layersFound, var_x, var_y);
+//    l = layersFound.find(14);
+//    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
+//      return estimatorRegion1_.estimate(layersFound, var_x, var_y);
+//    l = layersFound.find(13);
+//    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
+//      return estimatorRegion2_.estimate(layersFound, var_x, var_y);
+//    l = layersFound.find(12);
+//    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
+//      return estimatorRegion3_.estimate(layersFound, var_x, var_y);
+//    return estimatorRegion4_.estimate(layersFound, var_x, var_y);
+//  }
+  double estimate(const std::vector<float> * var_x, const std::vector<float> * var_y,
+                  const std::map<int, unsigned int> & layersFound, const int region) {
+    switch (region) {
+      case 0:
+        return estimatorRegion0_.estimate(layersFound, var_x, var_y);
+      case 1:
+        return estimatorRegion1_.estimate(layersFound, var_x, var_y);
+      case 2:
+        return estimatorRegion2_.estimate(layersFound, var_x, var_y);
+      case 3:
+        return estimatorRegion3_.estimate(layersFound, var_x, var_y);
+      default:
+        return estimatorRegion4_.estimate(layersFound, var_x, var_y);
+    }
+  }
+
+  // Note: this is only valid when the input are the R coordinates of the 5 disks from the innermost to the outermost.
+  template <class T>
+  double estimate(const T & var) {
+    if ( var[4] < 61.) return estimatorRegion0_.estimate(var);
+    if ( var[3] < 61.) return estimatorRegion1_.estimate(var);
+    if ( var[2] < 61.) return estimatorRegion2_.estimate(var);
+    if ( var[1] < 61.) return estimatorRegion3_.estimate(var);
+    return estimatorRegion4_.estimate(var);
+  }
+ private:
+  Estimator estimatorRegion0_;
+  Estimator estimatorRegion1_;
+  Estimator estimatorRegion2_;
+  Estimator estimatorRegion3_;
+  Estimator estimatorRegion4_;
 };
 
 
@@ -862,7 +978,7 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
     // double estimatedChargeOverRho = 1./(rho+d0);
     // double estimatedChargeOverRho = 1./rho;
     //    double estimatedChargeOverRho = charge/(rho+d0);
-    // double phi = std::atan2(var_y->at(k), var_x->at(k));
+    double phi = std::atan2(var_y->at(k), var_x->at(k));
 
     // return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6. + getParD0_->at(0)*(1/R-1/meanRadius(var_layer->at(k))));
     // return (phi + estimatedChargeOverRho*DeltaR/2. + RCube*std::pow(estimatedChargeOverRho/2., 3)/6. - d0Correction);
@@ -1053,16 +1169,10 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 
     // Study the endcaps
     // double theMeanZ = meanZ(var_layer->at(k));
-//    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - getParPhi_->at(0));
+    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - getParPhi_->at(0));
 //    theMeanZ/(2*rho));
 
-//    return correctedPhi;
-
-    double cotTheta = 1./tan(2*atan(exp(-par_eta->at(k))));
-
-    double correctedZ = (var_z->at(k) - 2*rho*cotTheta*asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - par_z0->at(k));
-
-    return correctedZ;
+    return correctedPhi;
   }
  private:
   std::vector<float> * var_x;
@@ -1084,9 +1194,103 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 
 
 // estimatedCharge*R variable of the stubs
+class GetVarCorrectedRExactWithD0Gen : public GetTreeVariable
+{
+ public:
+  GetVarCorrectedRExactWithD0Gen(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+      par_pxGEN(tree->m_stub_pxGEN), par_pyGEN(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg),
+      par_d0_(tree->m_stub_d0GEN), par_x0(tree->m_stub_X0), par_y0(tree->m_stub_Y0), par_z0(tree->m_stub_Z0),  par_eta(tree->m_stub_etaGEN) {
+    getParD0_ = std::make_shared<GetParD0>(tree);
+    getParPhi_ = std::make_shared<GetParPhi>(tree);
+    generator_.seed(0);
+  }
+  virtual ~GetVarCorrectedRExactWithD0Gen() {}
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+    int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
+    double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+    double d0 = getParD0_->at(0);
+    double rho = charge*std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
+
+    // Study the endcaps
+    // double theMeanZ = meanZ(var_layer->at(k));
+//    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - getParPhi_->at(0));
+//    theMeanZ/(2*rho));
+
+//    return correctedPhi;
+
+    double cotTheta = 1./tan(2*atan(exp(-par_eta->at(k))));
+
+    // double correctedZ = (var_z->at(k) - 2*rho*cotTheta*asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - par_z0->at(k));
+    // R = 2*rho*sin((z - z0)/(2*rho*cotTheta))
+
+//    double correctedR = R - 2*rho*sin((var_z->at(k) - par_z0->at(k))/(2*rho*cotTheta)) + 2*rho*sin((meanZ(var_layer->at(k)) - par_z0->at(k))/(2*rho*cotTheta));
+//    double correctedR = R - 2*rho*sin((var_z->at(k) - par_z0->at(k))/(2*rho*cotTheta)) + par_z0->at(k)/cotTheta;
+//    double correctedR = R - 2*rho*sin((var_z->at(k) - par_z0->at(k))/(2*rho*cotTheta)) + meanZ(var_layer->at(k))/cotTheta;
+//    double correctedR = R - 2*rho*sin((var_z->at(k) - par_z0->at(k))/(2*rho*cotTheta)) + var_z->at(k)/cotTheta;
+//    double correctedR = R - 2*rho*sin((var_z->at(k) - par_z0->at(k))/(2*rho*cotTheta)) - par_z0->at(k)/cotTheta +
+//        meanZ(var_layer->at(k), getRegion(var_x, var_y, layersFound))/cotTheta;
+//    double correctedR = R - 2*rho*sin((var_z->at(k) - par_z0->at(k))/(2*rho*cotTheta)) - par_z0->at(k)/cotTheta + var_z->at(k)/cotTheta;
+    double correctedR = R + (meanZ(var_layer->at(k), getRegion(var_x, var_y, layersFound)) - var_z->at(k))/cotTheta;
+
+//    if (var_layer->at(k) < 11) {
+//      correctedR = R - (var_z->at(k) - meanZ(var_layer->at(k)))/cotTheta;
+//    }
+
+
+    return correctedR;
+  }
+ private:
+  std::vector<float> * var_x;
+  std::vector<float> * var_y;
+  std::vector<float> * var_z;
+  std::vector<int> * var_layer;
+  std::vector<float> * par_pxGEN;
+  std::vector<float> * par_pyGEN;
+  std::vector<int> * par_pdg;
+  std::shared_ptr<GetParD0> getParD0_;
+  std::vector<float> * par_d0_;
+  std::shared_ptr<GetParPhi> getParPhi_;
+  std::vector<float> * par_x0;
+  std::vector<float> * par_y0;
+  std::vector<float> * par_z0;
+  std::vector<float> * par_eta;
+};
+
+
+class GetVarCorrectedR : public GetTreeVariable
+{
+ public:
+  GetVarCorrectedR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) ://,
+                   // const std::string & firstOrderCoefficientsFileName) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer)
+//      , par_eta(tree->m_stub_etaGEN)
+  {}
+
+  virtual ~GetVarCorrectedR() {}
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+    int region = getRegion(var_x, var_y, layersFound);
+    double estimatedTgTheta = estimator_.estimate(var_x, var_y, layersFound, region);
+    double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
+//    double tgTheta = tan(2*atan(exp(-par_eta->at(k))));
+    double correctedR = R + (meanZ(var_layer->at(k), region) - var_z->at(k))*estimatedTgTheta;
+//    double correctedRMCTruth = R + (meanZ(var_layer->at(k), region) - var_z->at(k))*tgTheta;
+    return correctedR;
+  }
+ private:
+  std::vector<float> * var_x;
+  std::vector<float> * var_y;
+  std::vector<float> * var_z;
+  std::vector<int> * var_layer;
+//  std::vector<float> * par_eta;
+  EstimatorEndcaps estimator_;
+};
+
+
+// estimatedCharge*R variable of the stubs
 class GetVarChargeOverPtCorrectedR : public GetTreeVariable
 {
-public:
+ public:
   GetVarChargeOverPtCorrectedR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
                                const std::string & firstOrderCoefficientsFileName) :
       GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y),

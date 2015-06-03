@@ -116,7 +116,8 @@ public:
   std::shared_ptr<GetParZ0> getParZ0_;
   std::shared_ptr<GetParD0> getParD0_;
 
-  unsigned int phiIndex_;
+  int phiIndex_;
+  int zIndex_;
   bool phiDiscontinuous_;
   bool adjustDiscontinuity_;
 };

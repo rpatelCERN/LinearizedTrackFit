@@ -1,9 +1,21 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearizedTrackFitter.h"
 
 LinearizedTrackFitter::LinearizedTrackFitter() :
-    linearFitLowPt_(std::make_shared<MatrixReader>("matrixVD_0_pT_2_10.txt")),
-    linearFitHighPt_(std::make_shared<MatrixReader>("matrixVD_0_pT10.txt")),
+//    linearFitLowPt_(std::make_shared<MatrixReader>("matrixVD_0_pT_2_10.txt")),
+//    linearFitHighPt_(std::make_shared<MatrixReader>("matrixVD_0_pT10.txt")),
+    linearFitLowPt_(std::make_shared<MatrixReader>("matrixVD_0_pT_2_10_new.txt")),
+    linearFitHighPt_(std::make_shared<MatrixReader>("matrixVD_0_pT10_new.txt")),
     linearFitLongitudinal_(std::make_shared<MatrixReader>("matrixVD_0_zCotTheta_SecondOrder_Final.txt")),
+//    linearFitLowPt_(std::make_shared<MatrixReader>("matrixVD_0_pT_2_inf.txt")),
+//    linearFitHighPt_(std::make_shared<MatrixReader>("matrixVD_0_pT_2_inf.txt")),
+//    linearFitLowPt_(std::make_shared<MatrixReader>("matrixVD_0_pT_2_inf_firstOrder.txt")),
+//    linearFitHighPt_(std::make_shared<MatrixReader>("matrixVD_0_pT_2_inf_firstOrder.txt")),
+//    linearFitLowPt_(std::make_shared<MatrixReader>("matrixVD_0_pT_2_inf_noCorrections.txt")),
+//    linearFitHighPt_(std::make_shared<MatrixReader>("matrixVD_0_pT_2_inf_noCorrections.txt")),
+//    linearFitLongitudinal_(std::make_shared<MatrixReader>("matrixVD_0_cotTheta_noCorrections.txt")),
+//    linearFitLowPt_(std::make_shared<MatrixReader>("matrixVD_0_pT_2_10_firstOrder.txt")),
+//    linearFitHighPt_(std::make_shared<MatrixReader>("matrixVD_0_pT10_firstOrder.txt")),
+//    linearFitLongitudinal_(std::make_shared<MatrixReader>("matrixVD_0_zCotTheta_firstOrder.txt")),
     meanRadius_{22.1072, 35.4917, 50.6335, 68.3771, 88.5511, 107.746},
     chargeOverPtEstimator_("matrixVD_pre_chargeOverPt.txt"),
     cotThetaEstimator_("matrixVD_pre_cotTheta.txt"),
@@ -40,6 +52,8 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars)
     double RCube = std::pow(varsR_[i], 3);
     correctedVarsPhi_[i] += oneOverTwoRho * DeltaR + RCube * std::pow(oneOverTwoRho, 3) / 6.;
     correctedVarsZ_[i] -= (DeltaR + 1/6.*RCube*(oneOverTwoRho*oneOverTwoRho))*cotTheta;
+//    correctedVarsPhi_[i] += oneOverTwoRho*DeltaR;
+//    correctedVarsZ_[i] -= cotTheta*DeltaR;
   }
 
   // Evaluate the chi2/ndof

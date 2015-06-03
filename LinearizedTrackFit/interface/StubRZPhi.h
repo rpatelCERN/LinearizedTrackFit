@@ -14,6 +14,12 @@ public:
   float phi() const { return std::atan2(y_, x_); }
   int module() const { return module_; }
   int ladder() const { return ladder_; }
+  double corrPhi() const { return corrPhi_; }
+  double corrZ() const { return corrZ_; }
+  double meanR() const { return meanR_; }
+  void setCorrPhi(const double & corrPhi) { corrPhi_ = corrPhi; }
+  void setCorrZ(const double & corrZ) { corrZ_ = corrZ; }
+  void setMeanR(const double & meanR) { meanR_ = meanR; }
   int layer() const { return layer_; }
 private:
   float x_;
@@ -21,6 +27,9 @@ private:
   float z_;
   int module_;
   int ladder_;
+  double corrPhi_;
+  double corrZ_;
+  double meanR_;
   int layer_;
 };
 
