@@ -42,7 +42,7 @@ public:
   GeometricIndex(const std::string & inputFileName);
   GeometricIndex(const GeometricIndexConfiguration & gic);
   int operator() (const double & oneOverPt, const double & phi, const double & eta, const double & z0,
-                  const int charge, const int endcapRegion);
+                  const int charge, const int endcapRegionIndexInput);
   int operator() (const std::vector<StubRZPhi> & stubs, const int charge);
   void write();
 
@@ -61,7 +61,7 @@ private:
     if (gic_.chargeRegions == 1) return 0;
     return charge < 0 ? 0 : 1;
   }
-  int endcapRegionIndex(const int regionIndex) {
+  int endcapRegionIndex(const int & regionIndex) {
     return gic_.endcapRegions == 1 ? 0 : regionIndex;
   }
   std::string readValue(std::ifstream & inputFile);

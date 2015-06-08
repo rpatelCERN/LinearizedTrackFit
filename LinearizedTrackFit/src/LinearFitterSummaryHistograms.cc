@@ -28,7 +28,6 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
 //  double phiMax = 0.8;
   double phiMin = -3.14;
   double phiMax = 3.14;
-//  double etaMin = -2.5;
   double etaMin = -2.5;
   double etaMax = 2.5;
   double z0Min = -20.;
