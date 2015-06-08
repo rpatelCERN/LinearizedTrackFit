@@ -336,10 +336,10 @@ class EstimatorEndcaps
       estimatorRegion0_("matrixVD_0_endcaps_region_0_R.txt"),
       estimatorRegion1_("matrixVD_0_endcaps_region_1_R.txt"),
       estimatorRegion2_("matrixVD_0_endcaps_region_2_R.txt"),
-//      estimatorRegion3_("matrixVD_0_endcaps_region_3_R.txt"),
-//      estimatorRegion4_("matrixVD_0_endcaps_region_4_R.txt")
-      estimatorRegion3_("matrixVD_0_endcaps_region_3_R_4Disks.txt"),
-      estimatorRegion4_("matrixVD_0_endcaps_region_4_R_4Disks.txt")
+      estimatorRegion3_("matrixVD_0_endcaps_region_3_R.txt"),
+      estimatorRegion4_("matrixVD_0_endcaps_region_4_R.txt")
+//      estimatorRegion3_("matrixVD_0_endcaps_region_3_R_4Disks.txt"),
+//      estimatorRegion4_("matrixVD_0_endcaps_region_4_R_4Disks.txt")
   {}
 
 //  double estimate(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {

@@ -46,7 +46,8 @@ namespace LinearFit
 //        std::cout << "generated pt = " << treeReader.getPt() << std::endl;
 //        std::cout << "generated c/pt = " << treeReader.getCharge()*treeReader.getOneOverPt() << std::endl;
 //        std::cout << "generated phi_0 = " << treeReader.getPhi() << std::endl;
-        goodFit = linearFitter.fit(vars, treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getCharge(), lastLadder);
+        goodFit = linearFitter.fit(vars, treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(),
+                                   treeReader.getZ0(), treeReader.getCharge(), treeReader.getEndcapRegion(), lastLadder);
       }
       if (goodFit) {
         double normChi2 = linearFitter.normChi2();

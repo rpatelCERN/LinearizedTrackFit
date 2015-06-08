@@ -17,6 +17,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   getParPhi0_(std::make_shared<GetParPhi>(tree_)),
   getParZ0_(std::make_shared<GetParZ0>(tree_)),
   getParD0_(std::make_shared<GetParD0>(tree_)),
+  getVar_(std::make_shared<GetVarPhi>(tree_, requiredLayers_["R"])),
   phiIndex_(-1),
   zIndex_(-1),
   phiDiscontinuous_(false),

@@ -52,6 +52,7 @@ public:
   double getZ0() const { return getParZ0_->at(0); }
   double getR(const int k) const { return std::sqrt(std::pow(tree_->m_stub_x->at(k), 2) + std::pow(tree_->m_stub_y->at(k), 2)); }
   double getD0() const { return getParD0_->at(0); }
+  int getEndcapRegion() const { return getVar_->getRegion(tree_->m_stub_x, tree_->m_stub_y, layersFound_); }
   int getCharge() const { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
   const std::vector<float> * getVarX() const { return tree_->m_stub_x; }
   const std::vector<float> * getVarY() const { return tree_->m_stub_y; }
@@ -115,6 +116,8 @@ public:
   std::shared_ptr<GetParPhi> getParPhi0_;
   std::shared_ptr<GetParZ0> getParZ0_;
   std::shared_ptr<GetParD0> getParD0_;
+  // GetVarPhi is arbitrary, we only need access to the getRegion method of the base class, which is abstract.
+  std::shared_ptr<GetVarPhi> getVar_;
 
   int phiIndex_;
   int zIndex_;

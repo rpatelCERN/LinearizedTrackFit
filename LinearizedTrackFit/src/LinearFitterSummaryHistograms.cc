@@ -28,6 +28,7 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
 //  double phiMax = 0.8;
   double phiMin = -3.14;
   double phiMax = 3.14;
+//  double etaMin = -2.5;
   double etaMin = -2.5;
   double etaMax = 2.5;
   double z0Min = -20.;
@@ -178,25 +179,25 @@ void LinearFitterSummaryHistograms::fill(const std::vector<double> & vars, const
   }
   if (tgThetaIndex_ != -1 && z0TgThetaIndex_ != -1 && z0Index_ == -1) {
     double z0 = pars[z0TgThetaIndex_] / pars[tgThetaIndex_];
-    double genZ0Here = genZ0;
-//    double estimatedZ0 = estimatedPars[z0TgThetaIndex_] / estimatedPars[tgThetaIndex_];
-    double estimatedZ0 = estimatedPars[z0TgThetaIndex_] / pars[tgThetaIndex_];
+//    double genZ0Here = genZ0;
+    double estimatedZ0 = estimatedPars[z0TgThetaIndex_] / estimatedPars[tgThetaIndex_];
+//    double estimatedZ0 = estimatedPars[z0TgThetaIndex_] / pars[tgThetaIndex_];
     hDeltaZ0VsEta_->Fill(genEta, z0 - estimatedZ0);
     hDeltaZ0VsZ0_->Fill(genZ0, z0 - estimatedZ0);
     hDeltaZ0VsPt_->Fill(genPt, z0 - estimatedZ0);
     hDeltaZ0VsD0_->Fill(genD0, z0 - estimatedZ0);
   }
   if (tgThetaIndex_ != -1 && cotThetaIndex_ == -1) {
-    double eta = -log(fabs(tan(atan(pars[tgThetaIndex_]) / 2.)));
-    if (pars[tgThetaIndex_] < 0.) eta = -eta;
+//    double eta = -log(fabs(tan(atan(pars[tgThetaIndex_]) / 2.)));
+//    if (pars[tgThetaIndex_] < 0.) eta = -eta;
     double estEta = -log(fabs(tan(atan(estimatedPars[tgThetaIndex_]) / 2.)));
     if (estimatedPars[tgThetaIndex_] < 0.) estEta = -estEta;
-    hDeltaCotThetaVsEta_->Fill(eta, 1./pars[tgThetaIndex_] - 1./estimatedPars[tgThetaIndex_]);
-    hDeltaEtaVsEta_->Fill(eta, eta - estEta);
+    hDeltaCotThetaVsEta_->Fill(genEta, 1./pars[tgThetaIndex_] - 1./estimatedPars[tgThetaIndex_]);
+    hDeltaEtaVsEta_->Fill(genEta, genEta - estEta);
     hDeltaCotThetaVsPt_->Fill(genPt, 1./pars[tgThetaIndex_] - 1./estimatedPars[tgThetaIndex_]);
-    hDeltaEtaVsPt_->Fill(genPt, eta - estEta);
+    hDeltaEtaVsPt_->Fill(genPt, genEta - estEta);
     hDeltaCotThetaVsZ0_->Fill(genZ0, 1./pars[tgThetaIndex_] - 1./estimatedPars[tgThetaIndex_]);
-    hDeltaCotThetaVsD0_->Fill(genD0, eta - estEta);
+    hDeltaCotThetaVsD0_->Fill(genD0, genEta - estEta);
   }
 
   hD0VsPhi_->Fill(genPhi, genD0);

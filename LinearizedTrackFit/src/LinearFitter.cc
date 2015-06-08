@@ -10,9 +10,10 @@ LinearFitter::LinearFitter(const std::string & inputDirName) :
 
 // Find the matrix in the hash-map for the given geometric index (needs the input parameters)
 bool LinearFitter::fit(const std::vector<double> & vars, const double & genOneOverPt, const double & genPhi,
-                       const double & genEta, const double & genZ0, const int charge, const int lastLadder)
+                       const double & genEta, const double & genZ0, const int charge, const int endcapRegion,
+                       const int lastLadder)
 {
-  geomIndex_ = gi_(genOneOverPt, genPhi, genEta, genZ0, charge);
+  geomIndex_ = gi_(genOneOverPt, genPhi, genEta, genZ0, charge, endcapRegion);
   return fit(vars, lastLadder);
 }
 

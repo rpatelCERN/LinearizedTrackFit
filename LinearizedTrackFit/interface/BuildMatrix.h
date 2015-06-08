@@ -98,7 +98,8 @@ namespace LinearFit {
       }
       else {
         // Use the geometrical index to access the matrix builder corresponding to that geometrical region.
-        geomIndex = geometricIndex(treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getCharge());
+        geomIndex = geometricIndex(treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(),
+                                   treeReader.getZ0(), treeReader.getCharge(), treeReader.getEndcapRegion());
         // A geometrical index of -1 means we are outside the min-max boundaries
         if (geomIndex == -1) continue;
       }
@@ -152,7 +153,8 @@ namespace LinearFit {
       }
       else {
         // Use the geometrical index to access the matrix builder corresponding to that geometrical region.
-        geomIndex = geometricIndex(treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getCharge());
+        geomIndex = geometricIndex(treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(),
+                                   treeReader.getZ0(), treeReader.getCharge(), treeReader.getEndcapRegion());
         // A geometrical index of -1 means we are outside the min-max boundaries
         if (geomIndex == -1) continue;
       }

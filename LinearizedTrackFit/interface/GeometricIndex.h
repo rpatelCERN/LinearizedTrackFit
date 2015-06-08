@@ -24,7 +24,7 @@ public:
         phiMin(0.), phiMax(0.), phiRegions(1),
         etaMin(0.), etaMax(0.), etaRegions(1),
         z0Min(0.), z0Max(0.), z0Regions(1),
-        chargeRegions(1)
+        chargeRegions(1), endcapRegions(1)
     {}
 
     double oneOverPtMin, oneOverPtMax;
@@ -36,11 +36,13 @@ public:
     double z0Min, z0Max;
     int z0Regions;
     int chargeRegions;
+    int endcapRegions;
   };
 
   GeometricIndex(const std::string & inputFileName);
   GeometricIndex(const GeometricIndexConfiguration & gic);
-  int operator() (const double & oneOverPt, const double & phi, const double & eta, const double & z0, const int charge);
+  int operator() (const double & oneOverPt, const double & phi, const double & eta, const double & z0,
+                  const int charge, const int endcapRegion);
   int operator() (const std::vector<StubRZPhi> & stubs, const int charge);
   void write();
 
@@ -58,6 +60,9 @@ private:
   int chargeRegionIndex(const int & charge) {
     if (gic_.chargeRegions == 1) return 0;
     return charge < 0 ? 0 : 1;
+  }
+  int endcapRegionIndex(const int regionIndex) {
+    return gic_.endcapRegions == 1 ? 0 : regionIndex;
   }
   std::string readValue(std::ifstream & inputFile);
 

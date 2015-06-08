@@ -18,7 +18,7 @@ public:
 
   // Fit track parameters
   bool fit(const std::vector<double> & vars, const double & genOneOverPt, const double & genPhi,
-      const double & genEta, const double & genZ0, const int charge, const int lastLadder);
+      const double & genEta, const double & genZ0, const int charge, const int endcapRegion, const int lastLadder);
   bool fit(const std::vector<double> & vars, const std::vector<StubRZPhi> & stubs, const int charge, const int lastLadder);
   double normChi2() const { return normChi2_; }
   std::vector<double> trackParameters() const { return trackParameters_; }
