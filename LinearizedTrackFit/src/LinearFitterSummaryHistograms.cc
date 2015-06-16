@@ -10,7 +10,8 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     hDeltaZ0TgThetaVsPt_(nullptr), hDeltaZ0TgThetaVsEta_(nullptr), hDeltaZ0TgThetaVsZ0_(nullptr), hDeltaZ0TgThetaVsD0_(nullptr),
     hDeltaTgThetaVsPt_(nullptr), hDeltaTgThetaVsEta_(nullptr), hDeltaTgThetaVsZ0_(nullptr), hDeltaTgThetaVsD0_(nullptr),
     hD0VsPhi_(nullptr),
-    ptIndex_(-1), cotThetaIndex_(-1), phiIndex_(-1), z0Index_(-1), d0Index_(-1), z0TgThetaIndex_(-1)
+    ptIndex_(-1), cotThetaIndex_(-1), phiIndex_(-1), z0Index_(-1), d0Index_(-1),
+    z0TgThetaIndex_(-1), tgThetaIndex_(-1), pzIndex_(-1), phi0PlusChargeZ0Over2RhoZIndex_(-1)
 {
   for (unsigned int i=0; i<trackParameterNames.size(); ++i) {
     if (trackParameterNames[i] == "1/pt" || trackParameterNames[i] == "charge/pt" || trackParameterNames[i] == "charge/ptELC") ptIndex_ = i;
@@ -20,6 +21,8 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     else if (trackParameterNames[i] == "d0") d0Index_ = i;
     else if (trackParameterNames[i] == "z0TgTheta") z0TgThetaIndex_ = i;
     else if (trackParameterNames[i] == "tgTheta") tgThetaIndex_ = i;
+    else if (trackParameterNames[i] == "chargeOverPz") pzIndex_ = i;
+    else if (trackParameterNames[i] == "phi0PlusChargeZ0Over2RhoZ") phi0PlusChargeZ0Over2RhoZIndex_ = i;
   }
 
   double ptMin = -200.;
@@ -36,6 +39,8 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
 //  double d0Max = 0.15;
   double d0Min = -1.;
   double d0Max = 1.;
+  double pzMin = -200.;
+  double pzMax = 200.;
 
   if (ptIndex_ != -1) {
     hDeltaCurvatureOverCurvatureVsCurvature_ = new TH2F("deltaCurvatureOverCurvatureVsCurvature", "deltaCurvatureOverCurvatureVsCurvature", 240, -0.6, 0.6, 200, -0.2, 0.2);
@@ -71,6 +76,13 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     hDeltaD0VsZ0_ = new TH2F("deltaD0VsZ0", "deltaD0VsZ0", 400, z0Min, z0Max, 200, -0.1, 0.1);
     hDeltaD0VsPhi_ = new TH2F("deltaD0VsPhi", "deltaD0VsPhi", 400, phiMin, phiMax, 200, -0.1, 0.1);
   }
+  // Endcaps
+  if (pzIndex_ != -1 && ptIndex_ == -1) {
+    hDeltaPzOverPzVsPz_ = new TH2F("deltaPzOverPzVsPz", "deltaPzOverPzVsPz", 400, pzMin, pzMax, 200, -0.2, 0.2);
+    hDeltaPzOverPzVsEta_ = new TH2F("deltaPzOverPzVsEta", "deltaPzOverPzVsEta", 500, etaMin, etaMax, 100, -0.2, 0.2);
+//    hDeltaPtOverPtVsPt_ = new TH2F("deltaPtOverPtVsPt", "deltaPtOverPtVsPt", 400, ptMin, ptMax, 200, -0.2, 0.2);
+//    hDeltaPtOverPtVsEta_ = new TH2F("deltaPtOverPtVsEta", "deltaPtOverPtVsEta", 500, etaMin, etaMax, 100, -0.2, 0.2);
+  }
   if (z0TgThetaIndex_ != -1) {
     hDeltaZ0TgThetaVsZ0_ = new TH2F("deltaZ0TgThetaVsZ0", "deltaZ0TgThetaVsZ0", 400, z0Min, z0Max, 200, -5., 5.);
     hDeltaZ0TgThetaVsEta_ = new TH2F("deltaZ0TgThetaVsEta", "deltaZ0TgThetaVsEta", 500, etaMin, etaMax, 200, -5., 5.);
@@ -84,25 +96,23 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     hDeltaTgThetaVsD0_ = new TH2F("deltaTgThetaVsD0", "deltaTgThetaVsD0", 200, d0Min, d0Max, 100, -0.05, 0.05);
   }
 
-  if (tgThetaIndex_ != -1 && z0TgThetaIndex_ != -1) {
-    if (z0Index_ == -1) {
-      double deltaZ0Min = -3.;
-      double deltaZ0Max = 3.;
-      hDeltaZ0VsZ0_ = new TH2F("deltaZ0VsZ0", "deltaZ0VsZ0", 400, z0Min, z0Max, 200, deltaZ0Min, deltaZ0Max);
-      hDeltaZ0VsEta_ = new TH2F("deltaZ0VsEta", "deltaZ0VsEta", 500, etaMin, etaMax, 200, deltaZ0Min, deltaZ0Max);
-      hDeltaZ0VsPt_ = new TH2F("deltaZ0VsPt", "deltaZ0VsPt", 400, ptMin, ptMax, 100, deltaZ0Min, deltaZ0Max);
-      hDeltaZ0VsD0_ = new TH2F("deltaZ0VsD0", "deltaZ0VsD0", 200, d0Min, d0Max, 100, deltaZ0Min, deltaZ0Max);
-    }
-    if (cotThetaIndex_ == -1) {
-      double deltaCotThetaMin = -0.1;
-      double deltaCotThetaMax = 0.1;
-      hDeltaCotThetaVsPt_ = new TH2F("deltaCotThetaVsPt", "deltaCotThetaVsPt", 400, ptMin, ptMax, 100, deltaCotThetaMin, deltaCotThetaMax);
-      hDeltaEtaVsPt_ = new TH2F("deltaEtaVsPt", "deltaEtaVsPt", 400, ptMin, ptMax, 100, deltaCotThetaMin, deltaCotThetaMax);
-      hDeltaCotThetaVsEta_ = new TH2F("deltaCotThetaVsEta", "deltaCotThetaVsEta", 500, etaMin, etaMax, 100, deltaCotThetaMin, deltaCotThetaMax);
-      hDeltaEtaVsEta_ = new TH2F("deltaEtaVsEta", "deltaEtaVsEta", 400, etaMin, etaMax, 100, deltaCotThetaMin, deltaCotThetaMax);
-      hDeltaCotThetaVsD0_ = new TH2F("deltaCotThetaVsD0", "deltaCotThetaVsD0", 200, d0Min, d0Max, 100, deltaCotThetaMin, deltaCotThetaMax);
-      hDeltaCotThetaVsZ0_ = new TH2F("deltaCotThetaVsZ0", "deltaCotThetaVsZ0", 400, z0Min, z0Max, 100, deltaCotThetaMin, deltaCotThetaMax);
-    }
+  if (tgThetaIndex_ != -1 && cotThetaIndex_ == -1) {
+    double deltaCotThetaMin = -0.1;
+    double deltaCotThetaMax = 0.1;
+    hDeltaCotThetaVsPt_ = new TH2F("deltaCotThetaVsPt", "deltaCotThetaVsPt", 400, ptMin, ptMax, 100, deltaCotThetaMin, deltaCotThetaMax);
+    hDeltaEtaVsPt_ = new TH2F("deltaEtaVsPt", "deltaEtaVsPt", 400, ptMin, ptMax, 100, deltaCotThetaMin, deltaCotThetaMax);
+    hDeltaCotThetaVsEta_ = new TH2F("deltaCotThetaVsEta", "deltaCotThetaVsEta", 500, etaMin, etaMax, 100, deltaCotThetaMin, deltaCotThetaMax);
+    hDeltaEtaVsEta_ = new TH2F("deltaEtaVsEta", "deltaEtaVsEta", 400, etaMin, etaMax, 100, deltaCotThetaMin, deltaCotThetaMax);
+    hDeltaCotThetaVsD0_ = new TH2F("deltaCotThetaVsD0", "deltaCotThetaVsD0", 200, d0Min, d0Max, 100, deltaCotThetaMin, deltaCotThetaMax);
+    hDeltaCotThetaVsZ0_ = new TH2F("deltaCotThetaVsZ0", "deltaCotThetaVsZ0", 400, z0Min, z0Max, 100, deltaCotThetaMin, deltaCotThetaMax);
+  }
+  if (tgThetaIndex_ != -1 && z0TgThetaIndex_ != -1 && z0Index_ == -1) {
+    double deltaZ0Min = -10.;
+    double deltaZ0Max = 10.;
+    hDeltaZ0VsZ0_ = new TH2F("deltaZ0VsZ0", "deltaZ0VsZ0", 400, z0Min, z0Max, 200, deltaZ0Min, deltaZ0Max);
+    hDeltaZ0VsEta_ = new TH2F("deltaZ0VsEta", "deltaZ0VsEta", 500, etaMin, etaMax, 200, deltaZ0Min, deltaZ0Max);
+    hDeltaZ0VsPt_ = new TH2F("deltaZ0VsPt", "deltaZ0VsPt", 400, ptMin, ptMax, 100, deltaZ0Min, deltaZ0Max);
+    hDeltaZ0VsD0_ = new TH2F("deltaZ0VsD0", "deltaZ0VsD0", 200, d0Min, d0Max, 100, deltaZ0Min, deltaZ0Max);
   }
 
   hD0VsPhi_ = new TH2F("d0VsPhi", "d0VsPhi", 400, 0, 0, 400, 0, 0);
@@ -164,6 +174,16 @@ void LinearFitterSummaryHistograms::fill(const std::vector<double> & vars, const
   }
 
   // Endcaps
+  if (pzIndex_ != -1 && ptIndex_ == -1) {
+    double genPz = 1./pars[pzIndex_];
+    double pz = 1./estimatedPars[pzIndex_];
+//    double pt = pz*tan(2*atan(exp(-genEta)));
+    hDeltaPzOverPzVsPz_->Fill(genPz, (genPz - pz)/genPz);
+    hDeltaPzOverPzVsEta_->Fill(genEta, (genPz - pz)/genPz);
+//    hDeltaPtOverPtVsPt_->Fill(genPt, (genPt - pt)/genPt);
+//    hDeltaPtOverPtVsEta_->Fill(genEta, (genPt - pt)/genPt);
+  }
+
   if (z0TgThetaIndex_ != -1) {
     hDeltaZ0TgThetaVsEta_->Fill(genEta, pars[z0TgThetaIndex_]-estimatedPars[z0TgThetaIndex_]);
     hDeltaZ0TgThetaVsZ0_->Fill(genZ0, pars[z0TgThetaIndex_]-estimatedPars[z0TgThetaIndex_]);
@@ -191,6 +211,8 @@ void LinearFitterSummaryHistograms::fill(const std::vector<double> & vars, const
 //    if (pars[tgThetaIndex_] < 0.) eta = -eta;
     double estEta = -log(fabs(tan(atan(estimatedPars[tgThetaIndex_]) / 2.)));
     if (estimatedPars[tgThetaIndex_] < 0.) estEta = -estEta;
+    double test = pars[tgThetaIndex_];
+    double test2 = estimatedPars[tgThetaIndex_];
     hDeltaCotThetaVsEta_->Fill(genEta, 1./pars[tgThetaIndex_] - 1./estimatedPars[tgThetaIndex_]);
     hDeltaEtaVsEta_->Fill(genEta, genEta - estEta);
     hDeltaCotThetaVsPt_->Fill(genPt, 1./pars[tgThetaIndex_] - 1./estimatedPars[tgThetaIndex_]);
@@ -240,6 +262,13 @@ void LinearFitterSummaryHistograms::write()
     hDeltaD0VsPt_->Write();
     hDeltaD0VsZ0_->Write();
     hDeltaD0VsPhi_->Write();
+  }
+  // Endcaps
+  if (pzIndex_ != -1 && ptIndex_ == -1) {
+    hDeltaPzOverPzVsPz_->Write();
+    hDeltaPzOverPzVsEta_->Write();
+//    hDeltaPtOverPtVsPt_->Write();
+//    hDeltaPtOverPtVsEta_->Write();
   }
   if (z0TgThetaIndex_ != -1) {
     hDeltaZ0TgThetaVsEta_->Write();

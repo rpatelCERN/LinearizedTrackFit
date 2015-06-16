@@ -4,12 +4,15 @@
 using namespace Eigen;
 // using namespace mpfr;
 
-MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, double> > & varsMeans,
+MatrixBuilder::MatrixBuilder(const std::string & name, //const std::vector<std::pair<bool, double> > & varsMeans,
+                             const unsigned int nVars,
                              const std::vector<std::string> & trackParametersNames,
-                             const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars) :
+//                             const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars) :
+                             const std::vector<int> & requiredLayersVec) :
     name_(name),
-    nVars_(varsMeans.size()),
-    varsMeans_(varsMeans),
+    nVars_(nVars),
+    // nVars_(varsMeans.size()),
+    // varsMeans_(varsMeans),
     nTrackParameters_(trackParametersNames.size()),
     trackParametersNames_(trackParametersNames),
 //    cov_(Matrix<mpreal, Dynamic, Dynamic>::Zero(nVars_, nVars_)),
@@ -21,7 +24,8 @@ MatrixBuilder::MatrixBuilder(const std::string & name, const std::vector<std::pa
     V_(MatrixXd::Zero(nVars_, nVars_)),
     sqrtEigenvalues_(VectorXd::Zero(nVars_)),
     count_(0),
-    requiredLayersForVars_(requiredLayersForVars)
+//    requiredLayersForVars_(requiredLayersForVars)
+    requiredLayersVec_(requiredLayersVec)
 {
   for (int ladder=-1; ladder<77; ++ladder) {
 //    meanValuesLadders_.insert(std::make_pair(ladder, Matrix<mpreal, Dynamic, 1>::Zero(nVars_)));
@@ -38,8 +42,8 @@ void MatrixBuilder::updateMeanAndCov(const std::vector<double> & vars, const int
   for (unsigned int iVar=0; iVar<nVars_; ++iVar) {
     // update mean
     // if (!varsMeans_.at(iVar).first) meanValues_(iVar) += (vars[iVar] - meanValues_(iVar))/count_;
-    if (!varsMeans_.at(iVar).first)
-      meanValuesLadders_[lastLadder](iVar) += (vars[iVar] - meanValuesLadders_[lastLadder](iVar)) / count_;
+//    if (!varsMeans_.at(iVar).first)
+    meanValuesLadders_[lastLadder](iVar) += (vars[iVar] - meanValuesLadders_[lastLadder](iVar)) / count_;
     // else meanValues_(iVar) = lastLadder*2*3.14159265359/76.;
   }
 
@@ -247,14 +251,16 @@ void MatrixBuilder::writeMatrices(const bool usePcs)
     outfilePar << nVars_ << std::endl << std::endl;
     // Required layers
     std::vector<int> layers;
-    for (auto l : requiredLayersForVars_) {
-      for (auto v : l.second) {
-        layers.push_back(v);
-      }
-      break;
-    }
-    std::sort(layers.begin(), layers.end());
-    for (auto l : layers) {
+//    for (auto l : requiredLayersForVars_) {
+    std::sort(requiredLayersVec_.begin(), requiredLayersVec_.end());
+    for (auto l : requiredLayersVec_) {
+//      for (auto v : l.second) {
+//        layers.push_back(v);
+//      }
+      // break;
+//    }
+//    std::sort(layers.begin(), layers.end());
+//    for (auto l : layers) {
       outfilePar << l << " ";
     }
     outfilePar << std::endl << std::endl;

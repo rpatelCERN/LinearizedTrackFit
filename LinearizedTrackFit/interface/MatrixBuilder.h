@@ -18,9 +18,11 @@ using namespace Eigen;
 class MatrixBuilder
 {
 public:
-  MatrixBuilder(const std::string & name, const std::vector<std::pair<bool, double> > & varsMeans,
+  MatrixBuilder(const std::string & name, // const std::vector<std::pair<bool, double> > & varsMeans,
+                const unsigned int nVars,
                 const std::vector<std::string> & trackParametersNames,
-                const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars);
+//                const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars);
+                const std::vector<int> & requiredLayersVec);
   void update(const std::vector<double> & vars, const int lastLadder);
   void update(const std::vector<double> & vars, const std::vector<double> & pars, const int lastLadder, const bool usePcs);
   void computeEigenvalueMatrix();
@@ -34,7 +36,7 @@ private:
   // Data members
   std::string name_;
   unsigned int nVars_;
-  std::vector<std::pair<bool, double> > varsMeans_;
+//  std::vector<std::pair<bool, double> > varsMeans_;
   unsigned int nTrackParameters_;
   std::vector<std::string> trackParametersNames_;
 //  Matrix<mpreal, Dynamic, Dynamic> cov_;
@@ -53,7 +55,8 @@ private:
   int count_;
   std::unordered_map<int, VectorXd> meanValuesLadders_;
   std::unordered_map<int, VectorXd> meanPLadders_;
-  std::unordered_map<std::string, std::unordered_set<int> > requiredLayersForVars_;
+//  std::unordered_map<std::string, std::unordered_set<int> > requiredLayersForVars_;
+  std::vector<int> requiredLayersVec_;
 
 //  std::vector<std::vector<double> > coordinates_;
 //  std::vector<double> parameters_;

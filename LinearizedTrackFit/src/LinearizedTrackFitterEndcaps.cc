@@ -11,6 +11,7 @@ LinearizedTrackFitterEndcaps::LinearizedTrackFitterEndcaps() :
 //    linearFitRegion3_(std::make_shared<MatrixReader>("matrixVD_Region_3_DisksOnly.txt")),
 //    linearFitRegion4_(std::make_shared<MatrixReader>("matrixVD_Region_4_DisksOnly.txt")),
     meanZ_{130.4493136613383, 156.3789770495511, 185.3729401262328, 220.1296985845544, 261.5181256117242},
+    tgThetaEstimator_("matrixVD_0_pre_cotTheta_region"),
     preEstimatedTgTheta_(0.),
     region_(-1)
 {

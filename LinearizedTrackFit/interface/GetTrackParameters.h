@@ -388,7 +388,7 @@ class GetParChargeOverPz : public GetTreeTrackParameter
   virtual double at(const int k) {
     // For muons, electrons and taus the charge is the opposite of the sign of the pdgId
     int charge = (par_pdg->at(k) > 0 ? -1 : 1);
-    double pz = std::sqrt(std::pow(par_px->at(k), 2) + std::pow(par_py->at(k), 2))*tan(2*atan(exp(-par_eta->at(k))));
+    double pz = std::sqrt(std::pow(par_px->at(k), 2) + std::pow(par_py->at(k), 2))/tan(2*atan(exp(-par_eta->at(k))));
     return (pz > 0 ? charge/pz : 0.);
   }
  private:
@@ -409,7 +409,7 @@ class GetParPhi0PlusChargeZ0Over2RhoZ : public GetTreeTrackParameter
   virtual double at(const int k) {
     // For muons, electrons and taus the charge is the opposite of the sign of the pdgId
     int charge = (par_pdg->at(k) > 0 ? -1 : 1);
-    double pz = std::sqrt(std::pow(par_px->at(k), 2) + std::pow(par_py->at(k), 2))*tan(2*atan(exp(-par_eta->at(k))));
+    double pz = std::sqrt(std::pow(par_px->at(k), 2) + std::pow(par_py->at(k), 2))/tan(2*atan(exp(-par_eta->at(k))));
     return (pz > 0 ? par_phi0->at(k) + par_z0->at(k)*3.8114*0.003/2.*charge/pz : 0.);
   }
  private:

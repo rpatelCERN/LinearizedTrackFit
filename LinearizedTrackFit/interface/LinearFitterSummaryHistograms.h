@@ -47,6 +47,8 @@ private:
   TH2F * hDeltaD0VsZ0_;
   TH2F * hDeltaD0VsPhi_;
   // Endcap plots
+  TH2F * hDeltaPzOverPzVsPz_;
+  TH2F * hDeltaPzOverPzVsEta_;
   TH2F * hDeltaZ0TgThetaVsPt_;
   TH2F * hDeltaZ0TgThetaVsEta_;
   TH2F * hDeltaZ0TgThetaVsZ0_;
@@ -65,6 +67,8 @@ private:
   int z0Index_;
   int d0Index_;
   // Endcaps
+  int pzIndex_;
+  int phi0PlusChargeZ0Over2RhoZIndex_;
   int z0TgThetaIndex_;
   int tgThetaIndex_;
 };

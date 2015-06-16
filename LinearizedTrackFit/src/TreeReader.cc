@@ -52,8 +52,15 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     else if (varName == "CorrectedPhiThirdOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrderWithD0Gen>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedZ") vars_.push_back(std::make_shared<GetVarCorrectedZ>(tree_, requiredLayers_["z"], firstOrderCotThetaCoefficientsFileName));
     else if (varName == "CorrectedZSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedZSecondOrder>(tree_, requiredLayers_["z"], firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName));
+    else if (varName == "CorrectedZExactWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedZExactWithD0Gen>(tree_, requiredLayers_["z"]));
     else if (varName == "CorrectedRExactWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedRExactWithD0Gen>(tree_, requiredLayers_["R"]));
     else if (varName == "CorrectedR") vars_.push_back(std::make_shared<GetVarCorrectedR>(tree_, requiredLayers_["R"]));
+    else if (varName == "CorrectedZEndcaps") vars_.push_back(std::make_shared<GetVarCorrectedZEndcaps>(tree_, requiredLayers_["z"]));
+    else if (varName == "DeltaZOverDeltaR") vars_.push_back(std::make_shared<GetVarDeltaZOverDeltaR>(tree_, requiredLayers_["z"]));
+    else if (varName == "Mixed") vars_.push_back(std::make_shared<GetVarMixed>(tree_, requiredLayers_["z"]));
+    else if (varName == "CorrectedPhiEndcaps") vars_.push_back(std::make_shared<GetVarCorrectedPhiEndcaps>(tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiEndcapsPz") vars_.push_back(std::make_shared<GetVarCorrectedPhiEndcapsPz>(tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedZEndcapsRegions34") vars_.push_back(std::make_shared<GetVarCorrectedZEndcapsRegions34>(tree_, requiredLayers_["z"]));
     else {
       std::cout << "Error: undefined variable name " << varName << std::endl;
       throw;
@@ -277,25 +284,55 @@ bool TreeReader::readVariables() {
   layersFound_.clear();
   // Find how the stub indexes correspond to the layers
   unsigned int totalStubs = tree_->m_stub;
+
+
+
+
+//  bool layerFive = false;
+
+
+
+
   for (unsigned int k = 0; k < totalStubs; ++k) {
     int layer = tree_->m_stub_layer->at(k);
     // Cut on the radius of the stub
     const auto radiusCut = radiusCuts_.find(layer);
+//    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
+//                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
     if (radiusCut != radiusCuts_.end()) {
       double R = getR(k);
       if ((R < radiusCut->second.first) || (R > radiusCut->second.second)) continue;
     }
+
+
+
+
+//    if (layer == 5) layerFive = true;
+
+
+
+
     if (allRequiredLayers_.find(layer) == allRequiredLayers_.end()) continue;
-    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
-                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
+//    int layerOfStub = tree_->m_stub_layer->at(k);
+//    if (layerOfStub == 5) {
+//      std::cout << "layer 5" << std::endl;
+//    }
+//    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
+//                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
     if (layersFound_.count(layer) != 0) continue;
     // Only store stubs in layers required by at least one variable.
     layersFound_.insert(std::make_pair(layer, k));
-//    if (allRequiredLayers_.find(layer) != allRequiredLayers_.end()) {
-//      stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
-//                                      tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
-//    }
+    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
+                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
   }
+
+
+
+
+//  if (!layerFive) return false;
+
+
+
 
   for (const auto & var : vars_) {
     if (layersFound_.size() < var->layersNum()) return false;

@@ -27,7 +27,7 @@ namespace LinearFit {
       const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars,
       std::unordered_map<int, std::pair<double, double> > & radiusCuts,  const std::unordered_map<int, double> & distanceCutsTransverse,
       const std::unordered_map<int, double> & distanceCutsLongitudinal, const std::vector<std::string> & inputVarNames,
-      const std::unordered_map<std::string, std::vector<std::pair<bool, double> > > & inputVariablesMeans,
+      // const std::unordered_map<std::string, std::vector<std::pair<bool, double> > > & inputVariablesMeans,
       const std::vector<std::string> & inputTrackParameterNames, const bool singleModules,
       const bool doMapSectors, const bool computeDistances, const bool computeCorrelations,
       const GeometricIndex::GeometricIndexConfiguration & gic, const bool phiSymmetricFit, const bool usePcs,
@@ -38,18 +38,31 @@ namespace LinearFit {
                           inputTrackParameterNames, firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName);
 
     // Consistency checks
-    for (const auto & varName : inputVarNames) {
-      auto it = requiredLayersForVars.find(varName);
-      if (it == requiredLayersForVars.end()) {
-        std::cout << "Error: requiredLayers not specified for variable " << varName << std::endl;
+    // std::unordered_map<std::string, std::unordered_set<int> > requiredLayersForTheVars;
+    std::vector<int> requiredLayersVec;
+    for (const auto & name : inputVarNames) {
+      auto requiredLayers = requiredLayersForVars.find(name);
+      if (requiredLayers == requiredLayersForVars.end()) {
+        std::cout << "Error: requiredLayers not specified for variable " << name << std::endl;
         throw;
       }
-      auto jt = inputVariablesMeans.find(varName);
-      if (jt == inputVariablesMeans.end()) {
-        std::cout << "Error: inputVariablesMeans not specified for variable " << varName << std::endl;
-        throw;
+      else {
+        for (const auto & l : requiredLayers->second) {
+          requiredLayersVec.push_back(l);
+        }
       }
     }
+//    for (const auto & rl : requiredLayersForVars) {
+//      if (std::find(inputVarNames.begin(), inputVarNames.end(), rl.first) == inputVarNames.end()) {
+//        std::cout << "Error: requiredLayers not specified for variable " << rl.first << std::endl;
+//        throw;
+//      }
+//      else {
+//        for (const auto & l : rl.second) {
+//          requiredLayersVec.push_back(l);
+//        }
+//      }
+//    }
 
     // Layers to iterate on
     std::set<int> allRequiredLayers;
@@ -57,22 +70,6 @@ namespace LinearFit {
       for (const auto & layer : requiredLayers.second) {
         allRequiredLayers.insert(layer);
       }
-    }
-    std::vector<std::pair<bool, double> > variablesMeans;
-    int i=0;
-    for (const auto & layer : allRequiredLayers) {
-      for (const auto &varName : inputVarNames) {
-        if (requiredLayersForVars.find(varName)->second.count(layer) != 0) {
-          variablesMeans.push_back(inputVariablesMeans.find(varName)->second.at(i));
-        }
-      }
-      ++i;
-    }
-
-    // More consistency checks
-    if (treeReader.variablesSize() != variablesMeans.size()) {
-      std::cout << "Error: inconsistent number of variables (" << treeReader.variablesSize() << ") and variablesMeans (" << variablesMeans.size() << ")." << std::endl;
-      throw;
     }
 
     // Initialize geometric index, matrix builder and histograms
@@ -115,7 +112,9 @@ namespace LinearFit {
 
       // Update mean and covariance for this linearization region
       if (matrices.count(geomIndex) == 0) {
-        matrices.insert({{geomIndex, MatrixBuilder(std::to_string(geomIndex), variablesMeans, inputTrackParameterNames, requiredLayersForVars)}});
+        matrices.insert({{geomIndex, MatrixBuilder(std::to_string(geomIndex), // variablesMeans,
+//        treeReader.variablesSize(), inputTrackParameterNames, requiredLayersForVars)}});
+        treeReader.variablesSize(), inputTrackParameterNames, requiredLayersVec)}});
         histograms.insert({{geomIndex, MatrixBuilderHistograms(std::to_string(geomIndex), treeReader.variablesNames(), inputTrackParameterNames)}});
         // histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), treeReader.maxRequiredLayers())}});
         histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), 6)}});
@@ -141,8 +140,6 @@ namespace LinearFit {
     // Second loop on the tracks to compute the track parameter covariances to the principal components
     // ------------------------------------------------------------------------------------------------
     treeReader.reset(eventsFractionStart, eventsFractionEnd);
-//    TreeReader treeReaderSecond(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayersForVars,
-//        radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
     while (treeReader.nextTrack()) {
 
       int geomIndex = -1;
