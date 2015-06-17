@@ -43,6 +43,9 @@ public:
         else if (region == 2) return 39.06199810814701;
         else if (region == 3) return 46.3666702082486;
         else if (region == 4) return 53.43143629810935;
+        else if (region == 5) return 68.51336756802067;
+        else if (region == 6) return 84.27873223836124;
+        else if (region == 7) return 104.1776155117564;
         return 35.4917;
       case 12:
         if (region == 0) return 33.30564143677174;
@@ -50,6 +53,8 @@ public:
         else if (region == 2) return 46.42964665313455;
         else if (region == 3) return 55.10534504708163;
         else if (region == 4) return 64.24248081776109;
+        else if (region == 5) return 80.62377061955605;
+        else if (region == 6) return 99.75246578375754;
         return 50.6335;
       case 13:
         if (region == 0) return 39.56329059157801;
@@ -57,6 +62,7 @@ public:
         else if (region == 2) return 55.09640287628014;
         else if (region == 3) return 66.06122689539532;
         else if (region == 4) return 74.43357208468305;
+        else if (region == 5) return 95.68694314471189;
         return 68.3771;
       case 14:
         if (region == 0) return 46.84774958247267;
@@ -124,6 +130,16 @@ public:
     }
   }
   int getRegion(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
+
+    if (layersFound.find(5) != layersFound.end() && layersFound.find(6) != layersFound.end() &&
+        layersFound.find(7) != layersFound.end() && layersFound.find(11) != layersFound.end()) {
+      if (layersFound.find(12) != layersFound.end() && layersFound.find(13) != layersFound.end()) return 5;
+      else if (layersFound.find(8) != layersFound.end()) {
+        if (layersFound.find(12) != layersFound.end()) return 6;
+        else if (layersFound.find(9) != layersFound.end()) return 7;
+      }
+    }
+
     auto l = layersFound.find(15);
     if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
       return 0;
@@ -413,9 +429,12 @@ class EstimatorEndcaps
       estimatorRegion1_(inputFileBaseName+"_1_R.txt"),
       estimatorRegion2_(inputFileBaseName+"_2_R.txt"),
       estimatorRegion3_(inputFileBaseName+"_3_R.txt"),
-      estimatorRegion4_(inputFileBaseName+"_4_R.txt")
+      estimatorRegion4_(inputFileBaseName+"_4_R.txt"),
 //      estimatorRegion3_("matrixVD_0_endcaps_region_3_R_4Disks.txt"),
 //      estimatorRegion4_("matrixVD_0_endcaps_region_4_R_4Disks.txt")
+      estimatorRegion5_(inputFileBaseName+"_5_R.txt"),
+      estimatorRegion6_(inputFileBaseName+"_6_R.txt"),
+      estimatorRegion7_(inputFileBaseName+"_7_R.txt")
   {}
 
   double estimate(const std::map<int, unsigned int> & layersFound,
@@ -429,6 +448,12 @@ class EstimatorEndcaps
         return estimatorRegion2_.estimate(layersFound, var_x, var_y);
       case 3:
         return estimatorRegion3_.estimate(layersFound, var_x, var_y);
+      case 5:
+        return estimatorRegion5_.estimate(layersFound, var_x, var_y);
+      case 6:
+        return estimatorRegion6_.estimate(layersFound, var_x, var_y);
+      case 7:
+        return estimatorRegion7_.estimate(layersFound, var_x, var_y);
       default:
         return estimatorRegion4_.estimate(layersFound, var_x, var_y);
     }
@@ -445,6 +470,12 @@ class EstimatorEndcaps
         return estimatorRegion2_.estimate(var_x, var_y, layersFound);
       case 3:
         return estimatorRegion3_.estimate(var_x, var_y, layersFound);
+      case 5:
+        return estimatorRegion5_.estimate(var_x, var_y, layersFound);
+      case 6:
+        return estimatorRegion6_.estimate(var_x, var_y, layersFound);
+      case 7:
+        return estimatorRegion7_.estimate(var_x, var_y, layersFound);
       default:
         return estimatorRegion4_.estimate(var_x, var_y, layersFound);
     }
@@ -461,6 +492,12 @@ class EstimatorEndcaps
         return estimatorRegion2_.estimate(var_x, var_y, var_z, layersFound);
       case 3:
         return estimatorRegion3_.estimate(var_x, var_y, var_z, layersFound);
+      case 5:
+        return estimatorRegion5_.estimate(var_x, var_y, var_z, layersFound);
+      case 6:
+        return estimatorRegion6_.estimate(var_x, var_y, var_z, layersFound);
+      case 7:
+        return estimatorRegion7_.estimate(var_x, var_y, var_z, layersFound);
       default:
         return estimatorRegion4_.estimate(var_x, var_y, var_z, layersFound);
     }
@@ -481,6 +518,9 @@ class EstimatorEndcaps
   Estimator estimatorRegion2_;
   Estimator estimatorRegion3_;
   Estimator estimatorRegion4_;
+  Estimator estimatorRegion5_;
+  Estimator estimatorRegion6_;
+  Estimator estimatorRegion7_;
 };
 
 
@@ -1450,6 +1490,32 @@ class GetVarCorrectedPhiEndcaps : public GetTreeVariable
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
     double phi = std::atan2(var_y->at(k), var_x->at(k));
     return (phi + estimatedCharge*DeltaR*3.8114*0.003/2.);
+  }
+ private:
+  std::vector<float> * var_x;
+  std::vector<float> * var_y;
+  std::vector<int> * var_layer;
+  EstimatorEndcaps chargeOverPtEstimator_;
+};
+
+
+// Corrected phi coordinate variable of the stubs specific to the endcaps. The only difference is the region input
+class GetVarCorrectedPhiSecondOrderEndcaps : public GetTreeVariable
+{
+ public:
+  GetVarCorrectedPhiSecondOrderEndcaps(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
+      chargeOverPtEstimator_("matrixVD_0_pre_chargeOverPt_endcaps") {
+  }
+  virtual ~GetVarCorrectedPhiSecondOrderEndcaps() {}
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+    int region = getRegion(var_x, var_y, layersFound);
+    // This is the "estimate" method that uses the phi
+    double estimatedChargeOverPt = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound, region);
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
+    double RCube = std::pow(std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)), 3);
+    double phi = std::atan2(var_y->at(k), var_x->at(k));
+    return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
   }
  private:
   std::vector<float> * var_x;
