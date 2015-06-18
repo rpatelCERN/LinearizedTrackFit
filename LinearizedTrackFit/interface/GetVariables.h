@@ -344,7 +344,6 @@ class Estimator
     // or it will miss some layers.
     layers.erase(std::unique(layers.begin(), layers.end()), layers.end());
     for (auto layer : layers) {
-      int sizeVec = means_.at(layer).size();
       for (auto v : means_.at(layer)) {
         std::cout << "Estimator variable mean[" << layer << "] = " << v << std::endl;
       }
@@ -1101,8 +1100,8 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
     // double RCube = std::pow(R, 3);
 //    double DeltaRCube = RCube - std::pow(meanRadius(var_layer->at(k)), 3);
 //    double estimatedChargeOverPt = charge/std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0));
-    double d0 = getParD0_->at(0);
-//    double d0 = fabs(getParD0_->at(0));
+//    double d0 = getParD0_->at(0);
+// //    double d0 = fabs(getParD0_->at(0));
     // double meanR = meanRadius(var_layer->at(k));
     // double d0Correction = d0*(1/R-1/meanR);
     // double rho = std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
@@ -1338,15 +1337,15 @@ class GetVarCorrectedRExactWithD0Gen : public GetTreeVariable
       GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
       par_pxGEN(tree->m_stub_pxGEN), par_pyGEN(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg),
       par_d0_(tree->m_stub_d0GEN), par_x0(tree->m_stub_X0), par_y0(tree->m_stub_Y0), par_z0(tree->m_stub_Z0),  par_eta(tree->m_stub_etaGEN) {
-    getParD0_ = std::make_shared<GetParD0>(tree);
-    getParPhi_ = std::make_shared<GetParPhi>(tree);
+    // getParD0_ = std::make_shared<GetParD0>(tree);
+    // getParPhi_ = std::make_shared<GetParPhi>(tree);
     generator_.seed(0);
   }
   virtual ~GetVarCorrectedRExactWithD0Gen() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    double d0 = getParD0_->at(0);
+    // double d0 = getParD0_->at(0);
     double rho = charge*std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
 
     // Study the endcaps
@@ -1386,9 +1385,9 @@ class GetVarCorrectedRExactWithD0Gen : public GetTreeVariable
   std::vector<float> * par_pxGEN;
   std::vector<float> * par_pyGEN;
   std::vector<int> * par_pdg;
-  std::shared_ptr<GetParD0> getParD0_;
+  // std::shared_ptr<GetParD0> getParD0_;
   std::vector<float> * par_d0_;
-  std::shared_ptr<GetParPhi> getParPhi_;
+  // std::shared_ptr<GetParPhi> getParPhi_;
   std::vector<float> * par_x0;
   std::vector<float> * par_y0;
   std::vector<float> * par_z0;
@@ -1404,15 +1403,15 @@ class GetVarCorrectedZExactWithD0Gen : public GetTreeVariable
       GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
       par_pxGEN(tree->m_stub_pxGEN), par_pyGEN(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg),
       par_d0_(tree->m_stub_d0GEN), par_x0(tree->m_stub_X0), par_y0(tree->m_stub_Y0), par_z0(tree->m_stub_Z0),  par_eta(tree->m_stub_etaGEN) {
-    getParD0_ = std::make_shared<GetParD0>(tree);
-    getParPhi_ = std::make_shared<GetParPhi>(tree);
+    // getParD0_ = std::make_shared<GetParD0>(tree);
+    // getParPhi_ = std::make_shared<GetParPhi>(tree);
     generator_.seed(0);
   }
   virtual ~GetVarCorrectedZExactWithD0Gen() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    double d0 = getParD0_->at(0);
+    // double d0 = getParD0_->at(0);
     double rho = charge*std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
 
     double cotTheta = 1./tan(2*atan(exp(-par_eta->at(k))));
@@ -1434,9 +1433,9 @@ class GetVarCorrectedZExactWithD0Gen : public GetTreeVariable
   std::vector<float> * par_pxGEN;
   std::vector<float> * par_pyGEN;
   std::vector<int> * par_pdg;
-  std::shared_ptr<GetParD0> getParD0_;
+  // std::shared_ptr<GetParD0> getParD0_;
   std::vector<float> * par_d0_;
-  std::shared_ptr<GetParPhi> getParPhi_;
+  // std::shared_ptr<GetParPhi> getParPhi_;
   std::vector<float> * par_x0;
   std::vector<float> * par_y0;
   std::vector<float> * par_z0;

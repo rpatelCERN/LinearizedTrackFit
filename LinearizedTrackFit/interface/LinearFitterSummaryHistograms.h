@@ -67,10 +67,10 @@ private:
   int z0Index_;
   int d0Index_;
   // Endcaps
-  int pzIndex_;
-  int phi0PlusChargeZ0Over2RhoZIndex_;
   int z0TgThetaIndex_;
   int tgThetaIndex_;
+  int pzIndex_;
+  int phi0PlusChargeZ0Over2RhoZIndex_;
 };
 
 

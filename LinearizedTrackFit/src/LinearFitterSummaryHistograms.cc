@@ -211,8 +211,6 @@ void LinearFitterSummaryHistograms::fill(const std::vector<double> & vars, const
 //    if (pars[tgThetaIndex_] < 0.) eta = -eta;
     double estEta = -log(fabs(tan(atan(estimatedPars[tgThetaIndex_]) / 2.)));
     if (estimatedPars[tgThetaIndex_] < 0.) estEta = -estEta;
-    double test = pars[tgThetaIndex_];
-    double test2 = estimatedPars[tgThetaIndex_];
     hDeltaCotThetaVsEta_->Fill(genEta, 1./pars[tgThetaIndex_] - 1./estimatedPars[tgThetaIndex_]);
     hDeltaEtaVsEta_->Fill(genEta, genEta - estEta);
     hDeltaCotThetaVsPt_->Fill(genPt, 1./pars[tgThetaIndex_] - 1./estimatedPars[tgThetaIndex_]);
