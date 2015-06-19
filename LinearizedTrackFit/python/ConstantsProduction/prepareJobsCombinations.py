@@ -80,9 +80,9 @@ def prepare_job(c, fit_type, oneOverPt_min, oneOverPt_max, stub_coordinates, tra
 
 
 files_dir = "/home/demattia/fdata_demattia/Upgrade/LinearizedTrackFit/Stubs/Official/"
-file_barrel = files_dir+"Muons_Pt_2_more_Eta_m01p09_Phi_m05p1_3_z0_m15p15/extracted.root"
-file_hybrid = files_dir+"Muons_Pt_2_more_Eta_0p7_1p7_Phi_m05p1_3_z0_m15p15_HYBRID/extracted.root"
-file_endcaps = files_dir+"Muons_Pt_2_more_Eta_1p5_2p5_Phi_m05p1_3_z0_m15p15_ENDCAPS/extracted.root"
+file_barrel = files_dir+"Muons_Pt_2_more_Eta_m01p09_Phi_m05p1_3_z0_m15p15/JobFiles/extracted.root"
+file_hybrid = files_dir+"Muons_Pt_2_more_Eta_0p7_1p7_Phi_m05p1_3_z0_m15p15_HYBRID/JobFiles/extracted.root"
+file_endcaps = files_dir+"Muons_Pt_2_more_Eta_1p5_2p5_Phi_m05p1_3_z0_m15p15_ENDCAPS/JobFiles/extracted.root"
 
 
 combinations = []
