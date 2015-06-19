@@ -155,8 +155,8 @@ class JobType:
 
 def prepare_pre_estimate_jobs(job_types, combinations):
     for j in job_types:
-        os.system("rm -rf BackupPre_"+j.fit_type+"_Old; mv BackupPre_"+j.fit_type+" BackupPre_"+j.fit_type+"_Old")
-        os.system("mkdir BackupPre_"+j.fit_type+"; mv PreEstimate_"+j.fit_type+" BackupPre")
+        os.system("rm -rf Backup/BackupPre_"+j.fit_type+"_Old; mv Backup/BackupPre_"+j.fit_type+" Backup/BackupPre_"+j.fit_type+"_Old")
+        os.system("mkdir -p Backup/BackupPre_"+j.fit_type+"; mv PreEstimate_"+j.fit_type+" Backup/BackupPre")
         # Use the combinations to modify the cfg, generate directories with the given name, and submit the jobs.
         for c in combinations:
             # pT > 2 GeV/c
@@ -166,7 +166,7 @@ def prepare_pre_estimate_jobs(job_types, combinations):
 
 job_types = [JobType("Transverse", '"phi"', '"charge/pt"')]
 job_types.append(JobType("Longitudinal", '"z"', '"cotTheta"'))
-job_types.append(JobType("Longitudinal", '"R", "z"', '"cotTheta"'))
+job_types.append(JobType("Longitudinal_Rz", '"R", "z"', '"cotTheta"'))
 
 prepare_pre_estimate_jobs(job_types, combinations)
 

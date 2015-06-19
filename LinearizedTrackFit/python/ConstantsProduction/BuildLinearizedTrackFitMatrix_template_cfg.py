@@ -29,8 +29,8 @@ process.demo = cms.EDAnalyzer('BuildLinearizedTrackFitMatrix',
                               LayersAll = cms.vint32(LAYERS_LIST),
 
                               # Radius cuts
-                              RadiusCutsMin = cms.vdouble(RADIUS_CUTS_MIN)
-                              RadiusCutsMax = cms.vdouble(RADIUS_CUTS_MAX)
+                              RadiusCutsMin = cms.vdouble(RADIUS_CUTS_MIN),
+                              RadiusCutsMax = cms.vdouble(RADIUS_CUTS_MAX),
 
                               VariableNames = cms.vstring(STUB_COORDINATES),
                               TrackParameterNames = cms.vstring(TRACK_PARAMETERS),
