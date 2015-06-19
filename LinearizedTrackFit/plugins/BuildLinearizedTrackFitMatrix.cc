@@ -73,7 +73,8 @@ private:
   std::vector<int> layersChargeOverPtCorrectedRCube_;
   std::vector<int> layersZ_;
   std::vector<int> layersDeltaS_;
-  bool fixMeansPhi_;
+  std::vector<double> radiusCutsMin_;
+  std::vector<double> radiusCutsMax_;
   // std::vector<double> distanceCutsTransverse_;
   // std::vector<double> distanceCutsLongitudinal_;
   std::vector<std::string> inputVarNames_;
@@ -135,7 +136,8 @@ BuildLinearizedTrackFitMatrix::BuildLinearizedTrackFitMatrix(const edm::Paramete
   layersChargeOverPtCorrectedRCube_(iConfig.getParameter<std::vector<int> >("LayersAll")),
   layersZ_(iConfig.getParameter<std::vector<int> >("LayersAll")),
   layersDeltaS_(iConfig.getParameter<std::vector<int> >("LayersAll")),
-  fixMeansPhi_(iConfig.getParameter<bool>("FixMeansPhi")),
+  radiusCutsMin_(iConfig.getParameter<std::vector<double> >("RadiusCutsMin")),
+  radiusCutsMax_(iConfig.getParameter<std::vector<double> >("RadiusCutsMax")),
   // distanceCutsTransverse_(iConfig.getParameter<std::vector<double> >("DistanceCutsTransverse")),
   // distanceCutsLongitudinal_(iConfig.getParameter<std::vector<double> >("DistanceCutsLongitudinal")),
   inputVarNames_(iConfig.getParameter<std::vector<std::string> >("VariableNames")),
@@ -190,34 +192,18 @@ void BuildLinearizedTrackFitMatrix::beginJob()
 {
   printSelectedNames();
 
+  if (radiusCutsMin_.size() != 16 || radiusCutsMax_.size() != 16) {
+    std::cout << "Error: please provide 16 values for the radius cuts, one for each layer." << std::endl;
+    std::cout << "Number of values provided for min: " << radiusCutsMin_.size() << std::endl;
+    std::cout << "Number of values provided for max: " << radiusCutsMax_.size() << std::endl;
+    throw;
+  }
+
   std::unordered_map<int, std::pair<double, double> > radiusCuts_;
-//  radiusCuts_.insert({5, {0., 21.95}});
-//  radiusCuts_.insert({6, {0., 34.6}});
-//  radiusCuts_.insert({7, {0., 49.7}});
-//  radiusCuts_.insert({8, {0., 67.4}});
-//  radiusCuts_.insert({9, {0., 87.55}});
-//  radiusCuts_.insert({10, {0., 106.75}});
-//  radiusCuts_.insert({5, {21.95, 22.6}});
-//  radiusCuts_.insert({5, {22.6, 23.72}});
-//  radiusCuts_.insert({5, {23.72, 1000.}});
-  radiusCuts_.insert({5, {0., 1000.}});
-  radiusCuts_.insert({6, {0., 1000.}});
-  radiusCuts_.insert({7, {0., 1000.}});
-  radiusCuts_.insert({8, {0., 1000.}});
-  radiusCuts_.insert({9, {0., 1000.}});
-  radiusCuts_.insert({10, {0., 1000.}});
-  //  // Endcaps low R resolution
-  // radiusCuts_.insert({11, {61., 1000.}});
-  //  radiusCuts_.insert({12, {61., 1000.}});
-  //  radiusCuts_.insert({13, {61., 1000.}});
-  //  radiusCuts_.insert({14, {61., 1000.}});
-  //  radiusCuts_.insert({15, {61., 1000.}});
-  // Endcaps
-  radiusCuts_.insert({11, {0., 1000.}});
-  radiusCuts_.insert({12, {0., 1000.}});
-  radiusCuts_.insert({13, {0., 1000.}});
-  radiusCuts_.insert({14, {0., 1000.}});
-  radiusCuts_.insert({15, {0., 1000.}});
+  for (unsigned int i=0; i<radiusCutsMin_.size(); ++i) {
+    radiusCuts_.insert({i+5, {radiusCutsMin_[i], radiusCutsMax_[i]}});
+  }
+
 
   std::unordered_map<int, double> distanceCutsTransverse_;
   distanceCutsTransverse_.insert(std::make_pair(5, 0.007));
@@ -285,36 +271,15 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     requiredLayers_.insert(std::make_pair("DeltaS", std::unordered_set<int>(layersDeltaS_.begin(), layersDeltaS_.end())));
     requiredLayers_.insert(std::make_pair("DeltaSDeltaR", std::unordered_set<int>(layersR_.begin(), layersR_.end())));
 
-    // For fixing the mean values. True means fix the mean to the specified value.
-    std::unordered_map<std::string, std::vector<std::pair<bool, double> > > inputVariablesMeans_;
-    std::vector<std::pair<bool, double> > freeMeans_(6, {fixMeansPhi_, 0.});
-    inputVariablesMeans_.insert(std::make_pair("phi", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("CorrectedPhi", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("CorrectedPhiSecondOrder", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("phiOverR", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("ChargeSignedPhi", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("GenChargeSignedPhi", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("R", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("DeltaSDeltaR", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("oneOverR", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("z", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("CorrectedZ", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("CorrectedZSecondOrder", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("DeltaS", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("ChargeCorrectedR", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("ChargeOverPtCorrectedR", freeMeans_));
-    inputVariablesMeans_.insert(std::make_pair("ChargeSignedR", freeMeans_));
-
-
 
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
-			   requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, // inputVariablesMeans_,
+			   requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_,
 			   inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic,
 			   phiSymmetricFit_, usePcs_, firstOrderChargeOverPtCoefficientsFileName_, firstOrderCotThetaCoefficientsFileName_);
 
     // Test
 //    LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
-//        requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_, inputVariablesMeans_,
+//        requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_,
 //      inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic, usePcs_);
   }
 

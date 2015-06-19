@@ -68,7 +68,7 @@ def prepare_job(c, fit_type, oneOverPt_min, oneOverPt_max, stub_coordinates, tra
     slurm_file.close()
     print "Submitting job for", c.name
     print "cd "+job_dir+"; sbatch jobFile.slrm; cd -"
-    # os.system("cd "+job_dir+"; sbatch jobFile.slrm; cd -")
+    os.system("cd "+job_dir+"; sbatch jobFile.slrm; cd -")
 
 
 # Function to make the combinations unique. If there is a duplicate take the one with the biggest region index since
