@@ -27,7 +27,6 @@ namespace LinearFit {
       const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars,
       std::unordered_map<int, std::pair<double, double> > & radiusCuts,  const std::unordered_map<int, double> & distanceCutsTransverse,
       const std::unordered_map<int, double> & distanceCutsLongitudinal, const std::vector<std::string> & inputVarNames,
-      // const std::unordered_map<std::string, std::vector<std::pair<bool, double> > > & inputVariablesMeans,
       const std::vector<std::string> & inputTrackParameterNames, const bool singleModules,
       const bool doMapSectors, const bool computeDistances, const bool computeCorrelations,
       const GeometricIndex::GeometricIndexConfiguration & gic, const bool phiSymmetricFit, const bool usePcs,
@@ -38,7 +37,6 @@ namespace LinearFit {
                           inputTrackParameterNames, firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName);
 
     // Consistency checks
-    // std::unordered_map<std::string, std::unordered_set<int> > requiredLayersForTheVars;
     std::vector<int> requiredLayersVec;
     for (const auto & name : inputVarNames) {
       auto requiredLayers = requiredLayersForVars.find(name);
@@ -52,17 +50,6 @@ namespace LinearFit {
         }
       }
     }
-//    for (const auto & rl : requiredLayersForVars) {
-//      if (std::find(inputVarNames.begin(), inputVarNames.end(), rl.first) == inputVarNames.end()) {
-//        std::cout << "Error: requiredLayers not specified for variable " << rl.first << std::endl;
-//        throw;
-//      }
-//      else {
-//        for (const auto & l : rl.second) {
-//          requiredLayersVec.push_back(l);
-//        }
-//      }
-//    }
 
     // Layers to iterate on
     std::set<int> allRequiredLayers;
@@ -113,15 +100,11 @@ namespace LinearFit {
       // Update mean and covariance for this linearization region
       if (matrices.count(geomIndex) == 0) {
         matrices.insert({{geomIndex, MatrixBuilder(std::to_string(geomIndex), // variablesMeans,
-//        treeReader.variablesSize(), inputTrackParameterNames, requiredLayersForVars)}});
         treeReader.variablesSize(), inputTrackParameterNames, requiredLayersVec)}});
         histograms.insert({{geomIndex, MatrixBuilderHistograms(std::to_string(geomIndex), treeReader.variablesNames(), inputTrackParameterNames)}});
-        // histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), treeReader.maxRequiredLayers())}});
         histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), 6)}});
       }
 
-//      matrices.find(geomIndex)->second.update(vars, varsCoeff, pars);
-      // matrices.find(geomIndex)->second.update(vars, varsCoeff, pars, treeReader.getLastLadder());
       int lastLadder = -1;
       if (phiSymmetricFit) lastLadder = treeReader.getLastLadder();
       matrices.find(geomIndex)->second.update(vars, lastLadder);
@@ -195,7 +178,6 @@ namespace LinearFit {
       correlationHistograms.write();
       outputCorrelationsFile.Close();
     }
-
   }
 }
 

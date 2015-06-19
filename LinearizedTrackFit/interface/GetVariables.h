@@ -131,7 +131,6 @@ public:
     }
   }
   int getRegion(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
-
     if (layersFound.find(5) != layersFound.end() && layersFound.find(6) != layersFound.end() &&
         layersFound.find(7) != layersFound.end() && layersFound.find(11) != layersFound.end()) {
       if (layersFound.find(12) != layersFound.end() && layersFound.find(13) != layersFound.end()) return 5;
@@ -155,6 +154,7 @@ public:
       return 3;
     return 4;
   }
+
 protected:
   std::unordered_set<int> layers_;
   std::default_random_engine generator_;

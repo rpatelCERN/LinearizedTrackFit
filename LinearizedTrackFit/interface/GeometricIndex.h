@@ -57,12 +57,12 @@ private:
   std::function<int(double)> phiRegionIndex;
   std::function<int(double)> etaRegionIndex;
   std::function<int(double)> z0RegionIndex;
-  int chargeRegionIndex(const int & charge) {
+  int chargeRegionIndex(const int charge) {
     if (gic_.chargeRegions == 1) return 0;
     return charge < 0 ? 0 : 1;
   }
-  int endcapRegionIndex(const int & regionIndex) {
-    return gic_.endcapRegions == 1 ? 0 : regionIndex;
+  int endcapRegionIndex(const int regionIndex) {
+    return gic_.endcapRegions == 0 ? 0 : regionIndex;
   }
   std::string readValue(std::ifstream & inputFile);
 

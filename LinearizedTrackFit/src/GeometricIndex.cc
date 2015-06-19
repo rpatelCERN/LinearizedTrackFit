@@ -29,10 +29,10 @@ GeometricIndex::GeometricIndex(const std::string & inputFileName)
   gic_.z0Regions = std::stoi(readValue(inputFile));
   gic_.chargeRegions = std::stoi(readValue(inputFile));
   gic_.endcapRegions = std::stoi(readValue(inputFile));
-  if (gic_.endcapRegions != 1 && gic_.endcapRegions != 5) {
-    std::cout << "Error: endcapRegions can only be 1 or 5. Requested regions: " << gic_.endcapRegions << std::endl;
-    throw;
-  }
+//  if (gic_.endcapRegions != 1 && gic_.endcapRegions != 5) {
+//    std::cout << "Error: endcapRegions can only be 1 or 5. Requested regions: " << gic_.endcapRegions << std::endl;
+//    throw;
+//  }
 
   initialize();
 }
@@ -67,12 +67,12 @@ bool GeometricIndex::filter(const double & oneOverPt, const double & phi, const 
 
 
 int GeometricIndex::operator() (const double & oneOverPt, const double & phi, const double & eta, const double & z0,
-                                const int charge, const int endcapRegionIndexInput)
+                                const int charge, const int regionIndexInput)
 {
   if (!filter(oneOverPt, phi, eta, z0)) return -1;
   return (oneOverPtRegionIndex(oneOverPt) + gic_.oneOverPtRegions*(phiRegionIndex(phi) +
       gic_.phiRegions*(etaRegionIndex(eta) + gic_.etaRegions*(z0RegionIndex(z0) +
-      gic_.z0Regions*(chargeRegionIndex(charge) + gic_.chargeRegions*endcapRegionIndex(endcapRegionIndexInput))))));
+      gic_.z0Regions*(chargeRegionIndex(charge) + gic_.chargeRegions*endcapRegionIndex(regionIndexInput))))));
 }
 
 
