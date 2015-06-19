@@ -66,6 +66,10 @@ def prepare_job(c, fit_type, oneOverPt_min, oneOverPt_max, stub_coordinates, tra
         line = line.replace("WORKING_DIR", os.getcwd()+"/"+job_dir)
         slurm_file.write(line)
     slurm_file.close()
+    print "Submitting job for", c.name
+    print "cd "+job_dir+"; sbatch jobFile.slrm; cd -"
+    # os.system("cd "+job_dir+"; sbatch jobFile.slrm; cd -")
+
 
 # Function to make the combinations unique. If there is a duplicate take the one with the biggest region index since
 # this ensures that radius cuts are applied.
@@ -163,13 +167,11 @@ def prepare_pre_estimate_jobs(job_types, combinations):
             prepare_job(c, j.fit_type, 0., 1./2., j.stub_coordinates, j.track_parameters, True)
 
 
-
 job_types = [JobType("Transverse", '"phi"', '"charge/pt"')]
 job_types.append(JobType("Longitudinal", '"z"', '"cotTheta"'))
 job_types.append(JobType("Longitudinal_Rz", '"R", "z"', '"cotTheta"'))
 
 prepare_pre_estimate_jobs(job_types, combinations)
-
 
 
 
