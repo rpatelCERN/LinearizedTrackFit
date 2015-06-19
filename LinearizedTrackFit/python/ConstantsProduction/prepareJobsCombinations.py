@@ -168,6 +168,7 @@ def prepare_pre_estimate_jobs(job_types, combinations):
 
 
 job_types = [JobType("Transverse", '"phi"', '"charge/pt"')]
+job_types.append(JobType("Transverse_Pz", '"phi"', '"chargeOverPz"'))
 job_types.append(JobType("Longitudinal", '"z"', '"cotTheta"'))
 job_types.append(JobType("Longitudinal_Rz", '"R", "z"', '"cotTheta"'))
 
