@@ -364,7 +364,8 @@ bool TreeReader::readVariables() {
     if (vars_[0]->layer(m.first)) {
       if (phiIndex_ != -1) stubsRZPhi_.back().setCorrPhi(vars_[phiIndex_]->at(k, layersFound_));
       if (zIndex_ != -1) stubsRZPhi_.back().setCorrZ(vars_[zIndex_]->at(k, layersFound_));
-      stubsRZPhi_.back().setMeanR(vars_[0]->meanRadius(m.first));
+      int region = vars_[0]->getRegion(tree_->m_stub_x, tree_->m_stub_y, layersFound_);
+      stubsRZPhi_.back().setMeanR(vars_[0]->meanRadius(m.first, region));
     }
   }
 
