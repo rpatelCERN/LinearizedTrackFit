@@ -334,10 +334,14 @@ class Estimator
     inputFile >> parameterMean_;
 
     // Read coefficients
+    multipleVariables_ = false;
     for (int i=0; i<nVars; ++i) {
       inputFile >> x;
       if (coeff_.find(layers[i]) == coeff_.end()) coeff_.insert(std::make_pair(layers[i], std::vector<double>(1, x)));
-      else coeff_.at(layers[i]).push_back(x);
+      else {
+        multipleVariables_ = true;
+        coeff_.at(layers[i]).push_back(x);
+      }
       // coeff_.insert(std::make_pair(layers[i], x));
     }
 
@@ -391,9 +395,12 @@ class Estimator
     return (estimatedParameter + parameterMean_);
   }
 
+  // This version is made to work for both z and rz pre-estimates. It relies on the multipleVariables bool to decide
+  // which one should be used.
   // This specific version is made for the endcaps. The pre-estimate uses both R and z.
   double estimate(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::vector<float> * var_z,
                   const std::map<int, unsigned int> & layersFound) {
+    if (multipleVariables_ == false) return estimate(var_z, layersFound);
     double estimatedParameter = 0.;
     for (const auto &layer : layersFound) {
       int l = layer.first;
@@ -418,6 +425,7 @@ class Estimator
   std::unordered_map<int, std::vector<double> > means_;
   std::unordered_map<int, std::vector<double> > coeff_;
   double parameterMean_;
+  bool multipleVariables_;
 };
 
 
@@ -1690,7 +1698,8 @@ public:
   virtual ~GetVarCorrectedZ() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
-    double cotTheta = cotThetaEstimator_.estimate(var_z, layersFound);
+    // double cotTheta = cotThetaEstimator_.estimate(var_z, layersFound);
+    double cotTheta = cotThetaEstimator_.estimate(var_x, var_y, var_z, layersFound);
     return (var_z->at(k) - DeltaR*cotTheta);
   }
 private:
@@ -1769,7 +1778,6 @@ class GetVarCorrectedZEndcaps : public GetTreeVariable
     double estimatedCotTheta = estimator_.estimate(var_x, var_y, var_z, layersFound, region);
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k), region);
     return (var_z->at(k) - DeltaR*estimatedCotTheta);
-    // return estimatedCotTheta;
   }
  private:
   std::vector<float> * var_x;

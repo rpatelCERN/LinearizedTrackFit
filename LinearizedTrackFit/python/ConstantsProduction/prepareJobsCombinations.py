@@ -34,16 +34,22 @@ def array_to_string(a):
 
 
 # Function to generate the configuration file for a given combination
-def prepare_job(c, fit_type, oneOverPt_min, oneOverPt_max, stub_coordinates, track_parameters, pre_estimate):
+def prepare_job(c, fit_type, oneOverPt_min, oneOverPt_max, stub_coordinates, track_parameters,
+                pre_estimate):
     print "preparing files for", c.name
-    job_dir = "Combinations/"+c.name+"/"
+    job_dir = "Combinations_"+fit_type+"/"+c.name+"/"
     pre_estimate_file_transverse = ""
     pre_estimate_file_longitudinal = ""
     if pre_estimate:
         job_dir = "PreEstimate_"+fit_type+"/"+c.name+"/"
     else:
-        pre_estimate_file_transverse = "PreEstimate_Transverse/"+c.name+"/file.txt"
-        pre_estimate_file_longitudinal = "PreEstimate_Longitudinal/"+c.name+"/file.txt"
+        pre_estimate_file_transverse = "PreEstimate_Transverse/"+c.name+"/matrixVD_0_pre_chargeOverPt.txt"
+        pre_estimate_file_longitudinal = "PreEstimate_Longitudinal/"+c.name+"/matrixVD_0_pre_cotTheta.txt"
+        if fit_type.find("Transverse_Pz") != -1:
+            pre_estimate_file_transverse = "PreEstimate_Transverse_Pz/"+c.name+"/matrixVD_0_pre_chargeOverPz.txt"
+        if fit_type.find("Longitudinal_Rz") != -1:
+            pre_estimate_file_longitudinal = "PreEstimate_Longitudinal_Rz/"+c.name+"/matrixVD_0_pre_cotTheta.txt"
+
     os.system("mkdir -p "+job_dir)
 
     configuration_file = open(job_dir+"BuildLinearizedTrackFitMatrix_cfg.py", "w")
@@ -157,27 +163,35 @@ class JobType:
         self.track_parameters = track_parameters
 
 
-def prepare_pre_estimate_jobs(job_types, combinations):
+def prepare_all_jobs(job_types, combinations, pre_estimate):
+    backup_dir = "Backup/Backup"
+    if pre_estimate:
+        backup_dir += "Pre"
     for j in job_types:
-        os.system("rm -rf Backup/BackupPre_"+j.fit_type+"_Old; mv Backup/BackupPre_"+j.fit_type+" Backup/BackupPre_"+j.fit_type+"_Old")
-        os.system("mkdir -p Backup/BackupPre_"+j.fit_type+"; mv PreEstimate_"+j.fit_type+" Backup/BackupPre")
+        os.system("rm -rf "+backup_dir+"_"+j.fit_type+"_Old; mv "+backup_dir+"_"+j.fit_type+" "+backup_dir+"_"+j.fit_type+"_Old")
+        os.system("mkdir -p "+backup_dir+"_"+j.fit_type+"; mv PreEstimate_"+j.fit_type+" "+backup_dir)
         # Use the combinations to modify the cfg, generate directories with the given name, and submit the jobs.
         for c in combinations:
             # pT > 2 GeV/c
-            prepare_job(c, j.fit_type, 0., 1./2., j.stub_coordinates, j.track_parameters, True)
+            prepare_job(c, j.fit_type, 0., 1./2., j.stub_coordinates, j.track_parameters, pre_estimate)
 
 
-job_types = [JobType("Transverse", '"phi"', '"charge/pt"')]
-job_types.append(JobType("Transverse_Pz", '"phi"', '"chargeOverPz"'))
-job_types.append(JobType("Longitudinal", '"z"', '"cotTheta"'))
-job_types.append(JobType("Longitudinal_Rz", '"R", "z"', '"cotTheta"'))
+# # Prepare and submit jobs for the pre-estimates of pt (or pz) and cot(theta)
+# pre_estimate = True
+# job_types_pre = [JobType("Transverse", '"phi"', '"charge/pt"')]
+# job_types_pre.append(JobType("Transverse_Pz", '"phi"', '"chargeOverPz"'))
+# job_types_pre.append(JobType("Longitudinal", '"z"', '"cotTheta"'))
+# job_types_pre.append(JobType("Longitudinal_Rz", '"R", "z"', '"cotTheta"'))
+# prepare_all_jobs(job_types_pre, combinations, pre_estimate)
 
-prepare_pre_estimate_jobs(job_types, combinations)
-
-
-
-os.system("rm -rf Backup_Old; mv Backup Backup_Old; mkdir Backup; mv Combinations Backup")
-
+# Prepare and submit jobs for the second PCA
+pre_estimate = False
+job_types_pre = [JobType("Transverse", '"CorrectedPhi"', '"charge/pt", "phi"')]
+job_types_pre.append(JobType("Transverse", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
+job_types_pre.append(JobType("Transverse_Pz", '"CorrectedPhiEndcapsPz"', '"charge/pt", "phi"'))
+job_types_pre.append(JobType("Longitudinal", '"CorrectedZ"', '"cotTheta", "z0"'))
+job_types_pre.append(JobType("Longitudinal_Rz", '"CorrectedZ"', '"cotTheta", "z0"'))
+prepare_all_jobs(job_types_pre, combinations, pre_estimate)
 
 
 
