@@ -132,6 +132,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
     }
     if (varNames[i] == "z" ||
         varNames[i] == "CorrectedZ" ||
+        varNames[i] == "CorrectedZEndcaps" ||
         varNames[i] == "CorrectedZSecondOrder") {
       zIndex_ = i;
       ++countZNames;
@@ -317,6 +318,12 @@ bool TreeReader::readVariables() {
 //    if (layer == 5) layerFive = true;
 
 
+//    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
+//                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
+//    if (phiIndex_ != -1) stubsRZPhi_.back().setCorrPhi(vars_[phiIndex_]->at(k, layersFound_));
+//    if (zIndex_ != -1) stubsRZPhi_.back().setCorrZ(vars_[zIndex_]->at(k, layersFound_));
+//    int region = vars_[0]->getRegion(tree_->m_stub_x, tree_->m_stub_y, layersFound_);
+//    stubsRZPhi_.back().setMeanR(vars_[0]->meanRadius(layer, region));
 
 
     if (allRequiredLayers_.find(layer) == allRequiredLayers_.end()) continue;
@@ -329,8 +336,8 @@ bool TreeReader::readVariables() {
     if (layersFound_.count(layer) != 0) continue;
     // Only store stubs in layers required by at least one variable.
     layersFound_.insert(std::make_pair(layer, k));
-    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
-                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
+//    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
+//                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
   }
 
 
