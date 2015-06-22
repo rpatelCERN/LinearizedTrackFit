@@ -961,7 +961,6 @@ class GetVarCorrectedPhiPz : public GetTreeVariable
   }
   virtual ~GetVarCorrectedPhiPz() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
-    int region = getRegion(var_x, var_y, layersFound);
     // This is the "estimate" method that uses the phi
     double estimatedCotTheta = cotThetaEstimator_.estimate(var_x, var_y, var_z, layersFound);
     double estimatedChargeOverPz = chargeOverPzEstimator_.estimate(var_x, var_y, layersFound);
