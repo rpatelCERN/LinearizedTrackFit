@@ -34,8 +34,7 @@ def array_to_string(a):
 
 
 # Function to generate the configuration file for a given combination
-def prepare_job(c, fit_type, oneOverPt_min, oneOverPt_max, stub_coordinates, track_parameters,
-                pre_estimate):
+def prepare_job(c, fit_type, oneOverPt_min, oneOverPt_max, stub_coordinates, track_parameters, pre_estimate):
     print "preparing files for", c.name
     job_dir = "Combinations_"+fit_type+"/"+c.name+"/"
     pre_estimate_file_transverse = ""
@@ -43,12 +42,13 @@ def prepare_job(c, fit_type, oneOverPt_min, oneOverPt_max, stub_coordinates, tra
     if pre_estimate:
         job_dir = "PreEstimate_"+fit_type+"/"+c.name+"/"
     else:
-        pre_estimate_file_transverse = "PreEstimate_Transverse/"+c.name+"/matrixVD_0_pre_chargeOverPt.txt"
-        pre_estimate_file_longitudinal = "PreEstimate_Longitudinal/"+c.name+"/matrixVD_0_pre_cotTheta.txt"
+        current_dir = os.getcwd()
+        pre_estimate_file_transverse = current_dir+"/PreEstimate_Transverse/"+c.name+"/matrixVD_0_pre_chargeOverPt.txt"
+        pre_estimate_file_longitudinal = current_dir+"/PreEstimate_Longitudinal/"+c.name+"/matrixVD_0_pre_cotTheta.txt"
         if fit_type.find("Transverse_Pz") != -1:
-            pre_estimate_file_transverse = "PreEstimate_Transverse_Pz/"+c.name+"/matrixVD_0_pre_chargeOverPz.txt"
+            pre_estimate_file_transverse = current_dir+"/PreEstimate_Transverse_Pz/"+c.name+"/matrixVD_0_pre_chargeOverPz.txt"
         if fit_type.find("Longitudinal_Rz") != -1:
-            pre_estimate_file_longitudinal = "PreEstimate_Longitudinal_Rz/"+c.name+"/matrixVD_0_pre_cotTheta.txt"
+            pre_estimate_file_longitudinal = current_dir+"/PreEstimate_Longitudinal_Rz/"+c.name+"/matrixVD_0_pre_cotTheta.txt"
 
     os.system("mkdir -p "+job_dir)
 
@@ -163,7 +163,11 @@ class JobType:
         self.track_parameters = track_parameters
 
 
-def prepare_all_jobs(job_types, combinations, pre_estimate):
+def prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 2., pt_max = 0.):
+    oneOverPtMin = 0.
+    oneOverPtMax = 1./pt_min
+    if pt_max != 0.:
+        oneOverPtMin = 1/pt_max
     backup_dir = "Backup/Backup"
     if pre_estimate:
         backup_dir += "Pre"
@@ -172,8 +176,7 @@ def prepare_all_jobs(job_types, combinations, pre_estimate):
         os.system("mkdir -p "+backup_dir+"_"+j.fit_type+"; mv PreEstimate_"+j.fit_type+" "+backup_dir)
         # Use the combinations to modify the cfg, generate directories with the given name, and submit the jobs.
         for c in combinations:
-            # pT > 2 GeV/c
-            prepare_job(c, j.fit_type, 0., 1./2., j.stub_coordinates, j.track_parameters, pre_estimate)
+            prepare_job(c, j.fit_type, oneOverPtMin, oneOverPtMax, j.stub_coordinates, j.track_parameters, pre_estimate)
 
 
 # # Prepare and submit jobs for the pre-estimates of pt (or pz) and cot(theta)
@@ -186,16 +189,37 @@ def prepare_all_jobs(job_types, combinations, pre_estimate):
 
 # Prepare and submit jobs for the second PCA
 pre_estimate = False
-job_types_pre = [JobType("Transverse", '"CorrectedPhi"', '"charge/pt", "phi"')]
-job_types_pre.append(JobType("Transverse", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
-job_types_pre.append(JobType("Transverse_Pz", '"CorrectedPhiEndcapsPz"', '"charge/pt", "phi"'))
-job_types_pre.append(JobType("Longitudinal", '"CorrectedZ"', '"cotTheta", "z0"'))
-job_types_pre.append(JobType("Longitudinal_Rz", '"CorrectedZ"', '"cotTheta", "z0"'))
-prepare_all_jobs(job_types_pre, combinations, pre_estimate)
+job_types = [JobType("Transverse", '"CorrectedPhi"', '"charge/pt", "phi"')]
+job_types.append(JobType("Transverse_SecondOrder", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
+job_types.append(JobType("Transverse_Pz", '"CorrectedPhiEndcapsPz"', '"charge/pt", "phi"'))
+job_types.append(JobType("Longitudinal", '"CorrectedZ"', '"cotTheta", "z0"'))
+job_types.append(JobType("Longitudinal_Rz", '"CorrectedZ"', '"cotTheta", "z0"'))
+job_types.append(JobType("Longitudinal_SecondOrder", '"CorrectedZSecondOrder"', '"cotTheta", "z0"'))
+job_types.append(JobType("Longitudinal_Rz_SecondOrder", '"CorrectedZSecondOrder"', '"cotTheta", "z0"'))
+prepare_all_jobs(job_types, combinations, pre_estimate)
 
+# Transverse plane only and splitting low and high pT
 
+# 2 < pT < 10 GeV/c
+job_types = [JobType("Transverse_2_10", '"CorrectedPhi"', '"charge/pt", "phi"')]
+job_types.append(JobType("Transverse_SecondOrder_2_10", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
+job_types.append(JobType("Transverse_Pz_2_10", '"CorrectedPhiEndcapsPz"', '"charge/pt", "phi"'))
+prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 2., pt_max = 10.)
 
-# prepare_job(c, "Transverse_lowPt", 1./10., 1./2., '"phi"', '"charge/pt"', True)
-# prepare_job(c, "Transverse_highPt", 0., 1./10., '"phi"', '"charge/pt"', True)
-# prepare_job(c, "Transverse_lowPt_15", 1./15., 1./2., '"phi"', '"charge/pt"', True)
-# prepare_job(c, "Transverse_highPt_15", 0., 1./15., '"phi"', '"charge/pt"', True)
+# pT > 10 GeV/c
+job_types = [JobType("Transverse_10_more", '"CorrectedPhi"', '"charge/pt", "phi"')]
+job_types.append(JobType("Transverse_SecondOrder_10_more", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
+job_types.append(JobType("Transverse_Pz_10_more", '"CorrectedPhiEndcapsPz"', '"charge/pt", "phi"'))
+prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 10.)
+
+# 2 < pT < 15 GeV/c
+job_types = [JobType("Transverse_2_15", '"CorrectedPhi"', '"charge/pt", "phi"')]
+job_types.append(JobType("Transverse_SecondOrder_2_15", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
+job_types.append(JobType("Transverse_Pz_2_15", '"CorrectedPhiEndcapsPz"', '"charge/pt", "phi"'))
+prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 2., pt_max = 15.)
+
+# pT > 15 GeV/c
+job_types = [JobType("Transverse_15_more", '"CorrectedPhi"', '"charge/pt", "phi"')]
+job_types.append(JobType("Transverse_SecondOrder_15_more", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
+job_types.append(JobType("Transverse_Pz_15_more", '"CorrectedPhiEndcapsPz"', '"charge/pt", "phi"'))
+prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 15.)
