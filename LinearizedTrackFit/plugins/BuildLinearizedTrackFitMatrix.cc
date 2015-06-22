@@ -255,6 +255,7 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
     requiredLayers_.insert(std::make_pair("phi", std::unordered_set<int>(layersPhi_.begin(), layersPhi_.end())));
     requiredLayers_.insert(std::make_pair("CorrectedPhi", std::unordered_set<int>(layersPhi_.begin(), layersPhi_.end())));
+    requiredLayers_.insert(std::make_pair("CorrectedPhiPz", std::unordered_set<int>(layersPhi_.begin(), layersPhi_.end())));
     requiredLayers_.insert(std::make_pair("CorrectedPhiSecondOrder", std::unordered_set<int>(layersPhi_.begin(), layersPhi_.end())));
     requiredLayers_.insert(std::make_pair("phiOverR", std::unordered_set<int>(layersPhiOverR_.begin(), layersPhiOverR_.end())));
     requiredLayers_.insert(std::make_pair("ChargeSignedPhi", std::unordered_set<int>(layersChargeSignedPhi_.begin(), layersChargeSignedPhi_.end())));

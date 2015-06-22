@@ -4,9 +4,10 @@ Base2DHistograms::Base2DHistograms(const std::string & name, const int inputSize
     inputSize_(inputSize), name_(name)
 {
   TString hName = "RZ_"+name;
-  hRZ_ = new TH2F(hName, hName, 600, 0., 0., 240, 0., 0.);
+  // hRZ_ = new TH2F(hName, hName, 600, 0., 0., 240, 0., 0.);
+  hRZ_ = new TH2F(hName, hName, 2200, 0., 110., 3000, 0., 300.);
   // hRZCorr_ = new TH2F(hName+"Corr", hName+"Corr", 600, 0., 0., 240, 0., 0.);
-  hRZCorr_ = new TH2F(hName+"Corr", hName+"Corr", 2200, -110., 110., 3000, 0., 300.);
+  hRZCorr_ = new TH2F(hName+"Corr", hName+"Corr", 2200, 0., 110., 3000, 0., 300.);
   hName = "xy_"+name;
   hxy_ = new TH2F(hName, hName, 200, 0., 0., 200, 0., 0.);
   hxyCorr_ = new TH2F(hName+"Corr", hName+"Corr", 200, 0., 0., 200, 0., 0.);
