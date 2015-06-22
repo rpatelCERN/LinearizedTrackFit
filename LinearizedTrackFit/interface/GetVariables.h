@@ -947,6 +947,38 @@ private:
 };
 
 
+// Corrected phi coordinate variable of the stubs specific to the endcaps. The only difference is the region input
+class GetVarCorrectedPhiPz : public GetTreeVariable
+{
+ public:
+  GetVarCorrectedPhiPz(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+                              const std::string & firstOrderCoefficientsPzFileName,
+                              const std::string & firstOrderCoefficientsCotThetaFileName) :
+      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z),
+      var_layer(tree->m_stub_layer),
+      chargeOverPzEstimator_(firstOrderCoefficientsPzFileName),
+      cotThetaEstimator_(firstOrderCoefficientsCotThetaFileName) {
+  }
+  virtual ~GetVarCorrectedPhiPz() {}
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+    int region = getRegion(var_x, var_y, layersFound);
+    // This is the "estimate" method that uses the phi
+    double estimatedCotTheta = cotThetaEstimator_.estimate(var_x, var_y, var_z, layersFound);
+    double estimatedChargeOverPz = chargeOverPzEstimator_.estimate(var_x, var_y, layersFound);
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
+    double phi = std::atan2(var_y->at(k), var_x->at(k));
+    return (phi + estimatedChargeOverPz*estimatedCotTheta*DeltaR*3.8114*0.003/2.);
+  }
+ private:
+  std::vector<float> * var_x;
+  std::vector<float> * var_y;
+  std::vector<float> * var_z;
+  std::vector<int> * var_layer;
+  Estimator chargeOverPzEstimator_;
+  Estimator cotThetaEstimator_;
+};
+
+
 // estimatedCharge*R variable of the stubs
 class GetVarCorrectedPhiSecondOrderGen : public GetTreeVariable
 {

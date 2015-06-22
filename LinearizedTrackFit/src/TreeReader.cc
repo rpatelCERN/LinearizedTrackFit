@@ -46,6 +46,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
 //    else if (varName == "CorrectedPhiHybridRegion6") vars_.push_back(std::make_shared<GetVarCorrectedPhi>(tree_, requiredLayers_["phi"], "matrixVD_0_pre_chargeOverPt_region6.txt"));
 //    else if (varName == "CorrectedPhiHybridRegion5") vars_.push_back(std::make_shared<GetVarCorrectedPhi>(tree_, requiredLayers_["phi"], "matrixVD_0_pre_chargeOverPt_region5.txt"));
     else if (varName == "CorrectedPhiSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrder>(tree_, requiredLayers_["phi"], firstOrderChargeOverPtCoefficientsFileName));
+    else if (varName == "CorrectedPhiPz") vars_.push_back(std::make_shared<GetVarCorrectedPhiPz>(tree_, requiredLayers_["phi"], firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName));
     else if (varName == "CorrectedPhiSecondOrderWithD0") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderWithD0>(tree_, requiredLayers_["phi"]));
     else if (varName == "CorrectedPhiThirdOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrder>(tree_, requiredLayers_["phi"], firstOrderChargeOverPtCoefficientsFileName));
     else if (varName == "CorrectedPhiSecondOrderGen") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderGen>(tree_, requiredLayers_["phi"]));
