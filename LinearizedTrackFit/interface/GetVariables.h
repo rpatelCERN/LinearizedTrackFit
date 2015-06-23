@@ -1767,7 +1767,7 @@ public:
     int region = getRegion(var_x, var_y, layersFound);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     double DeltaR = R - meanRadius(var_layer->at(k), region);
-    double cotTheta = cotThetaEstimator_.estimate(var_z, layersFound);
+    double cotTheta = cotThetaEstimator_.estimate(var_x, var_y, var_z, layersFound);
     double oneOverRho = (3.8114*0.003)*chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
     return (var_z->at(k) - (DeltaR + 1/24.*std::pow(R, 3)*(oneOverRho*oneOverRho))*cotTheta);
     // double DeltaRCube = std::pow(R, 3) - std::pow(meanRadius(var_layer->at(k)), 3);

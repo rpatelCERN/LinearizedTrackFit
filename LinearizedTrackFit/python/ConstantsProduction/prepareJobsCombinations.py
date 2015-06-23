@@ -189,37 +189,42 @@ def prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 2., pt_max 
 
 # Prepare and submit jobs for the second PCA
 pre_estimate = False
-job_types = [JobType("Transverse", '"CorrectedPhi"', '"charge/pt", "phi"')]
-job_types.append(JobType("Transverse_SecondOrder", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
+job_types = []
+# job_types.append(JobType("Transverse", '"CorrectedPhi"', '"charge/pt", "phi"'))
+# job_types.append(JobType("Transverse_SecondOrder", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
 job_types.append(JobType("Transverse_Pz", '"CorrectedPhiPz"', '"charge/pt", "phi"'))
-job_types.append(JobType("Longitudinal", '"CorrectedZ"', '"cotTheta", "z0"'))
-job_types.append(JobType("Longitudinal_Rz", '"CorrectedZ"', '"cotTheta", "z0"'))
-job_types.append(JobType("Longitudinal_SecondOrder", '"CorrectedZSecondOrder"', '"cotTheta", "z0"'))
-job_types.append(JobType("Longitudinal_Rz_SecondOrder", '"CorrectedZSecondOrder"', '"cotTheta", "z0"'))
+# job_types.append(JobType("Longitudinal", '"CorrectedZ"', '"cotTheta", "z0"'))
+# job_types.append(JobType("Longitudinal_Rz", '"CorrectedZ"', '"cotTheta", "z0"'))
+# job_types.append(JobType("Longitudinal_SecondOrder", '"CorrectedZSecondOrder"', '"cotTheta", "z0"'))
+# job_types.append(JobType("Longitudinal_Rz_SecondOrder", '"CorrectedZSecondOrder"', '"cotTheta", "z0"'))
 prepare_all_jobs(job_types, combinations, pre_estimate)
 
 # Transverse plane only and splitting low and high pT
 
 # 2 < pT < 10 GeV/c
-job_types = [JobType("Transverse_2_10", '"CorrectedPhi"', '"charge/pt", "phi"')]
-job_types.append(JobType("Transverse_SecondOrder_2_10", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
+job_types = []
+# job_types.append(JobType("Transverse_2_10", '"CorrectedPhi"', '"charge/pt", "phi"'))
+# job_types.append(JobType("Transverse_SecondOrder_2_10", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
 job_types.append(JobType("Transverse_Pz_2_10", '"CorrectedPhiPz"', '"charge/pt", "phi"'))
 prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 2., pt_max = 10.)
 
 # pT > 10 GeV/c
-job_types = [JobType("Transverse_10_more", '"CorrectedPhi"', '"charge/pt", "phi"')]
-job_types.append(JobType("Transverse_SecondOrder_10_more", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
+job_types = []
+# job_types.append(JobType("Transverse_10_more", '"CorrectedPhi"', '"charge/pt", "phi"'))
+# job_types.append(JobType("Transverse_SecondOrder_10_more", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
 job_types.append(JobType("Transverse_Pz_10_more", '"CorrectedPhiPz"', '"charge/pt", "phi"'))
 prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 10.)
 
 # 2 < pT < 15 GeV/c
-job_types = [JobType("Transverse_2_15", '"CorrectedPhi"', '"charge/pt", "phi"')]
-job_types.append(JobType("Transverse_SecondOrder_2_15", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
+job_types = []
+# job_types.append(JobType("Transverse_2_15", '"CorrectedPhi"', '"charge/pt", "phi"'))
+# job_types.append(JobType("Transverse_SecondOrder_2_15", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
 job_types.append(JobType("Transverse_Pz_2_15", '"CorrectedPhiPz"', '"charge/pt", "phi"'))
 prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 2., pt_max = 15.)
 
 # pT > 15 GeV/c
-job_types = [JobType("Transverse_15_more", '"CorrectedPhi"', '"charge/pt", "phi"')]
-job_types.append(JobType("Transverse_SecondOrder_15_more", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
+job_types = []
+# job_types.append(JobType("Transverse_15_more", '"CorrectedPhi"', '"charge/pt", "phi"'))
+# job_types.append(JobType("Transverse_SecondOrder_15_more", '"CorrectedPhiSecondOrder"', '"charge/pt", "phi"'))
 job_types.append(JobType("Transverse_Pz_15_more", '"CorrectedPhiPz"', '"charge/pt", "phi"'))
 prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 15.)
