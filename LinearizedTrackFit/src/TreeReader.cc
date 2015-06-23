@@ -382,7 +382,6 @@ bool TreeReader::readVariables() {
   // Check the distance of the stubs from the generated track
   if (!closeDistanceFromGenTrack()) return false;
 
-
   if (adjustDiscontinuity_) {
     // Avoid discontinuity in phi
     phiDiscontinuous_ = false;

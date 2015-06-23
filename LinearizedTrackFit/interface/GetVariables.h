@@ -1589,7 +1589,6 @@ class GetVarCorrectedPhiEndcapsPz : public GetTreeVariable
     // This is the "estimate" method that uses the phi
     double estimatedCotTheta = cotThetaEstimator_.estimate(var_x, var_y, var_z, layersFound, region);
     double estimatedChargeOverPz = chargeOverPzEstimator_.estimate(var_x, var_y, layersFound, region);
-    int region = getRegion(var_x, var_y, layersFound);
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k), region);
     double phi = std::atan2(var_y->at(k), var_x->at(k));
     return (phi + estimatedChargeOverPz*estimatedCotTheta*DeltaR*3.8114*0.003/2.);
