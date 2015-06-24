@@ -21,7 +21,7 @@
 // system include files
 #include <vector>
 #include <string>
-#include <unordered_set>
+#include <set>
 
 // CMSSW include files
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -252,25 +252,11 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     gic.z0Regions = z0Regions_;
     gic.chargeRegions = chargeRegions_;
 
-    std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
-    requiredLayers_.insert(std::make_pair("phi", std::unordered_set<int>(layersPhi_.begin(), layersPhi_.end())));
-    requiredLayers_.insert(std::make_pair("CorrectedPhi", std::unordered_set<int>(layersPhi_.begin(), layersPhi_.end())));
-    requiredLayers_.insert(std::make_pair("CorrectedPhiPz", std::unordered_set<int>(layersPhi_.begin(), layersPhi_.end())));
-    requiredLayers_.insert(std::make_pair("CorrectedPhiSecondOrder", std::unordered_set<int>(layersPhi_.begin(), layersPhi_.end())));
-    requiredLayers_.insert(std::make_pair("phiOverR", std::unordered_set<int>(layersPhiOverR_.begin(), layersPhiOverR_.end())));
-    requiredLayers_.insert(std::make_pair("ChargeSignedPhi", std::unordered_set<int>(layersChargeSignedPhi_.begin(), layersChargeSignedPhi_.end())));
-    requiredLayers_.insert(std::make_pair("GenChargeSignedPhi", std::unordered_set<int>(layersGenChargeSignedPhi_.begin(), layersGenChargeSignedPhi_.end())));
-    requiredLayers_.insert(std::make_pair("R", std::unordered_set<int>(layersR_.begin(), layersR_.end())));
-    requiredLayers_.insert(std::make_pair("oneOverR", std::unordered_set<int>(layersOneOverR_.begin(), layersOneOverR_.end())));
-    requiredLayers_.insert(std::make_pair("ChargeSignedR", std::unordered_set<int>(layersChargeSignedR_.begin(), layersChargeSignedR_.end())));
-    requiredLayers_.insert(std::make_pair("ChargeCorrectedR", std::unordered_set<int>(layersChargeCorrectedR_.begin(), layersChargeCorrectedR_.end())));
-    requiredLayers_.insert(std::make_pair("ChargeOverPtCorrectedR", std::unordered_set<int>(layersChargeOverPtCorrectedR_.begin(), layersChargeOverPtCorrectedR_.end())));
-    requiredLayers_.insert(std::make_pair("ChargeOverPtCorrectedRCube", std::unordered_set<int>(layersChargeOverPtCorrectedRCube_.begin(), layersChargeOverPtCorrectedRCube_.end())));
-    requiredLayers_.insert(std::make_pair("z", std::unordered_set<int>(layersZ_.begin(), layersZ_.end())));
-    requiredLayers_.insert(std::make_pair("CorrectedZ", std::unordered_set<int>(layersZ_.begin(), layersZ_.end())));
-    requiredLayers_.insert(std::make_pair("CorrectedZSecondOrder", std::unordered_set<int>(layersZ_.begin(), layersZ_.end())));
-    requiredLayers_.insert(std::make_pair("DeltaS", std::unordered_set<int>(layersDeltaS_.begin(), layersDeltaS_.end())));
-    requiredLayers_.insert(std::make_pair("DeltaSDeltaR", std::unordered_set<int>(layersR_.begin(), layersR_.end())));
+    std::unordered_map<std::string, std::set<int> > requiredLayers_;
+    requiredLayers_.insert(std::make_pair("phi", std::set<int>(layersPhi_.begin(), layersPhi_.end())));
+    requiredLayers_.insert(std::make_pair("R", std::set<int>(layersR_.begin(), layersR_.end())));
+    requiredLayers_.insert(std::make_pair("z", std::set<int>(layersZ_.begin(), layersZ_.end())));
+    requiredLayers_.insert(std::make_pair("DeltaS", std::set<int>(layersDeltaS_.begin(), layersDeltaS_.end())));
 
 
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
