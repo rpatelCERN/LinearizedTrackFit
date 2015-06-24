@@ -43,7 +43,7 @@ void LinearFitter::readRequiredLayers(const std::string & inputFileName)
     inputFile >> varName;
     if (requiredLayers_.count(varName) == 0 ) {
       std::cout << "variable name: " << varName << std::endl;
-      std::unordered_set<int> layers;
+      std::set<int> layers;
       inputFile >> layer;
       while (layer != "-") {
         std::cout << "layer: " << layer << std::endl;

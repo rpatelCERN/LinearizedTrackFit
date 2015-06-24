@@ -1,7 +1,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
 
 TreeReader::TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-                       const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
+                       const std::unordered_map<std::string, std::set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
                        const std::unordered_map<int, double> & distanceCutsTransverse, const std::unordered_map<int, double> & distanceCutsLongitudinal,
                        const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames,
                        const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName) :
@@ -17,11 +17,12 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   getParPhi0_(std::make_shared<GetParPhi>(tree_)),
   getParZ0_(std::make_shared<GetParZ0>(tree_)),
   getParD0_(std::make_shared<GetParD0>(tree_)),
-  getVar_(std::make_shared<GetVarPhi>(tree_, requiredLayers_["R"])),
+  getVar_(std::make_shared<GetVarPhi>("phi", tree_, requiredLayers_["R"])),
   phiIndex_(-1),
   zIndex_(-1),
   phiDiscontinuous_(false),
-  adjustDiscontinuity_(false)
+  adjustDiscontinuity_(false),
+  regionForMeanR_(-1)
 {
   reset(eventsFractionStart, eventsFractionEnd);
 
@@ -30,45 +31,42 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
 
   // Store the classes that will return the selected variables for each stub
   for (const std::string varName : varNames) {
-    if (varName == "phi") vars_.push_back(std::make_shared<GetVarPhi>(tree_, requiredLayers_["phi"]));
-    else if (varName == "phiOverR") vars_.push_back(std::make_shared<GetVarPhiOverR>(tree_, requiredLayers_["phiOverR"]));
-    else if (varName == "phiR") vars_.push_back(std::make_shared<GetVarPhiR>(tree_, requiredLayers_["phiR"]));
-    else if (varName == "z") vars_.push_back(std::make_shared<GetVarZ>(tree_, requiredLayers_["z"]));
-    else if (varName == "R") vars_.push_back(std::make_shared<GetVarR>(tree_, requiredLayers_["R"]));
-    else if (varName == "oneOverR") vars_.push_back(std::make_shared<GetVarR>(tree_, requiredLayers_["oneOverR"]));
-    else if (varName == "DeltaS") vars_.push_back(std::make_shared<GetVarDeltaS>(tree_, requiredLayers_["DeltaS"]));
-    else if (varName == "ChargeSignedR") vars_.push_back(std::make_shared<GetVarChargeSignedR>(tree_, requiredLayers_["ChargeSignedR"]));
-    else if (varName == "ChargeOverPtCorrectedR") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedR>(tree_, requiredLayers_["ChargeOverPtCorrectedR"], firstOrderChargeOverPtCoefficientsFileName));
-    else if (varName == "ChargeOverPtCorrectedRCube") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedRCube>(tree_, requiredLayers_["ChargeOverPtCorrectedRCube"]));
-    else if (varName == "RCotTheta") vars_.push_back(std::make_shared<GetVarRCotTheta>(tree_, requiredLayers_["RCotTheta"], firstOrderCotThetaCoefficientsFileName));
-    else if (varName == "CorrectedPhi") vars_.push_back(std::make_shared<GetVarCorrectedPhi>(tree_, requiredLayers_["phi"], firstOrderChargeOverPtCoefficientsFileName));
-//    else if (varName == "CorrectedPhiHybridRegion7") vars_.push_back(std::make_shared<GetVarCorrectedPhi>(tree_, requiredLayers_["phi"], "matrixVD_0_pre_chargeOverPt_region7.txt"));
-//    else if (varName == "CorrectedPhiHybridRegion6") vars_.push_back(std::make_shared<GetVarCorrectedPhi>(tree_, requiredLayers_["phi"], "matrixVD_0_pre_chargeOverPt_region6.txt"));
-//    else if (varName == "CorrectedPhiHybridRegion5") vars_.push_back(std::make_shared<GetVarCorrectedPhi>(tree_, requiredLayers_["phi"], "matrixVD_0_pre_chargeOverPt_region5.txt"));
-    else if (varName == "CorrectedPhiSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrder>(tree_, requiredLayers_["phi"], firstOrderChargeOverPtCoefficientsFileName));
-    else if (varName == "CorrectedPhiPz") vars_.push_back(std::make_shared<GetVarCorrectedPhiPz>(tree_, requiredLayers_["phi"], firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName));
-    else if (varName == "CorrectedPhiSecondOrderWithD0") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderWithD0>(tree_, requiredLayers_["phi"]));
-    else if (varName == "CorrectedPhiThirdOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrder>(tree_, requiredLayers_["phi"], firstOrderChargeOverPtCoefficientsFileName));
-    else if (varName == "CorrectedPhiSecondOrderGen") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderGen>(tree_, requiredLayers_["phi"]));
-    else if (varName == "CorrectedPhiExactWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiExactWithD0Gen>(tree_, requiredLayers_["phi"]));
-    else if (varName == "CorrectedPhiFirstOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiFirstOrderWithD0Gen>(tree_, requiredLayers_["phi"]));
-    else if (varName == "CorrectedPhiSecondOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderWithD0Gen>(tree_, requiredLayers_["phi"]));
-    else if (varName == "CorrectedPhiThirdOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrderWithD0Gen>(tree_, requiredLayers_["phi"]));
-    else if (varName == "CorrectedZ") vars_.push_back(std::make_shared<GetVarCorrectedZ>(tree_, requiredLayers_["z"], firstOrderCotThetaCoefficientsFileName));
-    else if (varName == "CorrectedZHybridRegion7") vars_.push_back(std::make_shared<GetVarCorrectedZ>(tree_, requiredLayers_["z"], "matrixVD_0_pre_cotTheta_l5d1_6coords.txt"));
-    else if (varName == "CorrectedZHybridRegion6") vars_.push_back(std::make_shared<GetVarCorrectedZ>(tree_, requiredLayers_["z"], "matrixVD_0_pre_cotTheta_l4d2_6coords.txt"));
-    else if (varName == "CorrectedZHybridRegion5") vars_.push_back(std::make_shared<GetVarCorrectedZ>(tree_, requiredLayers_["z"], "matrixVD_0_pre_cotTheta_l3d3_6coords.txt"));
-    else if (varName == "CorrectedZSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedZSecondOrder>(tree_, requiredLayers_["z"], firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName));
-    else if (varName == "CorrectedZExactWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedZExactWithD0Gen>(tree_, requiredLayers_["z"]));
-    else if (varName == "CorrectedRExactWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedRExactWithD0Gen>(tree_, requiredLayers_["R"]));
-    else if (varName == "CorrectedR") vars_.push_back(std::make_shared<GetVarCorrectedR>(tree_, requiredLayers_["R"]));
-    else if (varName == "CorrectedZEndcaps") vars_.push_back(std::make_shared<GetVarCorrectedZEndcaps>(tree_, requiredLayers_["z"]));
-    else if (varName == "DeltaZOverDeltaR") vars_.push_back(std::make_shared<GetVarDeltaZOverDeltaR>(tree_, requiredLayers_["z"]));
-    else if (varName == "Mixed") vars_.push_back(std::make_shared<GetVarMixed>(tree_, requiredLayers_["z"]));
-    else if (varName == "CorrectedPhiEndcaps") vars_.push_back(std::make_shared<GetVarCorrectedPhiEndcaps>(tree_, requiredLayers_["phi"]));
-    else if (varName == "CorrectedPhiSecondOrderEndcaps") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderEndcaps>(tree_, requiredLayers_["phi"]));
-    else if (varName == "CorrectedPhiEndcapsPz") vars_.push_back(std::make_shared<GetVarCorrectedPhiEndcapsPz>(tree_, requiredLayers_["phi"]));
-    else if (varName == "CorrectedZEndcapsRegions34") vars_.push_back(std::make_shared<GetVarCorrectedZEndcapsRegions34>(tree_, requiredLayers_["z"]));
+    if (varName == "phi") vars_.push_back(std::make_shared<GetVarPhi>(varName, tree_, requiredLayers_["phi"]));
+    else if (varName == "phiOverR") vars_.push_back(std::make_shared<GetVarPhiOverR>(varName, tree_, requiredLayers_["phi"]));
+    else if (varName == "phiR") vars_.push_back(std::make_shared<GetVarPhiR>(varName, tree_, requiredLayers_["phi"]));
+    else if (varName == "z") vars_.push_back(std::make_shared<GetVarZ>(varName, tree_, requiredLayers_["z"]));
+    else if (varName == "R") vars_.push_back(std::make_shared<GetVarR>(varName, tree_, requiredLayers_["R"]));
+    else if (varName == "oneOverR") vars_.push_back(std::make_shared<GetVarR>(varName, tree_, requiredLayers_["R"]));
+    else if (varName == "DeltaS") vars_.push_back(std::make_shared<GetVarDeltaS>(varName, tree_, requiredLayers_["DeltaS"]));
+    else if (varName == "ChargeSignedR") vars_.push_back(std::make_shared<GetVarChargeSignedR>(varName, tree_, requiredLayers_["R"]));
+    else if (varName == "ChargeOverPtCorrectedR") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedR>(varName, tree_, requiredLayers_["R"], firstOrderChargeOverPtCoefficientsFileName));
+    else if (varName == "ChargeOverPtCorrectedRCube") vars_.push_back(std::make_shared<GetVarChargeOverPtCorrectedRCube>(varName, tree_, requiredLayers_["R"]));
+    else if (varName == "RCotTheta") vars_.push_back(std::make_shared<GetVarRCotTheta>(varName, tree_, requiredLayers_["R"], firstOrderCotThetaCoefficientsFileName));
+    else if (varName == "CorrectedPhi") vars_.push_back(std::make_shared<GetVarCorrectedPhi>(varName, tree_, requiredLayers_["phi"], firstOrderChargeOverPtCoefficientsFileName));
+    else if (varName == "CorrectedPhiSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrder>(varName, tree_, requiredLayers_["phi"], firstOrderChargeOverPtCoefficientsFileName));
+    else if (varName == "CorrectedPhiPz") vars_.push_back(std::make_shared<GetVarCorrectedPhiPz>(varName, tree_, requiredLayers_["phi"], firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName));
+    else if (varName == "CorrectedPhiSecondOrderWithD0") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderWithD0>(varName, tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiThirdOrder") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrder>(varName, tree_, requiredLayers_["phi"], firstOrderChargeOverPtCoefficientsFileName));
+    else if (varName == "CorrectedPhiSecondOrderGen") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderGen>(varName, tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiExactWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiExactWithD0Gen>(varName, tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiFirstOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiFirstOrderWithD0Gen>(varName, tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiSecondOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderWithD0Gen>(varName, tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiThirdOrderWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedPhiThirdOrderWithD0Gen>(varName, tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedZ") vars_.push_back(std::make_shared<GetVarCorrectedZ>(varName, tree_, requiredLayers_["z"], firstOrderCotThetaCoefficientsFileName));
+    else if (varName == "CorrectedZHybridRegion7") vars_.push_back(std::make_shared<GetVarCorrectedZ>(varName, tree_, requiredLayers_["z"], "matrixVD_0_pre_cotTheta_l5d1_6coords.txt"));
+    else if (varName == "CorrectedZHybridRegion6") vars_.push_back(std::make_shared<GetVarCorrectedZ>(varName, tree_, requiredLayers_["z"], "matrixVD_0_pre_cotTheta_l4d2_6coords.txt"));
+    else if (varName == "CorrectedZHybridRegion5") vars_.push_back(std::make_shared<GetVarCorrectedZ>(varName, tree_, requiredLayers_["z"], "matrixVD_0_pre_cotTheta_l3d3_6coords.txt"));
+    else if (varName == "CorrectedZSecondOrder") vars_.push_back(std::make_shared<GetVarCorrectedZSecondOrder>(varName, tree_, requiredLayers_["z"], firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName));
+    else if (varName == "CorrectedZExactWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedZExactWithD0Gen>(varName, tree_, requiredLayers_["z"]));
+    else if (varName == "CorrectedRExactWithD0Gen") vars_.push_back(std::make_shared<GetVarCorrectedRExactWithD0Gen>(varName, tree_, requiredLayers_["R"]));
+    else if (varName == "CorrectedR") vars_.push_back(std::make_shared<GetVarCorrectedR>(varName, tree_, requiredLayers_["R"]));
+    else if (varName == "CorrectedZEndcaps") vars_.push_back(std::make_shared<GetVarCorrectedZEndcaps>(varName, tree_, requiredLayers_["z"]));
+    else if (varName == "DeltaZOverDeltaR") vars_.push_back(std::make_shared<GetVarDeltaZOverDeltaR>(varName, tree_, requiredLayers_["z"]));
+    else if (varName == "Mixed") vars_.push_back(std::make_shared<GetVarMixed>(varName, tree_, requiredLayers_["z"]));
+    else if (varName == "CorrectedPhiEndcaps") vars_.push_back(std::make_shared<GetVarCorrectedPhiEndcaps>(varName, tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiSecondOrderEndcaps") vars_.push_back(std::make_shared<GetVarCorrectedPhiSecondOrderEndcaps>(varName, tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedPhiEndcapsPz") vars_.push_back(std::make_shared<GetVarCorrectedPhiEndcapsPz>(varName, tree_, requiredLayers_["phi"]));
+    else if (varName == "CorrectedZEndcapsRegions34") vars_.push_back(std::make_shared<GetVarCorrectedZEndcapsRegions34>(varName, tree_, requiredLayers_["z"]));
     else {
       std::cout << "Error: undefined variable name " << varName << std::endl;
       throw;
@@ -77,19 +75,14 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   for (const auto & v : vars_) {
     variablesSize_ += v->layersNum();
     maxRequiredLayers_ = std::max(maxRequiredLayers_, v->layersNum());
-  }
-
-  // Build the full list of names
-  for (const auto & requiredLayers : requiredLayers_) {
-    for (const auto & layer : requiredLayers.second) {
-      allRequiredLayers_.insert(layer);
+    for (const auto & l : *(v->layers())) {
+      allRequiredLayers_.insert(l);
+      requiredLayersVec_.push_back(l);
     }
   }
   for (const auto & layer : allRequiredLayers_) {
-    for (const auto & varName : varNames) {
-      if (requiredLayers_[varName].count(layer) != 0) {
-        variablesNames_.push_back(varName);
-      }
+    for (const auto & v : vars_) {
+      if (v->layer(layer)) variablesNames_.push_back(v->name());
     }
   }
 
@@ -341,6 +334,15 @@ bool TreeReader::readVariables() {
 //                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
   }
 
+  // If we did not find all the required layers we skip the event
+  for (const auto l : allRequiredLayers_) {
+    if (layersFound_.find(l) == layersFound_.end()) return false;
+  }
+
+
+
+  // This needs to be after the layersFound is filled and before the variables are filled
+  regionForMeanR_ = getRegionForMeanR();
 
 
 
@@ -358,7 +360,7 @@ bool TreeReader::readVariables() {
     unsigned int k = m.second;
     for (const auto &var : vars_) {
       if (var->layer(m.first)) {
-        variables_.push_back(var->at(k, layersFound_));
+        variables_.push_back(var->at(k, layersFound_, regionForMeanR_));
         // Take the ladder of the outermost layer in the barrel
         if (m.first == 10) {
           lastLadder_ = tree_->m_stub_ladder->at(k);
@@ -370,10 +372,10 @@ bool TreeReader::readVariables() {
     stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
                                     tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
     if (vars_[0]->layer(m.first)) {
-      if (phiIndex_ != -1) stubsRZPhi_.back().setCorrPhi(vars_[phiIndex_]->at(k, layersFound_));
-      if (zIndex_ != -1) stubsRZPhi_.back().setCorrZ(vars_[zIndex_]->at(k, layersFound_));
-      int region = vars_[0]->getRegion(tree_->m_stub_x, tree_->m_stub_y, layersFound_);
-      stubsRZPhi_.back().setMeanR(vars_[0]->meanRadius(m.first, region));
+      if (phiIndex_ != -1) stubsRZPhi_.back().setCorrPhi(vars_[phiIndex_]->at(k, layersFound_, regionForMeanR_));
+      if (zIndex_ != -1) stubsRZPhi_.back().setCorrZ(vars_[zIndex_]->at(k, layersFound_, regionForMeanR_));
+      // int region = getRegion(tree_->m_stub_x, tree_->m_stub_y, layersFound_);
+      stubsRZPhi_.back().setMeanR(vars_[0]->meanRadius(m.first, regionForMeanR_));
     }
   }
 
@@ -467,4 +469,34 @@ void TreeReader::writeConfiguration()
     outfile << "-" << std::endl << std::endl;
   }
   outfile.close();
+}
+
+
+int TreeReader::getRegionForMeanR() const
+{
+  auto l = layersFound_.find(15);
+  if ((l != layersFound_.end()) && (std::sqrt(std::pow(tree_->m_stub_x->at(l->second), 2) + std::pow(tree_->m_stub_y->at(l->second), 2)) < 61.))
+    return 9;
+  l = layersFound_.find(14);
+  if ((l != layersFound_.end()) && (std::sqrt(std::pow(tree_->m_stub_x->at(l->second), 2) + std::pow(tree_->m_stub_y->at(l->second), 2)) < 61.))
+    return 8;
+  l = layersFound_.find(13);
+  if ((l != layersFound_.end()) && (std::sqrt(std::pow(tree_->m_stub_x->at(l->second), 2) + std::pow(tree_->m_stub_y->at(l->second), 2)) < 61.))
+    return 7;
+  l = layersFound_.find(12);
+  if ((l != layersFound_.end()) && (std::sqrt(std::pow(tree_->m_stub_x->at(l->second), 2) + std::pow(tree_->m_stub_y->at(l->second), 2)) < 61.))
+    return 6;
+  l = layersFound_.find(11);
+  if ((l != layersFound_.end()) && (std::sqrt(std::pow(tree_->m_stub_x->at(l->second), 2) + std::pow(tree_->m_stub_y->at(l->second), 2)) < 61.))
+    return 5;
+  // Switch to the barrel layers to decide the average radius for the endcap disks
+  if (layersFound_.find(10) != layersFound_.end()) return 1;
+  if (layersFound_.find(9) != layersFound_.end()) return 2;
+  if (layersFound_.find(8) != layersFound_.end()) return 3;
+  if (layersFound_.find(7) != layersFound_.end()) return 4;
+
+  std::cout << "Error: the following combination of layers did not match any meanR: " << std::endl;
+  for (const auto & l : layersFound_) std::cout << l.first << std::endl;
+  throw(1);
+  return 4;
 }

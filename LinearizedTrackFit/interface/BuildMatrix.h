@@ -24,7 +24,7 @@
 namespace LinearFit {
 
   void buildMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars,
+      const std::unordered_map<std::string, std::set<int> > & requiredLayersForVars,
       std::unordered_map<int, std::pair<double, double> > & radiusCuts,  const std::unordered_map<int, double> & distanceCutsTransverse,
       const std::unordered_map<int, double> & distanceCutsLongitudinal, const std::vector<std::string> & inputVarNames,
       const std::vector<std::string> & inputTrackParameterNames, const bool singleModules,
@@ -36,28 +36,31 @@ namespace LinearFit {
                           radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames,
                           inputTrackParameterNames, firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName);
 
-    // Consistency checks
-    std::vector<int> requiredLayersVec;
-    for (const auto & name : inputVarNames) {
-      auto requiredLayers = requiredLayersForVars.find(name);
-      if (requiredLayers == requiredLayersForVars.end()) {
-        std::cout << "Error: requiredLayers not specified for variable " << name << std::endl;
-        throw;
-      }
-      else {
-        for (const auto & l : requiredLayers->second) {
-          requiredLayersVec.push_back(l);
-        }
-      }
-    }
+//    // Consistency checks
+//    std::vector<int> requiredLayersVec;
+//    for (const auto & name : inputVarNames) {
+//      auto requiredLayers = requiredLayersForVars.find(name);
+//      if (requiredLayers == requiredLayersForVars.end()) {
+//        std::cout << "Error: requiredLayers not specified for variable " << name << std::endl;
+//        throw;
+//      }
+//      else {
+//        for (const auto & l : requiredLayers->second) {
+//          requiredLayersVec.push_back(l);
+//        }
+//      }
+//    }
+
+    std::vector<int> requiredLayersVec = treeReader.requiredLayersVec();
+
 
     // Layers to iterate on
-    std::set<int> allRequiredLayers;
-    for (const auto & requiredLayers : requiredLayersForVars) {
-      for (const auto & layer : requiredLayers.second) {
-        allRequiredLayers.insert(layer);
-      }
-    }
+//    std::set<int> allRequiredLayers = treeReader.allRequiredLayers();
+//    for (const auto & requiredLayers : requiredLayersForVars) {
+//      for (const auto & layer : requiredLayers.second) {
+//        allRequiredLayers.insert(layer);
+//      }
+//    }
 
     // Initialize geometric index, matrix builder and histograms
     GeometricIndex geometricIndex(gic);
@@ -83,7 +86,7 @@ namespace LinearFit {
       else {
         // Use the geometrical index to access the matrix builder corresponding to that geometrical region.
         geomIndex = geometricIndex(treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(),
-                                   treeReader.getZ0(), treeReader.getCharge(), treeReader.getEndcapRegion());
+                                   treeReader.getZ0(), treeReader.getCharge(), treeReader.getRegionForMeanR());
         // A geometrical index of -1 means we are outside the min-max boundaries
         if (geomIndex == -1) continue;
       }
@@ -99,7 +102,7 @@ namespace LinearFit {
 
       // Update mean and covariance for this linearization region
       if (matrices.count(geomIndex) == 0) {
-        matrices.insert({{geomIndex, MatrixBuilder(std::to_string(geomIndex), // variablesMeans,
+        matrices.insert({{geomIndex, MatrixBuilder(std::to_string(geomIndex),
         treeReader.variablesSize(), inputTrackParameterNames, requiredLayersVec)}});
         histograms.insert({{geomIndex, MatrixBuilderHistograms(std::to_string(geomIndex), treeReader.variablesNames(), inputTrackParameterNames)}});
         histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), 6)}});
@@ -134,7 +137,7 @@ namespace LinearFit {
       else {
         // Use the geometrical index to access the matrix builder corresponding to that geometrical region.
         geomIndex = geometricIndex(treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(),
-                                   treeReader.getZ0(), treeReader.getCharge(), treeReader.getEndcapRegion());
+                                   treeReader.getZ0(), treeReader.getCharge(), treeReader.getRegionForMeanR());
         // A geometrical index of -1 means we are outside the min-max boundaries
         if (geomIndex == -1) continue;
       }

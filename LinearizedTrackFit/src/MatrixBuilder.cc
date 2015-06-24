@@ -4,10 +4,9 @@
 using namespace Eigen;
 // using namespace mpfr;
 
-MatrixBuilder::MatrixBuilder(const std::string & name, //const std::vector<std::pair<bool, double> > & varsMeans,
+MatrixBuilder::MatrixBuilder(const std::string & name,
                              const unsigned int nVars,
                              const std::vector<std::string> & trackParametersNames,
-//                             const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars) :
                              const std::vector<int> & requiredLayersVec) :
     name_(name),
     nVars_(nVars),

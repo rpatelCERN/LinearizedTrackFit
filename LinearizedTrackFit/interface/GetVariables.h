@@ -15,12 +15,14 @@
 class GetTreeVariable
 {
 public:
-  GetTreeVariable(const std::unordered_set<int> & layers) : layers_(layers) {}
+  GetTreeVariable(const std::string & name, const std::set<int> & layers) : name_(name), layers_(layers) {}
   virtual ~GetTreeVariable() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) = 0;
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) = 0;
   // virtual double at(const int k) = 0;
   virtual bool layer(const int layer) { return (layers_.count(layer) != 0); }
   unsigned int layersNum() { return layers_.size(); }
+  const std::set<int> * const layers() { return &layers_; }
+  std::string name() const { return name_; }
   void resetSeed() { generator_.seed(0); }
   // Simple function to return the value of the mean radius for each layer
   double meanRadius(const int layer, const int region = -1) {
@@ -39,45 +41,45 @@ public:
         return 107.746;
       // Endcaps
       case 11:
-        if (region == 0) return 27.89043503443113;
-        else if (region == 1) return 32.88035646440497;
-        else if (region == 2) return 39.06199810814701;
-        else if (region == 3) return 46.3666702082486;
-        else if (region == 4) return 53.43143629810935;
-        else if (region == 5) return 68.51336756802067;
-        else if (region == 6) return 84.27873223836124;
-        else if (region == 7) return 104.1776155117564;
+        if (region == 9) return 27.89043503443113;
+        else if (region == 8) return 32.88035646440497;
+        else if (region == 7) return 39.06199810814701;
+        else if (region == 6) return 46.3666702082486;
+        else if (region == 5) return 53.43143629810935;
+        else if (region == 4) return 68.51336756802067;
+        else if (region == 3) return 84.27873223836124;
+        else if (region == 2) return 104.1776155117564;
         return 35.4917;
       case 12:
-        if (region == 0) return 33.30564143677174;
-        else if (region == 1) return 39.09468410806041;
-        else if (region == 2) return 46.42964665313455;
-        else if (region == 3) return 55.10534504708163;
-        else if (region == 4) return 64.24248081776109;
-        else if (region == 5) return 80.62377061955605;
-        else if (region == 6) return 99.75246578375754;
+        if (region == 9) return 33.30564143677174;
+        else if (region == 8) return 39.09468410806041;
+        else if (region == 7) return 46.42964665313455;
+        else if (region == 6) return 55.10534504708163;
+        else if (region == 5) return 64.24248081776109;
+        else if (region == 4) return 80.62377061955605;
+        else if (region == 4) return 99.75246578375754;
         return 50.6335;
       case 13:
-        if (region == 0) return 39.56329059157801;
-        else if (region == 1) return 46.42814746147855;
-        else if (region == 2) return 55.09640287628014;
-        else if (region == 3) return 66.06122689539532;
-        else if (region == 4) return 74.43357208468305;
-        else if (region == 5) return 95.68694314471189;
+        if (region == 9) return 39.56329059157801;
+        else if (region == 8) return 46.42814746147855;
+        else if (region == 7) return 55.09640287628014;
+        else if (region == 6) return 66.06122689539532;
+        else if (region == 5) return 74.43357208468305;
+        else if (region == 4) return 95.68694314471189;
         return 68.3771;
       case 14:
-        if (region == 0) return 46.84774958247267;
-        else if (region == 1) return 55.08412080517559;
-        else if (region == 2) return 65.90259932012049;
-        else if (region == 3) return 78.01633288820797;
-        else if (region == 4) return 88.25424756121362;
+        if (region == 9) return 46.84774958247267;
+        else if (region == 8) return 55.08412080517559;
+        else if (region == 7) return 65.90259932012049;
+        else if (region == 6) return 78.01633288820797;
+        else if (region == 5) return 88.25424756121362;
         return 88.5511;
       case 15:
-        if (region == 0) return 55.33561575468842;
-        else if (region == 1) return 65.77593015868673;
-        else if (region == 2) return 77.87288766642286;
-        else if (region == 3) return 92.37020800726815;
-        else if (region == 4) return 104.7191403523241;
+        if (region == 9) return 55.33561575468842;
+        else if (region == 8) return 65.77593015868673;
+        else if (region == 7) return 77.87288766642286;
+        else if (region == 6) return 92.37020800726815;
+        else if (region == 5) return 104.7191403523241;
         return 107.746;
       default:
         std::cout << "Unknown layer " << layer << std::endl;
@@ -88,15 +90,15 @@ public:
     switch (layer) {
       case 5:
         switch (region) {
-          case 0:
+          case 9:
             return 103.8201987475974;
-          case 1:
+          case 8:
             return 91.11502665669214;
-          case 2:
+          case 7:
             return 76.86502023001647;
-          case 3:
+          case 6:
             return 64.15146180224865;
-          case 4:
+          case 5:
             return 55.18041855235778;
           default:
             std::cout << "Unknown region for layer 5: " << region << std::endl;
@@ -104,12 +106,12 @@ public:
         }
       case 6:
         switch (region) {
-          case 2:
+          case 7:
             // This is fake, it should not access this region
             return 100.6838178000041;
-          case 3:
+          case 6:
             return 100.6838178000041;
-          case 4:
+          case 5:
             return 87.59561827803246;
           default:
             std::cout << "Unknown region for layer 6: " << region << std::endl;
@@ -130,33 +132,35 @@ public:
         throw;
     }
   }
-  int getRegion(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
-    if (layersFound.find(5) != layersFound.end() && layersFound.find(6) != layersFound.end() &&
-        layersFound.find(7) != layersFound.end() && layersFound.find(11) != layersFound.end()) {
-      if (layersFound.find(12) != layersFound.end() && layersFound.find(13) != layersFound.end()) return 5;
-      else if (layersFound.find(8) != layersFound.end()) {
-        if (layersFound.find(12) != layersFound.end()) return 6;
-        else if (layersFound.find(9) != layersFound.end()) return 7;
-      }
-    }
-
-    auto l = layersFound.find(15);
-    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
-      return 0;
-    l = layersFound.find(14);
-    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
-      return 1;
-    l = layersFound.find(13);
-    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
-      return 2;
-    l = layersFound.find(12);
-    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
-      return 3;
-    return 4;
-  }
+//  int getRegion(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound, const int region) {
+//    if (layersFound.find(5) != layersFound.end() && layersFound.find(6) != layersFound.end() &&
+//        layersFound.find(7) != layersFound.end() && layersFound.find(11) != layersFound.end()) {
+//      if (layersFound.find(12) != layersFound.end() && layersFound.find(13) != layersFound.end()) return 5;
+//      else if (layersFound.find(8) != layersFound.end()) {
+//        if (layersFound.find(12) != layersFound.end()) return 6;
+//        else if (layersFound.find(9) != layersFound.end()) return 7;
+//      }
+//    }
+//
+//    auto l = layersFound.find(15);
+//    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
+//      return 0;
+//    l = layersFound.find(14);
+//    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
+//      return 1;
+//    l = layersFound.find(13);
+//    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
+//      return 2;
+//    l = layersFound.find(12);
+//    if ((l != layersFound.end()) && (std::sqrt(std::pow(var_x->at(l->second), 2) + std::pow(var_y->at(l->second), 2)) < 61.))
+//      return 3;
+//    return 4;
+//  }
 
 protected:
-  std::unordered_set<int> layers_;
+  std::string name_;
+  // std::unordered_set<int> layers_;
+  std::set<int> layers_;
   std::default_random_engine generator_;
 };
 
@@ -186,10 +190,10 @@ class ParametrizedMagneticField
 class GetVarPhi : public GetTreeVariable
 {
 public:
-  GetVarPhi(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
+  GetVarPhi(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
   virtual ~GetVarPhi() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {return std::atan2(var_y->at(k), var_x->at(k));}
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {return std::atan2(var_y->at(k), var_x->at(k));}
 private:
   std::vector<float> * var_x;
   std::vector<float> * var_y;
@@ -200,10 +204,10 @@ private:
 class GetVarPhiR : public GetTreeVariable
 {
 public:
-  GetVarPhiR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
+  GetVarPhiR(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
   virtual ~GetVarPhiR() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return (std::atan2(var_y->at(k), var_x->at(k))*R);
   }
@@ -217,10 +221,10 @@ private:
 class GetVarPhiOverR : public GetTreeVariable
 {
 public:
-  GetVarPhiOverR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
+  GetVarPhiOverR(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
   virtual ~GetVarPhiOverR() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return (R > 0. ? std::atan2(var_y->at(k), var_x->at(k))/R : 0.);
   }
@@ -233,10 +237,10 @@ private:
 class GetVarMixed : public GetTreeVariable
 {
  public:
-  GetVarMixed(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer) {}
+  GetVarMixed(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer) {}
   virtual ~GetVarMixed() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     if (var_layer->at(k) == 5) var_z->at(k);
     return std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
   }
@@ -252,10 +256,10 @@ class GetVarMixed : public GetTreeVariable
 class GetVarZ : public GetTreeVariable
 {
 public:
-  GetVarZ(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_z(tree->m_stub_z) {}
+  GetVarZ(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_z(tree->m_stub_z) {}
   virtual ~GetVarZ() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {return var_z->at(k);}
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {return var_z->at(k);}
 private:
   std::vector<float> * var_z;
 };
@@ -265,10 +269,10 @@ private:
 class GetVarR : public GetTreeVariable
 {
 public:
-  GetVarR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
+  GetVarR(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
   virtual ~GetVarR() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {return std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));}
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {return std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));}
 private:
   std::vector<float> * var_x;
   std::vector<float> * var_y;
@@ -279,10 +283,10 @@ private:
 class GetVarOneOverR : public GetTreeVariable
 {
 public:
-  GetVarOneOverR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
+  GetVarOneOverR(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {}
   virtual ~GetVarOneOverR() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return (R > 0 ? 1./R : 0.);
   }
@@ -532,96 +536,6 @@ class EstimatorEndcaps
 };
 
 
-//class ChargeOverPtEstimator
-//{
-// public:
-//  ChargeOverPtEstimator(const std::string & inputFileName) {
-//    // open matrix file and read V and D arrays
-//    std::cout << "opening "+inputFileName+" for reading" << std::endl;
-//
-//    std::ifstream inputFile;
-//    inputFile.open(inputFileName);
-//    if (!inputFile) {
-//      std::cout << "MatrixReader: Error opening "+inputFileName << std::endl;
-//      throw;
-//    }
-//
-//    // Read number of variables and number of track parameters
-//    int nVars = 0;
-//    inputFile >> nVars;
-//
-//    // Read required layers
-//    int l;
-//    std::vector<int> layers;
-//    for (int v=0; v<nVars; ++v) {
-//      inputFile >> l;
-//      layers.push_back(l);
-//    }
-//
-//    // Read mean values
-//    double x;
-//    for (int i=0; i<nVars; ++i) {
-//      inputFile >> x;
-//      chargeOverPtPhiMeans_.insert(std::make_pair(layers[i], x));
-//    }
-//    // Read parameter mean value
-//    inputFile >> chargeOverPtMean_;
-//
-//    // Read coefficients
-//    for (int i=0; i<nVars; ++i) {
-//      inputFile >> x;
-//      chargeOverPtPhiCoeff_.insert(std::make_pair(layers[i], x));
-//    }
-//
-//    for (auto l : layers) {
-//      std::cout << "chargeOverPtPhiMeans_["<<l<<"] = " << chargeOverPtPhiMeans_[l] << std::endl;
-//    }
-//    std::cout << "chargeOverPtMean_ = " << chargeOverPtMean_ << std::endl;
-//    for (auto l : layers) {
-//      std::cout << "chargeOverPtPhiCoeff_["<<l<<"] = " << chargeOverPtPhiCoeff_[l] << std::endl;
-//    }
-//
-////    chargeOverPtPhiMeans_.insert(std::make_pair(5, 0.399854));
-////    chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.399922));
-////    chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.399942));
-////    chargeOverPtPhiMeans_.insert(std::make_pair(8, 0.399955));
-////    chargeOverPtPhiMeans_.insert(std::make_pair(9, 0.39996));
-////    chargeOverPtPhiMeans_.insert(std::make_pair(10, 0.399966));
-////    chargeOverPtPhiCoeff_.insert(std::make_pair(5, 0.46392));
-////    chargeOverPtPhiCoeff_.insert(std::make_pair(6, 0.615171));
-////    chargeOverPtPhiCoeff_.insert(std::make_pair(7, 0.683068));
-////    chargeOverPtPhiCoeff_.insert(std::make_pair(8, 0.721298));
-////    chargeOverPtPhiCoeff_.insert(std::make_pair(9, 1.24224));
-////    chargeOverPtPhiCoeff_.insert(std::make_pair(10, -3.72572));
-////    chargeOverPtMean_ = 6.63953e-05;
-//  }
-//  double chargeOverPt(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
-//    double estimatedChargeOverPt = 0.;
-//    for (const auto & layer : layersFound) {
-//      unsigned int l = layer.first;
-//      double phi = std::atan2(var_y->at(layer.second), var_x->at(layer.second));
-//      estimatedChargeOverPt += (phi-chargeOverPtPhiMeans_[l])*chargeOverPtPhiCoeff_[l];
-//    }
-//    // When it is estimated the mean value is subtracted. We add it back.
-//    return (estimatedChargeOverPt + chargeOverPtMean_);
-//  }
-//  template <class T>
-//  double chargeOverPt(const T & var_phi)
-//  {
-//    double estimatedChargeOverPt = 0.;
-//    for (int i=0; i<var_phi.size(); ++i) {
-//      estimatedChargeOverPt += (var_phi[i]-chargeOverPtPhiMeans_[i+5])*chargeOverPtPhiCoeff_[i+5];
-//    }
-//    // When it is estimated the mean value is subtracted. We add it back.
-//    return (estimatedChargeOverPt + chargeOverPtMean_);
-//  }
-// private:
-//  std::unordered_map<unsigned int, double> chargeOverPtPhiMeans_;
-//  std::unordered_map<unsigned int, double> chargeOverPtPhiCoeff_;
-//  double chargeOverPtMean_;
-//};
-
-
 class ChargeOverPtWithD0Estimator
 {
  public:
@@ -807,7 +721,7 @@ class Phi0Estimator
     phi0PhiCoeff_.insert(std::make_pair(10, -1.624473267568149425350500));
     phi0Mean_ = 0.40043961916558845626213;
   }
-  double phi0(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
+  double phi0(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound, const int region) {
     double estimatedPhi0 = 0.;
     for (const auto & layer : layersFound) {
       unsigned int l = layer.first;
@@ -838,13 +752,13 @@ class Phi0Estimator
 class GetVarCorrectedPhi : public GetTreeVariable
 {
 public:
-  GetVarCorrectedPhi(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+  GetVarCorrectedPhi(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers,
                      const std::string & firstOrderCoefficientsFileName) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
       chargeOverPtEstimator_(firstOrderCoefficientsFileName) {
   }
   virtual ~GetVarCorrectedPhi() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double estimatedCharge = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
     double phi = std::atan2(var_y->at(k), var_x->at(k));
@@ -863,13 +777,13 @@ private:
 class GetVarCorrectedPhiSecondOrder : public GetTreeVariable
 {
 public:
-  GetVarCorrectedPhiSecondOrder(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+  GetVarCorrectedPhiSecondOrder(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers,
                                 const std::string & firstOrderCoefficientsFileName) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
       chargeOverPtEstimator_(firstOrderCoefficientsFileName){
   }
   virtual ~GetVarCorrectedPhiSecondOrder() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double estimatedChargeOverPt = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
     double RCube = std::pow(std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)), 3);
@@ -891,11 +805,11 @@ private:
 class GetVarCorrectedPhiSecondOrderWithD0 : public GetTreeVariable
 {
  public:
-  GetVarCorrectedPhiSecondOrderWithD0(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer)
+  GetVarCorrectedPhiSecondOrderWithD0(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer)
   {}
   virtual ~GetVarCorrectedPhiSecondOrderWithD0() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double estimatedChargeOverPt = chargeOverPtWithD0Estimator_.chargeOverPt(var_x, var_y, layersFound);
     double estimatedD0 = d0Estimator_.d0(var_x, var_y, layersFound);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
@@ -921,13 +835,13 @@ class GetVarCorrectedPhiSecondOrderWithD0 : public GetTreeVariable
 class GetVarCorrectedPhiThirdOrder : public GetTreeVariable
 {
 public:
-  GetVarCorrectedPhiThirdOrder(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+  GetVarCorrectedPhiThirdOrder(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers,
                                const std::string & firstOrderCoefficientsFileName) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
       chargeOverPtEstimator_(firstOrderCoefficientsFileName) {
   }
   virtual ~GetVarCorrectedPhiThirdOrder() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double estimatedCharge = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     double DeltaR = R - meanRadius(var_layer->at(k));
@@ -951,16 +865,16 @@ private:
 class GetVarCorrectedPhiPz : public GetTreeVariable
 {
  public:
-  GetVarCorrectedPhiPz(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
-                              const std::string & firstOrderCoefficientsPzFileName,
-                              const std::string & firstOrderCoefficientsCotThetaFileName) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z),
+  GetVarCorrectedPhiPz(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers,
+                       const std::string & firstOrderCoefficientsPzFileName,
+                       const std::string & firstOrderCoefficientsCotThetaFileName) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z),
       var_layer(tree->m_stub_layer),
       chargeOverPzEstimator_(firstOrderCoefficientsPzFileName),
       cotThetaEstimator_(firstOrderCoefficientsCotThetaFileName) {
   }
   virtual ~GetVarCorrectedPhiPz() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     // This is the "estimate" method that uses the phi
     double estimatedCotTheta = cotThetaEstimator_.estimate(var_x, var_y, var_z, layersFound);
     double estimatedChargeOverPz = chargeOverPzEstimator_.estimate(var_x, var_y, layersFound);
@@ -982,12 +896,12 @@ class GetVarCorrectedPhiPz : public GetTreeVariable
 class GetVarCorrectedPhiSecondOrderGen : public GetTreeVariable
 {
 public:
-  GetVarCorrectedPhiSecondOrderGen(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
+  GetVarCorrectedPhiSecondOrderGen(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
       par_pxGEN(tree->m_stub_pxGEN), par_pyGEN(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg) {
   }
   virtual ~GetVarCorrectedPhiSecondOrderGen() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double estimatedChargeOverPt = charge/std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0));
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
@@ -1018,13 +932,13 @@ private:
 class GetVarCorrectedPhiFirstOrderWithD0Gen : public GetTreeVariable
 {
  public:
-  GetVarCorrectedPhiFirstOrderWithD0Gen(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
+  GetVarCorrectedPhiFirstOrderWithD0Gen(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
       par_pxGEN(tree->m_stub_pxGEN), par_pyGEN(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg) {
     getParD0_ = std::make_shared<GetParD0>(tree);
   }
   virtual ~GetVarCorrectedPhiFirstOrderWithD0Gen() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     double DeltaR = R - meanRadius(var_layer->at(k));
@@ -1052,13 +966,13 @@ class GetVarCorrectedPhiFirstOrderWithD0Gen : public GetTreeVariable
 class GetVarCorrectedPhiSecondOrderWithD0Gen : public GetTreeVariable
 {
  public:
-  GetVarCorrectedPhiSecondOrderWithD0Gen(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
+  GetVarCorrectedPhiSecondOrderWithD0Gen(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
       par_pxGEN(tree->m_stub_pxGEN), par_pyGEN(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg) {
     getParD0_ = std::make_shared<GetParD0>(tree);
   }
   virtual ~GetVarCorrectedPhiSecondOrderWithD0Gen() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     double DeltaR = R - meanRadius(var_layer->at(k));
@@ -1088,13 +1002,13 @@ class GetVarCorrectedPhiSecondOrderWithD0Gen : public GetTreeVariable
 class GetVarCorrectedPhiThirdOrderWithD0Gen : public GetTreeVariable
 {
  public:
-  GetVarCorrectedPhiThirdOrderWithD0Gen(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
+  GetVarCorrectedPhiThirdOrderWithD0Gen(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
       par_pxGEN(tree->m_stub_pxGEN), par_pyGEN(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg) {
     getParD0_ = std::make_shared<GetParD0>(tree);
   }
   virtual ~GetVarCorrectedPhiThirdOrderWithD0Gen() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     double DeltaR = R - meanRadius(var_layer->at(k));
@@ -1123,8 +1037,8 @@ class GetVarCorrectedPhiThirdOrderWithD0Gen : public GetTreeVariable
 class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 {
  public:
-  GetVarCorrectedPhiExactWithD0Gen(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+  GetVarCorrectedPhiExactWithD0Gen(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
       par_pxGEN(tree->m_stub_pxGEN), par_pyGEN(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg),
       par_d0_(tree->m_stub_d0GEN), par_x0(tree->m_stub_X0), par_y0(tree->m_stub_Y0), par_z0(tree->m_stub_Z0),  par_eta(tree->m_stub_etaGEN) {
     getParD0_ = std::make_shared<GetParD0>(tree);
@@ -1133,7 +1047,7 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
     generator_.seed(0);
   }
   virtual ~GetVarCorrectedPhiExactWithD0Gen() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     // double DeltaR = R - meanRadius(var_layer->at(k));
@@ -1343,7 +1257,7 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
     // double theMeanZ = meanZ(var_layer->at(k));
 //    double correctedPhi = (phi + asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - getParPhi_->at(0));
     // Exact corrections
-    int region = getRegion(var_x, var_y, layersFound);
+    // int region = getRegion(var_x, var_y, layersFound);
     double meanR = meanRadius(var_layer->at(k), region);
     double correctedPhi = (phi + asin(R/(2*rho)) - asin(meanR/(2*rho)));
 //    theMeanZ/(2*rho));
@@ -1373,8 +1287,8 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
 class GetVarCorrectedRExactWithD0Gen : public GetTreeVariable
 {
  public:
-  GetVarCorrectedRExactWithD0Gen(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+  GetVarCorrectedRExactWithD0Gen(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
       par_pxGEN(tree->m_stub_pxGEN), par_pyGEN(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg),
       par_d0_(tree->m_stub_d0GEN), par_x0(tree->m_stub_X0), par_y0(tree->m_stub_Y0), par_z0(tree->m_stub_Z0),  par_eta(tree->m_stub_etaGEN) {
     // getParD0_ = std::make_shared<GetParD0>(tree);
@@ -1382,7 +1296,7 @@ class GetVarCorrectedRExactWithD0Gen : public GetTreeVariable
     generator_.seed(0);
   }
   virtual ~GetVarCorrectedRExactWithD0Gen() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     // double d0 = getParD0_->at(0);
@@ -1400,7 +1314,7 @@ class GetVarCorrectedRExactWithD0Gen : public GetTreeVariable
     // double correctedZ = (var_z->at(k) - 2*rho*cotTheta*asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - par_z0->at(k));
     // R = 2*rho*sin((z - z0)/(2*rho*cotTheta))
 
-    int region = getRegion(var_x, var_y, layersFound);
+    // int region = getRegion(var_x, var_y, layersFound);
     double correctedR = R - 2*rho*sin((var_z->at(k) - par_z0->at(k))/(2*rho*cotTheta)) + 2*rho*sin((meanZ(var_layer->at(k), region) - par_z0->at(k))/(2*rho*cotTheta));
 //    double correctedR = R - 2*rho*sin((var_z->at(k) - par_z0->at(k))/(2*rho*cotTheta)) + par_z0->at(k)/cotTheta;
 //    double correctedR = R - 2*rho*sin((var_z->at(k) - par_z0->at(k))/(2*rho*cotTheta)) + meanZ(var_layer->at(k))/cotTheta;
@@ -1439,8 +1353,8 @@ class GetVarCorrectedRExactWithD0Gen : public GetTreeVariable
 class GetVarCorrectedZExactWithD0Gen : public GetTreeVariable
 {
  public:
-  GetVarCorrectedZExactWithD0Gen(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+  GetVarCorrectedZExactWithD0Gen(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
       par_pxGEN(tree->m_stub_pxGEN), par_pyGEN(tree->m_stub_pyGEN), par_pdg(tree->m_stub_pdg),
       par_d0_(tree->m_stub_d0GEN), par_x0(tree->m_stub_X0), par_y0(tree->m_stub_Y0), par_z0(tree->m_stub_Z0),  par_eta(tree->m_stub_etaGEN) {
     // getParD0_ = std::make_shared<GetParD0>(tree);
@@ -1448,14 +1362,14 @@ class GetVarCorrectedZExactWithD0Gen : public GetTreeVariable
     generator_.seed(0);
   }
   virtual ~GetVarCorrectedZExactWithD0Gen() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     // double d0 = getParD0_->at(0);
     double rho = charge*std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
 
     double cotTheta = 1./tan(2*atan(exp(-par_eta->at(k))));
-    int region = getRegion(var_x, var_y, layersFound);
+    // int region = getRegion(var_x, var_y, layersFound);
     double meanR = meanRadius(var_layer->at(k), region);
 
 //    double correctedZ = (var_z->at(k) - 2*rho*cotTheta*asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) + par_z0->at(k));
@@ -1486,16 +1400,16 @@ class GetVarCorrectedZExactWithD0Gen : public GetTreeVariable
 class GetVarCorrectedRDiskPre : public GetTreeVariable
 {
  public:
-  GetVarCorrectedRDiskPre(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) ://,
+  GetVarCorrectedRDiskPre(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) ://,
                    // const std::string & firstOrderCoefficientsFileName) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
       estimator_("matrixVD_0_endcaps_region")
 //      , par_eta(tree->m_stub_etaGEN)
   {}
 
   virtual ~GetVarCorrectedRDiskPre() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
-    int region = getRegion(var_x, var_y, layersFound);
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
+    // int region = getRegion(var_x, var_y, layersFound);
     double estimatedTgTheta = estimator_.estimate(layersFound, var_x, var_y, region);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
 //    double tgTheta = tan(2*atan(exp(-par_eta->at(k))));
@@ -1517,13 +1431,13 @@ class GetVarCorrectedRDiskPre : public GetTreeVariable
 class GetVarCorrectedPhiEndcaps : public GetTreeVariable
 {
  public:
-  GetVarCorrectedPhiEndcaps(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
+  GetVarCorrectedPhiEndcaps(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
       chargeOverPtEstimator_("matrixVD_0_pre_chargeOverPt_endcaps") {
   }
   virtual ~GetVarCorrectedPhiEndcaps() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
-    int region = getRegion(var_x, var_y, layersFound);
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
+    // int region = getRegion(var_x, var_y, layersFound);
     // This is the "estimate" method that uses the phi
     double estimatedCharge = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound, region);
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
@@ -1542,13 +1456,13 @@ class GetVarCorrectedPhiEndcaps : public GetTreeVariable
 class GetVarCorrectedPhiSecondOrderEndcaps : public GetTreeVariable
 {
  public:
-  GetVarCorrectedPhiSecondOrderEndcaps(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
+  GetVarCorrectedPhiSecondOrderEndcaps(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_layer(tree->m_stub_layer),
       chargeOverPtEstimator_("matrixVD_0_pre_chargeOverPt_endcaps") {
   }
   virtual ~GetVarCorrectedPhiSecondOrderEndcaps() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
-    int region = getRegion(var_x, var_y, layersFound);
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
+    // int region = getRegion(var_x, var_y, layersFound);
     // This is the "estimate" method that uses the phi
     double estimatedChargeOverPt = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound, region);
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
@@ -1568,15 +1482,15 @@ class GetVarCorrectedPhiSecondOrderEndcaps : public GetTreeVariable
 class GetVarCorrectedPhiEndcapsPz : public GetTreeVariable
 {
  public:
-  GetVarCorrectedPhiEndcapsPz(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z),
+  GetVarCorrectedPhiEndcapsPz(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z),
       var_layer(tree->m_stub_layer),
       chargeOverPzEstimator_("matrixVD_0_pre_chargeOverPz_endcaps"),
       cotThetaEstimator_("matrixVD_0_pre_cotTheta_region") {
   }
   virtual ~GetVarCorrectedPhiEndcapsPz() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
-    int region = getRegion(var_x, var_y, layersFound);
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
+    // int region = getRegion(var_x, var_y, layersFound);
     // This is the "estimate" method that uses the phi
     double estimatedCotTheta = cotThetaEstimator_.estimate(var_x, var_y, var_z, layersFound, region);
     double estimatedChargeOverPz = chargeOverPzEstimator_.estimate(var_x, var_y, layersFound, region);
@@ -1597,14 +1511,14 @@ class GetVarCorrectedPhiEndcapsPz : public GetTreeVariable
 class GetVarCorrectedR : public GetTreeVariable
 {
  public:
-  GetVarCorrectedR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+  GetVarCorrectedR(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
       estimator_("matrixVD_0_pre_cotTheta_region")
   {}
 
   virtual ~GetVarCorrectedR() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
-    int region = getRegion(var_x, var_y, layersFound);
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
+    // int region = getRegion(var_x, var_y, layersFound);
     double estimatedCotTheta = estimator_.estimate(var_x, var_y, var_z, layersFound, region);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     double correctedR = R + (meanZ(var_layer->at(k), region) - var_z->at(k))/estimatedCotTheta;
@@ -1622,12 +1536,12 @@ class GetVarCorrectedR : public GetTreeVariable
 class GetVarDeltaZOverDeltaR : public GetTreeVariable
 {
  public:
-  GetVarDeltaZOverDeltaR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) ://,
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer)
+  GetVarDeltaZOverDeltaR(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) ://,
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer)
   {}
 
   virtual ~GetVarDeltaZOverDeltaR() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     // Find the index of the stub from layer 5, if any
     int i = -1;
     for (unsigned long l = 0; l < var_layer->size(); ++l) {
@@ -1656,13 +1570,13 @@ class GetVarDeltaZOverDeltaR : public GetTreeVariable
 class GetVarChargeOverPtCorrectedR : public GetTreeVariable
 {
  public:
-  GetVarChargeOverPtCorrectedR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+  GetVarChargeOverPtCorrectedR(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers,
                                const std::string & firstOrderCoefficientsFileName) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y),
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y),
       chargeOverPtEstimator_(firstOrderCoefficientsFileName)
   {}
   virtual ~GetVarChargeOverPtCorrectedR() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double estimatedCharge = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return estimatedCharge*R;
@@ -1692,7 +1606,7 @@ private:
 //    zCoeff_.insert(std::make_pair(10, 0.00196343));
 //    cotThetaMean_ = 0.000127483;
 //  }
-//  double cotTheta(const std::vector<float> * var_z, const std::map<int, unsigned int> & layersFound) {
+//  double cotTheta(const std::vector<float> * var_z, const std::map<int, unsigned int> & layersFound, const int region) {
 //    double cotTheta = 0.;
 //    for (const auto &layer : layersFound) {
 //      unsigned int l = layer.first;
@@ -1720,14 +1634,14 @@ private:
 class GetVarCorrectedZ : public GetTreeVariable
 {
 public:
-  GetVarCorrectedZ(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+  GetVarCorrectedZ(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers,
                    const std::string & firstOrderCotThetaCoefficientsFileName) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
       cotThetaEstimator_(firstOrderCotThetaCoefficientsFileName)
   {
   }
   virtual ~GetVarCorrectedZ() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
     // double cotTheta = cotThetaEstimator_.estimate(var_z, layersFound);
     double cotTheta = cotThetaEstimator_.estimate(var_x, var_y, var_z, layersFound);
@@ -1745,14 +1659,14 @@ private:
 class GetVarCorrectedZSecondOrder : public GetTreeVariable
 {
 public:
-  GetVarCorrectedZSecondOrder(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+  GetVarCorrectedZSecondOrder(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers,
                               const std::string & firstOrderChargeOverPtCoefficientsFileName,
                               const std::string & firstOrderCotThetaCoefficientsFileName) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
       chargeOverPtEstimator_(firstOrderChargeOverPtCoefficientsFileName), cotThetaEstimator_(firstOrderCotThetaCoefficientsFileName)
   {}
   virtual ~GetVarCorrectedZSecondOrder() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     double DeltaR = R - meanRadius(var_layer->at(k));
     double cotTheta = cotThetaEstimator_.estimate(var_x, var_y, var_z, layersFound);
@@ -1774,14 +1688,14 @@ private:
 class GetVarCorrectedZEndcapsDiskPre : public GetTreeVariable
 {
  public:
-  GetVarCorrectedZEndcapsDiskPre(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+  GetVarCorrectedZEndcapsDiskPre(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
       estimator_("matrixVD_0_endcaps_region")
   {
   }
   virtual ~GetVarCorrectedZEndcapsDiskPre() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
-    int region = getRegion(var_x, var_y, layersFound);
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
+    // int region = getRegion(var_x, var_y, layersFound);
     double estimatedTgTheta = estimator_.estimate(layersFound, var_x, var_y, region);
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k), region);
     return (var_z->at(k) - DeltaR/estimatedTgTheta);
@@ -1798,14 +1712,14 @@ class GetVarCorrectedZEndcapsDiskPre : public GetTreeVariable
 class GetVarCorrectedZEndcaps : public GetTreeVariable
 {
  public:
-  GetVarCorrectedZEndcaps(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+  GetVarCorrectedZEndcaps(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
       estimator_("matrixVD_0_pre_cotTheta_region")
   {
   }
   virtual ~GetVarCorrectedZEndcaps() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
-    int region = getRegion(var_x, var_y, layersFound);
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
+    // int region = getRegion(var_x, var_y, layersFound);
     double estimatedCotTheta = estimator_.estimate(var_x, var_y, var_z, layersFound, region);
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k), region);
     return (var_z->at(k) - DeltaR*estimatedCotTheta);
@@ -1822,8 +1736,8 @@ class GetVarCorrectedZEndcaps : public GetTreeVariable
 class GetVarCorrectedZEndcapsRegions34 : public GetTreeVariable
 {
  public:
-  GetVarCorrectedZEndcapsRegions34(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
+  GetVarCorrectedZEndcapsRegions34(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z), var_layer(tree->m_stub_layer),
       estimator_("matrixVD_0_pre_cotTheta_endcaps_regions34.txt")
   {
     meanR_.insert(std::make_pair(5, 22.1072));
@@ -1834,7 +1748,7 @@ class GetVarCorrectedZEndcapsRegions34 : public GetTreeVariable
     meanR_.insert(std::make_pair(15, 95.7962882272236));
   }
   virtual ~GetVarCorrectedZEndcapsRegions34() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double estimatedCotTheta = estimator_.estimate(var_x, var_y, var_z, layersFound);
     double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanR_[var_layer->at(k)];
     return (var_z->at(k) - DeltaR*estimatedCotTheta);
@@ -1853,13 +1767,13 @@ class GetVarCorrectedZEndcapsRegions34 : public GetTreeVariable
 class GetVarRCotTheta : public GetTreeVariable
 {
 public:
-  GetVarRCotTheta(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers,
+  GetVarRCotTheta(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers,
                   const std::string & firstOrderCotThetaCoefficientsFileName) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z),
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y), var_z(tree->m_stub_z),
       cotThetaEstimator_(firstOrderCotThetaCoefficientsFileName) {
   }
   virtual ~GetVarRCotTheta() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double cotTheta = cotThetaEstimator_.estimate(var_z, layersFound);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
     return R*(cotTheta);
@@ -1876,8 +1790,8 @@ private:
 class GetVarChargeOverPtCorrectedRCube : public GetTreeVariable
 {
 public:
-  GetVarChargeOverPtCorrectedRCube(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {
+  GetVarChargeOverPtCorrectedRCube(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {
     chargeOverPtPhiMeans_.insert(std::make_pair(5, 1.67968e-05));
     chargeOverPtPhiMeans_.insert(std::make_pair(6, 0.000123609));
     chargeOverPtPhiMeans_.insert(std::make_pair(7, 0.000200134));
@@ -1893,7 +1807,7 @@ public:
     chargeOverPtMean_ = -0.000483493;
   }
   virtual ~GetVarChargeOverPtCorrectedRCube() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double estimatedCharge = 0.;
     for (const auto & layer : layersFound) {
       unsigned int l = layer.first;
@@ -1916,8 +1830,8 @@ private:
 class GetVarChargeSignedR : public GetTreeVariable
 {
 public:
-  GetVarChargeSignedR(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {
+  GetVarChargeSignedR(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_x(tree->m_stub_x), var_y(tree->m_stub_y) {
     chargePhiMeans_.insert(std::make_pair(5, 1.67968e-05));
     chargePhiMeans_.insert(std::make_pair(6, 0.000123609));
     chargePhiMeans_.insert(std::make_pair(7, 0.000200134));
@@ -1933,7 +1847,7 @@ public:
     chargeMean_ = -0.00115319;
   }
   virtual ~GetVarChargeSignedR() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
 
     double estimatedCharge = 0.;
     for (const auto & layer : layersFound) {
@@ -1957,10 +1871,10 @@ private:
 class GetVarDeltaS : public GetTreeVariable
 {
 public:
-  GetVarDeltaS(std::shared_ptr<L1TrackTriggerTree> tree, const std::unordered_set<int> & layers) :
-      GetTreeVariable(layers), var_deltas(tree->m_stub_deltas) {}
+  GetVarDeltaS(const std::string & name, std::shared_ptr<L1TrackTriggerTree> tree, const std::set<int> & layers) :
+      GetTreeVariable(name, layers), var_deltas(tree->m_stub_deltas) {}
   virtual ~GetVarDeltaS() {}
-  virtual double at(const int k, const std::map<int, unsigned int> & layersFound) {
+  virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     return var_deltas->at(k);
   }
 private:

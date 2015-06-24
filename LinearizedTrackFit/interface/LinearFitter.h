@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <set>
 #include <unordered_map>
 #include <unordered_set>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GeometricIndex.h"
@@ -23,7 +24,7 @@ public:
   double normChi2() const { return normChi2_; }
   std::vector<double> trackParameters() const { return trackParameters_; }
   int geometricIndex() const { return geomIndex_; }
-  std::unordered_map<std::string, std::unordered_set<int> > requiredLayers() const { return requiredLayers_; }
+  std::unordered_map<std::string, std::set<int> > requiredLayers() const { return requiredLayers_; }
   unsigned int variablesSize() const { return variablesSize_; }
 
   // These are mostly for debugging and validation. They must be called after the fit, otherwise the geomIndex is not updated.
@@ -42,7 +43,7 @@ private:
   int geomIndex_;
   unsigned int variablesSize_;
   std::unordered_map<int, MatrixReader> matrices_;
-  std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
+  std::unordered_map<std::string, std::set<int> > requiredLayers_;
 };
 
 #endif // LINEARFITTER_H

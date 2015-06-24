@@ -24,10 +24,10 @@ namespace LinearFit
                   const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_)
   {
     std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
-    std::unordered_map<std::string, std::unordered_set<int> > requiredLayers;
-    requiredLayers.insert(std::make_pair("phi", std::unordered_set<int>(layersAll_.begin(), layersAll_.end())));
-    requiredLayers.insert(std::make_pair("R", std::unordered_set<int>(layersAll_.begin(), layersAll_.end())));
-    requiredLayers.insert(std::make_pair("z", std::unordered_set<int>(layersAll_.begin(), layersAll_.end())));
+    std::unordered_map<std::string, std::set<int> > requiredLayers;
+    requiredLayers.insert(std::make_pair("phi", std::set<int>(layersAll_.begin(), layersAll_.end())));
+    requiredLayers.insert(std::make_pair("R", std::set<int>(layersAll_.begin(), layersAll_.end())));
+    requiredLayers.insert(std::make_pair("z", std::set<int>(layersAll_.begin(), layersAll_.end())));
 
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers, radiusCuts,
                           distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames,

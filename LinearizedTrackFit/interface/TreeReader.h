@@ -20,7 +20,7 @@ class TreeReader
 {
 public:
   TreeReader(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-             const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
+             const std::unordered_map<std::string, std::set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
              const std::unordered_map<int, double> & distanceCutsTransverse,  const std::unordered_map<int, double> & distanceCutsLongitudinal,
              const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames,
              const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName);
@@ -52,7 +52,8 @@ public:
   double getZ0() const { return getParZ0_->at(0); }
   double getR(const int k) const { return std::sqrt(std::pow(tree_->m_stub_x->at(k), 2) + std::pow(tree_->m_stub_y->at(k), 2)); }
   double getD0() const { return getParD0_->at(0); }
-  int getEndcapRegion() const { return getVar_->getRegion(tree_->m_stub_x, tree_->m_stub_y, layersFound_); }
+  int getRegionForMeanR() const;
+  // int getEndcapRegion() const { return getVar_->getRegion(tree_->m_stub_x, tree_->m_stub_y, layersFound_); }
   int getCharge() const { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
   const std::vector<float> * getVarX() const { return tree_->m_stub_x; }
   const std::vector<float> * getVarY() const { return tree_->m_stub_y; }
@@ -60,10 +61,13 @@ public:
   int getLastLadder() { return lastLadder_; }
   unsigned int variablesSize() const { return variablesSize_; }
   unsigned int maxRequiredLayers() const { return maxRequiredLayers_; }
+  std::set<int> allRequiredLayers() const { return allRequiredLayers_; }
+  std::vector<int> requiredLayersVec() const { return requiredLayersVec_; }
   std::vector<std::string> const variablesNames() const { return variablesNames_; }
+  // const std::vector<std::shared_ptr<GetTreeVariable>> * getVars() const { return &vars_; }
   void writeConfiguration();
   double genTrackDistanceTransverse(const double &pt, const double &phi0, const double &d0,
-      const int charge, const double &B, const double &x1, const double &y1) const;
+                                    const int charge, const double &B, const double &x1, const double &y1) const;
   double genTrackDistanceLongitudinal(const double &z0, const double &cotTheta, const double &pt, const double &d0,
                                       const int charge, const double &B, const double &R, const double &z1) const;
   std::map<int, unsigned int> layersFound() const { return layersFound_; }
@@ -89,8 +93,10 @@ public:
   std::shared_ptr<L1TrackTriggerTree> tree_;
   double eventsFractionStart_;
   double eventsFractionEnd_;
-  std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
+  // std::unordered_map<std::string, std::unordered_set<int> > requiredLayers_;
+  std::unordered_map<std::string, std::set<int> > requiredLayers_;
   std::set<int> allRequiredLayers_;
+  std::vector<int> requiredLayersVec_;
   std::unordered_map<int, std::pair<double, double> > radiusCuts_;
   unsigned int parametersSize_;
   std::vector<std::shared_ptr<GetTreeVariable> > vars_;
@@ -123,6 +129,8 @@ public:
   int zIndex_;
   bool phiDiscontinuous_;
   bool adjustDiscontinuity_;
+
+  int regionForMeanR_;
 };
 
 #endif // TREEREADER_H
