@@ -495,10 +495,12 @@ int TreeReader::getRegionForMeanR() const
   if (layersFound_.find(8) != layersFound_.end()) return 3;
   if (layersFound_.find(7) != layersFound_.end()) return 4;
   // It means layer 7 is missing, return the same meanR for the disks
-  if (layersFound_.find(6) != layersFound_.end()) return 4;
-
-  std::cout << "Error: the following combination of layers did not match any meanR: " << std::endl;
-  for (const auto & l : layersFound_) std::cout << l.first << std::endl;
-  throw(1);
   return 4;
+  // if (layersFound_.find(6) != layersFound_.end()) return 4;
+  // if (layersFound_.find(5) != layersFound_.end()) return 4;
+
+  // std::cout << "Error: the following combination of layers did not match any meanR: " << std::endl;
+  // for (const auto & l : layersFound_) std::cout << l.first << std::endl;
+  // throw(1);
+  // return 4;
 }
