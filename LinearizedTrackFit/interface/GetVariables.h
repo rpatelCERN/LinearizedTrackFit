@@ -26,7 +26,7 @@ public:
   std::string name() const { return name_; }
   void resetSeed() { generator_.seed(0); }
   // Simple function to return the value of the mean radius for each layer
-  double meanRadius(const int layer, const int region = -1) {
+  double meanRadius(const int layer, const int region) {
     switch (layer) {
       case 5:
         return 22.1072;
@@ -761,7 +761,7 @@ public:
   virtual ~GetVarCorrectedPhi() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double estimatedCharge = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
-    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k), region);
     double phi = std::atan2(var_y->at(k), var_x->at(k));
 //    return (phi + estimatedCharge*DeltaR*3.8*0.003/2.);
     return (phi + estimatedCharge*DeltaR*3.8114*0.003/2.);
@@ -786,7 +786,7 @@ public:
   virtual ~GetVarCorrectedPhiSecondOrder() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double estimatedChargeOverPt = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
-    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k), region);
     double RCube = std::pow(std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)), 3);
     // double DeltaRCube = RCube - std::pow(meanR_[var_layer->at(k)], 3);
     double phi = std::atan2(var_y->at(k), var_x->at(k));
@@ -814,8 +814,8 @@ class GetVarCorrectedPhiSecondOrderWithD0 : public GetTreeVariable
     double estimatedChargeOverPt = chargeOverPtWithD0Estimator_.chargeOverPt(var_x, var_y, layersFound);
     double estimatedD0 = d0Estimator_.d0(var_x, var_y, layersFound);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    double DeltaR = R - meanRadius(var_layer->at(k));
-    // double d0Correction = estimatedD0*(1/R - 1/meanRadius(var_layer->at(k)));
+    double DeltaR = R - meanRadius(var_layer->at(k), region);
+    // double d0Correction = estimatedD0*(1/R - 1/meanRadius(var_layer->at(k), region));
     double phi = std::atan2(var_y->at(k), var_x->at(k));
     double cOverTwoRho = estimatedChargeOverPt*3.8114*0.003/2.;
     // return (phi + cOverTwoRho*DeltaR + std::pow(R*cOverTwoRho, 3)/6. + d0Correction);
@@ -845,7 +845,7 @@ public:
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double estimatedCharge = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    double DeltaR = R - meanRadius(var_layer->at(k));
+    double DeltaR = R - meanRadius(var_layer->at(k), region);
     double RCube = std::pow(R, 3);
     double RFifth = std::pow(R, 5);
     // double DeltaRCube = RCube - std::pow(meanR_[var_layer->at(k)], 3);
@@ -879,7 +879,7 @@ class GetVarCorrectedPhiPz : public GetTreeVariable
     // This is the "estimate" method that uses the phi
     double estimatedCotTheta = cotThetaEstimator_.estimate(var_x, var_y, var_z, layersFound);
     double estimatedChargeOverPz = chargeOverPzEstimator_.estimate(var_x, var_y, layersFound);
-    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k), region);
     double phi = std::atan2(var_y->at(k), var_x->at(k));
     return (phi + estimatedChargeOverPz*estimatedCotTheta*DeltaR*3.8114*0.003/2.);
   }
@@ -906,7 +906,7 @@ public:
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double estimatedChargeOverPt = charge/std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0));
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    double DeltaR = R - meanRadius(var_layer->at(k));
+    double DeltaR = R - meanRadius(var_layer->at(k), region);
     double RCube = std::pow(R, 3);
     // double RFifth = std::pow(R, 5);
     // double DeltaRCube = std::pow(std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)), 3) - std::pow(meanR_[var_layer->at(k)], 3);
@@ -915,7 +915,7 @@ public:
      return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
 //    return (phi + estimatedChargeOverPt*DeltaR*3.8*0.003/2. + 1.2*RCube*std::pow(estimatedChargeOverPt*3.8*0.003/2., 3)/6.);
     // return (phi + estimatedChargeOverPt*DeltaR*3.8*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8*0.003/2., 3)/6. + RFifth*std::pow(estimatedChargeOverPt*3.8*0.003/2., 5)*3./40.);
-    // return (phi + std::asin(estimatedChargeOverPt*R*3.8*0.003/2.) - std::asin(estimatedChargeOverPt*meanRadius(var_layer->at(k))*3.8*0.003/2.));
+    // return (phi + std::asin(estimatedChargeOverPt*R*3.8*0.003/2.) - std::asin(estimatedChargeOverPt*meanRadius(var_layer->at(k), region)*3.8*0.003/2.));
     // return (phi + std::asin(estimatedCharge*R*3.8*0.003/2.) + std::asin(estimatedCharge*meanR_[var_layer->at(k)]*3.8*0.003/2.));
 //    return (phi + std::asin(estimatedCharge*R*3.8*0.003/2.));
   }
@@ -942,9 +942,9 @@ class GetVarCorrectedPhiFirstOrderWithD0Gen : public GetTreeVariable
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    double DeltaR = R - meanRadius(var_layer->at(k));
+    double DeltaR = R - meanRadius(var_layer->at(k), region);
     double d0 = getParD0_->at(0);
-    double meanR = meanRadius(var_layer->at(k));
+    double meanR = meanRadius(var_layer->at(k), region);
     double d0Correction = d0*(1/R-1/meanR);
     double rho = charge*std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
     double estimatedChargeOverRho = 1./rho;
@@ -976,9 +976,9 @@ class GetVarCorrectedPhiSecondOrderWithD0Gen : public GetTreeVariable
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    double DeltaR = R - meanRadius(var_layer->at(k));
+    double DeltaR = R - meanRadius(var_layer->at(k), region);
     double d0 = getParD0_->at(0);
-    // double meanR = meanRadius(var_layer->at(k));
+    // double meanR = meanRadius(var_layer->at(k), region);
     // double d0Correction = d0*(1/R-1/meanR);
     double rho = charge*std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
     double estimatedChargeOverRho = 1./rho;
@@ -1012,10 +1012,10 @@ class GetVarCorrectedPhiThirdOrderWithD0Gen : public GetTreeVariable
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    double DeltaR = R - meanRadius(var_layer->at(k));
+    double DeltaR = R - meanRadius(var_layer->at(k), region);
     // double RCube = std::pow(R, 3);
     double d0 = getParD0_->at(0);
-    double meanR = meanRadius(var_layer->at(k));
+    double meanR = meanRadius(var_layer->at(k), region);
     double d0Correction = d0*(1/R-1/meanR);
     double rho = charge*std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
     double estimatedChargeOverRho = 1./rho;
@@ -1051,13 +1051,13 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     int charge = ((par_pdg->at(0) > 0) ? -1 : 1);
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    // double DeltaR = R - meanRadius(var_layer->at(k));
+    // double DeltaR = R - meanRadius(var_layer->at(k), region);
     // double RCube = std::pow(R, 3);
-//    double DeltaRCube = RCube - std::pow(meanRadius(var_layer->at(k)), 3);
+//    double DeltaRCube = RCube - std::pow(meanRadius(var_layer->at(k), region), 3);
 //    double estimatedChargeOverPt = charge/std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0));
 //    double d0 = getParD0_->at(0);
 // //    double d0 = fabs(getParD0_->at(0));
-    // double meanR = meanRadius(var_layer->at(k));
+    // double meanR = meanRadius(var_layer->at(k), region);
     // double d0Correction = d0*(1/R-1/meanR);
     // double rho = std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
     double rho = charge*std::sqrt(par_pxGEN->at(0)*par_pxGEN->at(0) + par_pyGEN->at(0)*par_pyGEN->at(0))/(3.8114*0.003);
@@ -1067,7 +1067,7 @@ class GetVarCorrectedPhiExactWithD0Gen : public GetTreeVariable
     //    double estimatedChargeOverRho = charge/(rho+d0);
     double phi = std::atan2(var_y->at(k), var_x->at(k));
 
-    // return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6. + getParD0_->at(0)*(1/R-1/meanRadius(var_layer->at(k))));
+    // return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6. + getParD0_->at(0)*(1/R-1/meanRadius(var_layer->at(k), region)));
     // return (phi + estimatedChargeOverRho*DeltaR/2. + RCube*std::pow(estimatedChargeOverRho/2., 3)/6. - d0Correction);
     // double correctedPhi = (phi + charge*asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - charge*asin((d0*d0 + 2*d0*rho + meanR*meanR)/(2*meanR*(rho+d0))));
     // double correctedPhi = (phi + charge*asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0))) - charge*asin((d0*d0 + 2*d0*rho + meanR*meanR)/(2*meanR*(rho+d0)))) + meanR*meanR*meanR*std::pow(estimatedChargeOverRho/2., 3)/6.;
@@ -1441,7 +1441,7 @@ class GetVarCorrectedPhiEndcaps : public GetTreeVariable
     // int region = getRegion(var_x, var_y, layersFound);
     // This is the "estimate" method that uses the phi
     double estimatedCharge = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound, region);
-    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k), region);
     double phi = std::atan2(var_y->at(k), var_x->at(k));
     return (phi + estimatedCharge*DeltaR*3.8114*0.003/2.);
   }
@@ -1466,7 +1466,7 @@ class GetVarCorrectedPhiSecondOrderEndcaps : public GetTreeVariable
     // int region = getRegion(var_x, var_y, layersFound);
     // This is the "estimate" method that uses the phi
     double estimatedChargeOverPt = chargeOverPtEstimator_.estimate(var_x, var_y, layersFound, region);
-    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k), region);
     double RCube = std::pow(std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)), 3);
     double phi = std::atan2(var_y->at(k), var_x->at(k));
     return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
@@ -1495,7 +1495,7 @@ class GetVarCorrectedPhiEndcapsPz : public GetTreeVariable
     // This is the "estimate" method that uses the phi
     double estimatedCotTheta = cotThetaEstimator_.estimate(var_x, var_y, var_z, layersFound, region);
     double estimatedChargeOverPz = chargeOverPzEstimator_.estimate(var_x, var_y, layersFound, region);
-    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k), region);
     double phi = std::atan2(var_y->at(k), var_x->at(k));
     return (phi + estimatedChargeOverPz*estimatedCotTheta*DeltaR*3.8114*0.003/2.);
   }
@@ -1643,7 +1643,7 @@ public:
   }
   virtual ~GetVarCorrectedZ() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
-    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k));
+    double DeltaR = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2)) - meanRadius(var_layer->at(k), region);
     // double cotTheta = cotThetaEstimator_.estimate(var_z, layersFound);
     double cotTheta = cotThetaEstimator_.estimate(var_x, var_y, var_z, layersFound);
     return (var_z->at(k) - DeltaR*cotTheta);
@@ -1669,11 +1669,11 @@ public:
   virtual ~GetVarCorrectedZSecondOrder() {}
   virtual double at(const int k, const std::map<int, unsigned int> & layersFound, const int region) {
     double R = std::sqrt(std::pow(var_x->at(k), 2) + std::pow(var_y->at(k), 2));
-    double DeltaR = R - meanRadius(var_layer->at(k));
+    double DeltaR = R - meanRadius(var_layer->at(k), region);
     double cotTheta = cotThetaEstimator_.estimate(var_x, var_y, var_z, layersFound);
     double oneOverRho = (3.8114*0.003)*chargeOverPtEstimator_.estimate(var_x, var_y, layersFound);
     return (var_z->at(k) - (DeltaR + 1/24.*std::pow(R, 3)*(oneOverRho*oneOverRho))*cotTheta);
-    // double DeltaRCube = std::pow(R, 3) - std::pow(meanRadius(var_layer->at(k)), 3);
+    // double DeltaRCube = std::pow(R, 3) - std::pow(meanRadius(var_layer->at(k), region), 3);
     // return (var_z->at(k) - (DeltaR + 1/24.*DeltaRCube*(oneOverRho*oneOverRho))*cotTheta);
   }
 private:
