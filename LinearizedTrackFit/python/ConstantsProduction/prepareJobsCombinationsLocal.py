@@ -1,7 +1,6 @@
 import os
 import subprocess
 import time
-import psutil
 
 __author__ = 'demattia'
 
