@@ -302,7 +302,7 @@ while len(jobs_queue) > 0:
     # Get the list of all running process ids
     failed_processes.extend([p for p in running_processes if p[1].poll() != None and p[1].poll() != 0])
     running_processes = [p for p in running_processes if p[1].poll() == None]
-    print "running jobs:", [p for p in running_processes if p[0]]
+    print "running jobs:", [p[0] for p in running_processes]
 
     for i in range(min(maximum_parallel_jobs - len(running_processes), len(jobs_queue))):
         job_command = jobs_queue.pop()
@@ -310,7 +310,8 @@ while len(jobs_queue) > 0:
         process = subprocess.Popen(job_command,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT)
-        running_processes.append([job_command, process])
+        # job_command.lstrip(os.getcwd())
+        running_processes.append([job_command.lstrip(os.getcwd()).rstrip("jobFile.sh"), process])
 
     if len(jobs_queue) == 0:
         break
