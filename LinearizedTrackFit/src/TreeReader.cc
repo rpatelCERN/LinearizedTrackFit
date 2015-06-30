@@ -17,7 +17,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
   getParPhi0_(std::make_shared<GetParPhi>(tree_)),
   getParZ0_(std::make_shared<GetParZ0>(tree_)),
   getParD0_(std::make_shared<GetParD0>(tree_)),
-  getVar_(std::make_shared<GetVarPhi>("phi", tree_, requiredLayers_["R"])),
+  // getVar_(std::make_shared<GetVarPhi>("phi", tree_, requiredLayers_["R"])),
   phiIndex_(-1),
   zIndex_(-1),
   phiDiscontinuous_(false),
@@ -30,7 +30,7 @@ TreeReader::TreeReader(const TString & inputFileName, const double & eventsFract
       " for a total of " << lastTrack_ - firstTrack_ << " tracks." << std::endl;
 
   // Store the classes that will return the selected variables for each stub
-  for (const std::string varName : varNames) {
+  for (const std::string & varName : varNames) {
     if (varName == "phi") vars_.push_back(std::make_shared<GetVarPhi>(varName, tree_, requiredLayers_["phi"]));
     else if (varName == "phiOverR") vars_.push_back(std::make_shared<GetVarPhiOverR>(varName, tree_, requiredLayers_["phi"]));
     else if (varName == "phiR") vars_.push_back(std::make_shared<GetVarPhiR>(varName, tree_, requiredLayers_["phi"]));
@@ -375,7 +375,7 @@ bool TreeReader::readVariables() {
       if (phiIndex_ != -1) stubsRZPhi_.back().setCorrPhi(vars_[phiIndex_]->at(k, layersFound_, regionForMeanR_));
       if (zIndex_ != -1) stubsRZPhi_.back().setCorrZ(vars_[zIndex_]->at(k, layersFound_, regionForMeanR_));
       // int region = getRegion(tree_->m_stub_x, tree_->m_stub_y, layersFound_);
-      stubsRZPhi_.back().setMeanR(vars_[0]->meanRadius(m.first, regionForMeanR_));
+      stubsRZPhi_.back().setMeanR(meanRadius(m.first, regionForMeanR_));
     }
   }
 

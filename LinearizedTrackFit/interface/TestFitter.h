@@ -23,7 +23,8 @@ namespace LinearFit
                   const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
                   const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_)
   {
-    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
+    // std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
+    std::vector<int> layersAll_{5, 6, 7, 8, 11, 12};
     std::unordered_map<std::string, std::set<int> > requiredLayers;
     requiredLayers.insert(std::make_pair("phi", std::set<int>(layersAll_.begin(), layersAll_.end())));
     requiredLayers.insert(std::make_pair("R", std::set<int>(layersAll_.begin(), layersAll_.end())));
@@ -54,7 +55,11 @@ namespace LinearFit
       std::vector<double> vars(treeReader.getVariables());
       std::vector<double> pars(treeReader.getTrackParameters());
 
-      double normChi2 = linearizedTrackFitter.fit(vars);
+      std::vector<int> requiredLayersVec(treeReader.requiredLayersVec());
+      std::sort(requiredLayersVec.begin(), requiredLayersVec.end());
+      requiredLayersVec.erase(std::unique(requiredLayersVec.begin(), requiredLayersVec.end()), requiredLayersVec.end());
+
+      double normChi2 = linearizedTrackFitter.fit(vars, requiredLayersVec);
       std::vector<double> estimatedPars(linearizedTrackFitter.estimatedPars());
 
       std::vector<double> principalComponents(linearizedTrackFitter.principalComponents());

@@ -123,7 +123,7 @@ public:
   std::shared_ptr<GetParZ0> getParZ0_;
   std::shared_ptr<GetParD0> getParD0_;
   // GetVarPhi is arbitrary, we only need access to the getRegion method of the base class, which is abstract.
-  std::shared_ptr<GetVarPhi> getVar_;
+  // std::shared_ptr<GetVarPhi> getVar_;
 
   int phiIndex_;
   int zIndex_;
