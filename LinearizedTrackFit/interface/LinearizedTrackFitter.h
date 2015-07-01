@@ -21,7 +21,9 @@ class LinearizedTrackFitter
   std::vector<double> normalizedPrincipalComponents();
 
  private:
-  unsigned long combinationIndex(const std::vector<int> & layers);
+  inline void combinationIndex(const std::vector<int> & layers, std::bitset<32> & bits) { for (auto l : layers) bits.set(l, 1); }
+  unsigned long combinationIndex(const std::vector<int> & layers, const int region);
+  unsigned long combinationIndex(const std::vector<int> & layers, const std::vector<double> radius);
   void fillLayers(const std::string & fileName, const std::string & var, std::vector<int> & layers);
 
 //  std::shared_ptr<MatrixReader> linearFitLowPt_;
@@ -66,7 +68,7 @@ class LinearizedTrackFitter
       std::cout << std::endl;
 
       // Compute the combinationIndex and fill the map combinationIndex<->matrix.
-      unsigned long index = combinationIndex(layers);
+      unsigned long index = combinationIndex(layers, region);
       matrices->insert(std::make_pair(index, std::make_pair(region, T(dirName+"_All/"+fileName))));
 
       // Generate names for the 5/6 cases in this region
@@ -75,7 +77,7 @@ class LinearizedTrackFitter
         std::copy_if(layers.begin(), layers.end(), layers_5_6.begin(), [l](int i){return i!=l;});
         std::string removedDir(dirName+"_Removed_"+std::to_string(l));
         if (var == "z") std::cout << "removedDir = " << removedDir << std::endl;
-        index = combinationIndex(layers_5_6);
+        index = combinationIndex(layers_5_6, region);
         matrices->insert(std::make_pair(index, std::make_pair(region, T(removedDir+"/"+fileName))));
       }
     }

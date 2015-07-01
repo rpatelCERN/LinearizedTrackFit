@@ -62,22 +62,38 @@ void LinearizedTrackFitter::fillLayers(const std::string & fileName, const std::
 }
 
 
-unsigned long LinearizedTrackFitter::combinationIndex(const std::vector<int> & layers)
+unsigned long LinearizedTrackFitter::combinationIndex(const std::vector<int> & layers, const int region)
 {
-  std::bitset<20> bits;
-  for (auto l : layers) {
-    bits.set(l-5, 1);
+  std::bitset<32> bits;
+  // Set the bits for the layers
+  combinationIndex(layers, bits);
+  int lastDisk = 10;
+  if (region == 9) lastDisk = 15;
+  if (region == 8) lastDisk = 14;
+  if (region == 7) lastDisk = 13;
+  if (region == 6) lastDisk = 12;
+  if (region == 5) lastDisk = 11;
+
+  for (int disk=11; disk<=lastDisk; ++disk) {
+    // Only set the bit of the disk is there
+    if (bits[disk]) bits.set(disk+10, 1);
   }
 
+  return bits.to_ulong();
+}
 
 
+unsigned long LinearizedTrackFitter::combinationIndex(const std::vector<int> & layers, const std::vector<double> radius)
+{
+  std::bitset<32> bits;
+  // Set the bits for the layers
+  combinationIndex(layers, bits);
 
-  // Handle here the endcaps by setting additional bits based on the R cuts
-
-
-
-
-
+  // Set bits to determine the type of modules in the disks (2S vs PS).
+  // Their positions in the bitset are the disk index + 10, since there are 10 disks in total.
+  for (int i=0; i<layers.size(); ++i) {
+    if (layers[i] > 10 && radius[i] < 61.) bits.set(layers[i]+10, 1);
+  }
   return bits.to_ulong();
 }
 
@@ -103,14 +119,28 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
   for (unsigned int i=0; i<varsNum; ++i) { varsR_.push_back(vars[i*3+1]); }
   for (unsigned int i=0; i<varsNum; ++i) { correctedVarsZ_(i) = vars[i*3+2]; }
 
-  // unsigned long index =
-  combinationIndex_ = combinationIndex(layers);
+  combinationIndex_ = combinationIndex(layers, varsR_);
+
+  // Some combinations are not covered at the moment. If they happen return -1 for the chi2/ndof.
+  // These two cases are the (5, 11, 12, 13, 14, 15) with PS modules only in the first two disks. Instead of those
+  // combinations we use (5, 6, 11, 12, 13, 14) (region 5) and (5, 6, 11, 12, 14, 15) (region 6) to cover the same tracks.
+  // We can support the other combinations later if their exclusion causes a significant loss of efficiency or we can
+  // keep it simple and smaller and discard them since this is the area where you can have 7 stubs and we pick 6.
+  if (combinationIndex_ == 6354976 ||
+      combinationIndex_ == 2160672) return -1.;
 
   auto iterPt = chargeOverPtEstimator_.find(combinationIndex_);
   if (iterPt == chargeOverPtEstimator_.end()) {
     std::cout << "Error: coefficients not found for combination:" << std::endl;
     for (auto l : layers) std::cout << l << " ";
     std::cout << std::endl;
+    std::cout << "With PS modules in disks:" << std::endl;
+    std::bitset<32> bits(combinationIndex_);
+    for (int disk=11; disk<=20; ++disk) {
+      if (bits[disk+10]) std::cout << disk << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "Combination index = " << combinationIndex_ << std::endl;
     throw;
   }
   int region = iterPt->second.first;

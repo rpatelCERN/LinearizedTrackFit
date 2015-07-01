@@ -24,7 +24,8 @@ namespace LinearFit
                   const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_)
   {
     // std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
-    std::vector<int> layersAll_{5, 6, 7, 8, 11, 12};
+    // std::vector<int> layersAll_{5, 6, 7, 8, 11, 12};
+    std::vector<int> layersAll_{5, 11, 12, 13, 14, 15};
     std::unordered_map<std::string, std::set<int> > requiredLayers;
     requiredLayers.insert(std::make_pair("phi", std::set<int>(layersAll_.begin(), layersAll_.end())));
     requiredLayers.insert(std::make_pair("R", std::set<int>(layersAll_.begin(), layersAll_.end())));
@@ -60,6 +61,10 @@ namespace LinearFit
       requiredLayersVec.erase(std::unique(requiredLayersVec.begin(), requiredLayersVec.end()), requiredLayersVec.end());
 
       double normChi2 = linearizedTrackFitter.fit(vars, requiredLayersVec);
+
+      // We do not have coefficients for this combination, skip it.
+      if (normChi2 == -1.) continue;
+
       std::vector<double> estimatedPars(linearizedTrackFitter.estimatedPars());
 
       std::vector<double> principalComponents(linearizedTrackFitter.principalComponents());
