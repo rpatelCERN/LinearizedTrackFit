@@ -184,10 +184,6 @@ bool TreeReader::nextTrack()
 double TreeReader::genTrackDistanceTransverse(const double &pt, const double &phi0, const double &d0,
                                               const int charge, const double &B, const double &x1, const double &y1) const
 {
-//  double r = pt / (0.003 * B); // In centimeters (0.3 for meters)
-//  double deltaXc = x1 - (charge*r * sin(phi) + x0);
-//  double deltaYc = y1 - (-charge*r * cos(phi) + y0);
-//  return fabs(std::sqrt(deltaXc * deltaXc + deltaYc * deltaYc) - r);
   double phi = std::atan2(y1, x1);
   double R = std::sqrt(x1*x1 + y1*y1);
   double rho = charge*pt/(B*0.003);
@@ -202,11 +198,6 @@ double TreeReader::genTrackDistanceTransverse(const double &pt, const double &ph
 double TreeReader::genTrackDistanceLongitudinal(const double &z0, const double &cotTheta, const double &pt, const double &d0,
                                                 const int charge, const double &B, const double &R, const double &z1) const
 {
-//  if (cotTheta == 0) return z1;
-//  double r0 = std::sqrt(x0*x0 + y0*y0);
-//  // The point r, z0 is the point the track goes through, 1/cotTheta = tan(theta) = m in z = m*r + c.
-//  // c = z0 - m*r0
-//  return (z1 - z0 - (r1-r0)*cotTheta);
   double rho = charge*pt/(B*0.003);
   double zGen = z0 + 2*rho*cotTheta*asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0)));
   return (z1 - zGen);
@@ -256,43 +247,22 @@ bool TreeReader::goodTrack()
   if (!goodStubsGenInfo(tree_->m_stub_pdg)) return false;
   if (!goodStubsGenInfo(tree_->m_stub_tp)) return false;
 
-  // Cut on the beamspot to make it a circle
-  // The generated distribution is a square with x0 and y0 between +/- 0.15 cm.
-//  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 0.145) return false;
-//  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 0.95) return false;
-//  if (std::sqrt(std::pow(tree_->m_stub_X0->at(0),2)+std::pow(tree_->m_stub_Y0->at(0),2)) > 9.5) return false;
-//   if (fabs(getParD0_->at(0)) > 0.02) return false;
-//  if (fabs(getParD0_->at(0)) > 0.01) return false;
-//  if (fabs(getParD0_->at(0)) < 0.4) return false;
-//  if (fabs(getParD0_->at(0)) > 0.25) return false;
-//  if (fabs(getParD0_->at(0)) > 0.5) return false;
-//  if (fabs(getParD0_->at(0)) < 0.2) return false;
-//  if (getParD0_->at(0) < 0.4) return false;
+  // d0 cuts
+//  if (fabs(getParD0_->at(0)) > 0.02) return false;
 //  if (getParD0_->at(0) > 0.5) return false;
-  // if (getParD0_->at(0) > 0) return false;
-//  if (fabs(getParD0_->at(0)) > 0.8) return false;
-//   if (tree_->m_stub_pdg->at(0) < 0) return false;
-//  if (fabs(getParD0_->at(0)) > 8.) return false;
 
   return true;
 }
 
 
 // Fill the vector of selected variables
-bool TreeReader::readVariables() {
+bool TreeReader::readVariables()
+{
   variables_.clear();
   stubsRZPhi_.clear();
   layersFound_.clear();
   // Find how the stub indexes correspond to the layers
   unsigned int totalStubs = tree_->m_stub;
-
-
-
-
-//  bool layerFive = false;
-
-
-
 
   for (unsigned int k = 0; k < totalStubs; ++k) {
     int layer = tree_->m_stub_layer->at(k);
@@ -305,12 +275,6 @@ bool TreeReader::readVariables() {
       if ((R < radiusCut->second.first) || (R > radiusCut->second.second)) continue;
     }
 
-
-
-
-//    if (layer == 5) layerFive = true;
-
-
 //    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
 //                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
 //    if (phiIndex_ != -1) stubsRZPhi_.back().setCorrPhi(vars_[phiIndex_]->at(k, layersFound_));
@@ -318,12 +282,7 @@ bool TreeReader::readVariables() {
 //    int region = vars_[0]->getRegion(tree_->m_stub_x, tree_->m_stub_y, layersFound_);
 //    stubsRZPhi_.back().setMeanR(vars_[0]->meanRadius(layer, region));
 
-
     if (allRequiredLayers_.find(layer) == allRequiredLayers_.end()) continue;
-//    int layerOfStub = tree_->m_stub_layer->at(k);
-//    if (layerOfStub == 5) {
-//      std::cout << "layer 5" << std::endl;
-//    }
 //    stubsRZPhi_.push_back(StubRZPhi(tree_->m_stub_x->at(k), tree_->m_stub_y->at(k), tree_->m_stub_z->at(k),
 //                                    tree_->m_stub_module->at(k), tree_->m_stub_ladder->at(k), tree_->m_stub_layer->at(k)));
     if (layersFound_.count(layer) != 0) continue;
@@ -338,18 +297,8 @@ bool TreeReader::readVariables() {
     if (layersFound_.find(l) == layersFound_.end()) return false;
   }
 
-
-
   // This needs to be after the layersFound is filled and before the variables are filled
   regionForMeanR_ = getRegionForMeanR();
-
-
-
-//  if (!layerFive) return false;
-
-
-
-
   for (const auto & var : vars_) {
     if (layersFound_.size() < var->layersNum()) return false;
   }
@@ -363,7 +312,6 @@ bool TreeReader::readVariables() {
         // Take the ladder of the outermost layer in the barrel
         if (m.first == 10) {
           lastLadder_ = tree_->m_stub_ladder->at(k);
-//          if (lastLadder_ != 4) return false;
         }
       }
     }
@@ -373,7 +321,6 @@ bool TreeReader::readVariables() {
     if (vars_[0]->layer(m.first)) {
       if (phiIndex_ != -1) stubsRZPhi_.back().setCorrPhi(vars_[phiIndex_]->at(k, layersFound_, regionForMeanR_));
       if (zIndex_ != -1) stubsRZPhi_.back().setCorrZ(vars_[zIndex_]->at(k, layersFound_, regionForMeanR_));
-      // int region = getRegion(tree_->m_stub_x, tree_->m_stub_y, layersFound_);
       stubsRZPhi_.back().setMeanR(meanRadius(m.first, regionForMeanR_));
     }
   }
@@ -398,9 +345,7 @@ bool TreeReader::readVariables() {
     }
     if (phiDiscontinuous_) {
       for (unsigned int i = phiIndex_; i < variables_.size(); i += vars_.size()) {
-        // std::cout << "discontinuous phi["<<i<<"] = " << variables_[i] << " ";
         if (variables_[i] < 0.) variables_[i] += 2 * M_PI;
-        // std::cout << "changed to phi["<<i<<"] = " << variables_[i] << std::endl;
       }
     }
   }
@@ -424,11 +369,8 @@ void TreeReader::readTrackParameters()
       // Adjust for discontinuity if the parameter phi is in the left hemisphere and it does not have the same sign
       // as the phi coordinates (which have already been adjusted in this hemisphere).
       if (parametersNames_[i] == "phi" && parameters_[i] * variables_[phiIndex_] < 0.) {
-        //  ((phiDiscontinuous_ && parameters_[i] < -M_PI_2) || (fabs(parameters_[i]) < M_PI_2 && parameters_[i] * variables_[phiIndex_] < 0.)) {
-        // std::cout << "discontinuous PHI0 = " << parameters_[i] << " ";
         if (parameters_[i] > M_PI_2) parameters_[i] -= 2 * M_PI;
         else if (parameters_[i] < -M_PI_2) parameters_[i] += 2 * M_PI;
-        // std::cout << "changed to PHI0 = " << parameters_[i] << std::endl;
       }
     }
 
@@ -495,11 +437,4 @@ int TreeReader::getRegionForMeanR() const
   if (layersFound_.find(7) != layersFound_.end()) return 4;
   // It means layer 7 is missing, return the same meanR for the disks
   return 4;
-  // if (layersFound_.find(6) != layersFound_.end()) return 4;
-  // if (layersFound_.find(5) != layersFound_.end()) return 4;
-
-  // std::cout << "Error: the following combination of layers did not match any meanR: " << std::endl;
-  // for (const auto & l : layersFound_) std::cout << l.first << std::endl;
-  // throw(1);
-  // return 4;
 }

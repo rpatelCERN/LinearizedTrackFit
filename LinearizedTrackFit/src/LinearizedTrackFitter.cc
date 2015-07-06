@@ -1,17 +1,11 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearizedTrackFitter.h"
 
 LinearizedTrackFitter::LinearizedTrackFitter() :
-//    linearFitLowPt_(std::make_shared<MatrixReader>("matrixVD_0_pT_2_10_new.txt")),
-//    linearFitHighPt_(std::make_shared<MatrixReader>("matrixVD_0_pT10_new.txt")),
-//    linearFitLongitudinal_(std::make_shared<MatrixReader>("Combinations_Longitudinal_Rz")),
     preEstimatePtDirName_("PreEstimate_Transverse"),
     preEstimateCotThetaDirName_("PreEstimate_Longitudinal_Rz"),
     linearFitLowPtDirName_("Combinations_Transverse_SecondOrder_2_10"),
     linearFitHighPtDirName_("Combinations_Transverse_SecondOrder_10_more"),
     linearFitLongitudinalDirName_("Combinations_Longitudinal_Rz_SecondOrder"),
-    // meanRadius_{22.1072, 35.4917, 50.6335, 68.3771, 88.5511, 107.746},
-    // chargeOverPtEstimator_("matrixVD_pre_chargeOverPt.txt"),
-    // cotThetaEstimator_("matrixVD_pre_cotTheta.txt"),
     preEstimatedPt_(0.),
     ptSplitValue_(10.),
     combinationIndex_(0)
@@ -98,6 +92,25 @@ unsigned long LinearizedTrackFitter::combinationIndex(const std::vector<int> & l
 }
 
 
+double LinearizedTrackFitter::fit(const std::vector<double> & vars, const int bits)
+{
+  std::vector<int> layers;
+  switch (bits) {
+    case 0b111111: layers = {5, 6, 7, 8, 9, 10};
+    case 0b111110: layers = {6, 7, 8, 9, 10};
+    case 0b111101: layers = {5, 7, 8, 9, 10};
+    case 0b111011: layers = {5, 6, 8, 9, 10};
+    case 0b110111: layers = {5, 6, 7, 9, 10};
+    case 0b101111: layers = {5, 6, 7, 8, 10};
+    case 0b011111: layers = {5, 6, 7, 8, 9};
+    default:
+      std::cout << "Error: unknown bits = " << bits << std::endl;
+      throw;
+  }
+  fit(vars, layers);
+}
+
+
 double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::vector<int> & layers)
 {
   if (vars.size() < 15) {
@@ -121,28 +134,124 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
 
   combinationIndex_ = combinationIndex(layers, varsR_);
 
-  // Some combinations are not covered at the moment. If they happen return -1 for the chi2/ndof.
-  // These two cases are the (5, 11, 12, 13, 14, 15) with PS modules only in the first two disks. Instead of those
-  // combinations we use (5, 6, 11, 12, 13, 14) (region 5) and (5, 6, 11, 12, 14, 15) (region 6) to cover the same tracks.
-  // We can support the other combinations later if their exclusion causes a significant loss of efficiency or we can
-  // keep it simple and smaller and discard them since this is the area where you can have 7 stubs and we pick 6.
-  if (combinationIndex_ == 6354976 ||
-      combinationIndex_ == 2160672) return -1.;
+//  // Some combinations are not covered at the moment. If they happen return -1 for the chi2/ndof.
+//  // These two cases are the (5, 11, 12, 13, 14, 15) with PS modules only in the first two disks. Instead of those
+//  // combinations we use (5, 6, 11, 12, 13, 14) (region 5) and (5, 6, 11, 12, 14, 15) (region 6) to cover the same tracks.
+//  // We can support the other combinations later if their exclusion causes a significant loss of efficiency or we can
+//  // keep it simple and smaller and discard them since this is the area where you can have 7 stubs and we pick 6.
+//  // Index 2160704 corresponds to layers (6 11 12 13 14 15) with the disk 11 having PS modules. This is not covered
+//  // as a 6/6 though its 5/6 cases are mostly covered by regions 5 and 6.
+//  // Index 61536 corresponds to layers (5 6 12 13 14 15), all modules 2S in the disks.
+//  // Index 2156640 corresponds to layers (5 6 11 13 14 15), disk 11 has PS modules.
+//  // Index 2152544 corresponds to layers (5 6 11 12 14 15), disk 11 has PS modules.
+//  // Index 2144352 corresponds to layers (5 6 11 12 13 15), disk 11 has PS modules.
+//  // Index 6355008 corresponds to layers (6 11 12 13 14 15), disks 11 and 12 have PS modules.
+//  // Index 4255840 corresponds to layers (5 6 12 13 14 15), disk 12 has PS modules.
+//  // Index 6338656 corresponds to layers (5 6 11 12 13 15), disks 11 and 12 have PS modules.
+//  // 6322272 -> (5 6 11 12 13 14), PS(11, 12)
+//  // 2128064 -> (6 7 11 12 13 14), PS(11)
+//  // 2128032 -> (5 7 11 12 13 14), PS(11)
+//  // 28896 -> (5 6 7 12 13 14), no PS modules
+//  // 2124000 -> (5 6 7 11 13 14), PS(11)
+//  // 2119904 -> (5 6 7 11 12 14), PS(11)
+//  // 2111712 -> (5 6 7 11 12 13), PS(11)
+//  // 14743616 -> (6 11 12 13 14 15), PS(11, 12, 13)
+//  // 12644448 -> (5 6 12 13 14 15), PS(12, 13)
+//  // 10545248 -> (5 6 11 13 14 15), PS(11, 13)
+//  // 14727264 -> (5 6 11 12 13 15), PS(11, 12, 13)
+//  // 14710880 -> (5 6 11 12 13 14), PS(11, 12, 13). This is covered by region 4 where we use layer 7.
+//  // 30912 -> (6 7 11 12 13 14), no PS modules
+//  // 30880 -> (5 7 11 12 13 14), no PS modules
+//  // 30816 -> (5 6 11 12 13 14), no PS modules
+//  // 26848 -> (5 6 7 11 13 14), no PS modules
+//  // 22752 -> (5 6 7 11 12 14), no PS modules
+//  // 61472 -> (5 12 13 14 15), no PS modules
+//  // 2160768 -> (7 11 12 13 14 15), PS(11)
+//  // 61632 -> (6 7 12 13 14 15), no PS modules
+//  // 2156736 -> (6 7 11 13 14 15), PS(11)
+//  // 2152640 -> (6 7 11 12 14 15), PS(11)
+//  // 2144448 -> (6 7 11 12 13 15), PS(11)
+//  // 61600 -> (5 7 12 13 14 15), no PS modules
+//  // 2156704 -> (5 7 11 13 14 15), PS(11)
+//  // 2152608 -> (5 7 11 12 14 15), PS(11)
+//  // 2144416 -> (5 7 11 12 13 15), PS(11)
+//  // 14784 -> (6 7 8 11 12 13), no PS modules
+//  // 14752 -> (5 7 8 11 12 13), no PS modules
+//  // 14688 -> (5 6 8 11 12 13), no PS modules
+//  // 12768 -> (5 6 7 8 12 13), no PS modules
+//  // 10720 -> (5 6 7 8 11 13), no PS modules
+//  // 45280 -> (5 6 7 12 13 15), no PS modules
+//  // 2140384 -> (5 6 7 11 13 15), PS(11)
+//  // 2136288 -> (5 6 7 11 12 15), PS(11)
+//  // 57568 -> (5 6 7 13 14 15), no PS modules
+//  // 53472 -> (5 6 7 12 14 15), no PS modules
+//  // 2148576 -> (5 6 7 11 14 15), PS(11)
+//  if (combinationIndex_ == 6354976 ||
+//      combinationIndex_ == 2160672 ||
+//      combinationIndex_ == 2160704 ||
+//      combinationIndex_ == 61536 ||
+//      combinationIndex_ == 2156640 ||
+//      combinationIndex_ == 2152544 ||
+//      combinationIndex_ == 2144352 ||
+//      combinationIndex_ == 6355008 ||
+//      combinationIndex_ == 4255840 ||
+//      combinationIndex_ == 6338656 ||
+//      combinationIndex_ == 6322272 ||
+//      combinationIndex_ == 2128064 ||
+//      combinationIndex_ == 2128032 ||
+//      combinationIndex_ == 28896 ||
+//      combinationIndex_ == 2124000 ||
+//      combinationIndex_ == 2119904 ||
+//      combinationIndex_ == 2111712 ||
+//      combinationIndex_ == 14743616 ||
+//      combinationIndex_ == 12644448 ||
+//      combinationIndex_ == 10545248 ||
+//      combinationIndex_ == 14727264 ||
+//      combinationIndex_ == 14710880 ||
+//      combinationIndex_ == 30912 ||
+//      combinationIndex_ == 30880 ||
+//      combinationIndex_ == 30816 ||
+//      combinationIndex_ == 26848 ||
+//      combinationIndex_ == 22752 ||
+//      combinationIndex_ == 61472 ||
+//      combinationIndex_ == 2160768 ||
+//      combinationIndex_ == 61632 ||
+//      combinationIndex_ == 2156736 ||
+//      combinationIndex_ == 2152640 ||
+//      combinationIndex_ == 2144448 ||
+//      combinationIndex_ == 61600 ||
+//      combinationIndex_ == 2156704 ||
+//      combinationIndex_ == 2152608 ||
+//      combinationIndex_ == 2144416 ||
+//      combinationIndex_ == 14784 ||
+//      combinationIndex_ == 14752 ||
+//      combinationIndex_ == 14688 ||
+//      combinationIndex_ == 12768 ||
+//      combinationIndex_ == 10720 ||
+//      combinationIndex_ == 45280 ||
+//      combinationIndex_ == 2140384 ||
+//      combinationIndex_ == 2136288 ||
+//      combinationIndex_ == 57568 ||
+//      combinationIndex_ == 53472 ||
+//      combinationIndex_ == 2148576) return -1.;
 
   auto iterPt = chargeOverPtEstimator_.find(combinationIndex_);
   if (iterPt == chargeOverPtEstimator_.end()) {
-    std::cout << "Error: coefficients not found for combination:" << std::endl;
-    for (auto l : layers) std::cout << l << " ";
-    std::cout << std::endl;
-    std::cout << "With PS modules in disks:" << std::endl;
-    std::bitset<32> bits(combinationIndex_);
-    for (int disk=11; disk<=20; ++disk) {
-      if (bits[disk+10]) std::cout << disk << " ";
-    }
-    std::cout << std::endl;
-    std::cout << "Combination index = " << combinationIndex_ << std::endl;
-    throw;
+    return -1.;
   }
+//  if (iterPt == chargeOverPtEstimator_.end()) {
+//    std::cout << "Error: coefficients not found for combination:" << std::endl;
+//    for (auto l : layers) std::cout << l << " ";
+//    std::cout << std::endl;
+//    std::cout << "With PS modules in disks:" << std::endl;
+//    std::bitset<32> bits(combinationIndex_);
+//    for (int disk=11; disk<=20; ++disk) {
+//      if (bits[disk+10]) std::cout << disk << " ";
+//    }
+//    std::cout << std::endl;
+//    std::cout << "Combination index = " << combinationIndex_ << std::endl;
+//    throw;
+//  }
   int region = iterPt->second.first;
   EstimatorSimple & chargeOverPtEstimator = iterPt->second.second;
 

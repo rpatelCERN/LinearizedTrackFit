@@ -17,6 +17,7 @@ class LinearizedTrackFitter
   LinearizedTrackFitter();
 
   double fit(const std::vector<double> & vars, const std::vector<int> & layers);
+  double fit(const std::vector<double> & vars, const int bits);
   std::vector<double> estimatedPars() { return estimatedPars_; }
   std::vector<double> principalComponents();
   std::vector<double> normalizedPrincipalComponents();
@@ -27,9 +28,6 @@ class LinearizedTrackFitter
   unsigned long combinationIndex(const std::vector<int> & layers, const std::vector<double> radius);
   void fillLayers(const std::string & fileName, const std::string & var, std::vector<int> & layers);
 
-//  std::shared_ptr<MatrixReader> linearFitLowPt_;
-//  std::shared_ptr<MatrixReader> linearFitHighPt_;
-//  std::shared_ptr<MatrixReader> linearFitLongitudinal_;
   std::string preEstimatePtDirName_;
   std::string preEstimateCotThetaDirName_;
   std::string linearFitLowPtDirName_;
@@ -38,9 +36,6 @@ class LinearizedTrackFitter
   std::vector<double> varsR_;
   Matrix<long double, Dynamic, 1> correctedVarsPhi_;
   Matrix<long double, Dynamic, 1> correctedVarsZ_;
-  // std::vector<double> meanRadius_;
-  // Estimator chargeOverPtEstimator_;
-  // Estimator cotThetaEstimator_;
   double preEstimatedPt_;
   double ptSplitValue_;
   std::vector<double> estimatedPars_;
