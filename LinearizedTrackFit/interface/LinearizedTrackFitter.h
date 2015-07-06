@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <memory>
+#include <bitset>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GetVariables.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixReader.h"
 
