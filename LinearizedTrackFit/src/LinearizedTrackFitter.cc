@@ -96,13 +96,13 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const int bi
 {
   std::vector<int> layers;
   switch (bits) {
-    case 0b111111: layers = {5, 6, 7, 8, 9, 10};
-    case 0b111110: layers = {6, 7, 8, 9, 10};
-    case 0b111101: layers = {5, 7, 8, 9, 10};
-    case 0b111011: layers = {5, 6, 8, 9, 10};
-    case 0b110111: layers = {5, 6, 7, 9, 10};
-    case 0b101111: layers = {5, 6, 7, 8, 10};
-    case 0b011111: layers = {5, 6, 7, 8, 9};
+    case 0: layers = {5, 6, 7, 8, 9, 10};
+    case 1: layers = {6, 7, 8, 9, 10};
+    case 2: layers = {5, 7, 8, 9, 10};
+    case 3: layers = {5, 6, 8, 9, 10};
+    case 4: layers = {5, 6, 7, 9, 10};
+    case 5: layers = {5, 6, 7, 8, 10};
+    case 6: layers = {5, 6, 7, 8, 9};
     default:
       std::cout << "Error: unknown bits = " << bits << std::endl;
       throw;

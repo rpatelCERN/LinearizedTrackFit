@@ -124,7 +124,7 @@ void TreeReaderNew::generateStubCombination()
 // Also, compute the geometrical index based on the geometrical filter.
 bool TreeReaderNew::nextTrack()
 {
-  if (stubCombination_ > 0) {
+  if (stubCombination_ >= 0) {
     // Generate the next combination
     variables_ = allVariables_;
     layersVec_ = allLayersVec_;
@@ -163,11 +163,12 @@ bool TreeReaderNew::nextTrack()
           maxStubCombinations_ = layersFound_.size();
           allVariables_ = variables_;
           allLayersVec_ = layersVec_;
-          generateStubCombination();
+          // only in the case of 7 we need to start generating immediately
+          if (layersFound_.size() == 7) generateStubCombination();
         }
+        // Only return the 5/6 cases if requested
+        if (layersFound_.size() == 5 && !fiveOutOfSix_) good = false;
       }
-      // Only return the 5/6 cases if requested
-      if (layersFound_.size() == 5 && !fiveOutOfSix_) good = false;
 
 //      std::cout << "track number = " << trackIndex_ << std::endl;
       ++trackIndex_;
@@ -288,9 +289,6 @@ bool TreeReaderNew::readVariables()
     // Only store stubs in layers required by at least one variable.
     layersFound_.insert(std::make_pair(layer, k));
   }
-
-
-
 
   if (allRequiredLayers_.size() <= 6) {
     // If we did not find all the required layers we skip the event
