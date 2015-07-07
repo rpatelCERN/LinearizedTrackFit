@@ -14,7 +14,7 @@
 class LinearizedTrackFitter
 {
  public:
-  LinearizedTrackFitter();
+  LinearizedTrackFitter(const std::string & baseDir);
 
   double fit(const std::vector<double> & vars, const std::vector<int> & layers);
   double fit(const std::vector<double> & vars, const int bits);
@@ -47,6 +47,7 @@ class LinearizedTrackFitter
   std::unordered_map<unsigned long, std::pair<int, MatrixReader> > linearFitHighPt_;
   std::unordered_map<unsigned long, std::pair<int, MatrixReader> > linearFitLongitudinal_;
   unsigned long combinationIndex_;
+  std::string baseDir_;
 
 
   template <class T>

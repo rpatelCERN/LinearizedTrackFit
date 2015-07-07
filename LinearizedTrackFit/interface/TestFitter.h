@@ -20,7 +20,8 @@ namespace LinearFit
                   std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit,
                   const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName,
                   const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
-                  const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_, const bool fiveOutOfSix)
+                  const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_, const bool fiveOutOfSix,
+                  const std::string & baseDir)
   {
     // std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
     // std::vector<int> layersAll_{5, 6, 7, 8, 11, 12};
@@ -45,7 +46,7 @@ namespace LinearFit
 
 
     // Perform linearized track fit
-    LinearizedTrackFitter linearizedTrackFitter;
+    LinearizedTrackFitter linearizedTrackFitter(baseDir);
     while (treeReader.nextTrack()) {
 
       if (treeReader.getOneOverPt() < oneOverPtMin_) continue;
