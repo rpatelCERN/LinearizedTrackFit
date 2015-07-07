@@ -434,7 +434,7 @@ class EstimatorSimple
   double estimate(const T & var1, const U & var2)
   {
     double estimatedParameter = 0.;
-    for (int i=0; i<var1.size(); ++i) {
+    for (unsigned int i=0; i<var1.size(); ++i) {
       estimatedParameter += (var1[i]-means_[i*2])*coeff_[i*2];
       estimatedParameter += (var2[i]-means_[i*2+1])*coeff_[i*2+1];
     }

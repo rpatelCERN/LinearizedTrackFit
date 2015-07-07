@@ -85,7 +85,7 @@ unsigned long LinearizedTrackFitter::combinationIndex(const std::vector<int> & l
 
   // Set bits to determine the type of modules in the disks (2S vs PS).
   // Their positions in the bitset are the disk index + 10, since there are 10 disks in total.
-  for (int i=0; i<layers.size(); ++i) {
+  for (unsigned int i=0; i<layers.size(); ++i) {
     if (layers[i] > 10 && radius[i] < 61.) bits.set(layers[i]+10, 1);
   }
   return bits.to_ulong();
