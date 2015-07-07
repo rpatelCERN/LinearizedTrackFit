@@ -1,0 +1,98 @@
+5 
+11 
+13 
+14 
+15 
+inputFileName = /Users/demattia/RemoteProjects/extracted_endcaps.root
+eventsFractionStartBuild = 0
+eventsFractionEndBuild = 0.2
+eventsFractionStartTest = 0.8
+eventsFractionEndTest = 1
+var name = CorrectedZSecondOrder
+par name = cotTheta
+par name = z0
+firstOrderChargeOverPtCoefficientsFileName = /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse/Region_9_Removed_12/matrixVD_0_pre_chargeOverPt.txt
+firstOrderCotThetaCoefficientsFileName = /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Longitudinal_Rz/Region_9_Removed_12/matrixVD_0_pre_cotTheta.txt
+pT > 2, pT regions = 1
+0 < phi < 0.8, phi regions = 1
+-3 < eta < 3, eta regions = 1
+-15 < z0 < 15, eta regions = 1
+charge regions = 1
+endcap regions = 0
+Training
+Requested running from track number 0 to track number 1000000 for a total of 1000000 tracks.
+opening /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse/Region_9_Removed_12/matrixVD_0_pre_chargeOverPt.txt for reading
+Estimator variable mean[5] = 0.40346
+Estimator variable mean[11] = 0.403632
+Estimator variable mean[13] = 0.403631
+Estimator variable mean[14] = 0.403637
+Estimator variable mean[15] = 0.403608
+Estimator parameter mean = 0.000138346
+Estimator coefficient[5] = -1.14588
+Estimator coefficient[11] = 2.57169
+Estimator coefficient[13] = 7.77904
+Estimator coefficient[14] = 2.55377
+Estimator coefficient[15] = -11.7641
+opening /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Longitudinal_Rz/Region_9_Removed_12/matrixVD_0_pre_cotTheta.txt for reading
+Estimator variable mean[5] = 22.399
+Estimator variable mean[5] = 103.812
+Estimator variable mean[11] = 27.979
+Estimator variable mean[11] = 130.226
+Estimator variable mean[13] = 39.6431
+Estimator variable mean[13] = 185.721
+Estimator variable mean[14] = 46.9219
+Estimator variable mean[14] = 220.384
+Estimator variable mean[15] = 55.4233
+Estimator variable mean[15] = 260.959
+Estimator parameter mean = 4.77317
+Estimator coefficient[5] = 0.0537195
+Estimator coefficient[5] = -0.0112749
+Estimator coefficient[11] = 0.107932
+Estimator coefficient[11] = -0.0243874
+Estimator coefficient[13] = 0.0334514
+Estimator coefficient[13] = -0.0108686
+Estimator coefficient[14] = -0.085772
+Estimator coefficient[14] = 0.0163444
+Estimator coefficient[15] = -0.119946
+Estimator coefficient[15] = 0.0208023
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks
+Evaluating eigenvalues:
+geomIndex = 0
+Sqrt(eigenvalues) of cov:
+ 0.150681 0.194325 0.19745 5.37105 22.9144
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks
+opening GeometricIndex.txt for writing
+Matrices built:
+geomIndex = 0
+
+V_0:
+  -0.664613    0.676084    0.222043 -0.00725944   -0.227693
+ 0.00599934     0.18814   -0.700247    0.669052   -0.163071
+ -0.0433182   -0.396933    0.508218    0.504351   -0.572635
+  -0.713374   -0.515608   -0.110534    0.142686     0.43894
+   0.217887    0.290009    0.435716    0.526866    0.633233
+corrPV_0:
+ 0.000669007 -4.20675e-05  0.000145448     0.997673      6.56444
+  -0.0296589   0.00133018  -0.00511148     -42.6401     -30.7684
+D_0:
+-0.0416984 0.00402487  0.0108434  0.0124439   0.014433
+   1.91573  -0.079373  -0.243505   -0.27485   -0.31913
+opening matrixVD_0.txt for writing

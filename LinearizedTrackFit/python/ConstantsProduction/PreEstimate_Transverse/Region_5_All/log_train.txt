@@ -1,0 +1,56 @@
+5 
+6 
+11 
+12 
+13 
+14 
+inputFileName = /Users/demattia/RemoteProjects/extracted_endcaps.root
+eventsFractionStartBuild = 0
+eventsFractionEndBuild = 0.5
+eventsFractionStartTest = 0.5
+eventsFractionEndTest = 1
+var name = phi
+par name = charge/pt
+firstOrderChargeOverPtCoefficientsFileName = 
+firstOrderCotThetaCoefficientsFileName = 
+pT > 2, pT regions = 1
+0 < phi < 0.8, phi regions = 1
+-3 < eta < 3, eta regions = 1
+-15 < z0 < 15, eta regions = 1
+charge regions = 1
+endcap regions = 0
+Training
+Requested running from track number 0 to track number 2500000 for a total of 2500000 tracks.
+
+ *** Break *** bus error
+ Generating stack trace...
+[invalid usage]: unrecognized option '-d'
+Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
+ 0x00000001009c451d in _ZN11TBufferFile13ApplySequenceERKN20TStreamerInfoActions15TActionSequenceEPv + 0x3d from /Users/demattia/root/lib/libRIO.so
+[invalid usage]: unrecognized option '-d'
+Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
+ 0x000000010128c0bb in _ZN14TBranchElement16ReadLeavesMemberER7TBuffer + 0x1eb from /Users/demattia/root/lib/libTree.so
+[invalid usage]: unrecognized option '-d'
+Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
+ 0x0000000101275c16 in _ZN7TBranch8GetEntryExi + 0x146 from /Users/demattia/root/lib/libTree.so
+[invalid usage]: unrecognized option '-d'
+Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
+ 0x0000000101286f1c in _ZN14TBranchElement8GetEntryExi + 0x11c from /Users/demattia/root/lib/libTree.so
+[invalid usage]: unrecognized option '-d'
+Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
+ 0x00000001012c4f58 in _ZN5TTree8GetEntryExi + 0xa8 from /Users/demattia/root/lib/libTree.so
+[invalid usage]: unrecognized option '-d'
+Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
+ 0x00000001004bd5eb in _ZN18L1TrackTriggerTree8getEntryEi + 0x2b from /Users/demattia/RemoteProjects/RemoteProjects
+[invalid usage]: unrecognized option '-d'
+Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
+ 0x00000001004b646b in _ZN10TreeReader9nextTrackEv + 0x6b from /Users/demattia/RemoteProjects/RemoteProjects
+[invalid usage]: unrecognized option '-d'
+Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
+ 0x00000001003bf0d2 in _ZN9LinearFit11buildMatrixERK7TStringRKdS4_RKNSt3__113unordered_mapINS5_12basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEENS5_3setIiNS5_4lessIiEENSA_IiEEEENS5_4hashISC_EENS5_8equal_toISC_EENSA_ + 0xee2 from /Users/demattia/RemoteProjects/RemoteProjects
+[invalid usage]: unrecognized option '-d'
+Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
+ 0x00000001003d7f5e in main + 0xff9e from /Users/demattia/RemoteProjects/RemoteProjects
+[invalid usage]: unrecognized option '-d'
+Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
+ 0x00007fff8ab1e5c9 in start + 0x1 from /usr/lib/system/libdyld.dylib

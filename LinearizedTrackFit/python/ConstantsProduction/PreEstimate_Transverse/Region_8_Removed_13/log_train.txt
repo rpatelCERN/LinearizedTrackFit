@@ -1,0 +1,61 @@
+5 
+11 
+12 
+14 
+15 
+inputFileName = /Users/demattia/RemoteProjects/extracted_endcaps.root
+eventsFractionStartBuild = 0
+eventsFractionEndBuild = 0.5
+eventsFractionStartTest = 0.5
+eventsFractionEndTest = 1
+var name = phi
+par name = charge/pt
+firstOrderChargeOverPtCoefficientsFileName = 
+firstOrderCotThetaCoefficientsFileName = 
+pT > 2, pT regions = 1
+0 < phi < 0.8, phi regions = 1
+-3 < eta < 3, eta regions = 1
+-15 < z0 < 15, eta regions = 1
+charge regions = 1
+endcap regions = 0
+Training
+Requested running from track number 0 to track number 2500000 for a total of 2500000 tracks.
+Analyzed 10% of 2500000 tracks
+Analyzed 20% of 2500000 tracks
+Analyzed 30% of 2500000 tracks
+Analyzed 40% of 2500000 tracks
+Analyzed 50% of 2500000 tracks
+Analyzed 60% of 2500000 tracks
+Analyzed 70% of 2500000 tracks
+Analyzed 80% of 2500000 tracks
+Analyzed 90% of 2500000 tracks
+Analyzed 100% of 2500000 tracks
+Evaluating eigenvalues:
+geomIndex = 0
+Sqrt(eigenvalues) of cov:
+ 0.000741962 0.000763925 0.00223696 0.0531456 0.538877
+Analyzed 10% of 2500000 tracks
+Analyzed 20% of 2500000 tracks
+Analyzed 30% of 2500000 tracks
+Analyzed 40% of 2500000 tracks
+Analyzed 50% of 2500000 tracks
+Analyzed 60% of 2500000 tracks
+Analyzed 70% of 2500000 tracks
+Analyzed 80% of 2500000 tracks
+Analyzed 90% of 2500000 tracks
+Analyzed 100% of 2500000 tracks
+opening GeometricIndex.txt for writing
+Matrices built:
+geomIndex = 0
+
+V_0:
+  0.113387  -0.683842   0.501316   0.399123  -0.329979
+ 0.0282868  -0.225266   0.521201  -0.720801   0.396548
+  0.659845  -0.440887  -0.513711 -0.0291015   0.324773
+  -0.60588  -0.308499  -0.127248   0.333136   0.640754
+  0.428786   0.438249    0.44378   0.457516   0.466711
+corrPV_0:
+ 3.23585e-06  2.71614e-06 -2.50335e-05   -0.0144066   -0.0445874
+D_0:
+0.521695 -1.35614  8.52336 -2.63266 -5.05864
+opening matrixVD_0.txt for writing

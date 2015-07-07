@@ -1,0 +1,98 @@
+5 
+6 
+7 
+8 
+10 
+inputFileName = /Users/demattia/RemoteProjects/extracted_prompt_extrapolated.root
+eventsFractionStartBuild = 0
+eventsFractionEndBuild = 0.2
+eventsFractionStartTest = 0.8
+eventsFractionEndTest = 1
+var name = CorrectedZSecondOrder
+par name = cotTheta
+par name = z0
+firstOrderChargeOverPtCoefficientsFileName = /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse/Region_1_Removed_9/matrixVD_0_pre_chargeOverPt.txt
+firstOrderCotThetaCoefficientsFileName = /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Longitudinal_Rz/Region_1_Removed_9/matrixVD_0_pre_cotTheta.txt
+pT > 2, pT regions = 1
+0 < phi < 0.8, phi regions = 1
+-3 < eta < 3, eta regions = 1
+-15 < z0 < 15, eta regions = 1
+charge regions = 1
+endcap regions = 0
+Training
+Requested running from track number 0 to track number 1000000 for a total of 1000000 tracks.
+opening /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse/Region_1_Removed_9/matrixVD_0_pre_chargeOverPt.txt for reading
+Estimator variable mean[5] = 0.399325
+Estimator variable mean[6] = 0.399615
+Estimator variable mean[7] = 0.399439
+Estimator variable mean[8] = 0.399377
+Estimator variable mean[10] = 0.399321
+Estimator parameter mean = 0.000218357
+Estimator coefficient[5] = 1.5708
+Estimator coefficient[6] = 0.733577
+Estimator coefficient[7] = 0.224316
+Estimator coefficient[8] = -0.672022
+Estimator coefficient[10] = -1.85455
+opening /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Longitudinal_Rz/Region_1_Removed_9/matrixVD_0_pre_cotTheta.txt for reading
+Estimator variable mean[5] = 22.678
+Estimator variable mean[5] = 9.40683
+Estimator variable mean[6] = 35.5603
+Estimator variable mean[6] = 14.7853
+Estimator variable mean[7] = 50.5599
+Estimator variable mean[7] = 21.0565
+Estimator variable mean[8] = 68.3412
+Estimator variable mean[8] = 28.5059
+Estimator variable mean[10] = 107.722
+Estimator variable mean[10] = 45.0926
+Estimator parameter mean = 0.417093
+Estimator coefficient[5] = 0.0100881
+Estimator coefficient[5] = -0.0242124
+Estimator coefficient[6] = 0.000187234
+Estimator coefficient[6] = -0.000737965
+Estimator coefficient[7] = -0.00767449
+Estimator coefficient[7] = 0.0182185
+Estimator coefficient[8] = -0.000869491
+Estimator coefficient[8] = 0.00215118
+Estimator coefficient[10] = -0.0019797
+Estimator coefficient[10] = 0.00465753
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks
+Evaluating eigenvalues:
+geomIndex = 0
+Sqrt(eigenvalues) of cov:
+ 0.0416521 0.339182 1.36053 8.42457 48.2775
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks
+opening GeometricIndex.txt for writing
+Matrices built:
+geomIndex = 0
+
+V_0:
+   -0.435103     0.816252    -0.380023  -0.00034152 -0.000793749
+   -0.551152     0.076019     0.794867    -0.103648    -0.218851
+    0.194896     0.158825     0.117933    -0.871031     0.405201
+   -0.656077    -0.474939    -0.270014   -0.0281014     0.519903
+    0.196202      0.27778     0.370072     0.479346     0.719456
+corrPV_0:
+ 3.69275e-06   0.00540686  -0.00500687     0.961784      14.2254
+-0.000117033    -0.183406     0.471371     -67.8496      142.481
+D_0:
+  -0.0350496  0.000139925    0.0348291   2.8902e-05  5.32094e-05
+     1.59683     0.335207    -0.930774 -0.000381258 -0.000900858
+opening matrixVD_0.txt for writing

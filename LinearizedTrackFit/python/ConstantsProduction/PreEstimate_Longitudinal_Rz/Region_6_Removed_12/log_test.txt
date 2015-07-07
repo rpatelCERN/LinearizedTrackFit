@@ -1,0 +1,1179 @@
+5 
+6 
+11 
+14 
+15 
+inputFileName = /Users/demattia/RemoteProjects/extracted_endcaps.root
+eventsFractionStartBuild = 0
+eventsFractionEndBuild = 0.2
+eventsFractionStartTest = 0.8
+eventsFractionEndTest = 1
+var name = R
+var name = z
+par name = cotTheta
+firstOrderChargeOverPtCoefficientsFileName = 
+firstOrderCotThetaCoefficientsFileName = 
+pT > 2, pT regions = 1
+0 < phi < 0.8, phi regions = 1
+-3 < eta < 3, eta regions = 1
+-15 < z0 < 15, eta regions = 1
+charge regions = 1
+endcap regions = 0
+Testing
+opening Variables.txt for reading
+variable name: phi
+layer: 5
+layer: 6
+layer: 11
+layer: 14
+layer: 15
+variable name: DeltaS
+layer: 5
+layer: 6
+layer: 11
+layer: 14
+layer: 15
+variable name: R
+layer: 5
+layer: 6
+layer: 11
+layer: 14
+layer: 15
+variable name: z
+layer: 5
+layer: 6
+layer: 11
+layer: 14
+layer: 15
+
+Requested running from track number 4000000 to track number 5000000 for a total of 1000000 tracks.
+opening matrixVD_0.txt for reading
+Number of variables = 10
+Number of track parameters = 1
+
+sqrt(eigenvalues):
+0.181676
+ 0.31929
+ 1.00626
+   1.172
+  1.8769
+ 2.34913
+ 2.67556
+  3.0343
+ 6.36787
+ 16.3819
+V:
+  -0.4556    0.1574    0.7751   -0.2754   -0.2812    0.1026  -0.01553  -0.01071  -0.02982   0.01572
+  -0.5315    0.1688  -0.03966   0.01519    0.7537   -0.2753    -0.127   0.06355   -0.1456   0.04443
+  -0.6461  -0.02589   -0.5319  0.005295   -0.3623    0.1976    0.2788   -0.1806  -0.06007    0.1214
+   0.2333    0.0432    0.1741   0.01968    0.1646  -0.01195     0.532   -0.4077   -0.4738    0.4605
+ -0.02024  -0.02139   0.01233   0.01433   -0.1541   -0.4414    0.4808    0.3541   -0.3484   -0.5497
+  0.04216   0.07562  -0.01333  -0.01175    0.2076    0.7238     0.158    0.5879    -0.233   0.02011
+ -0.00943 -0.009096   0.06385    0.1034    0.2181    0.3935   0.01754   -0.5639  -0.06615   -0.6782
+   0.1827    0.5171   -0.2824   -0.7201  -0.05671   -0.0242   -0.1777  -0.08855   -0.2238  -0.08726
+ -0.04897   -0.7067  -0.01713   -0.2494  -0.03751  0.007068   -0.3898  -0.01258   -0.5309   0.01473
+ 0.004474    0.4137 -0.001993     0.576   -0.2748   -0.0172   -0.4277 -0.002957   -0.4877   0.02261
+Ladder = -1
+meanValues:
+22.69
+62.11
+35.47
+97.94
+47.63
+131.1
+79.33
+  220
+94.05
+261.5
+meanTrackParameters:
+2.804
+Ladder = 0
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 1
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 2
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 3
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 4
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 5
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 6
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 7
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 8
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 9
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 10
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 11
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 12
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 13
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 14
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 15
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 16
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 17
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 18
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 19
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 20
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 21
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 22
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 23
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 24
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 25
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 26
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 27
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 28
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 29
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 30
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 31
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 32
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 33
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 34
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 35
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 36
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 37
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 38
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 39
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 40
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 41
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 42
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 43
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 44
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 45
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 46
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 47
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 48
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 49
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 50
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 51
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 52
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 53
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 54
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 55
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 56
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 57
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 58
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 59
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 60
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 61
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 62
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 63
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 64
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 65
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 66
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 67
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 68
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 69
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 70
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 71
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 72
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 73
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 74
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 75
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+Ladder = 76
+meanValues:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+meanTrackParameters:
+0
+D:
+   0.1787   -0.0636   -0.1633   0.05811 -0.008386  0.003759 -0.003404  0.001203 -0.004679   0.00171
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks

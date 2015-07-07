@@ -1,0 +1,67 @@
+5 
+11 
+12 
+13 
+14 
+inputFileName = /Users/demattia/RemoteProjects/extracted_endcaps.root
+eventsFractionStartBuild = 0
+eventsFractionEndBuild = 0.2
+eventsFractionStartTest = 0.8
+eventsFractionEndTest = 1
+var name = R
+var name = z
+par name = cotTheta
+firstOrderChargeOverPtCoefficientsFileName = 
+firstOrderCotThetaCoefficientsFileName = 
+pT > 2, pT regions = 1
+0 < phi < 0.8, phi regions = 1
+-3 < eta < 3, eta regions = 1
+-15 < z0 < 15, eta regions = 1
+charge regions = 1
+endcap regions = 0
+Training
+Requested running from track number 0 to track number 1000000 for a total of 1000000 tracks.
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks
+Evaluating eigenvalues:
+geomIndex = 0
+Sqrt(eigenvalues) of cov:
+ 0.0503836 0.0583456 0.108302 0.840984 1.30859 1.99007 2.17753 2.92728 3.68013 11.9918
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks
+opening GeometricIndex.txt for writing
+Matrices built:
+geomIndex = 0
+
+V_0:
+  -0.0710748    0.0159455   -0.0357659    0.0110548     0.576734    -0.128384     -0.73727     0.167318     0.261731   -0.0642159
+   0.0484919   -0.0116841     0.516053    -0.120402    -0.613931     0.140607    -0.360042    0.0898059     0.414963    -0.100667
+   -0.604208     0.141476     0.649769    -0.121856     0.214081   -0.0717256    0.0786877   -0.0100914    -0.336825    0.0845485
+    0.766942   -0.0396236     0.422895    -0.106621     0.194895   -0.0308374   -0.0901228   0.00425182    -0.403264     0.101612
+      -0.021 -0.000582164   -0.0496206    -0.299336    0.0843571      0.30643    -0.134531    -0.696286     0.160124     0.527188
+  -0.0111766    0.0209149    0.0780797     0.332677     0.166607     0.755173   -0.0408321    -0.182684    -0.121518    -0.484578
+ -0.00112427   0.00600075    -0.145889     -0.86835    0.0972435     0.152307     0.104141     0.133244   -0.0144385    -0.403964
+   0.0712335     0.130624    0.0997474     0.047263    0.0114672    -0.512371    0.0313765     -0.63729     0.111587      -0.5324
+   -0.183428    -0.562736     -0.18974   -0.0437976     -0.30158   -0.0861135    -0.427312    -0.147403    -0.548706    -0.089412
+  0.00657031     0.802381    -0.235748    -0.026558    -0.266908     0.018139    -0.313525   0.00360131    -0.359284    0.0299198
+corrPV_0:
+-0.000243772  0.000218424   0.00466169      0.12582    0.0071033    0.0516624    0.0196603    -0.246722      1.01826      4.26401
+D_0:
+  -0.109646   0.0249147    0.346103  -0.0821286 -0.00301172  0.00792738   0.0199527  -0.0109051   -0.260219   0.0550717
+opening matrixVD_0.txt for writing

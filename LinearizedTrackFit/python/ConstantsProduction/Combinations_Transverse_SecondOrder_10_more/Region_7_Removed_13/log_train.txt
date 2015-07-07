@@ -1,0 +1,76 @@
+5 
+11 
+12 
+14 
+15 
+inputFileName = /Users/demattia/RemoteProjects/extracted_endcaps.root
+eventsFractionStartBuild = 0
+eventsFractionEndBuild = 0.2
+eventsFractionStartTest = 0.8
+eventsFractionEndTest = 1
+var name = CorrectedPhiSecondOrder
+par name = charge/pt
+par name = phi
+firstOrderChargeOverPtCoefficientsFileName = /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse/Region_7_Removed_13/matrixVD_0_pre_chargeOverPt.txt
+firstOrderCotThetaCoefficientsFileName = /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Longitudinal/Region_7_Removed_13/matrixVD_0_pre_cotTheta.txt
+pT > 10, pT regions = 1
+0 < phi < 0.8, phi regions = 1
+-3 < eta < 3, eta regions = 1
+-15 < z0 < 15, eta regions = 1
+charge regions = 1
+endcap regions = 0
+Training
+Requested running from track number 0 to track number 1000000 for a total of 1000000 tracks.
+opening /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse/Region_7_Removed_13/matrixVD_0_pre_chargeOverPt.txt for reading
+Estimator variable mean[5] = 0.40005
+Estimator variable mean[11] = 0.400115
+Estimator variable mean[12] = 0.400076
+Estimator variable mean[14] = 0.399991
+Estimator variable mean[15] = 0.399933
+Estimator parameter mean = 0.000857031
+Estimator coefficient[5] = -2.6132
+Estimator coefficient[11] = 5.76696
+Estimator coefficient[12] = 4.86581
+Estimator coefficient[14] = -5.74728
+Estimator coefficient[15] = -2.28021
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks
+Evaluating eigenvalues:
+geomIndex = 0
+Sqrt(eigenvalues) of cov:
+ 0.000218667 0.000508423 0.000758297 0.0180906 0.518334
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks
+opening GeometricIndex.txt for writing
+Matrices built:
+geomIndex = 0
+
+V_0:
+ -0.271789   0.827897  -0.488069 -0.0437842 -0.0242655
+ -0.510678   0.251939   0.743404  -0.189327  -0.295365
+-0.0907894 -0.0487572 -0.0748131   0.800309  -0.585908
+ -0.677606  -0.222262 -0.0609686   0.347421   0.605831
+  0.444912    0.44647   0.447017   0.448377   0.449278
+corrPV_0:
+ 3.47305e-07  9.68135e-07  3.89992e-07  -0.00103614  -0.00281772
+  3.5524e-08 -1.69612e-09  7.78517e-09  -0.00035299     0.119175
+D_0:
+  -1.8077   7.62295 -0.623223  -1.58896  -3.60265
+  0.72841   1.05054 -0.104453 -0.196288 -0.478179
+opening matrixVD_0.txt for writing

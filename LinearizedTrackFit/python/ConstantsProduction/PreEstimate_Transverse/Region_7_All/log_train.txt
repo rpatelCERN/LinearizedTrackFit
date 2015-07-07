@@ -1,0 +1,63 @@
+5 
+11 
+12 
+13 
+14 
+15 
+inputFileName = /Users/demattia/RemoteProjects/extracted_endcaps.root
+eventsFractionStartBuild = 0
+eventsFractionEndBuild = 0.5
+eventsFractionStartTest = 0.5
+eventsFractionEndTest = 1
+var name = phi
+par name = charge/pt
+firstOrderChargeOverPtCoefficientsFileName = 
+firstOrderCotThetaCoefficientsFileName = 
+pT > 2, pT regions = 1
+0 < phi < 0.8, phi regions = 1
+-3 < eta < 3, eta regions = 1
+-15 < z0 < 15, eta regions = 1
+charge regions = 1
+endcap regions = 0
+Training
+Requested running from track number 0 to track number 2500000 for a total of 2500000 tracks.
+Analyzed 10% of 2500000 tracks
+Analyzed 20% of 2500000 tracks
+Analyzed 30% of 2500000 tracks
+Analyzed 40% of 2500000 tracks
+Analyzed 50% of 2500000 tracks
+Analyzed 60% of 2500000 tracks
+Analyzed 70% of 2500000 tracks
+Analyzed 80% of 2500000 tracks
+Analyzed 90% of 2500000 tracks
+Analyzed 100% of 2500000 tracks
+Evaluating eigenvalues:
+geomIndex = 0
+Sqrt(eigenvalues) of cov:
+ 0.000590119 0.000882436 0.0012767 0.00258067 0.0660935 0.600463
+Analyzed 10% of 2500000 tracks
+Analyzed 20% of 2500000 tracks
+Analyzed 30% of 2500000 tracks
+Analyzed 40% of 2500000 tracks
+Analyzed 50% of 2500000 tracks
+Analyzed 60% of 2500000 tracks
+Analyzed 70% of 2500000 tracks
+Analyzed 80% of 2500000 tracks
+Analyzed 90% of 2500000 tracks
+Analyzed 100% of 2500000 tracks
+opening GeometricIndex.txt for writing
+Matrices built:
+geomIndex = 0
+
+V_0:
+-0.0195477   0.597492  -0.791844  0.0847819  0.0708004  0.0583343
+ 0.0114456  -0.225934  -0.126926   0.807419   -0.52643  0.0604911
+-0.0923901  -0.205726  -0.100654   0.387617   0.633548  -0.622399
+  0.634077   -0.55355  -0.410213  -0.125796   0.188161   0.268374
+ -0.665884  -0.292566  -0.124309  0.0735879   0.321585   0.588828
+  0.381439   0.397015    0.40375   0.411582   0.421491   0.432222
+corrPV_0:
+-5.07662e-07  4.44245e-07 -1.69038e-05 -2.11209e-05   -0.0176113   -0.0584266
+D_0:
+ 1.60502  4.00429  3.86246 -3.64724 -8.93539  3.10912
+opening matrixVD_0.txt for writing
