@@ -1,6 +1,6 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearizedTrackFitter.h"
 
-LinearizedTrackFitter::LinearizedTrackFitter() :
+LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir) :
     preEstimatePtDirName_("PreEstimate_Transverse"),
     preEstimateCotThetaDirName_("PreEstimate_Longitudinal_Rz"),
     linearFitLowPtDirName_("Combinations_Transverse_SecondOrder_2_10"),
@@ -8,21 +8,21 @@ LinearizedTrackFitter::LinearizedTrackFitter() :
     linearFitLongitudinalDirName_("Combinations_Longitudinal_Rz_SecondOrder"),
     preEstimatedPt_(0.),
     ptSplitValue_(10.),
-    combinationIndex_(0)
+    combinationIndex_(0),
+    baseDir_(baseDir)
 {
   // Read the constants for the full tracker.
   // It needs to read all 9 regions based on few base names and generate the names for the removed layers.
-  std::string baseDir("/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/");
 
   // Fill all pre-estimates
-  fillMatrices(baseDir+preEstimatePtDirName_, "phi", "matrixVD_0_pre_chargeOverPt.txt", &chargeOverPtEstimator_);
+  fillMatrices(baseDir_+preEstimatePtDirName_, "phi", "matrixVD_0_pre_chargeOverPt.txt", &chargeOverPtEstimator_);
   // R and z are assumed to have the same number of layers. If not the estimator needs to be modified.
-  fillMatrices(baseDir+preEstimateCotThetaDirName_, "z", "matrixVD_0_pre_cotTheta.txt", &cotThetaEstimator_);
+  fillMatrices(baseDir_+preEstimateCotThetaDirName_, "z", "matrixVD_0_pre_cotTheta.txt", &cotThetaEstimator_);
 
   // Fill all PCA coefficients for parameters and chi2 estimates
-  fillMatrices(baseDir+linearFitLowPtDirName_, "phi", "matrixVD_0.txt", &linearFitLowPt_);
-  fillMatrices(baseDir+linearFitHighPtDirName_, "phi", "matrixVD_0.txt", &linearFitHighPt_);
-  fillMatrices(baseDir+linearFitLongitudinalDirName_, "z", "matrixVD_0.txt", &linearFitLongitudinal_);
+  fillMatrices(baseDir_+linearFitLowPtDirName_, "phi", "matrixVD_0.txt", &linearFitLowPt_);
+  fillMatrices(baseDir_+linearFitHighPtDirName_, "phi", "matrixVD_0.txt", &linearFitHighPt_);
+  fillMatrices(baseDir_+linearFitLongitudinalDirName_, "z", "matrixVD_0.txt", &linearFitLongitudinal_);
 }
 
 
