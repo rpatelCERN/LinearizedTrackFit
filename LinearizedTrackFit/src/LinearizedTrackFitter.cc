@@ -95,19 +95,19 @@ unsigned long LinearizedTrackFitter::combinationIndex(const std::vector<int> & l
 double LinearizedTrackFitter::fit(const std::vector<double> & vars, const int bits)
 {
   std::vector<int> layers;
-  switch (bits) {
-    case 0: layers = {5, 6, 7, 8, 9, 10};
-    case 1: layers = {6, 7, 8, 9, 10};
-    case 2: layers = {5, 7, 8, 9, 10};
-    case 3: layers = {5, 6, 8, 9, 10};
-    case 4: layers = {5, 6, 7, 9, 10};
-    case 5: layers = {5, 6, 7, 8, 10};
-    case 6: layers = {5, 6, 7, 8, 9};
-    default:
-      std::cout << "Error: unknown bits = " << bits << std::endl;
-      throw;
+  std::cout << "bits = " << bits << std::endl;
+  if (bits == 0) layers = {5, 6, 7, 8, 9, 10};
+  else if (bits == 1) layers = {6, 7, 8, 9, 10};
+  else if (bits == 2) layers = {5, 7, 8, 9, 10};
+  else if (bits == 3) layers = {5, 6, 8, 9, 10};
+  else if (bits == 4) layers = {5, 6, 7, 9, 10};
+  else if (bits == 5) layers = {5, 6, 7, 8, 10};
+  else if (bits == 6) layers = {5, 6, 7, 8, 9};
+  else {
+    std::cout << "Error: unknown bits = " << bits << std::endl;
+    throw;
   }
-  fit(vars, layers);
+  return fit(vars, layers);
 }
 
 
