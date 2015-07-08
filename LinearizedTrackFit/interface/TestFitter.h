@@ -68,6 +68,9 @@ namespace LinearFit
       std::sort(layersVec.begin(), layersVec.end());
       layersVec.erase(std::unique(layersVec.begin(), layersVec.end()), layersVec.end());
 
+//      if (fiveOutOfSix && layersVec.size() != 5) continue;
+       if (layersVec.size() != 6) continue;
+
       double normChi2 = linearizedTrackFitter.fit(vars, layersVec);
 
       // We do not have coefficients for this combination, skip it.
