@@ -10,10 +10,8 @@
 #include <unordered_map>
 #include <regex>
 #include <Eigen/Eigenvalues>
-// #include <unsupported/Eigen/MPRealSupport>
 
 using namespace Eigen;
-// using namespace mpfr;
 
 class MatrixBuilder
 {
@@ -23,43 +21,30 @@ public:
                 const std::vector<std::string> & trackParametersNames,
 //                const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayersForVars);
                 const std::vector<int> & requiredLayersVec);
-  void update(const std::vector<double> & vars, const int lastLadder);
-  void update(const std::vector<double> & vars, const std::vector<double> & pars, const int lastLadder, const bool usePcs);
+  void update(const std::vector<double> & vars);
+  void update(const std::vector<double> & vars, const std::vector<double> & pars, const bool usePcs);
   void computeEigenvalueMatrix();
   void writeMatrices(const bool usePcs);
   void resetCount() { count_ = 0; }
 
 private:
-  void updateMeanAndCov(const std::vector<double> & vars, const int lastLadder);
-  void updateMeanAndCovParams(const std::vector<double> & vars, const std::vector<double> & pars, const int lastLadder, const bool usePcs);
+  void updateMeanAndCov(const std::vector<double> & vars);
+  void updateMeanAndCovParams(const std::vector<double> & vars, const std::vector<double> & pars, const bool usePcs);
 
   // Data members
   std::string name_;
   unsigned int nVars_;
-//  std::vector<std::pair<bool, double> > varsMeans_;
   unsigned int nTrackParameters_;
   std::vector<std::string> trackParametersNames_;
-//  Matrix<mpreal, Dynamic, Dynamic> cov_;
-//  Matrix<mpreal, Dynamic, Dynamic> corrPV_;
-//  Matrix<mpreal, Dynamic, Dynamic> V_;
-//  Matrix<mpreal, Dynamic, 1> sqrtEigenvalues_;
-//  Matrix<mpreal, Dynamic, Dynamic> diagCov_;
-//  mpreal count_;
-//  std::unordered_map<int, Matrix<mpreal, Dynamic, 1>> meanValuesLadders_;
-//  std::unordered_map<int, Matrix<mpreal, Dynamic, 1>> meanPLadders_;
   MatrixXd cov_;
   MatrixXd corrPV_;
   MatrixXd V_;
   VectorXd sqrtEigenvalues_;
   MatrixXd diagCov_;
   int count_;
-  std::unordered_map<int, VectorXd> meanValuesLadders_;
-  std::unordered_map<int, VectorXd> meanPLadders_;
-//  std::unordered_map<std::string, std::unordered_set<int> > requiredLayersForVars_;
+  VectorXd meanValues_;
+  VectorXd meanPars_;
   std::vector<int> requiredLayersVec_;
-
-//  std::vector<std::vector<double> > coordinates_;
-//  std::vector<double> parameters_;
 };
 
 #endif // MATRIXBUILDER_H

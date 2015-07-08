@@ -10,19 +10,17 @@ LinearFitter::LinearFitter(const std::string & inputDirName) :
 
 // Find the matrix in the hash-map for the given geometric index (needs the input parameters)
 bool LinearFitter::fit(const std::vector<double> & vars, const double & genOneOverPt, const double & genPhi,
-                       const double & genEta, const double & genZ0, const int charge, const int endcapRegion,
-                       const int lastLadder)
+                       const double & genEta, const double & genZ0, const int charge, const int endcapRegion)
 {
   geomIndex_ = gi_(genOneOverPt, genPhi, genEta, genZ0, charge, endcapRegion);
-  return fit(vars, lastLadder);
+  return fit(vars);
 }
 
 
-bool LinearFitter::fit(const std::vector<double> & vars, const std::vector<StubRZPhi> & stubs,
-                       const int charge, const int lastLadder)
+bool LinearFitter::fit(const std::vector<double> & vars, const std::vector<StubRZPhi> & stubs, const int charge)
 {
   geomIndex_ = gi_(stubs, charge);
-  return fit(vars, lastLadder);
+  return fit(vars);
 }
 
 
@@ -62,7 +60,7 @@ void LinearFitter::readRequiredLayers(const std::string & inputFileName)
 }
 
 
-bool LinearFitter::fit(const std::vector<double> & vars, const int lastLadder)
+bool LinearFitter::fit(const std::vector<double> & vars)
 {
   if (geomIndex_ == -1) return false;
 //  VectorXd varsVec(vars.size());
@@ -72,27 +70,27 @@ bool LinearFitter::fit(const std::vector<double> & vars, const int lastLadder)
     matrices_.insert(std::make_pair(geomIndex_, MatrixReader(inputDirName_+"matrixVD_"+std::to_string(geomIndex_)+".txt")));
   }
   const auto & matrix = matrices_.find(geomIndex_)->second;
-  normChi2_ = matrix.normChi2(varsVec, lastLadder);
-  trackParameters_ = matrix.trackParameters(varsVec, lastLadder);
+  normChi2_ = matrix.normChi2(varsVec);
+  trackParameters_ = matrix.trackParameters(varsVec);
   return true;
 }
 
 
 // This method must be called only after the fit method to use the correct geomIndex
-std::vector<double> LinearFitter::principalComponents(const std::vector<double> & vars, const int lastLadder)
+std::vector<double> LinearFitter::principalComponents(const std::vector<double> & vars)
 {
 //  VectorXd varsVec(vars.size());
   Matrix<long double, Dynamic, 1> varsVec(vars.size());
   for (unsigned int i=0; i<vars.size(); ++i) { varsVec(i) = vars[i]; }
-  return matrices_.find(geomIndex_)->second.principalComponents(varsVec, lastLadder);
+  return matrices_.find(geomIndex_)->second.principalComponents(varsVec);
 }
 
 
 // This method must be called only after the fit method to use the correct geomIndex
-std::vector<double> LinearFitter::normalizedPrincipalComponents(const std::vector<double> & vars, const int lastLadder)
+std::vector<double> LinearFitter::normalizedPrincipalComponents(const std::vector<double> & vars)
 {
 //  VectorXd varsVec(vars.size());
   Matrix<long double, Dynamic, 1> varsVec(vars.size());
   for (unsigned int i=0; i<vars.size(); ++i) { varsVec(i) = vars[i]; }
-  return matrices_.find(geomIndex_)->second.normalizedPrincipalComponents(varsVec, lastLadder);
+  return matrices_.find(geomIndex_)->second.normalizedPrincipalComponents(varsVec);
 }

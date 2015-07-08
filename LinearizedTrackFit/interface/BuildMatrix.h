@@ -29,38 +29,14 @@ namespace LinearFit {
       const std::unordered_map<int, double> & distanceCutsLongitudinal, const std::vector<std::string> & inputVarNames,
       const std::vector<std::string> & inputTrackParameterNames, const bool singleModules,
       const bool doMapSectors, const bool computeDistances, const bool computeCorrelations,
-      const GeometricIndex::GeometricIndexConfiguration & gic, const bool phiSymmetricFit, const bool usePcs,
+      const GeometricIndex::GeometricIndexConfiguration & gic, const bool usePcs,
       const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName)
   {
     TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayersForVars,
                           radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames,
                           inputTrackParameterNames, firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName);
 
-//    // Consistency checks
-//    std::vector<int> requiredLayersVec;
-//    for (const auto & name : inputVarNames) {
-//      auto requiredLayers = requiredLayersForVars.find(name);
-//      if (requiredLayers == requiredLayersForVars.end()) {
-//        std::cout << "Error: requiredLayers not specified for variable " << name << std::endl;
-//        throw;
-//      }
-//      else {
-//        for (const auto & l : requiredLayers->second) {
-//          requiredLayersVec.push_back(l);
-//        }
-//      }
-//    }
-
     std::vector<int> requiredLayersVec = treeReader.requiredLayersVec();
-
-
-    // Layers to iterate on
-//    std::set<int> allRequiredLayers = treeReader.allRequiredLayers();
-//    for (const auto & requiredLayers : requiredLayersForVars) {
-//      for (const auto & layer : requiredLayers.second) {
-//        allRequiredLayers.insert(layer);
-//      }
-//    }
 
     // Initialize geometric index, matrix builder and histograms
     GeometricIndex geometricIndex(gic);
@@ -108,9 +84,7 @@ namespace LinearFit {
         histograms2D.insert({{geomIndex, Base2DHistograms(std::to_string(geomIndex), 6)}});
       }
 
-      int lastLadder = -1;
-      if (phiSymmetricFit) lastLadder = treeReader.getLastLadder();
-      matrices.find(geomIndex)->second.update(vars, lastLadder);
+      matrices.find(geomIndex)->second.update(vars);
       histograms.find(geomIndex)->second.fill(vars, pars);
       histograms2D.find(geomIndex)->second.fill(treeReader.getStubRZPhi(), treeReader.getX0(), treeReader.getY0());
       if (computeCorrelations) correlationHistograms.fill(vars, pars, treeReader.getCharge());
@@ -146,9 +120,7 @@ namespace LinearFit {
       std::vector<double> pars(treeReader.getTrackParameters());
 
       // Update mean and covariance for this linearization region
-      int lastLadder = -1;
-      if (phiSymmetricFit) lastLadder = treeReader.getLastLadder();
-      matrices.find(geomIndex)->second.update(vars, pars, lastLadder, usePcs);
+      matrices.find(geomIndex)->second.update(vars, pars, usePcs);
     }
     // -----------------------
 

@@ -19,8 +19,8 @@ public:
 
   // Fit track parameters
   bool fit(const std::vector<double> & vars, const double & genOneOverPt, const double & genPhi,
-      const double & genEta, const double & genZ0, const int charge, const int endcapRegion, const int lastLadder);
-  bool fit(const std::vector<double> & vars, const std::vector<StubRZPhi> & stubs, const int charge, const int lastLadder);
+      const double & genEta, const double & genZ0, const int charge, const int endcapRegion);
+  bool fit(const std::vector<double> & vars, const std::vector<StubRZPhi> & stubs, const int charge);
   double normChi2() const { return normChi2_; }
   std::vector<double> trackParameters() const { return trackParameters_; }
   int geometricIndex() const { return geomIndex_; }
@@ -28,11 +28,11 @@ public:
   unsigned int variablesSize() const { return variablesSize_; }
 
   // These are mostly for debugging and validation. They must be called after the fit, otherwise the geomIndex is not updated.
-  std::vector<double> principalComponents(const std::vector<double> & vars, const int lastLadder);
-  std::vector<double> normalizedPrincipalComponents(const std::vector<double> & vars, const int lastLadder);
+  std::vector<double> principalComponents(const std::vector<double> & vars);
+  std::vector<double> normalizedPrincipalComponents(const std::vector<double> & vars);
 
 private:
-  bool fit(const std::vector<double> & vars, const int lastLadder);
+  bool fit(const std::vector<double> & vars);
   void readRequiredLayers(const std::string & inputFileName);
 
   // Data members

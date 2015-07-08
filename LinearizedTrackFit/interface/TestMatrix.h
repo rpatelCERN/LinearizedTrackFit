@@ -16,7 +16,7 @@ namespace LinearFit
   void testMatrix(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
       const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
       std::unordered_map<int, double> & distanceCutsTransverse, std::unordered_map<int, double> & distanceCutsLongitudinal,
-      std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit,
+      std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules,
       const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName)
   {
     LinearFitter linearFitter("");
@@ -37,17 +37,15 @@ namespace LinearFit
       std::vector<double> pars(treeReader.getTrackParameters());
 
       bool goodFit = false;
-      int lastLadder = -1;
-      if (phiSymmetricFit) lastLadder = treeReader.getLastLadder();
       if (singleModules) {
-        goodFit = linearFitter.fit(vars, treeReader.getStubRZPhi(), treeReader.getCharge(), lastLadder);
+        goodFit = linearFitter.fit(vars, treeReader.getStubRZPhi(), treeReader.getCharge());
       }
       else {
 //        std::cout << "generated pt = " << treeReader.getPt() << std::endl;
 //        std::cout << "generated c/pt = " << treeReader.getCharge()*treeReader.getOneOverPt() << std::endl;
 //        std::cout << "generated phi_0 = " << treeReader.getPhi() << std::endl;
         goodFit = linearFitter.fit(vars, treeReader.getOneOverPt(), treeReader.getPhi(), treeReader.getEta(),
-                                   treeReader.getZ0(), treeReader.getCharge(), treeReader.getRegionForMeanR(), lastLadder);
+                                   treeReader.getZ0(), treeReader.getCharge(), treeReader.getRegionForMeanR());
       }
       if (goodFit) {
         double normChi2 = linearFitter.normChi2();
@@ -56,10 +54,10 @@ namespace LinearFit
         if (histograms.count(geomIndex) == 0) {
           histograms.insert({{geomIndex, LinearFitterHistograms(std::to_string(geomIndex), treeReader.variablesNames(), inputTrackParameterNames)}});
         }
-        histograms.find(geomIndex)->second.fill(vars, linearFitter.principalComponents(vars, lastLadder),
-            linearFitter.normalizedPrincipalComponents(vars, lastLadder), pars, estimatedPars, normChi2);
-        summaryHistograms.fill(vars, linearFitter.principalComponents(vars, lastLadder),
-            linearFitter.normalizedPrincipalComponents(vars, lastLadder), pars, estimatedPars, normChi2,
+        histograms.find(geomIndex)->second.fill(vars, linearFitter.principalComponents(vars),
+            linearFitter.normalizedPrincipalComponents(vars), pars, estimatedPars, normChi2);
+        summaryHistograms.fill(vars, linearFitter.principalComponents(vars),
+            linearFitter.normalizedPrincipalComponents(vars), pars, estimatedPars, normChi2,
             treeReader.getChargePt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getD0());
         if (inputTrackParameterNames.size() == 1 && inputTrackParameterNames[0] == "charge") {
           // std::cout << "treeReader.getPt() = " << treeReader.getPt() << ", estimatedPars[0] = " << estimatedPars[0] << std::endl;

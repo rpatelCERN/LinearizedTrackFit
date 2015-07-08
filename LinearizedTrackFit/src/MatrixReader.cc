@@ -43,40 +43,21 @@ MatrixReader::MatrixReader(const std::string & inputFileName)
   std::cout << "V:" << std::endl;
   std::cout << std::setprecision(4) << V_ << std::endl;
 
-//  meanValues_ = Matrix<long double, Dynamic, 1>::Zero(nVars_);
-//  for (int i=0; i < nVars_; ++i) {
-//    inputFile >> x;
-//    meanValues_(i) = x;
-//  }
-//  std::cout << "meanValues:" << std::endl;
-//  std::cout << std::setprecision(4) << meanValues_ << std::endl;
-
-  for (int ladder=-1; ladder < 77; ++ladder) {
-    std::cout << "Ladder = " << ladder << std::endl;
-    meanValuesLadders_[ladder] = Matrix<long double, Dynamic, 1>::Zero(nVars_);
-    for (int i = 0; i < nVars_; ++i) {
-      inputFile >> x;
-      meanValuesLadders_[ladder](i) = x;
-    }
-    std::cout << "meanValues:" << std::endl;
-    std::cout << std::setprecision(4) << meanValuesLadders_[ladder] << std::endl;
-
-    meanPLadders_[ladder] = Matrix<long double, Dynamic, 1>::Zero(nTrackParameters_);
-    for (int i=0; i < nTrackParameters_; ++i) {
-      inputFile >> x;
-      meanPLadders_[ladder](i) = x;
-    }
-    std::cout << "meanTrackParameters:" << std::endl;
-    std::cout << std::setprecision(4) << meanPLadders_[ladder] << std::endl;
+  meanValues_ = Matrix<long double, Dynamic, 1>::Zero(nVars_);
+  for (int i=0; i < nVars_; ++i) {
+    inputFile >> x;
+    meanValues_(i) = x;
   }
+  std::cout << "meanValues:" << std::endl;
+  std::cout << std::setprecision(4) << meanValues_ << std::endl;
 
-//  meanP_ = Matrix<long double, Dynamic, 1>::Zero(nTrackParameters_);
-//  for (int i=0; i < nTrackParameters_; ++i) {
-//    inputFile >> x;
-//    meanP_(i) = x;
-//  }
-//  std::cout << "meanTrackParameters:" << std::endl;
-//  std::cout << std::setprecision(4) << meanP_ << std::endl;
+  meanPars_ = Matrix<long double, Dynamic, 1>::Zero(nTrackParameters_);
+  for (int i=0; i < nTrackParameters_; ++i) {
+    inputFile >> x;
+    meanPars_(i) = x;
+  }
+  std::cout << "meanTrackParameters:" << std::endl;
+  std::cout << std::setprecision(4) << meanPars_ << std::endl;
 
   // Read transformation matrix D from file
   D_ = Matrix<long double, Dynamic, Dynamic>::Zero(nTrackParameters_, nVars_);
@@ -91,9 +72,9 @@ MatrixReader::MatrixReader(const std::string & inputFileName)
 }
 
 
-double MatrixReader::normChi2(const Matrix<long double, Dynamic, 1> & vars, const int lastLadder) const
+double MatrixReader::normChi2(const Matrix<long double, Dynamic, 1> & vars) const
 {
-  Matrix<long double, Dynamic, 1> principal = V_*(vars - meanValuesLadders_.find(lastLadder)->second);
+  Matrix<long double, Dynamic, 1> principal = V_*(vars - meanValues_);
 
   double chi2 = 0.;
   // Use only the constraints to evaluate a chi2
@@ -104,12 +85,12 @@ double MatrixReader::normChi2(const Matrix<long double, Dynamic, 1> & vars, cons
 }
 
 
-std::vector<double> MatrixReader::trackParameters(const Matrix<long double, Dynamic, 1> & vars, const int lastLadder) const
+std::vector<double> MatrixReader::trackParameters(const Matrix<long double, Dynamic, 1> & vars) const
 {
   std::vector<double> pars;
 
   // Estimate track parameters
-  Matrix<long double, Dynamic, 1> estimatedPars = D_ * (vars - meanValuesLadders_.find(lastLadder)->second) + meanPLadders_.find(lastLadder)->second;
+  Matrix<long double, Dynamic, 1> estimatedPars = D_ * (vars - meanValues_) + meanPars_;
   for (int i=0; i<nTrackParameters_; ++i) {
     pars.push_back(estimatedPars(i));
   }
@@ -118,11 +99,11 @@ std::vector<double> MatrixReader::trackParameters(const Matrix<long double, Dyna
 }
 
 
-std::vector<double> MatrixReader::principalComponents(const Matrix<long double, Dynamic, 1> & vars, const int lastLadder) const
+std::vector<double> MatrixReader::principalComponents(const Matrix<long double, Dynamic, 1> & vars) const
 {
   std::vector<double> pcs;
 
-  Matrix<long double, Dynamic, 1> principal = V_*(vars - meanValuesLadders_.find(lastLadder)->second);
+  Matrix<long double, Dynamic, 1> principal = V_*(vars - meanValues_);
 
   for (int i=0; i<nVars_; ++i) {
     pcs.push_back(principal(i));
@@ -132,11 +113,11 @@ std::vector<double> MatrixReader::principalComponents(const Matrix<long double, 
 }
 
 
-std::vector<double> MatrixReader::normalizedPrincipalComponents(const Matrix<long double, Dynamic, 1> & vars, const int lastLadder) const
+std::vector<double> MatrixReader::normalizedPrincipalComponents(const Matrix<long double, Dynamic, 1> & vars) const
 {
   std::vector<double> npcs;
 
-  Matrix<long double, Dynamic, 1> principal = V_*(vars - meanValuesLadders_.find(lastLadder)->second);
+  Matrix<long double, Dynamic, 1> principal = V_*(vars - meanValues_);
 
   for (int i=0; i<nVars_; ++i) {
     npcs.push_back(principal(i)/sqrtEigenvalues_(i));

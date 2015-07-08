@@ -17,7 +17,7 @@ namespace LinearFit
   void testFitter(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
                   const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames,
                   std::unordered_map<int, double> & distanceCutsTransverse, std::unordered_map<int, double> & distanceCutsLongitudinal,
-                  std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules, bool phiSymmetricFit,
+                  std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules,
                   const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName,
                   const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
                   const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_, const bool fiveOutOfSix,
