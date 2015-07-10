@@ -22,39 +22,39 @@ endcap regions = 0
 Training
 Requested running from track number 0 to track number 1000000 for a total of 1000000 tracks.
 opening /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse/Region_4_Removed_7/matrixVD_0_pre_chargeOverPt.txt for reading
-Estimator variable mean[5] = 0.399544
-Estimator variable mean[6] = 0.399749
-Estimator variable mean[11] = 0.399362
-Estimator variable mean[12] = 0.399287
-Estimator variable mean[13] = 0.399147
-Estimator parameter mean = 0.00148646
-Estimator coefficient[5] = 6.4199
-Estimator coefficient[6] = -5.5515
-Estimator coefficient[11] = -1.14985
-Estimator coefficient[12] = 4.65172
-Estimator coefficient[13] = -4.3647
+Estimator variable mean[5] = 0.39993
+Estimator variable mean[6] = 0.400143
+Estimator variable mean[11] = 0.399609
+Estimator variable mean[12] = 0.399503
+Estimator variable mean[13] = 0.399311
+Estimator parameter mean = 0.00199038
+Estimator coefficient[5] = 6.45692
+Estimator coefficient[6] = -5.58876
+Estimator coefficient[11] = -1.15557
+Estimator coefficient[12] = 4.64005
+Estimator coefficient[13] = -4.34567
 opening /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Longitudinal_Rz/Region_4_Removed_7/matrixVD_0_pre_cotTheta.txt for reading
-Estimator variable mean[5] = 22.6824
-Estimator variable mean[5] = 43.2637
-Estimator variable mean[6] = 35.5525
-Estimator variable mean[6] = 68.4005
-Estimator variable mean[11] = 68.4066
-Estimator variable mean[11] = 131.797
-Estimator variable mean[12] = 80.4316
-Estimator variable mean[12] = 155.621
-Estimator variable mean[13] = 95.4985
-Estimator variable mean[13] = 185.307
-Estimator parameter mean = 1.95084
-Estimator coefficient[5] = 0.112075
-Estimator coefficient[5] = -0.0573898
-Estimator coefficient[6] = -0.101683
-Estimator coefficient[6] = 0.0520663
-Estimator coefficient[11] = -0.00304143
-Estimator coefficient[11] = 0.00151409
-Estimator coefficient[12] = -0.00350146
-Estimator coefficient[12] = -0.000380978
-Estimator coefficient[13] = -0.00406226
-Estimator coefficient[13] = 0.00300324
+Estimator variable mean[5] = 22.6814
+Estimator variable mean[5] = 43.2126
+Estimator variable mean[6] = 35.5504
+Estimator variable mean[6] = 68.3353
+Estimator variable mean[11] = 68.4317
+Estimator variable mean[11] = 131.79
+Estimator variable mean[12] = 80.4454
+Estimator variable mean[12] = 155.618
+Estimator variable mean[13] = 95.4885
+Estimator variable mean[13] = 185.308
+Estimator parameter mean = 1.94935
+Estimator coefficient[5] = 0.111643
+Estimator coefficient[5] = -0.0572182
+Estimator coefficient[6] = -0.101243
+Estimator coefficient[6] = 0.0518678
+Estimator coefficient[11] = -0.00305084
+Estimator coefficient[11] = 0.00154048
+Estimator coefficient[12] = -0.00350885
+Estimator coefficient[12] = -0.000442221
+Estimator coefficient[13] = -0.00411535
+Estimator coefficient[13] = 0.00306562
 Analyzed 10% of 1000000 tracks
 Analyzed 20% of 1000000 tracks
 Analyzed 30% of 1000000 tracks
@@ -68,7 +68,7 @@ Analyzed 100% of 1000000 tracks
 Evaluating eigenvalues:
 geomIndex = 0
 Sqrt(eigenvalues) of cov:
- 0.261003 2.3816 2.83674 7.98376 24.3733
+ 0.260961 2.38052 2.83528 7.98307 24.3617
 Analyzed 10% of 1000000 tracks
 Analyzed 20% of 1000000 tracks
 Analyzed 30% of 1000000 tracks
@@ -84,15 +84,15 @@ Matrices built:
 geomIndex = 0
 
 V_0:
- -0.615924   0.781577 -0.0436402 -0.0604207  -0.064956
- -0.195277  -0.143151   0.664393   0.330835  -0.624904
- 0.0352888  0.0310856  -0.601532   0.754488  -0.258254
- -0.744789  -0.552855 -0.0713121   0.119471   0.346818
-  0.162939   0.249058   0.435604   0.550792    0.64676
+ -0.615916   0.781577  -0.043669 -0.0604493 -0.0649938
+ -0.195168  -0.143059    0.66432   0.330943   -0.62498
+ 0.0352945  0.0310844  -0.601629   0.754452  -0.258134
+ -0.744801  -0.552817  -0.071118   0.119583   0.346853
+  0.163041   0.249198   0.435612    0.55075   0.646711
 corrPV_0:
- 0.00710107   0.0223588 -0.00260325    0.921541     3.85417
-   -0.19972    -1.60311    0.341745     -67.909     11.3315
+ 0.00710014   0.0223318 -0.00260342     0.92161     3.85202
+  -0.199696    -1.60093    0.341493    -67.9031       11.35
 D_0:
- -0.0746956   0.0745198 5.97004e-05 6.25758e-05 5.95344e-05
-    2.65905    -1.65587 -0.00109825 -0.00110153  -0.0010748
+ -0.0747082   0.0745358 5.87058e-05 6.13476e-05 5.78589e-05
+    2.65942    -1.65634 -0.00107285 -0.00106661 -0.00101978
 opening matrixVD_0.txt for writing

@@ -1896,4 +1896,48 @@ private:
   std::vector<float> * var_deltas;
 };
 
+
+
+
+
+
+
+
+
+
+class TransformBase
+{
+ public:
+virtual double operator()(const int index, const int combinationIndex_, const std::vector<double> & vars) = 0;
+ private:
+  std::unordered_map<int, Estimator> estimatorMap_;
+};
+
+
+class TransformPropagatePhi : public TransformBase
+{
+  virtual double operator()(const int index, const int combinationIndex_, const std::vector<double> & vars)
+  {
+    return vars.at(index);
+  }
+};
+
+
+class TransformPropagateR : public TransformBase
+{
+  virtual double operator()(const int index, const int combinationIndex_, const std::vector<double> & vars)
+  {
+    return vars.at(index+1);
+  }
+};
+
+
+class TransformPropagateZ : public TransformBase
+{
+  virtual double operator()(const int index, const int combinationIndex_, const std::vector<double> & vars)
+  {
+    return vars.at(index+2);
+  }
+};
+
 #endif // GETVARIABLES_H

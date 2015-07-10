@@ -7,12 +7,12 @@
 TreeReaderNew::TreeReaderNew(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
                              const std::unordered_map<std::string, std::set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
                              const std::unordered_map<int, double> & distanceCutsTransverse, const std::unordered_map<int, double> & distanceCutsLongitudinal,
-                             const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames, const bool fiveOutOfSix) :
+                             const std::vector<std::string> & trackParNames) :
     tree_(std::make_shared<L1TrackTriggerTree>(inputFileName)),
     requiredLayers_(requiredLayers),
     radiusCuts_(radiusCuts),
     parametersSize_(trackParNames.size()),
-    maxRequiredLayers_(6),
+    maxRequiredLayers_(5),
     variablesSize_(0),
     parametersNames_(trackParNames),
     distanceCutsTransverse_(distanceCutsTransverse),
@@ -26,21 +26,24 @@ TreeReaderNew::TreeReaderNew(const TString & inputFileName, const double & event
     adjustDiscontinuity_(false),
     regionForMeanR_(-1),
     stubCombination_(-1),
-    maxStubCombinations_(0),
-    fiveOutOfSix_(fiveOutOfSix)
+    maxStubCombinations_(0)//,
+//    fiveOutOfSix_(fiveOutOfSix)
 {
   reset(eventsFractionStart, eventsFractionEnd);
 
-  if (fiveOutOfSix_) maxRequiredLayers_ = 5;
+  // if (fiveOutOfSix_) maxRequiredLayers_ = 5;
 
   std::cout << "Requested running from track number " << firstTrack_ << " to track number " << lastTrack_ <<
   " for a total of " << lastTrack_ - firstTrack_ << " tracks." << std::endl;
 
+  // varNames is now fixed to phi, R and z
+  std::vector<std::string> varNames = {"phi", "R", "z"};
+
   // Store the classes that will return the selected variables for each stub
   for (const std::string & varName : varNames) {
     if (varName == "phi") vars_.push_back(std::make_shared<GetVarPhi>(varName, tree_, requiredLayers_["phi"]));
-    else if (varName == "z") vars_.push_back(std::make_shared<GetVarZ>(varName, tree_, requiredLayers_["z"]));
     else if (varName == "R") vars_.push_back(std::make_shared<GetVarR>(varName, tree_, requiredLayers_["R"]));
+    else if (varName == "z") vars_.push_back(std::make_shared<GetVarZ>(varName, tree_, requiredLayers_["z"]));
     else {
       std::cout << "Error: undefined variable name " << varName << std::endl;
       throw;
@@ -112,12 +115,28 @@ void TreeReaderNew::reset(const double & eventsFractionStart, const double & eve
 }
 
 
+// Generate all combinations and store them in a vector<vector<int> >. Initialize an index and go
+// through the combinations when this index is != -1. When the last combination is reached set
+// the index to -1 so that the next request will go through the next event.
+// Store the indeces of the layers instead of the layers themselves as this is more convenient
+// to apply both to layers and variables.
 void TreeReaderNew::generateStubCombination()
 {
-  variables_.erase(variables_.begin()+stubCombination_*3, variables_.begin()+stubCombination_*3+3);
-  layersVec_.erase(layersVec_.begin()+stubCombination_*3, layersVec_.begin()+stubCombination_*3+3);
+  std::vector<int> combination(combinationGenerator_.combination(stubCombination_, layersFound_.size()));
+  variables_.clear();
+  layersVec_.clear();
+  // Fill with all the variables and layers from indeces contained in the combination
+  for (auto index : combination) {
+    variables_.push_back(allVariables_[index*3]);
+    variables_.push_back(allVariables_[index*3+1]);
+    variables_.push_back(allVariables_[index*3+2]);
+    layersVec_.push_back(allLayersVec_[index*3]);
+    layersVec_.push_back(allLayersVec_[index*3+1]);
+    layersVec_.push_back(allLayersVec_[index*3+2]);
+  }
   ++stubCombination_;
 }
+
 
 
 // Find the next acceptable track and fill the vectors of parameters and variables.
@@ -126,8 +145,6 @@ bool TreeReaderNew::nextTrack()
 {
   if (stubCombination_ >= 0) {
     // Generate the next combination
-    variables_ = allVariables_;
-    layersVec_ = allLayersVec_;
     generateStubCombination();
     if (stubCombination_ >= maxStubCombinations_) stubCombination_ = -1;
   }
@@ -144,33 +161,27 @@ bool TreeReaderNew::nextTrack()
       if (good) good = readVariables();
 
       if (good) {
-        // --------------------------------------------------------
-        // To be implemented: 6/6 and 5/6 in the case of 8 stubs
-        // Observed only for the combination (5 6 7 11 12 13 14 15)
-        // --------------------------------------------------------
-        if (layersFound_.size() > 7) {
-//          std::cout << "Error: more than 7 stubs found. The layers are:" << std::endl;
-//          for (auto l : layersFound_) std::cout << l.first << " ";
-//          std::cout << std::endl;
-          // throw;
-          good = false;
+
+        if (layersFound_.size() > 8) {
+          std::cout << "Error: more than 7 stubs found. The layers are:" << std::endl;
+          for (auto l : layersFound_) std::cout << l.first << " ";
+          std::cout << std::endl;
+          throw;
+          // good = false;
         }
-        // ---------------------------------------------
-        // To be implemented: 5/6 in the case of 7 stubs
-        // ---------------------------------------------
-        if ((layersFound_.size() == 7) || (fiveOutOfSix_ && layersFound_.size() == 6)) {
+        // If the number of layers found is more than 5 generate combinations
+        // If it is less than 5 set it as a bad combination
+        // Otherwise go through and return the set of 5 stubs.
+        if (layersFound_.size() > 5) {
           stubCombination_ = 0;
-          maxStubCombinations_ = layersFound_.size();
+          // maxStubCombinations_ = layersFound_.size();
+          maxStubCombinations_ = combinationGenerator_.combinationsSize(layersFound_.size());
           allVariables_ = variables_;
           allLayersVec_ = layersVec_;
-          // only in the case of 7 we need to start generating immediately
-          if (layersFound_.size() == 7) generateStubCombination();
         }
-        // Only return the 5/6 cases if requested
-        if (layersFound_.size() == 5 && !fiveOutOfSix_) good = false;
+        else if (layersFound_.size() < 5) good = false;
       }
 
-//      std::cout << "track number = " << trackIndex_ << std::endl;
       ++trackIndex_;
 
       if (trackIndex_ % (totalTracks_ / 10) == 0) {
@@ -308,18 +319,12 @@ bool TreeReaderNew::readVariables()
   // This needs to be after the layersFound is filled and before the variables are filled
   regionForMeanR_ = getRegionForMeanR();
 
-  // Ladder 76 is outside the range for the outermost layer.
-  lastLadder_ = 76;
   for (const auto & m : layersFound_) {
     unsigned int k = m.second;
     for (const auto &var : vars_) {
       if (var->layer(m.first)) {
         variables_.push_back(var->at(k, layersFound_, regionForMeanR_));
         layersVec_.push_back(m.first);
-        // Take the ladder of the outermost layer in the barrel
-        if (m.first == 10) {
-          lastLadder_ = tree_->m_stub_ladder->at(k);
-        }
       }
     }
   }

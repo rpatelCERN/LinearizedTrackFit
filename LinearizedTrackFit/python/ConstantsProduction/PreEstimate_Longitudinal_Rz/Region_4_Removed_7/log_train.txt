@@ -13,7 +13,7 @@ var name = z
 par name = cotTheta
 firstOrderChargeOverPtCoefficientsFileName = 
 firstOrderCotThetaCoefficientsFileName = 
-pT > 2, pT regions = 1
+2 < pT < 10, pT regions = 1
 0 < phi < 0.8, phi regions = 1
 -3 < eta < 3, eta regions = 1
 -15 < z0 < 15, eta regions = 1
@@ -21,37 +21,47 @@ charge regions = 1
 endcap regions = 0
 Training
 Requested running from track number 0 to track number 1000000 for a total of 1000000 tracks.
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks
+Evaluating eigenvalues:
+geomIndex = 0
+Sqrt(eigenvalues) of cov:
+ 0.173339 0.910922 1.07847 1.15491 1.69285 2.01218 2.30675 2.75008 6.94864 14.1232
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks
+opening GeometricIndex.txt for writing
+Matrices built:
+geomIndex = 0
 
- *** Break *** bus error
- Generating stack trace...
-[invalid usage]: unrecognized option '-d'
-Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
- 0x00000001081a551d in _ZN11TBufferFile13ApplySequenceERKN20TStreamerInfoActions15TActionSequenceEPv + 0x3d from /Users/demattia/root/lib/libRIO.so
-[invalid usage]: unrecognized option '-d'
-Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
- 0x0000000108a6f0bb in _ZN14TBranchElement16ReadLeavesMemberER7TBuffer + 0x1eb from /Users/demattia/root/lib/libTree.so
-[invalid usage]: unrecognized option '-d'
-Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
- 0x0000000108a58c16 in _ZN7TBranch8GetEntryExi + 0x146 from /Users/demattia/root/lib/libTree.so
-[invalid usage]: unrecognized option '-d'
-Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
- 0x0000000108a69f1c in _ZN14TBranchElement8GetEntryExi + 0x11c from /Users/demattia/root/lib/libTree.so
-[invalid usage]: unrecognized option '-d'
-Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
- 0x0000000108aa7f58 in _ZN5TTree8GetEntryExi + 0xa8 from /Users/demattia/root/lib/libTree.so
-[invalid usage]: unrecognized option '-d'
-Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
- 0x0000000107c9d5eb in _ZN18L1TrackTriggerTree8getEntryEi + 0x2b from /Users/demattia/RemoteProjects/RemoteProjects
-[invalid usage]: unrecognized option '-d'
-Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
- 0x0000000107c9646b in _ZN10TreeReader9nextTrackEv + 0x6b from /Users/demattia/RemoteProjects/RemoteProjects
-[invalid usage]: unrecognized option '-d'
-Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
- 0x0000000107b9f0d2 in _ZN9LinearFit11buildMatrixERK7TStringRKdS4_RKNSt3__113unordered_mapINS5_12basic_stringIcNS5_11char_traitsIcEENS5_9allocatorIcEEEENS5_3setIiNS5_4lessIiEENSA_IiEEEENS5_4hashISC_EENS5_8equal_toISC_EENSA_ + 0xee2 from /Users/demattia/RemoteProjects/RemoteProjects
-[invalid usage]: unrecognized option '-d'
-Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
- 0x0000000107bb7f5e in main + 0xff9e from /Users/demattia/RemoteProjects/RemoteProjects
-[invalid usage]: unrecognized option '-d'
-Usage: atos [-p pid] [-o executable] [-f file] [-s slide | -l loadAddress] [-arch architecture] [-printHeader] [address ...]
- 0x00007fff8ab1e5c9 in start + 0x1 from /usr/lib/system/libdyld.dylib
- 0x0000000000000002 in <unknown function>
+V_0:
+  0.555913  -0.276136  -0.696015   0.348003  0.0382321 -0.0199311  0.0466672 0.00498691  0.0578531 -0.0419324
+ -0.735216  0.0345193  -0.568081   0.061196    0.24284  -0.139631  0.0941147 -0.0190588  -0.187944  0.0937696
+ 0.0208835 0.00811034  0.0487207 0.00294268   0.350143  -0.489323  -0.499849   0.501997   0.115479  -0.346255
+  0.288097  0.0692377   0.215058  0.0367036   0.474633  -0.406608   0.287139  -0.152295  -0.532477   0.291253
+ 0.0465846  0.0304613  0.0230135  0.0357681   0.574411   0.654138  -0.254896   0.211119  0.0491969   0.353956
+ 0.0113278  0.0159653 -0.0493838 -0.0572107  0.0192222  -0.299483  -0.489766  -0.559746   0.376245   0.457273
+ -0.250261  -0.527356   0.374307   0.677947   0.114965 -0.0133214  0.0644573  -0.131595   0.140119 -0.0710399
+ 0.0353016   0.126814 -0.0292078 -0.0869176   0.352376   0.205277  -0.101132  -0.589195 -0.0756906  -0.666971
+-0.0281242  -0.681972 -0.0162849  -0.378304  -0.136772  0.0799013  -0.351388 -0.0382178  -0.490435  0.0138879
+0.00387552   0.396539 0.00556934   0.508881   -0.32447  0.0951388  -0.462566  -0.024536  -0.504573  0.0159711
+corrPV_0:
+ 0.00497869  -0.0195708 -0.00551243   0.0112077   0.0112397   0.0149122 -0.00974704  -0.0509938     1.05062     1.68946
+D_0:
+    0.111643   -0.0572182    -0.101243    0.0518678  -0.00305084   0.00154048  -0.00350885 -0.000442221  -0.00411535   0.00306562
+opening matrixVD_0.txt for writing

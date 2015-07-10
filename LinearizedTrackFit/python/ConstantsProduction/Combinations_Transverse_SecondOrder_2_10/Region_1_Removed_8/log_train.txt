@@ -22,17 +22,17 @@ endcap regions = 0
 Training
 Requested running from track number 0 to track number 1000000 for a total of 1000000 tracks.
 opening /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse/Region_1_Removed_8/matrixVD_0_pre_chargeOverPt.txt for reading
-Estimator variable mean[5] = 0.399315
-Estimator variable mean[6] = 0.399597
-Estimator variable mean[7] = 0.399422
-Estimator variable mean[9] = 0.399335
-Estimator variable mean[10] = 0.399296
-Estimator parameter mean = 0.000244463
-Estimator coefficient[5] = 1.42657
-Estimator coefficient[6] = 0.727791
-Estimator coefficient[7] = 0.283848
-Estimator coefficient[9] = -0.89552
-Estimator coefficient[10] = -1.54075
+Estimator variable mean[5] = 0.398999
+Estimator variable mean[6] = 0.399338
+Estimator variable mean[7] = 0.399101
+Estimator variable mean[9] = 0.398972
+Estimator variable mean[10] = 0.398913
+Estimator parameter mean = 0.000349895
+Estimator coefficient[5] = 1.44092
+Estimator coefficient[6] = 0.716122
+Estimator coefficient[7] = 0.275687
+Estimator coefficient[9] = -0.889062
+Estimator coefficient[10] = -1.54114
 Analyzed 10% of 1000000 tracks
 Analyzed 20% of 1000000 tracks
 Analyzed 30% of 1000000 tracks
@@ -46,7 +46,7 @@ Analyzed 100% of 1000000 tracks
 Evaluating eigenvalues:
 geomIndex = 0
 Sqrt(eigenvalues) of cov:
- 9.70587e-05 0.000135216 0.000330299 0.11728 0.575701
+ 9.70686e-05 0.00013522 0.00033029 0.11728 0.575702
 Analyzed 10% of 1000000 tracks
 Analyzed 20% of 1000000 tracks
 Analyzed 30% of 1000000 tracks
@@ -62,15 +62,15 @@ Matrices built:
 geomIndex = 0
 
 V_0:
--0.0691709   0.302917  -0.510898    0.68814  -0.410978
- -0.280988   0.721429  -0.352324  -0.413224   0.325114
-    0.6541  -0.252793  -0.628125 -0.0963131   0.323159
- -0.579569  -0.395435  -0.187027   0.335417   0.600206
-  0.390531   0.409278     0.4305    0.48366   0.510607
+ -0.069043   0.302622  -0.510771   0.688304  -0.411101
+ -0.281003   0.721545  -0.352542   -0.41295   0.324956
+  0.654109  -0.252813  -0.628106 -0.0963219   0.323159
+ -0.579568  -0.395437   -0.18703   0.335417   0.600205
+   0.39053   0.409277   0.430499   0.483661   0.510609
 corrPV_0:
- 7.59099e-08 -1.01309e-07 -3.11169e-07   -0.0330946   -0.0811647
- 5.09822e-09 -1.96855e-08  9.36615e-08   -0.0121538     0.119176
+ 7.59263e-08 -1.01291e-07 -3.11198e-07   -0.0330946    -0.081165
+ 5.10653e-09 -1.96783e-08  9.36569e-08   -0.0121538     0.119176
 D_0:
-  0.432812   0.015676 -0.0284544    7.18398   -7.60407
-    1.4792  -0.333264  -0.116341   0.612174  -0.641782
+  0.433237   0.013828 -0.0265313    7.18337   -7.60393
+   1.47912  -0.332998  -0.116581     0.6123  -0.641842
 opening matrixVD_0.txt for writing

@@ -155,6 +155,7 @@ name = "Region_5"
 layers_list = [5, 6, 11, 12, 13, 14]
 radius_cut_min = [0]*16
 radius_cut_max = [1000.]*16
+radius_cut_min[13-5] = 61.
 radius_cut_min[12-5] = 61.
 radius_cut_max[11-5] = 61.
 # combinations.extend(generate_layers_combinations(name, layers_list, radius_cut_min, radius_cut_max, file_endcaps))
@@ -165,6 +166,7 @@ name = "Region_6"
 layers_list = [5, 6, 11, 12, 14, 15]
 radius_cut_min = [0]*16
 radius_cut_max = [1000.]*16
+radius_cut_min[14-5] = 61.
 radius_cut_min[13-5] = 61.
 radius_cut_max[12-5] = 61.
 # combinations.extend(generate_layers_combinations(name, layers_list, radius_cut_min, radius_cut_max, file_endcaps))
@@ -174,8 +176,10 @@ name = "Region_7"
 layers_list = [5, 11, 12, 13, 14, 15]
 radius_cut_min = [0]*16
 radius_cut_max = [1000.]*16
+radius_cut_min[15-5] = 61.
 radius_cut_min[14-5] = 61.
 radius_cut_max[13-5] = 61.
+radius_cut_max[12-5] = 61.
 # combinations.extend(generate_layers_combinations(name, layers_list, radius_cut_min, radius_cut_max, file_endcaps))
 combinations.append(generate_layers_combinations(name, layers_list, radius_cut_min, radius_cut_max, file_endcaps))
 
@@ -185,6 +189,7 @@ radius_cut_min = [0]*16
 radius_cut_max = [1000.]*16
 radius_cut_min[15-5] = 61.
 radius_cut_max[14-5] = 61.
+radius_cut_max[13-5] = 61.
 # combinations.extend(generate_layers_combinations(name, layers_list, radius_cut_min, radius_cut_max, file_endcaps))
 combinations.append(generate_layers_combinations(name, layers_list, radius_cut_min, radius_cut_max, file_endcaps))
 
@@ -192,6 +197,7 @@ name = "Region_9"
 layers_list = [5, 11, 12, 13, 14, 15]
 radius_cut_min = [0]*16
 radius_cut_max = [1000.]*16
+radius_cut_max[14-5] = 61.
 radius_cut_max[15-5] = 61.
 # combinations.extend(generate_layers_combinations(name, layers_list, radius_cut_min, radius_cut_max, file_endcaps))
 combinations.append(generate_layers_combinations(name, layers_list, radius_cut_min, radius_cut_max, file_endcaps))
@@ -228,23 +234,27 @@ def prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 2., pt_max 
 
 
 # # Prepare and submit jobs for the pre-estimates of pt (or pz) and cot(theta)
-# pre_estimate = True
-# job_types_pre = []
-# job_types_pre.append([JobType("Transverse", ["phi"], ["charge/pt"])])
-# job_types_pre.append(JobType("Transverse_Pz", ["phi"], ["chargeOverPz"]))
-# job_types_pre.append(JobType("Longitudinal", ["z"], ["cotTheta"]))
+pre_estimate = True
+job_types_pre = []
+# job_types_pre.append(JobType("Transverse", ["phi"], ["charge/pt"]))
+job_types_pre.append(JobType("Transverse_Pz", ["phi"], ["chargeOverPz"]))
+job_types_pre.append(JobType("Longitudinal", ["z"], ["cotTheta"]))
 # job_types_pre.append(JobType("Longitudinal_Rz", ["R", "z"], ["cotTheta"]))
+# Full pT range
 # prepare_all_jobs(job_types_pre, combinations, pre_estimate)
+# Low pT only
+prepare_all_jobs(job_types_pre, combinations, pre_estimate, pt_min = 2., pt_max = 10.)
+
 
 # Prepare and submit jobs for the second PCA
 pre_estimate = False
 job_types = []
 job_types.append(JobType("Transverse", ["CorrectedPhi"], ["charge/pt", "phi"]))
 job_types.append(JobType("Transverse_SecondOrder", ["CorrectedPhiSecondOrder"], ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_Pz", ["CorrectedPhiPz"], ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_Pz", ["CorrectedPhiPz"], ["charge/pt", "phi"]))
 # job_types.append(JobType("Longitudinal", ["CorrectedZ"], ["cotTheta", "z0"]))
 job_types.append(JobType("Longitudinal_Rz", ["CorrectedZ"], ["cotTheta", "z0"]))
-# job_types.append(JobType("Longitudinal_SecondOrder", ["CorrectedZSecondOrder"], ["cotTheta", "z0"]))
+job_types.append(JobType("Longitudinal_SecondOrder", ["CorrectedZSecondOrder"], ["cotTheta", "z0"]))
 # job_types.append(JobType("Longitudinal_Rz_SecondOrder", ["CorrectedZSecondOrder"], ["cotTheta", "z0"]))
 prepare_all_jobs(job_types, combinations, pre_estimate)
 
@@ -255,7 +265,7 @@ job_types = []
 job_types.append(JobType("Transverse_2_10", ["CorrectedPhi"], ["charge/pt", "phi"]))
 # job_types.append(JobType("Transverse_SecondOrder_2_10", ["CorrectedPhiSecondOrder"], ["charge/pt", "phi"]))
 # job_types.append(JobType("Transverse_Pz_2_10", ["CorrectedPhiPz"], ["charge/pt", "phi"]))
-# prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 2., pt_max = 10.)
+prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 2., pt_max = 10.)
 
 # pT > 10 GeV/c
 job_types = []
@@ -264,19 +274,19 @@ job_types.append(JobType("Transverse_10_more", ["CorrectedPhi"], ["charge/pt", "
 # job_types.append(JobType("Transverse_Pz_10_more", ["CorrectedPhiPz"], ["charge/pt", "phi"]))
 prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 10.)
 
-# 2 < pT < 15 GeV/c
-job_types = []
-job_types.append(JobType("Transverse_2_15", ["CorrectedPhi"], ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_2_15", ["CorrectedPhiSecondOrder"], ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_Pz_2_15", ["CorrectedPhiPz"], ["charge/pt", "phi"]))
-prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 2., pt_max = 15.)
+# # 2 < pT < 15 GeV/c
+# job_types = []
+# job_types.append(JobType("Transverse_2_15", ["CorrectedPhi"], ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_SecondOrder_2_15", ["CorrectedPhiSecondOrder"], ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_Pz_2_15", ["CorrectedPhiPz"], ["charge/pt", "phi"]))
+# prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 2., pt_max = 15.)
 
-# pT > 15 GeV/c
-job_types = []
-job_types.append(JobType("Transverse_15_more", ["CorrectedPhi"], ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_15_more", ["CorrectedPhiSecondOrder"], ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_Pz_15_more", ["CorrectedPhiPz"], ["charge/pt", "phi"]))
-prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 15.)
+# # pT > 15 GeV/c
+# job_types = []
+# job_types.append(JobType("Transverse_15_more", ["CorrectedPhi"], ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_SecondOrder_15_more", ["CorrectedPhiSecondOrder"], ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_Pz_15_more", ["CorrectedPhiPz"], ["charge/pt", "phi"]))
+# prepare_all_jobs(job_types, combinations, pre_estimate, pt_min = 15.)
 
 
 def check_pid(pid):

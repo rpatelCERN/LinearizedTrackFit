@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
 //  inputFileName_ = "/Users/demattia/RemoteProjects/extracted_d0_FLAT_new_1cm_larger.root";
 
     // The prompt sample
-  inputFileName_ = "/Users/demattia/RemoteProjects/extracted_prompt_extrapolated.root";
+//  inputFileName_ = "/Users/demattia/RemoteProjects/extracted_prompt_extrapolated.root";
 
     // Hybrid
 //  inputFileName_ = "/Users/demattia/RemoteProjects/extracted_hybrid.root";
@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_endcaps.root";
 
     // Full Tracker (slice in 0 < phi < 0.8 and eta > 0)
-//    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
+    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
 
 
 //    bool train = true;
@@ -169,10 +169,10 @@ int main(int argc, char* argv[])
     }
 
 
-    bool testFitter_ = false;
-//  buildMatrix_ = false;
-//  testMatrix_ = false;
-//  bool testFitter_ = true;
+//    bool testFitter_ = false;
+  buildMatrix_ = false;
+  testMatrix_ = false;
+  bool testFitter_ = true;
 
 
     // Select layers to use for each stub coordinate
@@ -219,7 +219,7 @@ int main(int argc, char* argv[])
 
     // Input coordinates
     // -----------------
-  std::vector<std::string> inputVarNames_{"phi"};
+//  std::vector<std::string> inputVarNames_{"phi"};
 //    inputVarNames_ = {"CorrectedPhi"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrder"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiExactWithD0Gen"};
@@ -244,7 +244,7 @@ int main(int argc, char* argv[])
     // Track parameters
     // ----------------
 //    inputTrackParameterNames_ = {"charge/pt", "phi"};
-  std::vector<std::string> inputTrackParameterNames_{"charge/pt"};
+//  std::vector<std::string> inputTrackParameterNames_{"charge/pt"};
 //  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "d0"};
 //  std::vector<std::string> inputTrackParameterNames_{"phi", "d0"};
 //  std::vector<std::string> inputTrackParameterNames_{"d0"};
@@ -261,8 +261,8 @@ int main(int argc, char* argv[])
 
 
 //  // Use this to test the linearized track fitter
-//  std::vector<std::string> inputVarNames_{"phi", "R", "z"};
-//  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "cotTheta", "z0"};
+  std::vector<std::string> inputVarNames_{"phi", "R", "z"};
+  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "cotTheta", "z0"};
 //  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "d0", "cotTheta", "z0"};
 
 
@@ -272,10 +272,10 @@ int main(int argc, char* argv[])
 
 
     // Geometric cuts
-    oneOverPtMax_ = 1 / 2.;
-    oneOverPtMin_ = 0.;
-//    oneOverPtMax_ = 1. / 2.;
-//    oneOverPtMin_ = 1. / 10.;
+//    oneOverPtMax_ = 1 / 2.;
+//    oneOverPtMin_ = 0.;
+    oneOverPtMax_ = 1. / 5.;
+    oneOverPtMin_ = 1. / 15.;
     oneOverPtRegions_ = 1;
     phiMin_ = 0.;
     phiMax_ = 0.8;

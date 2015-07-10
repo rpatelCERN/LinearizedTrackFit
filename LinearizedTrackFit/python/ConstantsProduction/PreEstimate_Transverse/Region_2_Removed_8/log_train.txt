@@ -5,57 +5,57 @@
 11 
 inputFileName = /Users/demattia/RemoteProjects/extracted_hybrid.root
 eventsFractionStartBuild = 0
-eventsFractionEndBuild = 0.5
-eventsFractionStartTest = 0.5
+eventsFractionEndBuild = 0.2
+eventsFractionStartTest = 0.8
 eventsFractionEndTest = 1
 var name = phi
 par name = charge/pt
 firstOrderChargeOverPtCoefficientsFileName = 
 firstOrderCotThetaCoefficientsFileName = 
-pT > 2, pT regions = 1
+2 < pT < 10, pT regions = 1
 0 < phi < 0.8, phi regions = 1
 -3 < eta < 3, eta regions = 1
 -15 < z0 < 15, eta regions = 1
 charge regions = 1
 endcap regions = 0
 Training
-Requested running from track number 0 to track number 2500000 for a total of 2500000 tracks.
-Analyzed 10% of 2500000 tracks
-Analyzed 20% of 2500000 tracks
-Analyzed 30% of 2500000 tracks
-Analyzed 40% of 2500000 tracks
-Analyzed 50% of 2500000 tracks
-Analyzed 60% of 2500000 tracks
-Analyzed 70% of 2500000 tracks
-Analyzed 80% of 2500000 tracks
-Analyzed 90% of 2500000 tracks
-Analyzed 100% of 2500000 tracks
+Requested running from track number 0 to track number 1000000 for a total of 1000000 tracks.
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks
 Evaluating eigenvalues:
 geomIndex = 0
 Sqrt(eigenvalues) of cov:
- 0.00163576 0.00181815 0.00275702 0.104582 0.561383
-Analyzed 10% of 2500000 tracks
-Analyzed 20% of 2500000 tracks
-Analyzed 30% of 2500000 tracks
-Analyzed 40% of 2500000 tracks
-Analyzed 50% of 2500000 tracks
-Analyzed 60% of 2500000 tracks
-Analyzed 70% of 2500000 tracks
-Analyzed 80% of 2500000 tracks
-Analyzed 90% of 2500000 tracks
-Analyzed 100% of 2500000 tracks
+ 0.0018376 0.00200633 0.00308763 0.114093 0.574686
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks
 opening GeometricIndex.txt for writing
 Matrices built:
 geomIndex = 0
 
 V_0:
- -0.584211   0.304137   0.621536  -0.417286  0.0759197
- -0.296857   0.760709  -0.562267   0.127155 -0.0297354
-   0.28362  0.0405651  -0.279437  -0.669962   0.625284
-  -0.57406  -0.392204  -0.177059   0.362363   0.594958
-  0.400735   0.416357    0.43372   0.479111   0.498395
+  0.590256  -0.323764  -0.605512   0.417148 -0.0782057
+  0.279658  -0.752836   0.580256  -0.132707  0.0268611
+  0.288646  0.0331985  -0.277974  -0.668952   0.625152
+ -0.580928  -0.399509   -0.18453   0.353962   0.586153
+  0.390635   0.409519   0.430508   0.485376   0.508696
 corrPV_0:
- 5.52219e-07 -8.50832e-07  1.64231e-05   -0.0271192   -0.0650207
+-5.5221e-07  1.2259e-06 2.06526e-05  -0.0322174  -0.0823169
 D_0:
-  1.90931  0.841175 0.0187684  -2.56369 -0.203695
+  1.95436  0.782298 0.0229583  -2.55483 -0.202254
 opening matrixVD_0.txt for writing

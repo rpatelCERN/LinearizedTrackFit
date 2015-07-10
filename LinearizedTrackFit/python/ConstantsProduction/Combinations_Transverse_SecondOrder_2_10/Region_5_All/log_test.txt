@@ -21,5 +21,89 @@ firstOrderCotThetaCoefficientsFileName = /Users/demattia/RemoteProjects/Lineariz
 charge regions = 1
 endcap regions = 0
 Testing
-GeometridIndex: Error opening input file: GeometricIndex.txt
-libc++abi.dylib: terminating
+opening Variables.txt for reading
+variable name: phi
+layer: 5
+layer: 6
+layer: 11
+layer: 12
+layer: 13
+layer: 14
+variable name: DeltaS
+layer: 5
+layer: 6
+layer: 11
+layer: 12
+layer: 13
+layer: 14
+variable name: R
+layer: 5
+layer: 6
+layer: 11
+layer: 12
+layer: 13
+layer: 14
+variable name: z
+layer: 5
+layer: 6
+layer: 11
+layer: 12
+layer: 13
+layer: 14
+
+Requested running from track number 4000000 to track number 5000000 for a total of 1000000 tracks.
+opening /Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse/Region_5_All/matrixVD_0_pre_chargeOverPt.txt for reading
+Estimator variable mean[5] = 0.399539
+Estimator variable mean[6] = 0.400021
+Estimator variable mean[11] = 0.399997
+Estimator variable mean[12] = 0.400129
+Estimator variable mean[13] = 0.400277
+Estimator variable mean[14] = 0.400396
+Estimator parameter mean = -0.00158319
+Estimator coefficient[5] = 3.47545
+Estimator coefficient[6] = -1.37938
+Estimator coefficient[11] = 1.46654
+Estimator coefficient[12] = -5.32498
+Estimator coefficient[13] = 6.77659
+Estimator coefficient[14] = -5.01085
+opening matrixVD_0.txt for reading
+Number of variables = 6
+Number of track parameters = 2
+
+sqrt(eigenvalues):
+0.000284321
+0.000816657
+ 0.00246344
+  0.0028813
+  0.0906963
+   0.616153
+V:
+  -0.3931    0.7909   -0.4669   0.00907   0.02356   0.03648
+  -0.5025    0.2267    0.7808   -0.1378   -0.1836   -0.1836
+   0.1968    0.1152    0.0504   -0.7247     -0.24    0.6022
+-0.003916  -0.01113  -0.02119    0.5189   -0.7953    0.3126
+  -0.6477   -0.4039  -0.07805    0.1142     0.303    0.5536
+    0.367    0.3829     0.404    0.4165    0.4288    0.4451
+meanValues:
+0.3996
+0.3997
+   0.4
+0.4001
+0.4002
+0.4003
+meanTrackParameters:
+-0.001583
+   0.3995
+D:
+   1.398    5.251   -5.119  -0.3076  -0.5668  -0.6557
+   1.555  0.07026  -0.4948 -0.01364 -0.04449 -0.07243
+Analyzed 10% of 1000000 tracks
+Analyzed 20% of 1000000 tracks
+Analyzed 30% of 1000000 tracks
+Analyzed 40% of 1000000 tracks
+Analyzed 50% of 1000000 tracks
+Analyzed 60% of 1000000 tracks
+Analyzed 70% of 1000000 tracks
+Analyzed 80% of 1000000 tracks
+Analyzed 90% of 1000000 tracks
+Analyzed 100% of 1000000 tracks

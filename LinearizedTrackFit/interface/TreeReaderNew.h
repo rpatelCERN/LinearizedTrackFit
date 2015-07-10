@@ -18,6 +18,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/L1TrackTriggerTree.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GetVariables.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GetTrackParameters.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/CombinationsGenerator.h"
 
 class TreeReaderNew
 {
@@ -25,7 +26,7 @@ class TreeReaderNew
   TreeReaderNew(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
                 const std::unordered_map<std::string, std::set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
                 const std::unordered_map<int, double> & distanceCutsTransverse,  const std::unordered_map<int, double> & distanceCutsLongitudinal,
-                const std::vector<std::string> & varNames, const std::vector<std::string> & trackParNames, const bool fiveOutOfSix);
+                const std::vector<std::string> & trackParNames);
 
   void reset(const double & eventsFractionStart, const double & eventsFractionEnd);
   bool nextTrack();
@@ -59,7 +60,6 @@ class TreeReaderNew
   int getCharge() const { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
   const std::vector<float> * getVarX() const { return tree_->m_stub_x; }
   const std::vector<float> * getVarY() const { return tree_->m_stub_y; }
-  int getLastLadder() { return lastLadder_; }
   unsigned int variablesSize() const { return variablesSize_; }
   unsigned int maxRequiredLayers() const { return maxRequiredLayers_; }
   std::set<int> allRequiredLayers() const { return allRequiredLayers_; }
@@ -117,7 +117,6 @@ class TreeReaderNew
   std::unordered_map<int, double> distanceCutsLongitudinal_;
 
   std::map<int, unsigned int> layersFound_;
-  int lastLadder_;
 
   std::shared_ptr<GetParPhi> getParPhi0_;
   std::shared_ptr<GetParZ0> getParZ0_;
@@ -138,6 +137,9 @@ class TreeReaderNew
   std::vector<int> allLayersVec_;
 
   bool fiveOutOfSix_;
+
+  CombinationsGenerator combinationGenerator_;
+  std::vector<std::vector<int> > combinations_;
 };
 
 #endif //REMOTEPROJECTS_TREEREADERNEW_H
