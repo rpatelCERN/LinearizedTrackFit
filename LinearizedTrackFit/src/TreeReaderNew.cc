@@ -138,7 +138,6 @@ void TreeReaderNew::generateStubCombination()
 }
 
 
-
 // Find the next acceptable track and fill the vectors of parameters and variables.
 // Also, compute the geometrical index based on the geometrical filter.
 bool TreeReaderNew::nextTrack()
@@ -444,3 +443,13 @@ int TreeReaderNew::getRegionForMeanR() const
   // It means layer 7 is missing, return the same meanR for the disks
   return 4;
 }
+
+
+std::vector<int> TreeReaderNew::uniqueLayersVec() const
+{
+  std::vector<int> uniqueLayers(layersVec_);
+  std::sort(uniqueLayers.begin(), uniqueLayers.end());
+  uniqueLayers.erase(std::unique(uniqueLayers.begin(), uniqueLayers.end()), uniqueLayers.end());
+  return uniqueLayers;
+}
+

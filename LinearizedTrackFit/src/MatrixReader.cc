@@ -10,8 +10,8 @@ MatrixReader::MatrixReader(const std::string & inputFileName)
   std::ifstream inputFile;
   inputFile.open(inputFileName);
   if (!inputFile) {
-    std::cout << "MatrixReader: Error opening "+inputFileName << std::endl;
-    throw;
+    // std::cout << "MatrixReader: Error opening "+inputFileName << std::endl;
+    throw 10;
   }
 
   // Read number of variables and number of track parameters

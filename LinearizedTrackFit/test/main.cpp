@@ -169,14 +169,17 @@ int main(int argc, char* argv[])
     }
 
 
-//    bool testFitter_ = false;
-  buildMatrix_ = false;
-  testMatrix_ = false;
-  bool testFitter_ = true;
+    bool testFitter_ = false;
+//  buildMatrix_ = false;
+//  testMatrix_ = false;
+//  bool testFitter_ = true;
 
+
+    // To run on all combinations
+    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
     // Select layers to use for each stub coordinate
-  std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
+//   std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
 //   std::vector<int> layersAll_{6, 7, 8, 9, 10};
 
     // Hybrid
@@ -198,16 +201,16 @@ int main(int argc, char* argv[])
     //   std::vector<int> layersAll_{5, 6, 11, 12, 13, 15};
 //    std::vector<int> layersAll_{11, 12, 13, 15};
 
-    std::unordered_map<std::string, std::set<int> > requiredLayers_;
-    requiredLayers_.insert(std::make_pair("phi", std::set<int>(layersAll_.begin(), layersAll_.end())));
-    requiredLayers_.insert(std::make_pair("R", std::set<int>(layersAll_.begin(), layersAll_.end())));
-    requiredLayers_.insert(std::make_pair("z", std::set<int>(layersAll_.begin(), layersAll_.end())));
-    requiredLayers_.insert(std::make_pair("DeltaS", std::set<int>(layersAll_.begin(), layersAll_.end())));
+//    std::unordered_map<std::string, std::set<int> > requiredLayers_;
+//    requiredLayers_.insert(std::make_pair("phi", std::set<int>(layersAll_.begin(), layersAll_.end())));
+//    requiredLayers_.insert(std::make_pair("R", std::set<int>(layersAll_.begin(), layersAll_.end())));
+//    requiredLayers_.insert(std::make_pair("z", std::set<int>(layersAll_.begin(), layersAll_.end())));
+//    requiredLayers_.insert(std::make_pair("DeltaS", std::set<int>(layersAll_.begin(), layersAll_.end())));
 
 
     // Fraction of the events in the input file to use. Use only 1/2 of them so that the testing phase can use the rest as a statistically independent sample.
     eventsFractionStartBuild_ = 0.;
-    eventsFractionEndBuild_ = 0.2;
+    eventsFractionEndBuild_ = 0.5;
 
     eventsFractionStartTest_ = 0.8;
     eventsFractionEndTest_ = 1.;
@@ -215,11 +218,13 @@ int main(int argc, char* argv[])
 
     // Barrel pre-estimate
     firstOrderChargeOverPtCoefficientsFileName_ = "matrixVD_pre_chargeOverPt.txt";
-    firstOrderCotThetaCoefficientsFileName_ = "matrixVD_0_pre_cotTheta_region7.txt";
+    // firstOrderCotThetaCoefficientsFileName_ = "matrixVD_0_pre_cotTheta_region7.txt";
+    firstOrderCotThetaCoefficientsFileName_ = "/Users/demattia/RemoteProjects/Test/";
+
 
     // Input coordinates
     // -----------------
-//  std::vector<std::string> inputVarNames_{"phi"};
+  std::vector<std::string> inputVarNames_{"phi"};
 //    inputVarNames_ = {"CorrectedPhi"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrder"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiExactWithD0Gen"};
@@ -244,7 +249,7 @@ int main(int argc, char* argv[])
     // Track parameters
     // ----------------
 //    inputTrackParameterNames_ = {"charge/pt", "phi"};
-//  std::vector<std::string> inputTrackParameterNames_{"charge/pt"};
+  std::vector<std::string> inputTrackParameterNames_{"charge/pt"};
 //  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "d0"};
 //  std::vector<std::string> inputTrackParameterNames_{"phi", "d0"};
 //  std::vector<std::string> inputTrackParameterNames_{"d0"};
@@ -252,6 +257,7 @@ int main(int argc, char* argv[])
 //  std::vector<std::string> inputTrackParameterNames_{"charge/ptELC", "phi", "d0"};
 //  std::vector<std::string> inputTrackParameterNames_{"1/pt", "phi"};
 //  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "cotTheta", "z0"};
+//  std::vector<std::string> inputTrackParameterNames_{"cotTheta"};
 //  std::vector<std::string> inputTrackParameterNames_{"cotTheta", "z0"};
 
 //  std::vector<std::string> inputTrackParameterNames_{"z0TgTheta", "tgTheta"};
@@ -261,8 +267,8 @@ int main(int argc, char* argv[])
 
 
 //  // Use this to test the linearized track fitter
-  std::vector<std::string> inputVarNames_{"phi", "R", "z"};
-  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "cotTheta", "z0"};
+//  std::vector<std::string> inputVarNames_{"phi", "R", "z"};
+//  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "cotTheta", "z0"};
 //  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "d0", "cotTheta", "z0"};
 
 
@@ -272,10 +278,10 @@ int main(int argc, char* argv[])
 
 
     // Geometric cuts
-//    oneOverPtMax_ = 1 / 2.;
-//    oneOverPtMin_ = 0.;
-    oneOverPtMax_ = 1. / 5.;
-    oneOverPtMin_ = 1. / 15.;
+    oneOverPtMax_ = 1 / 2.;
+    oneOverPtMin_ = 0.;
+//    oneOverPtMax_ = 1. / 2.;
+//    oneOverPtMin_ = 1. / 10.;
     oneOverPtRegions_ = 1;
     phiMin_ = 0.;
     phiMax_ = 0.8;
@@ -293,36 +299,26 @@ int main(int argc, char* argv[])
 
 
     if (buildMatrix_) {
-      GeometricIndex::GeometricIndexConfiguration gic;
-      gic.oneOverPtMin = oneOverPtMin_;
-      gic.oneOverPtMax = oneOverPtMax_;
-      gic.oneOverPtRegions = oneOverPtRegions_;
-      gic.phiMin = phiMin_;
-      gic.phiMax = phiMax_;
-      gic.phiRegions = phiRegions_;
-      gic.etaMin = etaMin_;
-      gic.etaMax = etaMax_;
-      gic.etaRegions = etaRegions_;
-      gic.z0Min = z0Min_;
-      gic.z0Max = z0Max_;
-      gic.z0Regions = z0Regions_;
-      gic.chargeRegions = chargeRegions_;
-      gic.endcapRegions = endcapRegions_;
-
       LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
-                             requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_,
+                             layersAll_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_,
                              inputVarNames_,
                              inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_,
-                             computeCorrelations_, gic, usePcs_, firstOrderChargeOverPtCoefficientsFileName_,
+                             computeCorrelations_, usePcs_,
+                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
+                             etaMin_, etaMax_, z0Min_, z0Max_,
+                             firstOrderChargeOverPtCoefficientsFileName_,
                              firstOrderCotThetaCoefficientsFileName_);
-
     }
 
     if (testMatrix_) {
       LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
+                            layersAll_,
                             inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_,
                             distanceCutsLongitudinal_,
-                            radiusCuts_, singleModules_, firstOrderChargeOverPtCoefficientsFileName_,
+                            radiusCuts_, singleModules_,
+                            oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
+                            etaMin_, etaMax_, z0Min_, z0Max_,
+                            firstOrderChargeOverPtCoefficientsFileName_,
                             firstOrderCotThetaCoefficientsFileName_);
     }
 
@@ -340,12 +336,6 @@ int main(int argc, char* argv[])
                             firstOrderChargeOverPtCoefficientsFileName_, firstOrderCotThetaCoefficientsFileName_,
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_, etaMin_, etaMax_, z0Min_, z0Max_, fiveOutOfSix_,
                             baseDir);
-//      LinearFit::testFitterEndcaps(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
-//                                   inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_,
-//                                   distanceCutsLongitudinal_,
-//                                   radiusCuts_, singleModules_,
-//                                   firstOrderChargeOverPtCoefficientsFileName_, firstOrderCotThetaCoefficientsFileName_,
-//                                   oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_, etaMin_, etaMax_, z0Min_, z0Max_);
     }
   }
   else {
@@ -461,47 +451,30 @@ int main(int argc, char* argv[])
     std::cout << "charge regions = " << chargeRegions_ << std::endl;
     std::cout << "endcap regions = " << endcapRegions_ << std::endl;
 
-    GeometricIndex::GeometricIndexConfiguration gic;
-    gic.oneOverPtMin = oneOverPtMin_;
-    gic.oneOverPtMax = oneOverPtMax_;
-    gic.oneOverPtRegions = oneOverPtRegions_;
-    gic.phiMin = phiMin_;
-    gic.phiMax = phiMax_;
-    gic.phiRegions = phiRegions_;
-    gic.etaMin = etaMin_;
-    gic.etaMax = etaMax_;
-    gic.etaRegions = etaRegions_;
-    gic.z0Min = z0Min_;
-    gic.z0Max = z0Max_;
-    gic.z0Regions = z0Regions_;
-    gic.chargeRegions = chargeRegions_;
-    gic.endcapRegions = endcapRegions_;
-
-
-    std::unordered_map<std::string, std::set<int> > requiredLayers_;
-    requiredLayers_.insert(std::make_pair("phi", std::set<int>(layersAll_.begin(), layersAll_.end())));
-    requiredLayers_.insert(std::make_pair("R", std::set<int>(layersAll_.begin(), layersAll_.end())));
-    requiredLayers_.insert(std::make_pair("z", std::set<int>(layersAll_.begin(), layersAll_.end())));
-    requiredLayers_.insert(std::make_pair("DeltaS", std::set<int>(layersAll_.begin(), layersAll_.end())));
-
     // Train
     if (test == 0) {
       std::cout << "Training" << std::endl;
       LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
-                             requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_,
+                             layersAll_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_,
                              inputVarNames_,
                              inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_,
-                             computeCorrelations_, gic,
-                             usePcs_, firstOrderChargeOverPtCoefficientsFileName_,
+                             computeCorrelations_, usePcs_,
+                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
+                             etaMin_, etaMax_, z0Min_, z0Max_,
+                             firstOrderChargeOverPtCoefficientsFileName_,
                              firstOrderCotThetaCoefficientsFileName_);
     }
     else {
       // Test
       std::cout << "Testing" << std::endl;
       LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
+                            layersAll_,
                             inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_,
                             distanceCutsLongitudinal_,
-                            radiusCuts_, singleModules_, firstOrderChargeOverPtCoefficientsFileName_,
+                            radiusCuts_, singleModules_,
+                            oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
+                            etaMin_, etaMax_, z0Min_, z0Max_,
+                            firstOrderChargeOverPtCoefficientsFileName_,
                             firstOrderCotThetaCoefficientsFileName_);
     }
   }

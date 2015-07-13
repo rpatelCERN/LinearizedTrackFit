@@ -64,6 +64,7 @@ class TreeReaderNew
   unsigned int maxRequiredLayers() const { return maxRequiredLayers_; }
   std::set<int> allRequiredLayers() const { return allRequiredLayers_; }
   std::vector<int> layersVec() const { return layersVec_; }
+  std::vector<int> uniqueLayersVec() const;
   std::vector<std::string> const variablesNames() const { return variablesNames_; }
   // const std::vector<std::shared_ptr<GetTreeVariable>> * getVars() const { return &vars_; }
   void writeConfiguration();
@@ -135,8 +136,6 @@ class TreeReaderNew
   int maxStubCombinations_;
   std::vector<double> allVariables_;
   std::vector<int> allLayersVec_;
-
-  bool fiveOutOfSix_;
 
   CombinationsGenerator combinationGenerator_;
   std::vector<std::vector<int> > combinations_;

@@ -60,13 +60,18 @@ def prepare_job(c, fit_type, oneOverPt_min, oneOverPt_max, stub_coordinates, tra
 
     configuration_file = open(job_dir+"conf_train.txt", "w")
 
+    trainStart = 0.
+    trainEnd = 0.2
+    testStart = 0.8
+    testEnd = 1.
+
     configuration_file.write(str(0)+"\n")
     configuration_file.write(c.input_file_name+"\n")
     configuration_file.write(array_to_string(c.layers, " ")+"\n")
-    configuration_file.write(str(0.)+"\n")
-    configuration_file.write(str(0.2)+"\n")
-    configuration_file.write(str(0.8)+"\n")
-    configuration_file.write(str(1.)+"\n")
+    configuration_file.write(str(trainStart)+"\n")
+    configuration_file.write(str(trainEnd)+"\n")
+    configuration_file.write(str(testStart)+"\n")
+    configuration_file.write(str(testEnd)+"\n")
     configuration_file.write(array_to_string(stub_coordinates, " ")+"\n")
     configuration_file.write(array_to_string(track_parameters, " ")+"\n")
     configuration_file.write(array_to_string(c.radius_cut_min, " ")+"\n")

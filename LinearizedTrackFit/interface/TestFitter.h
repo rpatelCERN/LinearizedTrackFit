@@ -37,8 +37,7 @@ namespace LinearFit
 //                          firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName);
 
     TreeReaderNew treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers, radiusCuts,
-                             distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames,
-                             fiveOutOfSix);
+                             distanceCutsTransverse, distanceCutsLongitudinal, inputTrackParameterNames);
 
     // Control histograms
     LinearFitterHistograms linearFitterHistograms("0", treeReader.variablesNames(), inputTrackParameterNames);

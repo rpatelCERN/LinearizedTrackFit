@@ -10,6 +10,7 @@
 #include <bitset>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GetVariables.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixReader.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/CombinationIndex.h"
 
 class LinearizedTrackFitter
 {
@@ -23,9 +24,6 @@ class LinearizedTrackFitter
   std::vector<double> normalizedPrincipalComponents();
 
  private:
-  inline void combinationIndex(const std::vector<int> & layers, std::bitset<32> & bits) { for (auto l : layers) bits.set(l, 1); }
-  unsigned long combinationIndex(const std::vector<int> & layers, const int region);
-  unsigned long combinationIndex(const std::vector<int> & layers, const std::vector<double> radius);
   void fillLayers(const std::string & fileName, const std::string & var, std::vector<int> & layers);
 
   std::string preEstimatePtDirName_;

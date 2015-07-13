@@ -1908,35 +1908,48 @@ private:
 class TransformBase
 {
  public:
-virtual double operator()(const int index, const int combinationIndex_, const std::vector<double> & vars) = 0;
+  TransformBase(const std::string & name) : name_(name)
+  {}
+  virtual double operator()(const int index, const std::vector<double> & vars) const = 0;
+  std::string getName() { return name_; }
  private:
-  std::unordered_map<int, Estimator> estimatorMap_;
+  std::string name_;
+  std::shared_ptr<Estimator> estimator_;
 };
 
 
 class TransformPropagatePhi : public TransformBase
 {
-  virtual double operator()(const int index, const int combinationIndex_, const std::vector<double> & vars)
+ public:
+  TransformPropagatePhi(const std::string & name) : TransformBase(name)
+  {}
+  virtual double operator()(const int index, const std::vector<double> & vars) const
   {
-    return vars.at(index);
+    return vars.at(index*3);
   }
 };
 
 
 class TransformPropagateR : public TransformBase
 {
-  virtual double operator()(const int index, const int combinationIndex_, const std::vector<double> & vars)
+ public:
+  TransformPropagateR(const std::string & name) : TransformBase(name)
+  {}
+  virtual double operator()(const int index, const std::vector<double> & vars) const
   {
-    return vars.at(index+1);
+    return vars.at(index*3+1);
   }
 };
 
 
 class TransformPropagateZ : public TransformBase
 {
-  virtual double operator()(const int index, const int combinationIndex_, const std::vector<double> & vars)
+ public:
+  TransformPropagateZ(const std::string & name) : TransformBase(name)
+  {}
+  virtual double operator()(const int index, const std::vector<double> & vars) const
   {
-    return vars.at(index+2);
+    return vars.at(index*3+2);
   }
 };
 
