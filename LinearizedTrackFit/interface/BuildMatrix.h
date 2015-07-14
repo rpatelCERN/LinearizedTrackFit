@@ -32,7 +32,7 @@ namespace LinearFit {
                    const bool usePcs,
                    const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
                    const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_,
-                   const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName)
+                   const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsDirName)
   {
     // std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     std::unordered_map<std::string, std::set<int> > requiredLayers;
@@ -50,7 +50,7 @@ namespace LinearFit {
     // Initialize geometric index, matrix builder and histograms
     std::unordered_map<unsigned long, MatrixBuilder> matrices;
     std::unordered_map<unsigned long, MatrixBuilderHistograms> histograms;
-//    std::unordered_map<int, Base2DHistograms> histograms2D;
+    std::unordered_map<int, Base2DHistograms> histograms2D;
 //    CorrelationHistograms correlationHistograms(treeReader.variablesNames(), inputTrackParameterNames);
 
 //    // Extra, not necessarily used
@@ -61,7 +61,7 @@ namespace LinearFit {
 
     // Map of combinaation indexes to pairs of counts and vectors of average radii
     std::unordered_map<unsigned long, std::pair<int, std::vector<double> > > meanRadius;
-
+    std::unordered_map<unsigned long, std::vector<double> > inputMeanRadius;
 
     while (treeReader.nextTrack()) {
 
@@ -81,7 +81,6 @@ namespace LinearFit {
       std::vector<double> vars(treeReader.getVariables());
       std::vector<double> pars(treeReader.getTrackParameters());
       std::vector<int> uniqueRequiredLayers(treeReader.uniqueLayersVec());
-      std::vector<int> requiredLayersVec(treeReader.layersVec());
 
       if (vars.size()%3 != 0) {
         std::cout << "Error: number of variables ("<<vars.size()<<") is not divisible by 3." << std::endl;
@@ -95,32 +94,17 @@ namespace LinearFit {
       // Compute the combination index
       unsigned long combinationIndex_ = combinationIndex(uniqueRequiredLayers, radius);
 
-//      std::cout << "vars = " << std::endl;
-//      for (auto v : vars) {
-//        std::cout << v << " ";
-//      }
-//      std::cout << std::endl;
-//      std::cout << "requiredLayersVec = " << std::endl;
-//      for (auto l : uniqueRequiredLayers) {
-//        std::cout << l << " ";
-//      }
-//      std::cout << std::endl;
-//      std::cout << "radius = " << std::endl;
-//      for (auto r : radius) {
-//        std::cout << r << " ";
-//      }
-//      std::cout << std::endl;
-//      std::cout << "combination index = " << combinationIndex_ << std::endl;
-//
-//      if (combinationIndex_ == 2103520) {
-//        std::cout << "found" << std::endl;
-//      }
-
-
       // Update the mean of R for this combination
       updateMeanR(meanRadius, combinationIndex_, radius);
 
-      initializeVariablesTransformations(inputVarNames, combinationIndex_, variablesTransformations);
+      readMeanRadius(firstOrderCotThetaCoefficientsDirName, combinationIndex_, inputMeanRadius);
+      initializeVariablesTransformations(inputVarNames, combinationIndex_, variablesTransformations,
+                                         firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsDirName,
+                                         inputMeanRadius[combinationIndex_]);
+
+//      std::cout << "input phi = " << std::endl;
+//      for (int i=0; i<vars.size()/3; ++i) std::cout << vars[i*3];
+//      std::cout << std::endl;
 
       std::vector<double> transformedVars;
       auto varTransformVec = variablesTransformations[combinationIndex_];
@@ -130,20 +114,40 @@ namespace LinearFit {
 
       // Initialize a new combination matrix and histograms if needed
       if (matrices.count(combinationIndex_) == 0) {
+        // Prepare the vector of required layers for the matrixBuilder.
+        std::vector<int> requiredLayers;
+        for (const auto l : uniqueRequiredLayers)
+        for(unsigned int i=0; i<inputVarNames.size(); ++i) {
+          requiredLayers.push_back(l);
+        }
         matrices.insert({{combinationIndex_, MatrixBuilder(std::to_string(combinationIndex_),
         // treeReader.variablesSize(), inputTrackParameterNames, requiredLayersVec)}});
-        transformedVars.size(), inputTrackParameterNames, requiredLayersVec)}});
+        // transformedVars.size(), inputTrackParameterNames, uniqueRequiredLayers)}});
+        transformedVars.size(), inputTrackParameterNames, requiredLayers)}});
 
         histograms.insert({{combinationIndex_, MatrixBuilderHistograms(std::to_string(combinationIndex_),
                                                                        transformedVariablesNames(vars.size(), variablesTransformations[combinationIndex_]),
                                                                        inputTrackParameterNames)}});
-//        histograms2D.insert({{combinationIndex_, Base2DHistograms(std::to_string(combinationIndex_), 6)}});
+        histograms2D.insert({{combinationIndex_, Base2DHistograms(std::to_string(combinationIndex_), vars.size()/3)}});
       }
 
       // Update mean and covariance for this linearization region
       matrices.find(combinationIndex_)->second.update(transformedVars);
       histograms.find(combinationIndex_)->second.fill(transformedVars, pars);
-      // histograms2D.find(combinationIndex)->second.fill(treeReader.getStubRZPhi(), treeReader.getX0(), treeReader.getY0());
+      histograms2D.find(combinationIndex_)->second.fill(vars, uniqueRequiredLayers, treeReader.getX0(), treeReader.getY0());
+
+      std::vector<std::string> transformedVarNames(transformedVariablesNames(vars.size(), variablesTransformations[combinationIndex_]));
+      std::vector<double> transformedPhi;
+      std::vector<double> transformedZ;
+      for(unsigned int i=0; i<transformedVarNames.size(); ++i) {
+        if ((transformedVarNames.at(i).find("phi") != std::string::npos) || (transformedVarNames.at(i).find("Phi") != std::string::npos)) {
+          transformedPhi.push_back(transformedVars.at(i));
+        }
+        else if ((transformedVarNames.at(i).find("z") != std::string::npos) || (transformedVarNames.at(i).find("Z") != std::string::npos)) {
+          transformedZ.push_back(transformedVars.at(i));
+        }
+      }
+      histograms2D.find(combinationIndex_)->second.fill(transformedPhi, transformedZ, inputMeanRadius[combinationIndex_]);
       // if (computeCorrelations) correlationHistograms.fill(transformedVars, pars, treeReader.getCharge());
     }
 
@@ -187,7 +191,7 @@ namespace LinearFit {
       std::vector<double> vars(treeReader.getVariables());
       std::vector<double> pars(treeReader.getTrackParameters());
       std::vector<int> uniqueRequiredLayers(treeReader.uniqueLayersVec());
-      std::vector<int> requiredLayersVec(treeReader.layersVec());
+      // std::vector<int> requiredLayersVec(treeReader.layersVec());
 
       if (vars.size()%3 != 0) {
         std::cout << "Error: number of variables ("<<vars.size()<<") is not divisible by 3." << std::endl;
@@ -202,29 +206,6 @@ namespace LinearFit {
 
       // Compute the combination index
       unsigned long combinationIndex_ = combinationIndex(uniqueRequiredLayers, radius);
-
-
-//      std::cout << "vars = " << std::endl;
-//      for (auto v : vars) {
-//        std::cout << v << " ";
-//      }
-//      std::cout << std::endl;
-//      std::cout << "requiredLayersVec = " << std::endl;
-//      for (auto l : uniqueRequiredLayers) {
-//        std::cout << l << " ";
-//      }
-//      std::cout << std::endl;
-//      std::cout << "radius = " << std::endl;
-//      for (auto r : radius) {
-//        std::cout << r << " ";
-//      }
-//      std::cout << std::endl;
-//      std::cout << "combination index = " << combinationIndex_ << std::endl;
-
-
-//      if (combinationIndex_ == 2103520) {
-//        std::cout << "found again" << std::endl;
-//      }
 
       // Running on the same events as above, no new combinations are expected
       // initializeVariablesTransformations(inputVarNames, combinationIndex_, variablesTransformations);
@@ -242,9 +223,6 @@ namespace LinearFit {
     }
     // -----------------------
 
-//    // Write the geometric index settings to a file
-//    geometricIndex.write();
-
     // Write the matrices to file
     std::cout << "Matrices built:" << std::endl;
     for (auto &m : matrices) {
@@ -256,7 +234,7 @@ namespace LinearFit {
     TFile outputFile("matrixBuilderHistograms.root", "RECREATE");
     outputFile.cd();
     for (auto &h : histograms) {h.second.write();}
-//    for (auto &h2D : histograms2D) {h2D.second.write();}
+    for (auto &h2D : histograms2D) {h2D.second.write();}
     outputFile.Close();
 
     // Write configuration of variables

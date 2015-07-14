@@ -1908,13 +1908,18 @@ private:
 class TransformBase
 {
  public:
-  TransformBase(const std::string & name) : name_(name)
+  TransformBase(const std::string & name) :
+      name_(name)
+  {}
+  TransformBase(const std::string & name, const std::string & preEstimateFileName, const std::vector<double> & meanRadius) :
+      name_(name), estimator_(std::make_shared<EstimatorSimple>(preEstimateFileName)), meanRadius_(meanRadius)
   {}
   virtual double operator()(const int index, const std::vector<double> & vars) const = 0;
   std::string getName() { return name_; }
- private:
+ protected:
   std::string name_;
-  std::shared_ptr<Estimator> estimator_;
+  std::shared_ptr<EstimatorSimple> estimator_;
+  std::vector<double> meanRadius_;
 };
 
 
@@ -1923,6 +1928,7 @@ class TransformPropagatePhi : public TransformBase
  public:
   TransformPropagatePhi(const std::string & name) : TransformBase(name)
   {}
+  virtual ~TransformPropagatePhi() {}
   virtual double operator()(const int index, const std::vector<double> & vars) const
   {
     return vars.at(index*3);
@@ -1935,6 +1941,7 @@ class TransformPropagateR : public TransformBase
  public:
   TransformPropagateR(const std::string & name) : TransformBase(name)
   {}
+  virtual ~TransformPropagateR() {}
   virtual double operator()(const int index, const std::vector<double> & vars) const
   {
     return vars.at(index*3+1);
@@ -1947,10 +1954,69 @@ class TransformPropagateZ : public TransformBase
  public:
   TransformPropagateZ(const std::string & name) : TransformBase(name)
   {}
+  virtual ~TransformPropagateZ() {}
   virtual double operator()(const int index, const std::vector<double> & vars) const
   {
     return vars.at(index*3+2);
   }
 };
+
+
+class TransformCorrectedPhiSecondOrder : public TransformBase
+{
+ public:
+  TransformCorrectedPhiSecondOrder(const std::string & name, const std::string & preEstimateChargeOverPtFileName,
+                                   const std::vector<double> & meanRadius) :
+  TransformBase(name, preEstimateChargeOverPtFileName, meanRadius)
+  {}
+  virtual ~TransformCorrectedPhiSecondOrder() {}
+  virtual double operator()(const int index, const std::vector<double> & vars) const
+  {
+    double phi = vars.at(index*3);
+    double R = vars.at(index*3+1);
+    std::vector<double> originalPhi;
+    for (int i=0; i<vars.size()/3; ++i) {
+      originalPhi.push_back(vars.at(i*3));
+    }
+    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+    double DeltaR = R - meanRadius_[index];
+    double RCube = R*R*R;
+    return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
+  }
+};
+
+
+class TransformCorrectedZSecondOrder : public TransformBase
+{
+ public:
+  TransformCorrectedZSecondOrder(const std::string & name,
+                                 const std::string & firstOrderChargeOverPtCoefficientsFileName,
+                                 const std::string & firstOrderCotThetaCoefficientsFileName,
+                                 const std::vector<double> & meanRadius) :
+      TransformBase(name, firstOrderCotThetaCoefficientsFileName, meanRadius),
+      estimatorChargeOverPt_(std::make_shared<EstimatorSimple>(firstOrderChargeOverPtCoefficientsFileName))
+  {}
+  virtual ~TransformCorrectedZSecondOrder() {}
+  virtual double operator()(const int index, const std::vector<double> & vars) const
+  {
+    double R = vars.at(index*3+1);
+    double z = vars.at(index*3+2);
+    double DeltaR = R - meanRadius_[index];
+    std::vector<double> originalPhi;
+    std::vector<double> originalR;
+    std::vector<double> originalZ;
+    for (int i=0; i<vars.size()/3; ++i) {
+      originalPhi.push_back(vars.at(i*3));
+      originalR.push_back(vars.at(i*3+1));
+      originalZ.push_back(vars.at(i*3+2));
+    }
+    double cotTheta = estimator_->estimate(originalR, originalZ);
+    double oneOverRho = (3.8114*0.003)*estimatorChargeOverPt_->estimate(originalPhi);
+    return (z - (DeltaR + 1/24.*std::pow(R, 3)*(oneOverRho*oneOverRho))*cotTheta);
+  }
+ private:
+  std::shared_ptr<EstimatorSimple> estimatorChargeOverPt_;
+};
+
 
 #endif // GETVARIABLES_H

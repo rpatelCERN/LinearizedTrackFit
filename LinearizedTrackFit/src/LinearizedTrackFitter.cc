@@ -206,6 +206,12 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
   if (iterPt == chargeOverPtEstimator_.end()) {
     return -1.;
   }
+
+  if (!readMeanRadius(preEstimateCotThetaDirName_, combinationIndex_, meanRadius_)) {
+    std::cout << "Error: mean radii not found for combination = " << combinationIndex_ << std::endl;
+    throw;
+  }
+
 //  if (iterPt == chargeOverPtEstimator_.end()) {
 //    std::cout << "Error: coefficients not found for combination:" << std::endl;
 //    for (auto l : layers) std::cout << l << " ";
@@ -219,11 +225,11 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
 //    std::cout << "Combination index = " << combinationIndex_ << std::endl;
 //    throw;
 //  }
-  int region = iterPt->second.first;
-  EstimatorSimple & chargeOverPtEstimator = iterPt->second.second;
+  // int region = iterPt->second.first;
+  EstimatorSimple & chargeOverPtEstimator = iterPt->second;
 
   auto iterCotTheta = cotThetaEstimator_.find(combinationIndex_);
-  EstimatorSimple & cotThetaEstimator = iterCotTheta->second.second;
+  EstimatorSimple & cotThetaEstimator = iterCotTheta->second;
 
   // Correct the input variables and split them between phi and z vectors
   double preEstimatedChargeOverPt = chargeOverPtEstimator.estimate(correctedVarsPhi_);
@@ -232,18 +238,19 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
   double oneOverTwoRho = (3.8114*0.003)*preEstimatedChargeOverPt/2.;
   double cotTheta = cotThetaEstimator.estimate(varsR_, correctedVarsZ_);
   for (unsigned int i=0; i<varsNum; ++i) {
-    double DeltaR = varsR_[i] - meanRadius(layers[i], region);
+    // double DeltaR = varsR_[i] - meanRadius(layers[i], region);
+    double DeltaR = varsR_[i] - meanRadius_[combinationIndex_][i];
     double RCube = std::pow(varsR_[i], 3);
     correctedVarsPhi_[i] += oneOverTwoRho * DeltaR + RCube * std::pow(oneOverTwoRho, 3) / 6.;
     correctedVarsZ_[i] -= (DeltaR + 1/6.*RCube*(oneOverTwoRho*oneOverTwoRho))*cotTheta;
   }
 
   // Evaluate the chi2/ndof
-  MatrixReader * linearFitLongitudinal = &(linearFitLongitudinal_.find(combinationIndex_)->second.second);
+  MatrixReader * linearFitLongitudinal = &(linearFitLongitudinal_.find(combinationIndex_)->second);
   double normChi2 = linearFitLongitudinal->normChi2(correctedVarsZ_)*linearFitLongitudinal->nDof();
   MatrixReader * linearFitTransverse = nullptr;
-  if (preEstimatedPt_ < ptSplitValue_) linearFitTransverse = &(linearFitLowPt_.find(combinationIndex_)->second.second);
-  else linearFitTransverse = &(linearFitHighPt_.find(combinationIndex_)->second.second);
+  if (preEstimatedPt_ < ptSplitValue_) linearFitTransverse = &(linearFitLowPt_.find(combinationIndex_)->second);
+  else linearFitTransverse = &(linearFitHighPt_.find(combinationIndex_)->second);
   normChi2 += linearFitTransverse->normChi2(correctedVarsPhi_)*linearFitTransverse->nDof();
   normChi2 /= linearFitLongitudinal->nDof()+linearFitTransverse->nDof();
 
@@ -261,10 +268,10 @@ std::vector<double> LinearizedTrackFitter::principalComponents()
 {
   principalComponents_.clear();
   MatrixReader * linearFitTransverse = nullptr;
-  if (preEstimatedPt_ < ptSplitValue_) linearFitTransverse = &(linearFitLowPt_.find(combinationIndex_)->second.second);
-  else linearFitTransverse = &(linearFitHighPt_.find(combinationIndex_)->second.second);
+  if (preEstimatedPt_ < ptSplitValue_) linearFitTransverse = &(linearFitLowPt_.find(combinationIndex_)->second);
+  else linearFitTransverse = &(linearFitHighPt_.find(combinationIndex_)->second);
   principalComponents_ = linearFitTransverse->principalComponents(correctedVarsPhi_);
-  auto tempPrincipalFromZ = linearFitLongitudinal_.find(combinationIndex_)->second.second.principalComponents(correctedVarsZ_);
+  auto tempPrincipalFromZ = linearFitLongitudinal_.find(combinationIndex_)->second.principalComponents(correctedVarsZ_);
   principalComponents_.insert(principalComponents_.end(), tempPrincipalFromZ.begin(), tempPrincipalFromZ.end());
   return principalComponents_;
 }
@@ -274,10 +281,10 @@ std::vector<double> LinearizedTrackFitter::normalizedPrincipalComponents()
 {
   normalizedPrincipalComponents_.clear();
   MatrixReader * linearFitTransverse = nullptr;
-  if (preEstimatedPt_ < ptSplitValue_) linearFitTransverse = &(linearFitLowPt_.find(combinationIndex_)->second.second);
-  else linearFitTransverse = &(linearFitHighPt_.find(combinationIndex_)->second.second);
+  if (preEstimatedPt_ < ptSplitValue_) linearFitTransverse = &(linearFitLowPt_.find(combinationIndex_)->second);
+  else linearFitTransverse = &(linearFitHighPt_.find(combinationIndex_)->second);
   normalizedPrincipalComponents_ = linearFitTransverse->normalizedPrincipalComponents(correctedVarsPhi_);
-  auto tempPrincipalFromZ = linearFitLongitudinal_.find(combinationIndex_)->second.second.normalizedPrincipalComponents(correctedVarsZ_);
+  auto tempPrincipalFromZ = linearFitLongitudinal_.find(combinationIndex_)->second.normalizedPrincipalComponents(correctedVarsZ_);
   normalizedPrincipalComponents_.insert(normalizedPrincipalComponents_.end(), tempPrincipalFromZ.begin(), tempPrincipalFromZ.end());
   return normalizedPrincipalComponents_;
 }

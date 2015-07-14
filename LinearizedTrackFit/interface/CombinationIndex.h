@@ -15,7 +15,7 @@ inline void combinationIndex(const std::vector<int> & layers, std::bitset<32> & 
 unsigned long combinationIndex(const std::vector<int> & layers, const int region);
 
 
-unsigned long combinationIndex(const std::vector<int> & layers, const std::vector<double> radius);
+unsigned long combinationIndex(const std::vector<int> & layers, const std::vector<double> & radius);
 
 
 #endif //REMOTEPROJECTS_COMBINATIONINDEX_H

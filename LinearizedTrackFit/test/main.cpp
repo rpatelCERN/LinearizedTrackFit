@@ -52,8 +52,8 @@ int main(int argc, char* argv[])
   usePcs_ = true;
 
   // Pre-estimate coefficient files
-  std::string firstOrderChargeOverPtCoefficientsFileName_;
-  std::string firstOrderCotThetaCoefficientsFileName_;
+  std::string firstOrderChargeOverPtCoefficientsDirName_;
+  std::string firstOrderCotThetaCoefficientsDirName_;
 
   // To remove outlier stubs. Each number is, for each layer, the maximum allowed distance in cm in
   // the transverse plane between the stub and the extrapolated generator-level track associated to it.
@@ -118,7 +118,7 @@ int main(int argc, char* argv[])
     radiusCuts_.insert({9, {0., 1000.}});
     radiusCuts_.insert({10, {0., 1000.}});
 
-    // Endcaps high R resolution
+//    // Endcaps high R resolution
 //    radiusCuts_.insert({11, {0., 61.}});
 //    radiusCuts_.insert({12, {0., 61.}});
 //    radiusCuts_.insert({13, {0., 61.}});
@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
 //    radiusCuts_.insert({14, {61., 1000.}});
 //    radiusCuts_.insert({15, {61., 1000.}});
 
-//    // Endcaps
+    // Endcaps
     radiusCuts_.insert({11, {0., 1000.}});
     radiusCuts_.insert({12, {0., 1000.}});
     radiusCuts_.insert({13, {0., 1000.}});
@@ -169,10 +169,10 @@ int main(int argc, char* argv[])
     }
 
 
-    bool testFitter_ = false;
-//  buildMatrix_ = false;
-//  testMatrix_ = false;
-//  bool testFitter_ = true;
+//    bool testFitter_ = false;
+  buildMatrix_ = false;
+  testMatrix_ = false;
+  bool testFitter_ = true;
 
 
     // To run on all combinations
@@ -210,21 +210,22 @@ int main(int argc, char* argv[])
 
     // Fraction of the events in the input file to use. Use only 1/2 of them so that the testing phase can use the rest as a statistically independent sample.
     eventsFractionStartBuild_ = 0.;
-    eventsFractionEndBuild_ = 0.5;
+    eventsFractionEndBuild_ = 0.01;
 
-    eventsFractionStartTest_ = 0.8;
+    eventsFractionStartTest_ = 0.9;
     eventsFractionEndTest_ = 1.;
 
 
     // Barrel pre-estimate
-    firstOrderChargeOverPtCoefficientsFileName_ = "matrixVD_pre_chargeOverPt.txt";
+    // firstOrderChargeOverPtCoefficientsFileName_ = "matrixVD_pre_chargeOverPt.txt";
     // firstOrderCotThetaCoefficientsFileName_ = "matrixVD_0_pre_cotTheta_region7.txt";
-    firstOrderCotThetaCoefficientsFileName_ = "/Users/demattia/RemoteProjects/Test/";
+    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/Test/PreTransverse/";
+    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/Test/PreLongitudinal/";
 
 
     // Input coordinates
     // -----------------
-  std::vector<std::string> inputVarNames_{"phi"};
+//  std::vector<std::string> inputVarNames_{"phi"};
 //    inputVarNames_ = {"CorrectedPhi"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrder"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiExactWithD0Gen"};
@@ -248,8 +249,8 @@ int main(int argc, char* argv[])
 
     // Track parameters
     // ----------------
-//    inputTrackParameterNames_ = {"charge/pt", "phi"};
-  std::vector<std::string> inputTrackParameterNames_{"charge/pt"};
+//  std::vector<std::string> inputTrackParameterNames_{"charge/pt"};
+//  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi"};
 //  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "d0"};
 //  std::vector<std::string> inputTrackParameterNames_{"phi", "d0"};
 //  std::vector<std::string> inputTrackParameterNames_{"d0"};
@@ -267,8 +268,8 @@ int main(int argc, char* argv[])
 
 
 //  // Use this to test the linearized track fitter
-//  std::vector<std::string> inputVarNames_{"phi", "R", "z"};
-//  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "cotTheta", "z0"};
+  std::vector<std::string> inputVarNames_{"phi", "R", "z"};
+  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "cotTheta", "z0"};
 //  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "d0", "cotTheta", "z0"};
 
 
@@ -282,20 +283,20 @@ int main(int argc, char* argv[])
     oneOverPtMin_ = 0.;
 //    oneOverPtMax_ = 1. / 2.;
 //    oneOverPtMin_ = 1. / 10.;
-    oneOverPtRegions_ = 1;
+//    oneOverPtRegions_ = 1;
     phiMin_ = 0.;
     phiMax_ = 0.8;
-    phiRegions_ = 1;
+//    phiRegions_ = 1;
     etaMin_ = -3.;
     etaMax_ = 3.;
-    etaRegions_ = 1;
+//    etaRegions_ = 1;
     z0Min_ = -15.;
     z0Max_ = 15.;
-    z0Regions_ = 1;
-    // Specify 1 for no charge splitting and 2 for separating positive and negative charge in difference regions
-    chargeRegions_ = 1;
-    // Either 0 for no endcap region splitting or != 0 for endcap region splitting
-    endcapRegions_ = 0;
+//    z0Regions_ = 1;
+//    // Specify 1 for no charge splitting and 2 for separating positive and negative charge in difference regions
+//    chargeRegions_ = 1;
+//    // Either 0 for no endcap region splitting or != 0 for endcap region splitting
+//    endcapRegions_ = 0;
 
 
     if (buildMatrix_) {
@@ -306,8 +307,8 @@ int main(int argc, char* argv[])
                              computeCorrelations_, usePcs_,
                              oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                              etaMin_, etaMax_, z0Min_, z0Max_,
-                             firstOrderChargeOverPtCoefficientsFileName_,
-                             firstOrderCotThetaCoefficientsFileName_);
+                             firstOrderChargeOverPtCoefficientsDirName_,
+                             firstOrderCotThetaCoefficientsDirName_);
     }
 
     if (testMatrix_) {
@@ -318,14 +319,15 @@ int main(int argc, char* argv[])
                             radiusCuts_, singleModules_,
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                             etaMin_, etaMax_, z0Min_, z0Max_,
-                            firstOrderChargeOverPtCoefficientsFileName_,
-                            firstOrderCotThetaCoefficientsFileName_);
+                            firstOrderChargeOverPtCoefficientsDirName_,
+                            firstOrderCotThetaCoefficientsDirName_);
     }
 
 
     if (testFitter_) {
 
-      const std::string baseDir("/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/");
+      // const std::string baseDir("/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/");
+      const std::string baseDir("/Users/demattia/RemoteProjects/Test/");
 
       bool fiveOutOfSix_ = true;
 
@@ -333,7 +335,7 @@ int main(int argc, char* argv[])
                             inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_,
                             distanceCutsLongitudinal_,
                             radiusCuts_, singleModules_,
-                            firstOrderChargeOverPtCoefficientsFileName_, firstOrderCotThetaCoefficientsFileName_,
+                            firstOrderChargeOverPtCoefficientsDirName_, firstOrderCotThetaCoefficientsDirName_,
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_, etaMin_, etaMax_, z0Min_, z0Max_, fiveOutOfSix_,
                             baseDir);
     }
@@ -416,12 +418,12 @@ int main(int argc, char* argv[])
       radiusCuts_.insert({i + 5, {rMinVec.at(i), rMaxVec.at(i)}});
     }
     std::getline(inputFile, line);
-    firstOrderChargeOverPtCoefficientsFileName_ = line;
+    firstOrderChargeOverPtCoefficientsDirName_ = line;
     std::getline(inputFile, line);
-    firstOrderCotThetaCoefficientsFileName_ = line;
+    firstOrderCotThetaCoefficientsDirName_ = line;
 
-    std::cout << "firstOrderChargeOverPtCoefficientsFileName = " << firstOrderChargeOverPtCoefficientsFileName_ << std::endl;
-    std::cout << "firstOrderCotThetaCoefficientsFileName = " << firstOrderCotThetaCoefficientsFileName_ << std::endl;
+    std::cout << "firstOrderChargeOverPtCoefficientsFileName = " << firstOrderChargeOverPtCoefficientsDirName_ << std::endl;
+    std::cout << "firstOrderCotThetaCoefficientsFileName = " << firstOrderCotThetaCoefficientsDirName_ << std::endl;
 
 
     // Geometric cuts
@@ -461,8 +463,8 @@ int main(int argc, char* argv[])
                              computeCorrelations_, usePcs_,
                              oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                              etaMin_, etaMax_, z0Min_, z0Max_,
-                             firstOrderChargeOverPtCoefficientsFileName_,
-                             firstOrderCotThetaCoefficientsFileName_);
+                             firstOrderChargeOverPtCoefficientsDirName_,
+                             firstOrderCotThetaCoefficientsDirName_);
     }
     else {
       // Test
@@ -474,8 +476,8 @@ int main(int argc, char* argv[])
                             radiusCuts_, singleModules_,
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                             etaMin_, etaMax_, z0Min_, z0Max_,
-                            firstOrderChargeOverPtCoefficientsFileName_,
-                            firstOrderCotThetaCoefficientsFileName_);
+                            firstOrderChargeOverPtCoefficientsDirName_,
+                            firstOrderCotThetaCoefficientsDirName_);
     }
   }
 };

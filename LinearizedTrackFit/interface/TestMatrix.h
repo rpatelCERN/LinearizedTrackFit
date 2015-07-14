@@ -21,15 +21,10 @@ namespace LinearFit
                   std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules,
                   const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
                   const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_,
-                  const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsDirName)
+                  const std::string & firstOrderChargeOverPtCoefficientsDirName, const std::string & firstOrderCotThetaCoefficientsDirName)
   {
     LinearFitter linearFitter("");
 
-//    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, linearFitter.requiredLayers(),
-//                          radiusCuts, distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames,
-//                          inputTrackParameterNames, firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName);
-
-//    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     std::unordered_map<std::string, std::set<int> > requiredLayers;
     requiredLayers.insert(std::make_pair("phi", std::set<int>(layersAll.begin(), layersAll.end())));
     requiredLayers.insert(std::make_pair("R", std::set<int>(layersAll.begin(), layersAll.end())));
@@ -74,13 +69,16 @@ namespace LinearFit
       // Compute the combination index
       unsigned long combinationIndex_ = combinationIndex(uniqueRequiredLayers, radius);
 
-      initializeVariablesTransformations(inputVarNames, combinationIndex_, variablesTransformations);
+      readMeanRadius(firstOrderCotThetaCoefficientsDirName, combinationIndex_, meanRadius);
+      initializeVariablesTransformations(inputVarNames, combinationIndex_, variablesTransformations,
+                                         firstOrderChargeOverPtCoefficientsDirName,
+                                         firstOrderCotThetaCoefficientsDirName,
+                                         meanRadius[combinationIndex_]);
 
       std::vector<double> transformedVars;
       auto varTransformVec = variablesTransformations[combinationIndex_];
       transformVariables(vars, varTransformVec, transformedVars);
 
-      readMeanRadius(firstOrderCotThetaCoefficientsDirName, combinationIndex_, meanRadius);
 
 
       bool goodFit = linearFitter.fit(transformedVars, combinationIndex_);
@@ -89,7 +87,12 @@ namespace LinearFit
         std::vector<double> estimatedPars = linearFitter.trackParameters();
         // int geomIndex = linearFitter.geometricIndex();
         if (histograms.count(combinationIndex_) == 0) {
-          histograms.insert({{combinationIndex_, LinearFitterHistograms(std::to_string(combinationIndex_), treeReader.variablesNames(), inputTrackParameterNames)}});
+          std::vector<std::string> transformedVarNames;
+          for (int i=0; i<uniqueRequiredLayers.size(); ++i) {
+            for (auto vt : variablesTransformations[combinationIndex_]) transformedVarNames.push_back(vt->getName());
+          }
+//          histograms.insert({{combinationIndex_, LinearFitterHistograms(std::to_string(combinationIndex_), treeReader.variablesNames(), inputTrackParameterNames)}});
+          histograms.insert({{combinationIndex_, LinearFitterHistograms(std::to_string(combinationIndex_), transformedVarNames, inputTrackParameterNames)}});
         }
         histograms.find(combinationIndex_)->second.fill(transformedVars, linearFitter.principalComponents(transformedVars, combinationIndex_),
             linearFitter.normalizedPrincipalComponents(transformedVars, combinationIndex_), pars, estimatedPars, normChi2);

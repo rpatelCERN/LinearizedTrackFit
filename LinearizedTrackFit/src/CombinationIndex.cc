@@ -26,7 +26,7 @@ unsigned long combinationIndex(const std::vector<int> & layers, const int region
 }
 
 
-unsigned long combinationIndex(const std::vector<int> & layers, const std::vector<double> radius)
+unsigned long combinationIndex(const std::vector<int> & layers, const std::vector<double> & radius)
 {
   std::bitset<32> bits;
   // Set the bits for the layers

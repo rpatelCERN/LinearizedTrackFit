@@ -22,11 +22,14 @@ void updateMeanR(std::unordered_map<unsigned long, std::pair<int, std::vector<do
                  const unsigned long combinationIndex, const std::vector<double> & radius);
 
 
-void readMeanRadius(const std::string & dirName, const unsigned long combinationIndex, std::unordered_map<unsigned long, std::vector<double> > meanRadius);
+bool readMeanRadius(const std::string & dirName, const unsigned long combinationIndex,
+                    std::unordered_map<unsigned long, std::vector<double> > & meanRadius);
 
 
 void initializeVariablesTransformations(const std::vector<std::string> & inputVarNames, const unsigned long combinationIndex,
-                                        std::unordered_map<unsigned long, std::vector<std::shared_ptr<TransformBase> > > & variablesTransformations);
+                                        std::unordered_map<unsigned long, std::vector<std::shared_ptr<TransformBase> > > & variablesTransformations,
+                                        const std::string & preEstimateChargeOverPtFileName, const std::string & preEstimateCotThetaFileName,
+                                        const std::vector<double> & inputMeanRadius);
 
 
 template <class T>
