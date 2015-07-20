@@ -1,5 +1,5 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilderHistograms.h"
-
+#include <iostream>
 MatrixBuilderHistograms::MatrixBuilderHistograms(const std::string & name, const std::vector<std::string> & varNames, const std::vector<std::string> & trackParameterNames) :
     hVars_("vars_"+name, varNames),
     hPars_("pars_"+name, trackParameterNames)

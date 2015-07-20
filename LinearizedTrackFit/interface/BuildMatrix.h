@@ -61,7 +61,9 @@ namespace LinearFit {
 
     // Map of combinaation indexes to pairs of counts and vectors of average radii
     std::unordered_map<unsigned long, std::pair<int, std::vector<double> > > meanRadius;
+    std::unordered_map<unsigned long, std::pair<int, std::vector<double> > > meanZ;
     std::unordered_map<unsigned long, std::vector<double> > inputMeanRadius;
+    std::unordered_map<unsigned long, std::vector<double> > inputMeanZ;
 
     while (treeReader.nextTrack()) {
 
@@ -89,18 +91,22 @@ namespace LinearFit {
 
       // Extract the radii
       std::vector<double> radius;
-      extractRadius(vars, radius);
+      extractCoordinate(vars, 1, radius);
+      std::vector<double> z;
+      extractCoordinate(vars, 2, z);
 
       // Compute the combination index
       unsigned long combinationIndex_ = combinationIndex(uniqueRequiredLayers, radius);
 
       // Update the mean of R for this combination
-      updateMeanR(meanRadius, combinationIndex_, radius);
+      updateMean(meanRadius, combinationIndex_, radius);
+      updateMean(meanZ, combinationIndex_, z);
 
-      readMeanRadius(firstOrderCotThetaCoefficientsDirName, combinationIndex_, inputMeanRadius);
+      readMean(firstOrderCotThetaCoefficientsDirName, "MeanRadius_", combinationIndex_, inputMeanRadius);
+      readMean(firstOrderCotThetaCoefficientsDirName, "MeanZ_", combinationIndex_, inputMeanZ);
       initializeVariablesTransformations(inputVarNames, combinationIndex_, variablesTransformations,
                                          firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsDirName,
-                                         inputMeanRadius[combinationIndex_]);
+                                         inputMeanRadius[combinationIndex_], inputMeanZ[combinationIndex_]);
 
 //      std::cout << "input phi = " << std::endl;
 //      for (int i=0; i<vars.size()/3; ++i) std::cout << vars[i*3];
@@ -108,7 +114,8 @@ namespace LinearFit {
 
       std::vector<double> transformedVars;
       auto varTransformVec = variablesTransformations[combinationIndex_];
-      transformVariables(vars, varTransformVec, transformedVars);
+      transformVariables(vars, uniqueRequiredLayers, varTransformVec, transformedVars,
+                         treeReader.getChargeOverPt(), treeReader.getCotTheta(), treeReader.getZ0());
 
       // printTrack(vars, pars, geomIndex);
 
@@ -173,6 +180,19 @@ namespace LinearFit {
       outfile.close();
     }
 
+    std::cout << "Saving mean z" << std::endl;
+    for (auto &c : meanZ) {
+      std::ofstream outfile;
+      outfile.open("MeanZ_"+std::to_string(c.first)+".txt");
+      if (!outfile) {
+        std::cout << "Error opening MeanZ_"+std::to_string(c.first)+".txt" << std::endl;
+        throw;
+      }
+      for (const auto & z : c.second.second) {
+        outfile << z << " ";
+      }
+      outfile.close();
+    }
 
     // Second loop on the tracks to compute the track parameter covariances to the principal components
     // ------------------------------------------------------------------------------------------------
@@ -214,7 +234,7 @@ namespace LinearFit {
       auto varTransformVec = variablesTransformations[combinationIndex_];
       for (int i=0; i<vars.size()/3; ++i) {
         for (auto v : varTransformVec) {
-          transformedVars.push_back((*v)(i, vars));
+          transformedVars.push_back((*v)(i, vars, uniqueRequiredLayers, treeReader.getChargeOverPt(), treeReader.getCotTheta(), treeReader.getZ0()));
         }
       }
 

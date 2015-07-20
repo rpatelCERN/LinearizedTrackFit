@@ -18,7 +18,7 @@ public:
   void write();
 
 private:
-  int inputSize_;
+//  int inputSize_;
   TString name_;
   TH2F * hRZ_;
   TH2F * hxy_;

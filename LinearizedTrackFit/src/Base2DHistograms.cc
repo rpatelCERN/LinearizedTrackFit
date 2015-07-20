@@ -1,7 +1,8 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/Base2DHistograms.h"
 
 Base2DHistograms::Base2DHistograms(const std::string & name, const int inputSize) :
-    inputSize_(inputSize), name_(name)
+    // inputSize_(inputSize),
+    name_(name)
 {
   TString hName = "RZ_"+name;
   hRZ_ = new TH2F(hName, hName, 300, 0., 300., 120, 0., 120.);

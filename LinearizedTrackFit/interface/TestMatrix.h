@@ -36,11 +36,12 @@ namespace LinearFit
     std::unordered_map<unsigned long, std::vector<std::shared_ptr<TransformBase> > > variablesTransformations;
 
     // Control histograms
-    std::unordered_map<int, LinearFitterHistograms> histograms;
+    std::unordered_map<int, LinearFitterSummaryHistograms> histograms;
     LinearFitterSummaryHistograms summaryHistograms("summary", treeReader.variablesNames(), inputTrackParameterNames);
 
-    // Mean radii are read when needed from the files
+    // Mean radii and z are read when needed from the files
     std::unordered_map<unsigned long, std::vector<double> > meanRadius;
+    std::unordered_map<unsigned long, std::vector<double> > meanZ;
 
     while (treeReader.nextTrack()) {
 
@@ -64,20 +65,22 @@ namespace LinearFit
 
       // Extract the radii
       std::vector<double> radius;
-      extractRadius(vars, radius);
+      extractCoordinate(vars, 1, radius);
 
       // Compute the combination index
       unsigned long combinationIndex_ = combinationIndex(uniqueRequiredLayers, radius);
 
-      readMeanRadius(firstOrderCotThetaCoefficientsDirName, combinationIndex_, meanRadius);
+      readMean(firstOrderCotThetaCoefficientsDirName, "MeanRadius_", combinationIndex_, meanRadius);
+      readMean(firstOrderCotThetaCoefficientsDirName, "MeanZ_", combinationIndex_, meanZ);
       initializeVariablesTransformations(inputVarNames, combinationIndex_, variablesTransformations,
                                          firstOrderChargeOverPtCoefficientsDirName,
                                          firstOrderCotThetaCoefficientsDirName,
-                                         meanRadius[combinationIndex_]);
+                                         meanRadius[combinationIndex_], meanZ[combinationIndex_]);
 
       std::vector<double> transformedVars;
       auto varTransformVec = variablesTransformations[combinationIndex_];
-      transformVariables(vars, varTransformVec, transformedVars);
+      transformVariables(vars, uniqueRequiredLayers, varTransformVec, transformedVars,
+                         treeReader.getChargeOverPt(), treeReader.getCotTheta(), treeReader.getZ0());
 
 
 
@@ -91,11 +94,14 @@ namespace LinearFit
           for (int i=0; i<uniqueRequiredLayers.size(); ++i) {
             for (auto vt : variablesTransformations[combinationIndex_]) transformedVarNames.push_back(vt->getName());
           }
-//          histograms.insert({{combinationIndex_, LinearFitterHistograms(std::to_string(combinationIndex_), treeReader.variablesNames(), inputTrackParameterNames)}});
-          histograms.insert({{combinationIndex_, LinearFitterHistograms(std::to_string(combinationIndex_), transformedVarNames, inputTrackParameterNames)}});
+          // histograms.insert({{combinationIndex_, LinearFitterHistograms(std::to_string(combinationIndex_), transformedVarNames, inputTrackParameterNames)}});
+          histograms.insert({{combinationIndex_, LinearFitterSummaryHistograms("summary", transformedVarNames, inputTrackParameterNames)}});
         }
+//        histograms.find(combinationIndex_)->second.fill(transformedVars, linearFitter.principalComponents(transformedVars, combinationIndex_),
+//            linearFitter.normalizedPrincipalComponents(transformedVars, combinationIndex_), pars, estimatedPars, normChi2);
         histograms.find(combinationIndex_)->second.fill(transformedVars, linearFitter.principalComponents(transformedVars, combinationIndex_),
-            linearFitter.normalizedPrincipalComponents(transformedVars, combinationIndex_), pars, estimatedPars, normChi2);
+                                                        linearFitter.normalizedPrincipalComponents(transformedVars, combinationIndex_), pars, estimatedPars, normChi2,
+                                                        treeReader.getChargePt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getD0());
         summaryHistograms.fill(transformedVars, linearFitter.principalComponents(transformedVars, combinationIndex_),
             linearFitter.normalizedPrincipalComponents(transformedVars, combinationIndex_), pars, estimatedPars, normChi2,
             treeReader.getChargePt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getD0());

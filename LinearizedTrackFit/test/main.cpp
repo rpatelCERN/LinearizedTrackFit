@@ -155,8 +155,8 @@ int main(int argc, char* argv[])
     inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
 
 
-//    bool train = true;
-    bool train = false;
+    bool train = true;
+//    bool train = false;
 
 
     if (train) {
@@ -183,9 +183,9 @@ int main(int argc, char* argv[])
 //   std::vector<int> layersAll_{6, 7, 8, 9, 10};
 
     // Hybrid
-//  std::vector<int> layersAll_{5, 6, 7, 8, 9, 11}; // region 7
-//  std::vector<int> layersAll_{5, 6, 7, 8, 11, 12}; // region 6
-//  std::vector<int> layersAll_{5, 6, 7, 11, 12, 13}; // region 5
+//  std::vector<int> layersAll_{5, 6, 7, 8, 9, 11}; // region 2
+//  std::vector<int> layersAll_{5, 6, 7, 8, 11, 12}; // region 3
+//  std::vector<int> layersAll_{5, 6, 7, 11, 12, 13}; // region 4
 
     // Endcaps
 //    std::vector<int> layersAll_{5, 11, 12, 13, 14, 15};
@@ -210,24 +210,29 @@ int main(int argc, char* argv[])
 
     // Fraction of the events in the input file to use. Use only 1/2 of them so that the testing phase can use the rest as a statistically independent sample.
     eventsFractionStartBuild_ = 0.;
-    eventsFractionEndBuild_ = 0.01;
+    eventsFractionEndBuild_ = 0.2;
 
-    eventsFractionStartTest_ = 0.9;
+    eventsFractionStartTest_ = 0.5;
     eventsFractionEndTest_ = 1.;
 
 
     // Barrel pre-estimate
-    // firstOrderChargeOverPtCoefficientsFileName_ = "matrixVD_pre_chargeOverPt.txt";
-    // firstOrderCotThetaCoefficientsFileName_ = "matrixVD_0_pre_cotTheta_region7.txt";
-    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/Test/PreTransverse/";
-    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/Test/PreLongitudinal/";
+//    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/Test/PreTransverse/";
+//    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/Test/PreLongitudinal/";
+    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse/";
+    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Longitudinal_Rz/";
 
 
     // Input coordinates
     // -----------------
 //  std::vector<std::string> inputVarNames_{"phi"};
-//    inputVarNames_ = {"CorrectedPhi"};
+//  std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrder"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrder"};
+//  std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrderPz"};
+//  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGen"};
+//  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenDeltaZ"};
+//  firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse_Pz/";
+
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiExactWithD0Gen"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderWithD0Gen"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiEndcaps"};
@@ -235,7 +240,7 @@ int main(int argc, char* argv[])
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiEndcapsPz"};
 
 //  std::vector<std::string> inputVarNames_{"z"};
-//  std::vector<std::string> inputVarNames_{"CorrectedZ"};
+//  std::vector<std::string> inputVarNames_{"CorrectedZFirstOrder"};
 //  std::vector<std::string> inputVarNames_{"CorrectedZSecondOrder"};
 //  std::vector<std::string> inputVarNames_{"CorrectedZExactWithD0Gen"};
 //  std::vector<std::string> inputVarNames_{"CorrectedZEndcaps"};
@@ -250,7 +255,7 @@ int main(int argc, char* argv[])
     // Track parameters
     // ----------------
 //  std::vector<std::string> inputTrackParameterNames_{"charge/pt"};
-//  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi"};
+  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi"};
 //  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "d0"};
 //  std::vector<std::string> inputTrackParameterNames_{"phi", "d0"};
 //  std::vector<std::string> inputTrackParameterNames_{"d0"};
@@ -266,11 +271,12 @@ int main(int argc, char* argv[])
 //  std::vector<std::string> inputTrackParameterNames_{"chargeOverPz", "phi0PlusChargeZ0Over2RhoZ"};
 
 
-
-//  // Use this to test the linearized track fitter
-  std::vector<std::string> inputVarNames_{"phi", "R", "z"};
-  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "cotTheta", "z0"};
-//  std::vector<std::string> inputTrackParameterNames_{"charge/pt", "phi", "d0", "cotTheta", "z0"};
+    if (testFitter_) {
+      // Use this to test the linearized track fitter
+      inputVarNames_ = std::vector<std::string>{"phi", "R", "z"};
+      inputTrackParameterNames_ = std::vector<std::string>{"charge/pt", "phi", "cotTheta", "z0"};
+      // inputTrackParameterNames_ = std::vector<std::string>{"charge/pt", "phi", "d0", "cotTheta", "z0"};
+    }
 
 
 //  // Use this to test the linearized track fitter in the endcaps
@@ -279,10 +285,10 @@ int main(int argc, char* argv[])
 
 
     // Geometric cuts
-    oneOverPtMax_ = 1 / 2.;
+//    oneOverPtMax_ = 1 / 2.;
+//    oneOverPtMin_ = 0.;
+    oneOverPtMax_ = 1. / 15.;
     oneOverPtMin_ = 0.;
-//    oneOverPtMax_ = 1. / 2.;
-//    oneOverPtMin_ = 1. / 10.;
 //    oneOverPtRegions_ = 1;
     phiMin_ = 0.;
     phiMax_ = 0.8;
@@ -290,8 +296,10 @@ int main(int argc, char* argv[])
     etaMin_ = -3.;
     etaMax_ = 3.;
 //    etaRegions_ = 1;
-    z0Min_ = -15.;
-    z0Max_ = 15.;
+//    z0Min_ = -15.;
+//    z0Max_ = 15.;
+    z0Min_ = -5.;
+    z0Max_ = 5.;
 //    z0Regions_ = 1;
 //    // Specify 1 for no charge splitting and 2 for separating positive and negative charge in difference regions
 //    chargeRegions_ = 1;

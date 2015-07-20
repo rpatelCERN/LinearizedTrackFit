@@ -207,7 +207,7 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
     return -1.;
   }
 
-  if (!readMeanRadius(preEstimateCotThetaDirName_, combinationIndex_, meanRadius_)) {
+  if (!readMean(preEstimateCotThetaDirName_, "MeanRadius_", combinationIndex_, meanRadius_)) {
     std::cout << "Error: mean radii not found for combination = " << combinationIndex_ << std::endl;
     throw;
   }

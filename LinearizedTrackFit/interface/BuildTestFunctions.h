@@ -11,33 +11,35 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GetVariables.h"
 
 
-inline void extractRadius(const std::vector<double> & vars, std::vector<double> & radius)
+inline void extractCoordinate(const std::vector<double> & vars, const int index, std::vector<double> & coordinate)
 {
   for (int i=0; i<vars.size()/3; ++i) {
-    radius.push_back(vars[i*3+1]);
+    coordinate.push_back(vars[i*3+index]);
   }
 }
 
-void updateMeanR(std::unordered_map<unsigned long, std::pair<int, std::vector<double> > > & meanRadius,
-                 const unsigned long combinationIndex, const std::vector<double> & radius);
+void updateMean(std::unordered_map<unsigned long, std::pair<int, std::vector<double> > > & mean,
+                const unsigned long combinationIndex, const std::vector<double> & radius);
 
 
-bool readMeanRadius(const std::string & dirName, const unsigned long combinationIndex,
-                    std::unordered_map<unsigned long, std::vector<double> > & meanRadius);
+bool readMean(const std::string & dirName, const std::string & fileName, const unsigned long combinationIndex,
+              std::unordered_map<unsigned long, std::vector<double> > & mean);
 
 
 void initializeVariablesTransformations(const std::vector<std::string> & inputVarNames, const unsigned long combinationIndex,
                                         std::unordered_map<unsigned long, std::vector<std::shared_ptr<TransformBase> > > & variablesTransformations,
                                         const std::string & preEstimateChargeOverPtFileName, const std::string & preEstimateCotThetaFileName,
-                                        const std::vector<double> & inputMeanRadius);
+                                        const std::vector<double> & inputMeanRadius, const std::vector<double> & inputMeanZ);
 
 
 template <class T>
-void transformVariables(const std::vector<double> & vars, const T & variablesTransformations, std::vector<double> & transformedVars)
+void transformVariables(const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                        const T & variablesTransformations, std::vector<double> & transformedVars,
+                        const double & genChargeOverPt, const double & genCotTheta, const double & genZ0)
 {
   for (int i=0; i<vars.size()/3; ++i) {
     for (auto v : variablesTransformations) {
-      transformedVars.push_back((*v)(i, vars));
+      transformedVars.push_back((*v)(i, vars, uniqueLayers, genChargeOverPt, genCotTheta, genZ0));
     }
   }
 }

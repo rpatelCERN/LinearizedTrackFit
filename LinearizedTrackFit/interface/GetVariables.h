@@ -382,41 +382,46 @@ class EstimatorSimple
 {
  public:
   EstimatorSimple(const TString & inputFileName) {
-    // open matrix file and read V and D arrays
-    std::cout << "opening "+inputFileName+" for reading" << std::endl;
+//    if (inputFileName == "") {
+//      std::cout << "Warning: no estimator input file. This should only be done when using generator-level corrections." << std::endl;
+//    }
+//    else {
+      // open matrix file and read V and D arrays
+      std::cout << "opening " + inputFileName + " for reading" << std::endl;
 
-    std::ifstream inputFile;
-    inputFile.open(inputFileName);
-    if (!inputFile) {
-      std::cout << "EstimatorSimple: Error opening "+inputFileName << std::endl;
-      throw;
-    }
+      std::ifstream inputFile;
+      inputFile.open(inputFileName);
+      if (!inputFile) {
+        std::cout << "EstimatorSimple: Error opening " + inputFileName << std::endl;
+        throw;
+      }
 
-    // Read number of variables and number of track parameters
-    int nVars = 0;
-    inputFile >> nVars;
+      // Read number of variables and number of track parameters
+      int nVars = 0;
+      inputFile >> nVars;
 
-    // Skip required layers
-    int l;
-    for (int v=0; v<nVars; ++v) {
-      inputFile >> l;
-    }
+      // Skip required layers
+      int l;
+      for (int v = 0; v < nVars; ++v) {
+        inputFile >> l;
+      }
 
-    // Read mean values
-    double x;
-    for (int i=0; i<nVars; ++i) {
-      inputFile >> x;
-      means_.push_back(x);
-    }
-    // Read parameter mean value
-    inputFile >> parameterMean_;
-    std::cout << "parameterMean_ = " << parameterMean_ << std::endl;
+      // Read mean values
+      double x;
+      for (int i = 0; i < nVars; ++i) {
+        inputFile >> x;
+        means_.push_back(x);
+      }
+      // Read parameter mean value
+      inputFile >> parameterMean_;
+      std::cout << "parameterMean_ = " << parameterMean_ << std::endl;
 
-    // Read coefficients
-    for (int i=0; i<nVars; ++i) {
-      inputFile >> x;
-      coeff_.push_back(x);
-    }
+      // Read coefficients
+      for (int i = 0; i < nVars; ++i) {
+        inputFile >> x;
+        coeff_.push_back(x);
+      }
+//    }
   }
 
   template <class T>
@@ -1911,15 +1916,25 @@ class TransformBase
   TransformBase(const std::string & name) :
       name_(name)
   {}
-  TransformBase(const std::string & name, const std::string & preEstimateFileName, const std::vector<double> & meanRadius) :
+  TransformBase(const std::string & name, const std::string & preEstimateFileName,
+                const std::vector<double> & meanRadius) :
       name_(name), estimator_(std::make_shared<EstimatorSimple>(preEstimateFileName)), meanRadius_(meanRadius)
   {}
-  virtual double operator()(const int index, const std::vector<double> & vars) const = 0;
+  TransformBase(const std::string & name, const std::vector<double> & meanRadius) :
+      name_(name), meanRadius_(meanRadius)
+  {}
+  TransformBase(const std::string & name,
+                const std::vector<double> & meanRadius, const std::vector<double> & meanZ) :
+      name_(name), meanRadius_(meanRadius), meanZ_(meanZ)
+  {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const = 0;
   std::string getName() { return name_; }
  protected:
   std::string name_;
   std::shared_ptr<EstimatorSimple> estimator_;
   std::vector<double> meanRadius_;
+  std::vector<double> meanZ_;
 };
 
 
@@ -1929,7 +1944,8 @@ class TransformPropagatePhi : public TransformBase
   TransformPropagatePhi(const std::string & name) : TransformBase(name)
   {}
   virtual ~TransformPropagatePhi() {}
-  virtual double operator()(const int index, const std::vector<double> & vars) const
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
   {
     return vars.at(index*3);
   }
@@ -1942,7 +1958,8 @@ class TransformPropagateR : public TransformBase
   TransformPropagateR(const std::string & name) : TransformBase(name)
   {}
   virtual ~TransformPropagateR() {}
-  virtual double operator()(const int index, const std::vector<double> & vars) const
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
   {
     return vars.at(index*3+1);
   }
@@ -1955,9 +1972,34 @@ class TransformPropagateZ : public TransformBase
   TransformPropagateZ(const std::string & name) : TransformBase(name)
   {}
   virtual ~TransformPropagateZ() {}
-  virtual double operator()(const int index, const std::vector<double> & vars) const
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
   {
     return vars.at(index*3+2);
+  }
+};
+
+
+class TransformCorrectedPhiFirstOrder : public TransformBase
+{
+ public:
+  TransformCorrectedPhiFirstOrder(const std::string & name, const std::string & preEstimateChargeOverPtFileName,
+                                  const std::vector<double> & meanRadius) :
+      TransformBase(name, preEstimateChargeOverPtFileName, meanRadius)
+  {}
+  virtual ~TransformCorrectedPhiFirstOrder() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double phi = vars.at(index*3);
+    double R = vars.at(index*3+1);
+    std::vector<double> originalPhi;
+    for (int i=0; i<vars.size()/3; ++i) {
+      originalPhi.push_back(vars.at(i*3));
+    }
+    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+    double DeltaR = R - meanRadius_[index];
+    return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2.);
   }
 };
 
@@ -1970,7 +2012,8 @@ class TransformCorrectedPhiSecondOrder : public TransformBase
   TransformBase(name, preEstimateChargeOverPtFileName, meanRadius)
   {}
   virtual ~TransformCorrectedPhiSecondOrder() {}
-  virtual double operator()(const int index, const std::vector<double> & vars) const
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
   {
     double phi = vars.at(index*3);
     double R = vars.at(index*3+1);
@@ -1986,6 +2029,36 @@ class TransformCorrectedPhiSecondOrder : public TransformBase
 };
 
 
+class TransformCorrectedZFirstOrder : public TransformBase
+{
+ public:
+  TransformCorrectedZFirstOrder(const std::string & name,
+                                const std::string & firstOrderCotThetaCoefficientsFileName,
+                                const std::vector<double> & meanRadius) :
+      TransformBase(name, firstOrderCotThetaCoefficientsFileName, meanRadius)
+  {}
+  virtual ~TransformCorrectedZFirstOrder() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double R = vars.at(index*3+1);
+    double z = vars.at(index*3+2);
+    double DeltaR = R - meanRadius_[index];
+    std::vector<double> originalPhi;
+    std::vector<double> originalR;
+    std::vector<double> originalZ;
+    for (int i=0; i<vars.size()/3; ++i) {
+      originalPhi.push_back(vars.at(i*3));
+      originalR.push_back(vars.at(i*3+1));
+      originalZ.push_back(vars.at(i*3+2));
+    }
+    double cotTheta = estimator_->estimate(originalR, originalZ);
+    return (z - DeltaR*cotTheta);
+  }
+ private:
+};
+
+
 class TransformCorrectedZSecondOrder : public TransformBase
 {
  public:
@@ -1997,7 +2070,8 @@ class TransformCorrectedZSecondOrder : public TransformBase
       estimatorChargeOverPt_(std::make_shared<EstimatorSimple>(firstOrderChargeOverPtCoefficientsFileName))
   {}
   virtual ~TransformCorrectedZSecondOrder() {}
-  virtual double operator()(const int index, const std::vector<double> & vars) const
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
   {
     double R = vars.at(index*3+1);
     double z = vars.at(index*3+2);
@@ -2016,6 +2090,195 @@ class TransformCorrectedZSecondOrder : public TransformBase
   }
  private:
   std::shared_ptr<EstimatorSimple> estimatorChargeOverPt_;
+};
+
+
+class TransformCorrectedPhiFirstOrderPz : public TransformBase
+{
+ public:
+  TransformCorrectedPhiFirstOrderPz(const std::string & name,
+                                    const std::string & firstOrderChargeOverPzCoefficientsFileName,
+                                    const std::string & firstOrderCotThetaCoefficientsFileName,
+                                    const std::vector<double> & meanRadius) :
+      TransformBase(name, firstOrderCotThetaCoefficientsFileName, meanRadius),
+      estimatorChargeOverPz_(std::make_shared<EstimatorSimple>(firstOrderChargeOverPzCoefficientsFileName))
+  {}
+  virtual ~TransformCorrectedPhiFirstOrderPz() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double phi = vars.at(index*3);
+    double R = vars.at(index*3+1);
+    double DeltaR = R - meanRadius_[index];
+    std::vector<double> originalPhi;
+    std::vector<double> originalR;
+    std::vector<double> originalZ;
+    for (int i=0; i<vars.size()/3; ++i) {
+      originalPhi.push_back(vars.at(i*3));
+      originalR.push_back(vars.at(i*3+1));
+      originalZ.push_back(vars.at(i*3+2));
+    }
+    double cotTheta = estimator_->estimate(originalR, originalZ);
+    double oneOverRhoz = (3.8114*0.003)*estimatorChargeOverPz_->estimate(originalPhi);
+    return (phi + oneOverRhoz*cotTheta*DeltaR*3.8114*0.003/2.);
+  }
+ private:
+  std::shared_ptr<EstimatorSimple> estimatorChargeOverPz_;
+};
+
+
+// Using generator-level c/pT
+class TransformCorrectedPhiSecondOrderGen : public TransformBase
+{
+ public:
+  TransformCorrectedPhiSecondOrderGen(const std::string & name, const std::vector<double> & meanRadius) :
+      TransformBase(name, meanRadius)
+  {}
+  virtual ~TransformCorrectedPhiSecondOrderGen() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double phi = vars.at(index*3);
+    double R = vars.at(index*3+1);
+    double DeltaR = R - meanRadius_[index];
+    double RCube = R*R*R;
+    return (phi + genChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(genChargeOverPt*3.8114*0.003/2., 3)/6.);
+  }
+};
+
+
+class TransformCorrectedPhiSecondOrderGenDeltaZ : public TransformBase
+{
+ public:
+  TransformCorrectedPhiSecondOrderGenDeltaZ(const std::string & name,
+                                            const std::vector<double> & meanRadius,
+                                            const std::vector<double> & meanZ) :
+      TransformBase(name, meanRadius, meanZ)
+  {}
+  virtual ~TransformCorrectedPhiSecondOrderGenDeltaZ() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double phi = vars.at(index*3);
+    double R = vars.at(index*3+1);
+    double z = vars.at(index*3+2);
+    double chargeOverTwoRho = genChargeOverPt*3.8114*0.003/2.;
+    // Correct the R for the z variation. This is needed only in the 2S modules of the disks
+    // where the R resolution is too low to see the DeltaZ variation within the disks.
+    if (uniqueLayers[index] > 10 && R > 61.) {
+      // std::cout << "R = " << R << std::endl;
+      // R must increase when moving from smaller z to bigger z. If z < meanZ the sign of the added them must be positive.
+      R += (meanZ_[index] - z)/genCotTheta;
+      // std::cout << "adjusted R = " << R << std::endl;
+      // std::cout << "gen R = " << sin((z - genZ0)/genCotTheta*chargeOverTwoRho)/chargeOverTwoRho << std::endl;
+    }
+    double DeltaR = R - meanRadius_[index];
+    return (phi + DeltaR*chargeOverTwoRho + std::pow(R*chargeOverTwoRho, 3)/6.);
+  }
+};
+
+
+class TransformCorrectedPhiSecondOrderGenExactR : public TransformBase
+{
+ public:
+  TransformCorrectedPhiSecondOrderGenExactR(const std::string & name,
+                                            const std::vector<double> & meanRadius,
+                                            const std::vector<double> & meanZ) :
+      TransformBase(name, meanRadius, meanZ)
+  {}
+  virtual ~TransformCorrectedPhiSecondOrderGenExactR() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double phi = vars.at(index*3);
+    double R = vars.at(index*3+1);
+    double z = vars.at(index*3+2);
+    double chargeOverTwoRho = genChargeOverPt*3.8114*0.003/2.;
+    if (uniqueLayers[index] > 10 && R > 61.) {
+      R = sin((z - genZ0) * chargeOverTwoRho / genCotTheta) / chargeOverTwoRho;
+    }
+    double DeltaR = R - meanRadius_[index];
+    return (phi + DeltaR*chargeOverTwoRho + std::pow(R*chargeOverTwoRho, 3)/6.);
+  }
+};
+
+
+class TransformCorrectedPhiExactGen : public TransformBase
+{
+ public:
+  TransformCorrectedPhiExactGen(const std::string & name, const std::vector<double> & meanRadius) :
+      TransformBase(name, meanRadius)
+  {}
+  virtual ~TransformCorrectedPhiExactGen() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double phi = vars.at(index*3);
+    double R = vars.at(index*3+1);
+    double chargeOverTwoRho = genChargeOverPt*3.8114*0.003/2.;
+    return (phi + asin(R*chargeOverTwoRho) - asin(meanRadius_[index]*chargeOverTwoRho));
+  }
+};
+
+
+class TransformCorrectedPhiExactGenExactR : public TransformBase
+{
+ public:
+  TransformCorrectedPhiExactGenExactR(const std::string & name, const std::vector<double> & meanRadius) :
+      TransformBase(name, meanRadius)
+  {}
+  virtual ~TransformCorrectedPhiExactGenExactR() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double phi = vars.at(index*3);
+    double R = vars.at(index*3+1);
+    double z = vars.at(index*3+2);
+    double chargeOverTwoRho = genChargeOverPt*3.8114*0.003/2.;
+    // Compute R using z
+    if (uniqueLayers[index] > 10 && R > 61.) {
+      R = sin((z - genZ0) / genCotTheta * chargeOverTwoRho) / chargeOverTwoRho;
+    }
+    return (phi + asin(R*chargeOverTwoRho) - asin(meanRadius_[index]*chargeOverTwoRho));
+  }
+};
+
+
+// Using generator-level c/pT and cot(theta)
+class TransformCorrectedZSecondOrderGen : public TransformBase
+{
+ public:
+  TransformCorrectedZSecondOrderGen(const std::string & name, const std::vector<double> & meanRadius) :
+      TransformBase(name, meanRadius)
+  {}
+  virtual ~TransformCorrectedZSecondOrderGen() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double R = vars.at(index*3+1);
+    double z = vars.at(index*3+2);
+    double DeltaR = R - meanRadius_[index];
+    double oneOverRho = (3.8114*0.003)*genChargeOverPt;
+    return (z - (DeltaR + 1/24.*std::pow(R, 3)*(oneOverRho*oneOverRho))*genCotTheta);
+  }
+};
+
+
+class TransformCorrectedZExactGen : public TransformBase
+{
+ public:
+  TransformCorrectedZExactGen(const std::string & name, const std::vector<double> & meanRadius) :
+      TransformBase(name, meanRadius)
+  {}
+  virtual ~TransformCorrectedZExactGen() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double R = vars.at(index*3+1);
+    double z = vars.at(index*3+2);
+    double rho = 1./((3.8114*0.003)*genChargeOverPt);
+    return (z - 2*rho*genCotTheta*asin(R/(2*rho)) + 2*rho*genCotTheta*asin(meanRadius_[index]/(2*rho)));
+  }
 };
 
 

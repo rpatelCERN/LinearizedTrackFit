@@ -45,7 +45,13 @@ class TreeReaderNew
     double pt = getPt();
     return pt == 0 ? 0 : 1./pt;
   }
+  double getChargeOverPt() const {
+    double pt = getPt();
+    if (getCharge() < 0) pt = -pt;
+    return pt == 0 ? 0 : 1./pt;
+  }
   // double getPhi() const { return tree_->m_stub_PHI0->at(0); }
+  int getTrackIndex() const { return trackIndex_; }
   double getPhi() const { return getParPhi0_->at(0); }
   double getEta() const { return tree_->m_stub_etaGEN->at(0); }
   double getCotTheta() const { return 1./tan(2*atan(exp(-tree_->m_stub_etaGEN->at(0)))); }
