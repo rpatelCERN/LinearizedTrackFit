@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReaderNew.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearizedTrackFitter.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/MinuitTrackFitter.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterHistograms.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterSummaryHistograms.h"
 #include "TString.h"
@@ -16,27 +17,11 @@ namespace LinearFit
 {
   struct FitResultsAndGen
   {
-//    FitResults(const std::vector<double> & vars, const std::vector<double> & principalComponents,
-//               const std::vector<double> & normalizedPrincipalComponents, const std::vector<double> & pars,
-//               const std::vector<double> & estimatedPars, const double & normChi2, const double & genChargePt,
-//               const double & genPhi, const double & genEta, const double & genZ0, const double & genD0) :
-//        vars_({vars}), principalComponents_({principalComponents}),
-//        normalizedPrincipalComponents_({normalizedPrincipalComponents}), pars_(pars), estimatedPars_(estimatedPars),
-//        normChi2_(normChi2), genChargePt_(genChargePt), genPhi_(genPhi), genEta_(genEta), genZ0_(genZ0), genD0_(genD0)
-//    {
-//    }
-
     void storeFitResults(const std::vector<double> & vars, const std::vector<double> & principalComponents,
                          const std::vector<double> & normalizedPrincipalComponents,
                          const std::vector<double> & estimatedPars, const double & normChi2)
     {
       fitResults_.push_back(FitResults(vars, principalComponents, normalizedPrincipalComponents, estimatedPars, normChi2));
-//      vars_.push_back(vars);
-//      principalComponents_.push_back(principalComponents);
-//      normalizedPrincipalComponents_.push_back(normalizedPrincipalComponents);
-//      estimatedPars_.push_back(estimatedPars);
-//      normChi2_.push_back(normChi2);
-
     }
 
     void storeGen(const std::vector<double> & pars, const double & genChargePt,
@@ -52,11 +37,6 @@ namespace LinearFit
 
     void clear()
     {
-//      vars_.clear();
-//      principalComponents_.clear();
-//      normalizedPrincipalComponents_.clear();
-//      estimatedPars_.clear();
-//      normChi2_.clear();
       fitResults_.clear();
       pars_.clear();
       genChargePt_ = 0.;
@@ -83,11 +63,7 @@ namespace LinearFit
     };
 
     std::vector<FitResults> fitResults_;
-//    std::vector<std::vector<double> > vars_;
-//    std::vector<std::vector<double> > principalComponents_;
-//    std::vector<std::vector<double> > normalizedPrincipalComponents_;
-//    std::vector<std::vector<double> > estimatedPars_;
-//    std::vector<double> normChi2_;
+    std::vector<FitResults> fitResultsMinuit_;
     // Shared among all combinations
     std::vector<double> pars_;
     double genChargePt_;
@@ -139,12 +115,12 @@ namespace LinearFit
                   const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName,
                   const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
                   const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_, const bool fiveOutOfSix,
-                  const std::string & baseDir)
+                  const std::string & baseDir, const bool minuitFit)
   {
-    // std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
+    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
     // std::vector<int> layersAll_{5, 6, 7, 8, 11, 12};
     // std::vector<int> layersAll_{5, 11, 12, 13, 14, 15};
-    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+//    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     std::unordered_map<std::string, std::set<int> > requiredLayers;
     requiredLayers.insert(std::make_pair("phi", std::set<int>(layersAll_.begin(), layersAll_.end())));
     requiredLayers.insert(std::make_pair("R", std::set<int>(layersAll_.begin(), layersAll_.end())));
@@ -161,11 +137,16 @@ namespace LinearFit
     LinearFitterHistograms linearFitterHistograms("0", treeReader.variablesNames(), inputTrackParameterNames);
     LinearFitterSummaryHistograms summaryHistograms("summary", treeReader.variablesNames(), inputTrackParameterNames);
 
+    LinearFitterHistograms minuitFitterHistograms("0", treeReader.variablesNames(), inputTrackParameterNames);
+    LinearFitterSummaryHistograms minuitSummaryHistograms("summary", treeReader.variablesNames(), inputTrackParameterNames);
+
     bool fillBestNormChi2 = false;
     FitResultsAndGen fitResultsAndGen;
+    FitResultsAndGen minuitFitResultsAndGen;
 
     // Perform linearized track fit
     LinearizedTrackFitter linearizedTrackFitter(baseDir);
+    MinuitTrackFitter minuitTrackFitter("Minuit2", "Migrad", inputTrackParameterNames.size());
     int trackIndex = -1;
     while (treeReader.nextTrack()) {
 
@@ -196,6 +177,12 @@ namespace LinearFit
         fitResultsAndGen.clear();
         fitResultsAndGen.storeGen(treeReader.getTrackParameters(), treeReader.getChargePt(), treeReader.getPhi(),
                                   treeReader.getEta(), treeReader.getZ0(), treeReader.getD0());
+        if (minuitFit) {
+          fillFitResultsHistograms(minuitFitterHistograms, minuitSummaryHistograms, minuitFitResultsAndGen, fillBestNormChi2);
+          minuitFitResultsAndGen.clear();
+          minuitFitResultsAndGen.storeGen(treeReader.getTrackParameters(), treeReader.getChargePt(), treeReader.getPhi(),
+                                          treeReader.getEta(), treeReader.getZ0(), treeReader.getD0());
+        }
       }
 
       std::vector<double> vars(treeReader.getVariables());
@@ -215,11 +202,21 @@ namespace LinearFit
 
       // Copying the generator-level quantities for each combination should be avoided.
       fitResultsAndGen.storeFitResults(vars, principalComponents, normalizedPrincipalComponents, estimatedPars, normChi2);
+
+      if (minuitFit) {
+        double minuitNormChi2 = minuitTrackFitter.fit(vars, layersVec, treeReader.getChargeOverPt(), treeReader.getPhi());
+        minuitFitResultsAndGen.storeFitResults(vars, principalComponents, normalizedPrincipalComponents,
+                                               minuitTrackFitter.estimatedPars(), minuitNormChi2);
+      }
+
       trackIndex = treeReader.getTrackIndex();
     }
 
     // Filling the last one
     fillFitResultsHistograms(linearFitterHistograms, summaryHistograms, fitResultsAndGen, fillBestNormChi2);
+    if (minuitFit) {
+      fillFitResultsHistograms(minuitFitterHistograms, minuitSummaryHistograms, minuitFitResultsAndGen, fillBestNormChi2);
+    }
 
     // Write histograms to file
     TFile outputFile("fullLinearFitterHistograms.root", "RECREATE");
@@ -227,6 +224,14 @@ namespace LinearFit
     summaryHistograms.write();
     linearFitterHistograms.write();
     outputFile.Close();
+
+    if (minuitFit) {
+      TFile outputFile("fullMinuitFitterHistograms.root", "RECREATE");
+      outputFile.cd();
+      minuitSummaryHistograms.write();
+      minuitFitterHistograms.write();
+      outputFile.Close();
+    }
   }
 }
 

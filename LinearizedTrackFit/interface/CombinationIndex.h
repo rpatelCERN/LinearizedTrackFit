@@ -18,4 +18,7 @@ unsigned long combinationIndex(const std::vector<int> & layers, const int region
 unsigned long combinationIndex(const std::vector<int> & layers, const std::vector<double> & radius);
 
 
+void allCombinationIndexes(const std::vector<int> & layers, const std::vector<double> & radius,
+                           std::vector<unsigned long> & combinationIndexList, const bool fiveOutOfSix);
+
 #endif //REMOTEPROJECTS_COMBINATIONINDEX_H

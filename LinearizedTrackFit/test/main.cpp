@@ -212,7 +212,7 @@ int main(int argc, char* argv[])
     eventsFractionStartBuild_ = 0.;
     eventsFractionEndBuild_ = 0.2;
 
-    eventsFractionStartTest_ = 0.5;
+    eventsFractionStartTest_ = 0.8;
     eventsFractionEndTest_ = 1.;
 
 
@@ -285,10 +285,10 @@ int main(int argc, char* argv[])
 
 
     // Geometric cuts
-//    oneOverPtMax_ = 1 / 2.;
-//    oneOverPtMin_ = 0.;
-    oneOverPtMax_ = 1. / 15.;
+    oneOverPtMax_ = 1 / 2.;
     oneOverPtMin_ = 0.;
+//    oneOverPtMax_ = 1. / 15.;
+//    oneOverPtMin_ = 0.;
 //    oneOverPtRegions_ = 1;
     phiMin_ = 0.;
     phiMax_ = 0.8;
@@ -296,10 +296,10 @@ int main(int argc, char* argv[])
     etaMin_ = -3.;
     etaMax_ = 3.;
 //    etaRegions_ = 1;
-//    z0Min_ = -15.;
-//    z0Max_ = 15.;
-    z0Min_ = -5.;
-    z0Max_ = 5.;
+    z0Min_ = -15.;
+    z0Max_ = 15.;
+//    z0Min_ = -5.;
+//    z0Max_ = 5.;
 //    z0Regions_ = 1;
 //    // Specify 1 for no charge splitting and 2 for separating positive and negative charge in difference regions
 //    chargeRegions_ = 1;
@@ -338,6 +338,7 @@ int main(int argc, char* argv[])
       const std::string baseDir("/Users/demattia/RemoteProjects/Test/");
 
       bool fiveOutOfSix_ = true;
+      bool minuitFit_ = true;
 
       LinearFit::testFitter(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
                             inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_,
@@ -345,7 +346,7 @@ int main(int argc, char* argv[])
                             radiusCuts_, singleModules_,
                             firstOrderChargeOverPtCoefficientsDirName_, firstOrderCotThetaCoefficientsDirName_,
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_, etaMin_, etaMax_, z0Min_, z0Max_, fiveOutOfSix_,
-                            baseDir);
+                            baseDir, minuitFit_);
     }
   }
   else {

@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 #include <iostream>
+#include <numeric>
 
 class CombinationsGenerator
 {
@@ -20,15 +21,6 @@ class CombinationsGenerator
     combinations(indexes, 7);
     combinations(indexes, 6);
     combinations(indexes, 5);
-
-//    std::cout << "Generated combinations for case of 8 stubs:" << std::endl;
-//    for (auto v : combs_[8]) {
-//      std::cout << "combination" << std::endl;
-//      for (auto i : v) {
-//        std::cout << i << " " << std::endl;
-//      }
-//      std::cout << std::endl;
-//    }
 
     // Generate all combinations for 6/7 and for 5/7 when there are 7 and store them.
     indexes = std::vector<int>(7);
@@ -60,8 +52,6 @@ class CombinationsGenerator
     combLength_ = combLength;
     // The index of this set of combinations is the length in the input vector.
     combinationsIndex_ = indexes.size();
-//    auto c = combs_.find(combLength_);
-//    if (c != combs_.end()) combs_.erase(c);
     auto c = combs_.find(combinationsIndex_);
     if (c == combs_.end()) combs_.insert(std::make_pair(combinationsIndex_, std::vector<std::vector<int> >()));
     if (combLength > combinationsIndex_) {

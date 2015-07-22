@@ -26,53 +26,23 @@ LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir) :
 }
 
 
-void LinearizedTrackFitter::fillLayers(const std::string & fileName, const std::string & var, std::vector<int> & layers)
-{
-  std::ifstream inputFile;
-  inputFile.open(fileName);
-  if (!inputFile) {
-    std::cout << "LinearizedTrackFitter: Error opening " << fileName << std::endl;
-    throw;
-  }
-  std::string line;
-  bool foundVar = false;
-  while(std::getline(inputFile, line)) {
-    std::stringstream sline(line);
-    std::string varLayer;
-    while (sline >> varLayer) {
-      if (!foundVar) {
-        if (var == varLayer) foundVar = true;
-      }
-      else {
-        layers.push_back(stoi(varLayer));
-      }
-    }
-    if (foundVar) break;
-  }
-  if (!foundVar) {
-    std::cout << "Error: layers list not found for " << var << std::endl;
-    throw;
-  }
-}
-
-
-double LinearizedTrackFitter::fit(const std::vector<double> & vars, const int bits)
-{
-  std::vector<int> layers;
-  std::cout << "bits = " << bits << std::endl;
-  if (bits == 0) layers = {5, 6, 7, 8, 9, 10};
-  else if (bits == 1) layers = {6, 7, 8, 9, 10};
-  else if (bits == 2) layers = {5, 7, 8, 9, 10};
-  else if (bits == 3) layers = {5, 6, 8, 9, 10};
-  else if (bits == 4) layers = {5, 6, 7, 9, 10};
-  else if (bits == 5) layers = {5, 6, 7, 8, 10};
-  else if (bits == 6) layers = {5, 6, 7, 8, 9};
-  else {
-    std::cout << "Error: unknown bits = " << bits << std::endl;
-    throw;
-  }
-  return fit(vars, layers);
-}
+//double LinearizedTrackFitter::fit(const std::vector<double> & vars, const int bits)
+//{
+//  std::vector<int> layers;
+//  std::cout << "bits = " << bits << std::endl;
+//  if (bits == 0) layers = {5, 6, 7, 8, 9, 10};
+//  else if (bits == 1) layers = {6, 7, 8, 9, 10};
+//  else if (bits == 2) layers = {5, 7, 8, 9, 10};
+//  else if (bits == 3) layers = {5, 6, 8, 9, 10};
+//  else if (bits == 4) layers = {5, 6, 7, 9, 10};
+//  else if (bits == 5) layers = {5, 6, 7, 8, 10};
+//  else if (bits == 6) layers = {5, 6, 7, 8, 9};
+//  else {
+//    std::cout << "Error: unknown bits = " << bits << std::endl;
+//    throw;
+//  }
+//  return fit(vars, layers);
+//}
 
 
 double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::vector<int> & layers)
@@ -235,14 +205,14 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
   double preEstimatedChargeOverPt = chargeOverPtEstimator.estimate(correctedVarsPhi_);
   preEstimatedPt_ = 1./fabs(preEstimatedChargeOverPt);
   // Retake it here because we need it with the charge
-  double oneOverTwoRho = (3.8114*0.003)*preEstimatedChargeOverPt/2.;
+  double chargeOverTwoRho = (3.8114*0.003)*preEstimatedChargeOverPt/2.;
   double cotTheta = cotThetaEstimator.estimate(varsR_, correctedVarsZ_);
   for (unsigned int i=0; i<varsNum; ++i) {
     // double DeltaR = varsR_[i] - meanRadius(layers[i], region);
     double DeltaR = varsR_[i] - meanRadius_[combinationIndex_][i];
     double RCube = std::pow(varsR_[i], 3);
-    correctedVarsPhi_[i] += oneOverTwoRho * DeltaR + RCube * std::pow(oneOverTwoRho, 3) / 6.;
-    correctedVarsZ_[i] -= (DeltaR + 1/6.*RCube*(oneOverTwoRho*oneOverTwoRho))*cotTheta;
+    correctedVarsPhi_[i] += chargeOverTwoRho * DeltaR + RCube * std::pow(chargeOverTwoRho, 3) / 6.;
+    correctedVarsZ_[i] -= (DeltaR + 1/6.*RCube*(chargeOverTwoRho*chargeOverTwoRho))*cotTheta;
   }
 
   // Evaluate the chi2/ndof
