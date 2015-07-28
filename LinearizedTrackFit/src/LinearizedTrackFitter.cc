@@ -33,23 +33,24 @@ LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const 
 }
 
 
-//double LinearizedTrackFitter::fit(const std::vector<double> & vars, const int bits)
-//{
-//  std::vector<int> layers;
-//  std::cout << "bits = " << bits << std::endl;
-//  if (bits == 0) layers = {5, 6, 7, 8, 9, 10};
-//  else if (bits == 1) layers = {6, 7, 8, 9, 10};
-//  else if (bits == 2) layers = {5, 7, 8, 9, 10};
-//  else if (bits == 3) layers = {5, 6, 8, 9, 10};
-//  else if (bits == 4) layers = {5, 6, 7, 9, 10};
-//  else if (bits == 5) layers = {5, 6, 7, 8, 10};
-//  else if (bits == 6) layers = {5, 6, 7, 8, 9};
-//  else {
-//    std::cout << "Error: unknown bits = " << bits << std::endl;
-//    throw;
-//  }
-//  return fit(vars, layers);
-//}
+/// This is used by the full simulation
+double LinearizedTrackFitter::fit(const std::vector<double> & vars, const int bits)
+{
+  std::vector<int> layers;
+  std::cout << "bits = " << bits << std::endl;
+  if (bits == 0) layers = {5, 6, 7, 8, 9, 10};
+  else if (bits == 1) layers = {6, 7, 8, 9, 10};
+  else if (bits == 2) layers = {5, 7, 8, 9, 10};
+  else if (bits == 3) layers = {5, 6, 8, 9, 10};
+  else if (bits == 4) layers = {5, 6, 7, 9, 10};
+  else if (bits == 5) layers = {5, 6, 7, 8, 10};
+  else if (bits == 6) layers = {5, 6, 7, 8, 9};
+  else {
+    std::cout << "Error: unknown bits = " << bits << std::endl;
+    throw;
+  }
+  return fit(vars, layers);
+}
 
 
 double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::vector<int> & layers)

@@ -5,7 +5,7 @@
 #ifndef REMOTEPROJECTS_MINUITTRACKFITTER_H
 #define REMOTEPROJECTS_MINUITTRACKFITTER_H
 
-#include <RtypesCore.h>
+// #include <RtypesCore.h>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/CombinationIndexListBuilder.h"
 #include "Math/Minimizer.h"
 #include "Math/Factory.h"

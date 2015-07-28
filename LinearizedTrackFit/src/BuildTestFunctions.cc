@@ -12,7 +12,7 @@ void updateMean(std::unordered_map<unsigned long, std::pair<int, std::vector<dou
   if (it == mean.end()) it = mean.insert(std::make_pair(combinationIndex, std::make_pair(0, std::vector<double>(coordinate.size(), 0)))).first;
   // The counter is common to the whole vector
   it->second.first += 1;
-  for (int index=0; index<coordinate.size(); ++index) {
+  for (size_t index=0; index<coordinate.size(); ++index) {
     it->second.second.at(index) += (coordinate[index] - it->second.second.at(index)) / it->second.first;
   }
 }

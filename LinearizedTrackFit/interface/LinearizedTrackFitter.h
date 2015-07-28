@@ -20,7 +20,7 @@ class LinearizedTrackFitter
   LinearizedTrackFitter(const std::string & baseDir, const bool inputExtrapolateR);
 
   double fit(const std::vector<double> & vars, const std::vector<int> & layers);
-//  double fit(const std::vector<double> & vars, const int bits);
+  double fit(const std::vector<double> & vars, const int bits);
   std::vector<double> estimatedPars() { return estimatedPars_; }
   std::vector<double> principalComponents();
   std::vector<double> normalizedPrincipalComponents();

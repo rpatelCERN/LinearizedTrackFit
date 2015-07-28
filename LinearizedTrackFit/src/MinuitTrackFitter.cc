@@ -109,7 +109,7 @@ double MinuitTrackFitter::fit(const std::vector<double> & vars, const std::vecto
   vars_ = &vars;
   // varErrors_ = &varErrors;
   varErrors_ = std::vector<double>(varErrors);
-  for (size_t i=0; i<layersNum; ++i) {
+  for (int i=0; i<layersNum; ++i) {
     // R uncertainties
     if (layers[i] > 10) {
       if (vars_->at(i*3+1) < 61.) varErrors_[i*3+1] = 0.15/sqrt(12.);

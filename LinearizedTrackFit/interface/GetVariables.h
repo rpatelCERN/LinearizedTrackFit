@@ -455,7 +455,7 @@ class EstimatorSimple
   double estimate(const T & var)
   {
     double estimatedParameter = 0.;
-    for (int i=0; i<var.size(); ++i) {
+    for (unsigned int i=0; i<var.size(); ++i) {
       estimatedParameter += (var[i]-means_[i])*coeff_[i];
     }
     // When it is estimated the mean value is subtracted. We add it back.
@@ -2021,7 +2021,7 @@ class TransformCorrectedPhiFirstOrder : public TransformBase
     double phi = vars.at(index*3);
     double R = vars.at(index*3+1);
     std::vector<double> originalPhi;
-    for (int i=0; i<vars.size()/3; ++i) {
+    for (size_t i=0; i<vars.size()/3; ++i) {
       originalPhi.push_back(vars.at(i*3));
     }
     double estimatedChargeOverPt = estimator_->estimate(originalPhi);
@@ -2045,7 +2045,7 @@ class TransformCorrectedPhiSecondOrder : public TransformBase
     double phi = vars.at(index*3);
     double R = vars.at(index*3+1);
     std::vector<double> originalPhi;
-    for (int i=0; i<vars.size()/3; ++i) {
+    for (size_t i=0; i<vars.size()/3; ++i) {
       originalPhi.push_back(vars.at(i*3));
     }
     double estimatedChargeOverPt = estimator_->estimate(originalPhi);
@@ -2076,7 +2076,7 @@ class TransformCorrectedPhiSecondOrderExtrapolatedR : public TransformBase
     std::vector<double> originalPhi;
     std::vector<double> originalR;
     std::vector<double> originalZ;
-    for (int i=0; i<vars.size()/3; ++i) {
+    for (size_t i=0; i<vars.size()/3; ++i) {
       originalPhi.push_back(vars.at(i*3));
       originalR.push_back(vars.at(i*3+1));
       originalZ.push_back(vars.at(i*3+2));
@@ -2125,7 +2125,7 @@ class TransformCorrectedZFirstOrder : public TransformBase
     std::vector<double> originalPhi;
     std::vector<double> originalR;
     std::vector<double> originalZ;
-    for (int i=0; i<vars.size()/3; ++i) {
+    for (size_t i=0; i<vars.size()/3; ++i) {
       originalPhi.push_back(vars.at(i*3));
       originalR.push_back(vars.at(i*3+1));
       originalZ.push_back(vars.at(i*3+2));
@@ -2157,7 +2157,7 @@ class TransformCorrectedZSecondOrder : public TransformBase
     std::vector<double> originalPhi;
     std::vector<double> originalR;
     std::vector<double> originalZ;
-    for (int i=0; i<vars.size()/3; ++i) {
+    for (size_t i=0; i<vars.size()/3; ++i) {
       originalPhi.push_back(vars.at(i*3));
       originalR.push_back(vars.at(i*3+1));
       originalZ.push_back(vars.at(i*3+2));
@@ -2191,7 +2191,7 @@ class TransformCorrectedPhiFirstOrderPz : public TransformBase
     std::vector<double> originalPhi;
     std::vector<double> originalR;
     std::vector<double> originalZ;
-    for (int i=0; i<vars.size()/3; ++i) {
+    for (size_t i=0; i<vars.size()/3; ++i) {
       originalPhi.push_back(vars.at(i*3));
       originalR.push_back(vars.at(i*3+1));
       originalZ.push_back(vars.at(i*3+2));

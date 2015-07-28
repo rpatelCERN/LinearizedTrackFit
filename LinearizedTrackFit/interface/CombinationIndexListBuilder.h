@@ -5,6 +5,7 @@
 #ifndef REMOTEPROJECTS_COMBINATIONINDEXLISTBUILDER_H
 #define REMOTEPROJECTS_COMBINATIONINDEXLISTBUILDER_H
 
+#include <algorithm>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/CombinationIndex.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/CombinationsGenerator.h"
 

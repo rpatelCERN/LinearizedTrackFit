@@ -13,7 +13,7 @@
 
 inline void extractCoordinate(const std::vector<double> & vars, const int index, std::vector<double> & coordinate)
 {
-  for (int i=0; i<vars.size()/3; ++i) {
+  for (size_t i=0; i<vars.size()/3; ++i) {
     coordinate.push_back(vars[i*3+index]);
   }
 }
