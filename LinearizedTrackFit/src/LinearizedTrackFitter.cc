@@ -37,7 +37,7 @@ LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const 
 double LinearizedTrackFitter::fit(const std::vector<double> & vars, const int bits)
 {
   std::vector<int> layers;
-  std::cout << "bits = " << bits << std::endl;
+  // std::cout << "bits = " << bits << std::endl;
   if (bits == 0) layers = {5, 6, 7, 8, 9, 10};
   else if (bits == 1) layers = {6, 7, 8, 9, 10};
   else if (bits == 2) layers = {5, 7, 8, 9, 10};
