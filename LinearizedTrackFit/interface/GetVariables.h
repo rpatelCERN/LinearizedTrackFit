@@ -16,6 +16,33 @@
 // Simple function to return the value of the mean radius for each layer
 double meanRadius(const int layer, const int region);
 
+// Extrapolate R to from the outermost PS module to the given z position using the given tgTheta
+// Note: the reference to R is passed and the variable is changed inside if needed.
+template <class T>
+double extrapolateR(const double & R, const double & z, const int layer, const double & tgTheta,
+                    const std::vector<int> & uniqueLayers, const std::vector<double> & originalR, const T & originalZ)
+{
+  if (layer > 10 && R > 61.) {
+    // Extrapolate R from the outermost PS module in this stubs combination
+    for (int i = uniqueLayers.size() - 1; i >= 0; --i) {
+      if (uniqueLayers[i] < 8 || (uniqueLayers[i] > 10 && originalR[i] < 61.)) {
+        double extrapolatedR = (originalR[i] + (z - originalZ[i]) * tgTheta);
+//        return (originalR[i] + (z - originalZ[i]) * tgTheta);
+
+
+//        std::cout << "uniqueLayers, originalR, originalZ" << std::endl;
+//        for (int i=0; i<uniqueLayers.size(); ++i) {
+//          std::cout << uniqueLayers[i] << ", " << originalR[i] << ", " << originalZ[i] << std::endl;
+//        }
+//        std::cout << std::endl;
+
+        return extrapolatedR;
+      }
+    }
+  }
+  return R;
+}
+
 
 // Abstract base class
 class GetTreeVariable
@@ -2026,6 +2053,57 @@ class TransformCorrectedPhiSecondOrder : public TransformBase
     double RCube = R*R*R;
     return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
   }
+};
+
+
+class TransformCorrectedPhiSecondOrderExtrapolatedR : public TransformBase
+{
+ public:
+  TransformCorrectedPhiSecondOrderExtrapolatedR(const std::string & name,
+                                                const std::string & firstOrderChargeOverPtCoefficientsFileName,
+                                                const std::string & firstOrderTgThetaCoefficientsFileName,
+                                                const std::vector<double> & meanRadius) :
+      TransformBase(name, firstOrderChargeOverPtCoefficientsFileName, meanRadius),
+      estimatorTgTheta_(std::make_shared<EstimatorSimple>(firstOrderTgThetaCoefficientsFileName))
+  {}
+  virtual ~TransformCorrectedPhiSecondOrderExtrapolatedR() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double phi = vars.at(index*3);
+    double R = vars.at(index*3+1);
+    double z = vars.at(index*3+2);
+    std::vector<double> originalPhi;
+    std::vector<double> originalR;
+    std::vector<double> originalZ;
+    for (int i=0; i<vars.size()/3; ++i) {
+      originalPhi.push_back(vars.at(i*3));
+      originalR.push_back(vars.at(i*3+1));
+      originalZ.push_back(vars.at(i*3+2));
+    }
+
+//    std::cout << "originalZ = "<< std::endl;
+//    for (auto zz : originalZ) std::cout << zz << " ";
+//    std::cout << std::endl;
+
+    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+    double tgTheta = estimatorTgTheta_->estimate(originalR, originalZ);
+//    double cotTheta = estimatorTgTheta_->estimate(originalR, originalZ);
+//    double genChargeOverTwoRho = genChargeOverPt*3.8114*0.003/2.;
+
+    // If this is a 2S module in the disks
+    R = extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ);
+
+    double DeltaR = R - meanRadius_[index];
+    double RCube = R*R*R;
+//    return (phi + asin(R*chargeOverTwoRho) - asin(meanRadius_[index]*chargeOverTwoRho));
+    return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
+//    return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2.);
+//    return (phi + genChargeOverPt*DeltaR*3.8114*0.003/2.);
+//    return (phi + genChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(genChargeOverPt*3.8114*0.003/2., 3)/6.);
+  }
+ private:
+  std::shared_ptr<EstimatorSimple> estimatorTgTheta_;
 };
 
 

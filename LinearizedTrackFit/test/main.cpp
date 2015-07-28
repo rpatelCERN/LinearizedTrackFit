@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
 //  inputFileName_ = "/Users/demattia/RemoteProjects/extracted_d0_FLAT_new_1cm_larger.root";
 
     // The prompt sample
-//  inputFileName_ = "/Users/demattia/RemoteProjects/extracted_prompt_extrapolated.root";
+//    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_prompt_extrapolated.root";
 
     // Hybrid
 //  inputFileName_ = "/Users/demattia/RemoteProjects/extracted_hybrid.root";
@@ -152,11 +152,15 @@ int main(int argc, char* argv[])
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_endcaps.root";
 
     // Full Tracker (slice in 0 < phi < 0.8 and eta > 0)
-    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
+//    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
+    // Full Tracker (slice in 0 < phi < 0.8 and eta > 0) with z0 = 0
+//    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker_z0_0.root";
 
+    // Central production
+    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_centralProduction_muMinus.root";
 
-    bool train = true;
-//    bool train = false;
+//    bool train = true;
+    bool train = false;
 
 
     if (train) {
@@ -170,9 +174,16 @@ int main(int argc, char* argv[])
 
 
 //    bool testFitter_ = false;
-  buildMatrix_ = false;
-  testMatrix_ = false;
-  bool testFitter_ = true;
+    buildMatrix_ = false;
+    testMatrix_ = false;
+    bool testFitter_ = true;
+
+
+
+
+    bool defaultCombinationsOnly_ = false;
+
+
 
 
     // To run on all combinations
@@ -192,6 +203,8 @@ int main(int argc, char* argv[])
 //  std::vector<int> layersAll_{5, 6, 11, 13, 14, 15};
 //  std::vector<int> layersAll_{5, 6, 11, 12, 13, 15};
 //  std::vector<int> layersAll_{11, 12, 13, 14, 15};
+    // Region 6
+//    std::vector<int> layersAll_{5, 6, 11, 12, 14, 15};
 
     // Endcaps regions 3 and 4. Remove the next to last disk to make room for the second barrel layer.
 //  if (region == 3 || region == 4) {
@@ -212,7 +225,7 @@ int main(int argc, char* argv[])
     eventsFractionStartBuild_ = 0.;
     eventsFractionEndBuild_ = 0.2;
 
-    eventsFractionStartTest_ = 0.8;
+    eventsFractionStartTest_ = 0.;
     eventsFractionEndTest_ = 1.;
 
 
@@ -228,8 +241,10 @@ int main(int argc, char* argv[])
 //  std::vector<std::string> inputVarNames_{"phi"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrder"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrder"};
+//  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactR"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrderPz"};
-//  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGen"};
+  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGen"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenDeltaZ"};
 //  firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse_Pz/";
 
@@ -285,21 +300,25 @@ int main(int argc, char* argv[])
 
 
     // Geometric cuts
-    oneOverPtMax_ = 1 / 2.;
+    oneOverPtMax_ = 1 / 1.;
     oneOverPtMin_ = 0.;
 //    oneOverPtMax_ = 1. / 15.;
-//    oneOverPtMin_ = 0.;
+//    oneOverPtMin_ = 1. / 100.;
 //    oneOverPtRegions_ = 1;
     phiMin_ = 0.;
     phiMax_ = 0.8;
+//    phiMin_ = -1.4;
+//    phiMax_ = 1.4;
+//    phiMin_ = -3.4;
+//    phiMax_ = 3.4;
 //    phiRegions_ = 1;
-    etaMin_ = -3.;
+    etaMin_ = 0.;
     etaMax_ = 3.;
 //    etaRegions_ = 1;
-    z0Min_ = -15.;
-    z0Max_ = 15.;
-//    z0Min_ = -5.;
-//    z0Max_ = 5.;
+//    z0Min_ = -15.;
+//    z0Max_ = 15.;
+    z0Min_ = -30.;
+    z0Max_ = 30.;
 //    z0Regions_ = 1;
 //    // Specify 1 for no charge splitting and 2 for separating positive and negative charge in difference regions
 //    chargeRegions_ = 1;
@@ -328,17 +347,19 @@ int main(int argc, char* argv[])
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                             etaMin_, etaMax_, z0Min_, z0Max_,
                             firstOrderChargeOverPtCoefficientsDirName_,
-                            firstOrderCotThetaCoefficientsDirName_);
+                            firstOrderCotThetaCoefficientsDirName_, defaultCombinationsOnly_);
     }
 
 
     if (testFitter_) {
 
-      // const std::string baseDir("/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/");
-      const std::string baseDir("/Users/demattia/RemoteProjects/Test/");
+      const std::string baseDir("/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/");
+      // const std::string baseDir("/Users/demattia/RemoteProjects/Test/");
 
       bool fiveOutOfSix_ = true;
-      bool minuitFit_ = true;
+      bool minuitFit_ = false;
+      bool fillBestNormChi2_ = true;
+      bool extrapolateR_ = true;
 
       LinearFit::testFitter(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
                             inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_,
@@ -346,7 +367,7 @@ int main(int argc, char* argv[])
                             radiusCuts_, singleModules_,
                             firstOrderChargeOverPtCoefficientsDirName_, firstOrderCotThetaCoefficientsDirName_,
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_, etaMin_, etaMax_, z0Min_, z0Max_, fiveOutOfSix_,
-                            baseDir, minuitFit_);
+                            baseDir, minuitFit_, fillBestNormChi2_, extrapolateR_);
     }
   }
   else {
@@ -486,7 +507,7 @@ int main(int argc, char* argv[])
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                             etaMin_, etaMax_, z0Min_, z0Max_,
                             firstOrderChargeOverPtCoefficientsDirName_,
-                            firstOrderCotThetaCoefficientsDirName_);
+                            firstOrderCotThetaCoefficientsDirName_, false);
     }
   }
 };

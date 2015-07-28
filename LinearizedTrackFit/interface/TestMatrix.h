@@ -11,6 +11,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterSummaryHistograms.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/BuildTestFunctions.h"
 #include "TString.h"
+#include "CombinationIndexListBuilder.h"
 
 namespace LinearFit
 {
@@ -21,7 +22,8 @@ namespace LinearFit
                   std::unordered_map<int, std::pair<double, double> > & radiusCuts, bool singleModules,
                   const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
                   const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_,
-                  const std::string & firstOrderChargeOverPtCoefficientsDirName, const std::string & firstOrderCotThetaCoefficientsDirName)
+                  const std::string & firstOrderChargeOverPtCoefficientsDirName, const std::string & firstOrderCotThetaCoefficientsDirName,
+                  const bool defaultCombinationsOnly)
   {
     LinearFitter linearFitter("");
 
@@ -42,6 +44,12 @@ namespace LinearFit
     // Mean radii and z are read when needed from the files
     std::unordered_map<unsigned long, std::vector<double> > meanRadius;
     std::unordered_map<unsigned long, std::vector<double> > meanZ;
+
+
+    CombinationIndexListBuilder combinationIndexListBuilder_;
+    std::vector<unsigned long> combinationIndexList;
+    combinationIndexListBuilder_.fillDefaultIndexList(combinationIndexList, false);
+
 
     while (treeReader.nextTrack()) {
 
@@ -69,6 +77,13 @@ namespace LinearFit
 
       // Compute the combination index
       unsigned long combinationIndex_ = combinationIndex(uniqueRequiredLayers, radius);
+
+
+
+      // This is to limit the cmombinations tested to the default ones only
+      if (defaultCombinationsOnly == true) {
+        if (std::find(combinationIndexList.begin(), combinationIndexList.end(), combinationIndex_) == combinationIndexList.end()) continue;
+      }
 
       readMean(firstOrderCotThetaCoefficientsDirName, "MeanRadius_", combinationIndex_, meanRadius);
       readMean(firstOrderCotThetaCoefficientsDirName, "MeanZ_", combinationIndex_, meanZ);

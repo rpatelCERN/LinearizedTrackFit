@@ -1,6 +1,6 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearizedTrackFitter.h"
 
-LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir) :
+LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const bool inputExtrapolateR) :
     preEstimatePtDirName_("PreEstimate_Transverse"),
     preEstimateCotThetaDirName_("PreEstimate_Longitudinal_Rz"),
     linearFitLowPtDirName_("Combinations_Transverse_SecondOrder_2_10"),
@@ -9,20 +9,27 @@ LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir) :
     preEstimatedPt_(0.),
     ptSplitValue_(10.),
     combinationIndex_(0),
-    baseDir_(baseDir)
+    baseDir_(baseDir),
+    extrapolateR_(inputExtrapolateR)
 {
+  if (extrapolateR_) {
+    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedR_2_10";
+    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedR_10_more";
+  }
+
   // Read the constants for the full tracker.
   // It needs to read all 9 regions based on few base names and generate the names for the removed layers.
 
   // Fill all pre-estimates
-  fillMatrices(baseDir_+preEstimatePtDirName_, "phi", "matrixVD_0_pre_chargeOverPt.txt", &chargeOverPtEstimator_);
+  fillMatrices(baseDir_+"/"+preEstimatePtDirName_, "matrixVD_0_pre_chargeOverPt.txt", &chargeOverPtEstimator_);
   // R and z are assumed to have the same number of layers. If not the estimator needs to be modified.
-  fillMatrices(baseDir_+preEstimateCotThetaDirName_, "z", "matrixVD_0_pre_cotTheta.txt", &cotThetaEstimator_);
+  fillMatrices(baseDir_+"/"+preEstimateCotThetaDirName_, "matrixVD_0_pre_cotTheta.txt", &cotThetaEstimator_);
+  fillMatrices(baseDir_+"/"+preEstimateCotThetaDirName_+"_tgTheta", "matrixVD_0_pre_tgTheta.txt", &tgThetaEstimator_);
 
   // Fill all PCA coefficients for parameters and chi2 estimates
-  fillMatrices(baseDir_+linearFitLowPtDirName_, "phi", "matrixVD_0.txt", &linearFitLowPt_);
-  fillMatrices(baseDir_+linearFitHighPtDirName_, "phi", "matrixVD_0.txt", &linearFitHighPt_);
-  fillMatrices(baseDir_+linearFitLongitudinalDirName_, "z", "matrixVD_0.txt", &linearFitLongitudinal_);
+  fillMatrices(baseDir_+"/"+linearFitLowPtDirName_, "matrixVD_0.txt", &linearFitLowPt_);
+  fillMatrices(baseDir_+"/"+linearFitHighPtDirName_, "matrixVD_0.txt", &linearFitHighPt_);
+  fillMatrices(baseDir_+"/"+linearFitLongitudinalDirName_, "matrixVD_0.txt", &linearFitLongitudinal_);
 }
 
 
@@ -177,7 +184,7 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
     return -1.;
   }
 
-  if (!readMean(preEstimateCotThetaDirName_, "MeanRadius_", combinationIndex_, meanRadius_)) {
+  if (!readMean(baseDir_+"/"+preEstimateCotThetaDirName_, "MeanRadius_", combinationIndex_, meanRadius_)) {
     std::cout << "Error: mean radii not found for combination = " << combinationIndex_ << std::endl;
     throw;
   }
@@ -195,7 +202,7 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
 //    std::cout << "Combination index = " << combinationIndex_ << std::endl;
 //    throw;
 //  }
-  // int region = iterPt->second.first;
+
   EstimatorSimple & chargeOverPtEstimator = iterPt->second;
 
   auto iterCotTheta = cotThetaEstimator_.find(combinationIndex_);
@@ -207,6 +214,19 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
   // Retake it here because we need it with the charge
   double chargeOverTwoRho = (3.8114*0.003)*preEstimatedChargeOverPt/2.;
   double cotTheta = cotThetaEstimator.estimate(varsR_, correctedVarsZ_);
+
+  // Extrapolate R if required
+  // Warning: do not put in the following loop or the correctedVarsZ will be modified for all the elements after the
+  // first one and the results will be incorrect.
+  if (extrapolateR_) {
+    auto iterTgTheta = tgThetaEstimator_.find(combinationIndex_);
+    EstimatorSimple &tgThetaEstimator = iterTgTheta->second;
+    double tgTheta = tgThetaEstimator.estimate(varsR_, correctedVarsZ_);
+    for (unsigned int i=0; i<varsNum; ++i) {
+      varsR_[i] = extrapolateR(varsR_[i], correctedVarsZ_[i], uniqueLayers[i], tgTheta, uniqueLayers, varsR_, correctedVarsZ_);
+    }
+  }
+
   for (unsigned int i=0; i<varsNum; ++i) {
     // double DeltaR = varsR_[i] - meanRadius(layers[i], region);
     double DeltaR = varsR_[i] - meanRadius_[combinationIndex_][i];

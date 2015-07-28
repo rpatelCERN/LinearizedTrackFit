@@ -18,6 +18,7 @@ inline void extractCoordinate(const std::vector<double> & vars, const int index,
   }
 }
 
+
 void updateMean(std::unordered_map<unsigned long, std::pair<int, std::vector<double> > > & mean,
                 const unsigned long combinationIndex, const std::vector<double> & radius);
 

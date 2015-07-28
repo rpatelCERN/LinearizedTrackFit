@@ -75,7 +75,10 @@ class TreeReaderNew
   // const std::vector<std::shared_ptr<GetTreeVariable>> * getVars() const { return &vars_; }
   void writeConfiguration();
   double genTrackDistanceTransverse(const double &pt, const double &phi0, const double &d0,
-                                    const int charge, const double &B, const double &x1, const double &y1) const;
+                                    const int charge, const double &B, const double &phi, const double &R) const;
+  double genTrackDistanceTransverseFromZ(const double &pt, const double &phi0, const double &z0,
+                                         const double & cotTheta, const int charge,
+                                         const double &B, const double &phi, const double &z) const;
   double genTrackDistanceLongitudinal(const double &z0, const double &cotTheta, const double &pt, const double &d0,
                                       const int charge, const double &B, const double &R, const double &z1) const;
   std::map<int, unsigned int> layersFound() const { return layersFound_; }

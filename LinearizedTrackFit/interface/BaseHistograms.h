@@ -13,6 +13,8 @@ public:
   BaseHistograms(const std::string & name, const std::vector<std::string> & varNames, const int bins = 100, const double & min = -1., const double & max = -1.);
   void fill(const std::vector<double> & input);
   void write();
+  int varNum() { return inputSize_; }
+  TH1F * getHistogramCopy(const int index);
 
 private:
   void initializeVarsHistograms(const std::string name, const std::vector<std::string> & varNames, const int bins, const double & min, const double & max);

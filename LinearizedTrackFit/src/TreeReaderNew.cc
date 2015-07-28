@@ -198,10 +198,24 @@ bool TreeReaderNew::nextTrack()
 
 
 double TreeReaderNew::genTrackDistanceTransverse(const double &pt, const double &phi0, const double &d0,
-                                                 const int charge, const double &B, const double &phi, const double &R) const
+                                                 const int charge, const double &B, const double &phi,
+                                                 const double &R) const
 {
   double rho = charge*pt/(B*0.003);
   double phiGen = phi0 - asin((d0*d0 + 2*d0*rho + R*R)/(2*R*(rho+d0)));
+  double deltaPhi = (phi - phiGen);
+  if (deltaPhi > M_PI) deltaPhi -= M_PI;
+  else if (deltaPhi < -M_PI) deltaPhi += M_PI;
+  return deltaPhi;
+}
+
+
+double TreeReaderNew::genTrackDistanceTransverseFromZ(const double &pt, const double &phi0, const double &z0,
+                                                      const double & cotTheta, const int charge,
+                                                      const double &B, const double &phi, const double &z) const
+{
+  double rho = charge*pt/(B*0.003);
+  double phiGen = phi0 - (z-z0)/(2*rho*cotTheta);
   double deltaPhi = (phi - phiGen);
   if (deltaPhi > M_PI) deltaPhi -= M_PI;
   else if (deltaPhi < -M_PI) deltaPhi += M_PI;

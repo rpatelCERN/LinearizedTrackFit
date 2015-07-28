@@ -17,7 +17,7 @@
 class LinearizedTrackFitter
 {
  public:
-  LinearizedTrackFitter(const std::string & baseDir);
+  LinearizedTrackFitter(const std::string & baseDir, const bool inputExtrapolateR);
 
   double fit(const std::vector<double> & vars, const std::vector<int> & layers);
 //  double fit(const std::vector<double> & vars, const int bits);
@@ -41,6 +41,7 @@ class LinearizedTrackFitter
   std::vector<double> normalizedPrincipalComponents_;
   std::unordered_map<unsigned long, EstimatorSimple> chargeOverPtEstimator_;
   std::unordered_map<unsigned long, EstimatorSimple> cotThetaEstimator_;
+  std::unordered_map<unsigned long, EstimatorSimple> tgThetaEstimator_;
   std::unordered_map<unsigned long, MatrixReader> linearFitLowPt_;
   std::unordered_map<unsigned long, MatrixReader> linearFitHighPt_;
   std::unordered_map<unsigned long, MatrixReader> linearFitLongitudinal_;
@@ -48,13 +49,13 @@ class LinearizedTrackFitter
   unsigned long combinationIndex_;
   std::string baseDir_;
   CombinationIndexListBuilder combinationIndexListBuilder_;
-
+  bool extrapolateR_;
 
   template <class T>
-  void fillMatrices(const std::string & baseDir, const std::string & var, const std::string & fileName,
+  void fillMatrices(const std::string & baseDir, const std::string & fileName,
                     std::unordered_map<unsigned long, T> * matrices)
   {
-    bool fiveOutOfSix = false;
+    bool fiveOutOfSix = true;
 
     std::vector<unsigned long> combinationIndexList;
     combinationIndexListBuilder_.fillDefaultIndexList(combinationIndexList, fiveOutOfSix);

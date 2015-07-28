@@ -67,3 +67,20 @@ double meanRadius(const int layer, const int region)
       throw;
   }
 }
+
+
+//template <class T>
+//double extrapolateR(const double & z, const double & tgTheta, const std::vector<int> & uniqueLayers,
+//                    const std::vector<double> & originalR, const T & originalZ)
+//{
+//  // Extrapolate R from the outermost PS module in this stubs combination
+//  for (int i = uniqueLayers.size() - 1; i >= 0; --i) {
+//    if (uniqueLayers[i] < 8 || (uniqueLayers[i] > 10 && originalR[i] < 61.)) {
+//      return originalR[i] + (z - originalZ[i]) * tgTheta;
+////          R = originalR[i] + (z - originalZ[i]) / genCotTheta;
+////          R = (z - genZ0) / genCotTheta;
+////          R = sin((z - genZ0) / genCotTheta * genChargeOverTwoRho) / genChargeOverTwoRho;
+////      break;
+//    }
+//  }
+//}

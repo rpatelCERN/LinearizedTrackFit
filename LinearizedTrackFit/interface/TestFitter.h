@@ -76,7 +76,7 @@ namespace LinearFit
 
   void fillFitResultsHistograms(LinearFitterHistograms & linearFitterHistograms,
                                 LinearFitterSummaryHistograms & summaryHistograms,
-                                FitResultsAndGen & fitResultsAndGen, bool fillBestNormChi2)
+                                FitResultsAndGen & fitResultsAndGen, const bool fillBestNormChi2)
   {
     if (fillBestNormChi2) {
       const auto fitResults = std::min_element(fitResultsAndGen.fitResults_.begin(), fitResultsAndGen.fitResults_.end(),
@@ -91,8 +91,14 @@ namespace LinearFit
                                fitResultsAndGen.genPhi_, fitResultsAndGen.genEta_, fitResultsAndGen.genZ0_,
                                fitResultsAndGen.genD0_);
       }
+      else {
+        std::cout << "No fit for track with eta = " << fitResultsAndGen.genEta_ << std::endl;
+      }
     }
     else {
+      if (fitResultsAndGen.fitResults_.size() == 0) {
+        std::cout << "No fit for track with eta = " << fitResultsAndGen.genEta_ << std::endl;
+      }
       for (size_t i = 0; i < fitResultsAndGen.fitResults_.size(); ++i) {
         const auto & fitResults = fitResultsAndGen.fitResults_[i];
         linearFitterHistograms.fill(fitResults.vars_, fitResults.principalComponents_,
@@ -115,12 +121,15 @@ namespace LinearFit
                   const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsFileName,
                   const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
                   const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_, const bool fiveOutOfSix,
-                  const std::string & baseDir, const bool minuitFit)
+                  const std::string & baseDir, const bool minuitFit, const bool fillBestNormChi2, const bool inputExtrapolateR)
   {
-    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
-    // std::vector<int> layersAll_{5, 6, 7, 8, 11, 12};
+//    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
+//    std::vector<int> layersAll_{5, 6, 7, 8, 11, 12};
     // std::vector<int> layersAll_{5, 11, 12, 13, 14, 15};
-//    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    // Region 6
+//    std::vector<int> layersAll_ = std::vector<int>{5, 6, 11, 12, 14, 15};
+
     std::unordered_map<std::string, std::set<int> > requiredLayers;
     requiredLayers.insert(std::make_pair("phi", std::set<int>(layersAll_.begin(), layersAll_.end())));
     requiredLayers.insert(std::make_pair("R", std::set<int>(layersAll_.begin(), layersAll_.end())));
@@ -133,20 +142,28 @@ namespace LinearFit
     TreeReaderNew treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers, radiusCuts,
                              distanceCutsTransverse, distanceCutsLongitudinal, inputTrackParameterNames);
 
+    // Monitor the distribution of the input tracks
+    TH1F hGenEta("hGenEta", "genEta", 60, -3., 3.);
+    TH1F hGenCotTheta("hGenCotTheta", "genCotTheta", 60, -6., 6.);
+
     // Control histograms
     LinearFitterHistograms linearFitterHistograms("0", treeReader.variablesNames(), inputTrackParameterNames);
     LinearFitterSummaryHistograms summaryHistograms("summary", treeReader.variablesNames(), inputTrackParameterNames);
 
     LinearFitterHistograms minuitFitterHistograms("0", treeReader.variablesNames(), inputTrackParameterNames);
     LinearFitterSummaryHistograms minuitSummaryHistograms("summary", treeReader.variablesNames(), inputTrackParameterNames);
+    // Average stub coordinate resolutions
+    std::unordered_map<unsigned long, std::vector<double> > stubCoordinateResolutions;
 
-    bool fillBestNormChi2 = false;
     FitResultsAndGen fitResultsAndGen;
     FitResultsAndGen minuitFitResultsAndGen;
 
     // Perform linearized track fit
-    LinearizedTrackFitter linearizedTrackFitter(baseDir);
+    LinearizedTrackFitter linearizedTrackFitter(baseDir, inputExtrapolateR);
     MinuitTrackFitter minuitTrackFitter("Minuit2", "Migrad", inputTrackParameterNames.size());
+//    MinuitTrackFitter minuitTrackFitter("Minuit2", "Minos", inputTrackParameterNames.size());
+//    MinuitTrackFitter minuitTrackFitter("Minuit2", "Combined", inputTrackParameterNames.size());
+//    MinuitTrackFitter minuitTrackFitter("GSLMultiMin", "ConjugateFR", inputTrackParameterNames.size());
     int trackIndex = -1;
     while (treeReader.nextTrack()) {
 
@@ -159,6 +176,14 @@ namespace LinearFit
       if (treeReader.getZ0() < z0Min_) continue;
       if (treeReader.getZ0() > z0Max_) continue;
 
+
+
+
+//      if (treeReader.getCharge() < 0) continue;
+
+
+
+
       std::vector<int> layersVec(treeReader.layersVec());
       std::sort(layersVec.begin(), layersVec.end());
       layersVec.erase(std::unique(layersVec.begin(), layersVec.end()), layersVec.end());
@@ -167,12 +192,14 @@ namespace LinearFit
 
 
 //      if (fiveOutOfSix && layersVec.size() != 5) continue;
-      if (layersVec.size() != 6) continue;
+//      if (layersVec.size() != 6) continue;
 
 
 
 
       if (trackIndex != treeReader.getTrackIndex()) {
+        hGenEta.Fill(treeReader.getEta());
+        hGenCotTheta.Fill(treeReader.getCotTheta());
         fillFitResultsHistograms(linearFitterHistograms, summaryHistograms, fitResultsAndGen, fillBestNormChi2);
         fitResultsAndGen.clear();
         fitResultsAndGen.storeGen(treeReader.getTrackParameters(), treeReader.getChargePt(), treeReader.getPhi(),
@@ -184,6 +211,7 @@ namespace LinearFit
                                           treeReader.getEta(), treeReader.getZ0(), treeReader.getD0());
         }
       }
+      trackIndex = treeReader.getTrackIndex();
 
       std::vector<double> vars(treeReader.getVariables());
       double normChi2 = linearizedTrackFitter.fit(vars, layersVec);
@@ -204,12 +232,19 @@ namespace LinearFit
       fitResultsAndGen.storeFitResults(vars, principalComponents, normalizedPrincipalComponents, estimatedPars, normChi2);
 
       if (minuitFit) {
-        double minuitNormChi2 = minuitTrackFitter.fit(vars, layersVec, treeReader.getChargeOverPt(), treeReader.getPhi());
+        // Extract the radii
+        std::vector<double> radius;
+        extractCoordinate(vars, 1, radius);
+        // Compute the combination index
+        unsigned long combinationIndex_ = combinationIndex(treeReader.uniqueLayersVec(), radius);
+        readMean("/Users/demattia/RemoteProjects/Test/", "StubCoordinateResolutions_", combinationIndex_, stubCoordinateResolutions);
+
+        double minuitNormChi2 = minuitTrackFitter.fit(vars, stubCoordinateResolutions[combinationIndex_],
+                                                      layersVec, treeReader.getChargeOverPt(), treeReader.getPhi());
+
         minuitFitResultsAndGen.storeFitResults(vars, principalComponents, normalizedPrincipalComponents,
                                                minuitTrackFitter.estimatedPars(), minuitNormChi2);
       }
-
-      trackIndex = treeReader.getTrackIndex();
     }
 
     // Filling the last one
@@ -223,6 +258,8 @@ namespace LinearFit
     outputFile.cd();
     summaryHistograms.write();
     linearFitterHistograms.write();
+    hGenEta.Write();
+    hGenCotTheta.Write();
     outputFile.Close();
 
     if (minuitFit) {

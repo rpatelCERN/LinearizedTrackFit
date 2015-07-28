@@ -7,7 +7,6 @@
 #include <unordered_set>
 #include <set>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReaderNew.h"
-// #include "LinearizedTrackFit/LinearizedTrackFit/interface/GeometricIndex.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilderHistograms.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/Base2DHistograms.h"
@@ -53,13 +52,13 @@ namespace LinearFit {
     std::unordered_map<int, Base2DHistograms> histograms2D;
 //    CorrelationHistograms correlationHistograms(treeReader.variablesNames(), inputTrackParameterNames);
 
-//    // Extra, not necessarily used
-//    std::unordered_map<std::string, int> sectors;
-//    BaseHistograms stubDistanceTransverseHistograms("stubDistanceTransverse", 6, 1000, 0, 0);
-//    BaseHistograms stubDistanceLongitudinalHistograms("stubDistanceLongitudinal", 6, 1000, 0, 0);
-//    BaseHistograms stubDistanceLongitudinalHistogramsR("stubDistanceLongitudinalR", 6, 1000, 0, 0);
+    // Extra, not necessarily used
+    std::unordered_map<std::string, int> sectors;
+    std::unordered_map<unsigned long, BaseHistograms> stubDistanceTransverseHistograms;
+    std::unordered_map<unsigned long, BaseHistograms> stubDistanceLongitudinalHistograms;
+    std::unordered_map<unsigned long, BaseHistograms> stubDistanceLongitudinalHistogramsR;
 
-    // Map of combinaation indexes to pairs of counts and vectors of average radii
+    // Map of combination indexes to pairs of counts and vectors of average radii
     std::unordered_map<unsigned long, std::pair<int, std::vector<double> > > meanRadius;
     std::unordered_map<unsigned long, std::pair<int, std::vector<double> > > meanZ;
     std::unordered_map<unsigned long, std::vector<double> > inputMeanRadius;
@@ -75,10 +74,6 @@ namespace LinearFit {
       if (treeReader.getEta() > etaMax_) continue;
       if (treeReader.getZ0() < z0Min_) continue;
       if (treeReader.getZ0() > z0Max_) continue;
-
-//      if (doMapSectors) mapSectors(treeReader.getStubRZPhi(), sectors);
-//      if (computeDistances) fillDistances(treeReader, stubDistanceTransverseHistograms,
-//                                          stubDistanceLongitudinalHistograms, stubDistanceLongitudinalHistogramsR);
 
       std::vector<double> vars(treeReader.getVariables());
       std::vector<double> pars(treeReader.getTrackParameters());
@@ -97,6 +92,20 @@ namespace LinearFit {
 
       // Compute the combination index
       unsigned long combinationIndex_ = combinationIndex(uniqueRequiredLayers, radius);
+
+
+
+//      if (doMapSectors) mapSectors(treeReader.getStubRZPhi(), sectors);
+//      if (computeDistances) fillDistances(treeReader, stubDistanceTransverseHistograms,
+//                                          stubDistanceLongitudinalHistograms, stubDistanceLongitudinalHistogramsR);
+      if (computeDistances) {
+        fillDistances(treeReader, vars, uniqueRequiredLayers, treeReader.getPt(), treeReader.getPhi(),
+                      treeReader.getD0(), treeReader.getCharge(), treeReader.getZ0(), treeReader.getCotTheta(),
+                      combinationIndex_, stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms,
+                      stubDistanceLongitudinalHistogramsR);
+      }
+
+
 
       // Update the mean of R for this combination
       updateMean(meanRadius, combinationIndex_, radius);
@@ -261,7 +270,7 @@ namespace LinearFit {
     treeReader.writeConfiguration();
 
 ////    if (doMapSectors) writeSectorsMap(sectors);
-//    if (computeDistances) writeDistances(stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms, stubDistanceLongitudinalHistogramsR);
+    if (computeDistances) writeDistances(stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms, stubDistanceLongitudinalHistogramsR);
 
 //    if (computeCorrelations) {
 //      TFile outputCorrelationsFile("correlationHistograms.root", "RECREATE");
