@@ -34,7 +34,7 @@ namespace LinearFit {
     std::vector<double> distancesTransverse;
     std::vector<double> distancesLongitudinal;
     std::vector<double> distancesLongitudinalR;
-    for (int i=0; i<vars.size()/3; ++i) {
+    for (size_t i=0; i<vars.size()/3; ++i) {
       double phi = vars[i*3];
       double R = vars[i*3+1];
       double z = vars[i*3+2];

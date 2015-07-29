@@ -106,7 +106,7 @@ namespace LinearFit
         // int geomIndex = linearFitter.geometricIndex();
         if (histograms.count(combinationIndex_) == 0) {
           std::vector<std::string> transformedVarNames;
-          for (int i=0; i<uniqueRequiredLayers.size(); ++i) {
+          for (size_t i=0; i<uniqueRequiredLayers.size(); ++i) {
             for (auto vt : variablesTransformations[combinationIndex_]) transformedVarNames.push_back(vt->getName());
           }
           // histograms.insert({{combinationIndex_, LinearFitterHistograms(std::to_string(combinationIndex_), transformedVarNames, inputTrackParameterNames)}});

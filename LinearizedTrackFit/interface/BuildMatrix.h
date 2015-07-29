@@ -229,7 +229,7 @@ namespace LinearFit {
 
       // Extract the radii
       std::vector<double> radius;
-      for (int i=0; i<vars.size()/3; ++i) {
+      for (size_t i=0; i<vars.size()/3; ++i) {
         radius.push_back(vars[i*3+1]);
       }
 
@@ -241,7 +241,7 @@ namespace LinearFit {
 
       std::vector<double> transformedVars;
       auto varTransformVec = variablesTransformations[combinationIndex_];
-      for (int i=0; i<vars.size()/3; ++i) {
+      for (size_t i=0; i<vars.size()/3; ++i) {
         for (auto v : varTransformVec) {
           transformedVars.push_back((*v)(i, vars, uniqueRequiredLayers, treeReader.getChargeOverPt(), treeReader.getCotTheta(), treeReader.getZ0()));
         }

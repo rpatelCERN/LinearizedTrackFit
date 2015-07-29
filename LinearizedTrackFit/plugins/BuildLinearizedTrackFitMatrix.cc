@@ -101,8 +101,8 @@ private:
   int chargeRegions_;
   bool buildMatrix_;
   bool testMatrix_;
-  std::string firstOrderChargeOverPtCoefficientsFileName_;
-  std::string firstOrderCotThetaCoefficientsFileName_;
+  std::string firstOrderChargeOverPtCoefficientsDirName_;
+  std::string firstOrderCotThetaCoefficientsDirName_;
 };
 
 //
@@ -163,8 +163,8 @@ BuildLinearizedTrackFitMatrix::BuildLinearizedTrackFitMatrix(const edm::Paramete
   chargeRegions_(iConfig.getParameter<int>("ChargeRegions")),
   buildMatrix_(iConfig.getParameter<bool>("BuildMatrix")),
   testMatrix_(iConfig.getParameter<bool>("TestMatrix")),
-  firstOrderChargeOverPtCoefficientsFileName_(iConfig.getParameter<std::string>("FirstOrderChargeOverPtCoefficientsFileName")),
-  firstOrderCotThetaCoefficientsFileName_(iConfig.getParameter<std::string>("FirstOrderCotThetaCoefficientsFileName"))
+  firstOrderChargeOverPtCoefficientsDirName_(iConfig.getParameter<std::string>("FirstOrderChargeOverPtCoefficientsFileName")),
+  firstOrderCotThetaCoefficientsDirName_(iConfig.getParameter<std::string>("FirstOrderCotThetaCoefficientsFileName"))
 {
 }
 
@@ -236,6 +236,8 @@ void BuildLinearizedTrackFitMatrix::beginJob()
   distanceCutsLongitudinal_.insert(std::make_pair(140, 4.5));
   distanceCutsLongitudinal_.insert(std::make_pair(150, 6.5));
 
+  std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+
   if (buildMatrix_) {
     GeometricIndex::GeometricIndexConfiguration gic;
     gic.oneOverPtMin = oneOverPtMin_;
@@ -258,11 +260,20 @@ void BuildLinearizedTrackFitMatrix::beginJob()
     requiredLayers_.insert(std::make_pair("z", std::set<int>(layersZ_.begin(), layersZ_.end())));
     requiredLayers_.insert(std::make_pair("DeltaS", std::set<int>(layersDeltaS_.begin(), layersDeltaS_.end())));
 
-
     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
-			   requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_,
-			   inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic,
-			   phiSymmetricFit_, usePcs_, firstOrderChargeOverPtCoefficientsFileName_, firstOrderCotThetaCoefficientsFileName_);
+			   layersAll_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_,
+			   inputVarNames_,
+			   inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_,
+			   computeCorrelations_, usePcs_,
+			   oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
+			   etaMin_, etaMax_, z0Min_, z0Max_,
+			   firstOrderChargeOverPtCoefficientsDirName_,
+			   firstOrderCotThetaCoefficientsDirName_);
+
+//     LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
+// 			   requiredLayers_, radiusCuts_, distanceCutsTransverse_, distanceCutsLongitudinal_, inputVarNames_,
+// 			   inputTrackParameterNames_, singleModules_, mapSectors_, computeDistances_, computeCorrelations_, gic,
+// 			   phiSymmetricFit_, usePcs_, firstOrderChargeOverPtCoefficientsDirName_, firstOrderCotThetaCoefficientsDirName_);
 
     // Test
 //    LinearFit::buildMatrix(inputFileName_, eventsFractionStartBuild_, eventsFractionEndBuild_,
@@ -271,9 +282,19 @@ void BuildLinearizedTrackFitMatrix::beginJob()
   }
 
   if (testMatrix_) {
-  LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
-			inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
-			radiusCuts_, singleModules_, phiSymmetricFit_, firstOrderChargeOverPtCoefficientsFileName_, firstOrderCotThetaCoefficientsFileName_);
+    bool defaultCombinationsOnly_ = false;
+    LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
+			  layersAll_,
+			  inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_,
+			  distanceCutsLongitudinal_,
+			  radiusCuts_, singleModules_,
+			  oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
+			  etaMin_, etaMax_, z0Min_, z0Max_,
+			  firstOrderChargeOverPtCoefficientsDirName_,
+			  firstOrderCotThetaCoefficientsDirName_, defaultCombinationsOnly_);
+//   LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
+// 			inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
+// 			radiusCuts_, singleModules_, phiSymmetricFit_, firstOrderChargeOverPtCoefficientsFileName_, firstOrderCotThetaCoefficientsFileName_);
 //    LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
 //			  inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_, distanceCutsLongitudinal_,
 //        radiusCuts_, singleModules_, phiSymmetricFit_, usePcs_);
