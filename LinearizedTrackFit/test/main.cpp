@@ -152,15 +152,15 @@ int main(int argc, char* argv[])
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_endcaps.root";
 
     // Full Tracker (slice in 0 < phi < 0.8 and eta > 0)
-//    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
+    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
     // Full Tracker (slice in 0 < phi < 0.8 and eta > 0) with z0 = 0
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker_z0_0.root";
 
     // Central production
-    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_centralProduction_muMinus.root";
+//    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_centralProduction_muMinus.root";
 
-//    bool train = true;
-    bool train = false;
+    bool train = true;
+//    bool train = false;
 
 
     if (train) {
@@ -173,28 +173,28 @@ int main(int argc, char* argv[])
     }
 
 
-//    bool testFitter_ = false;
-    buildMatrix_ = false;
-    testMatrix_ = false;
-    bool testFitter_ = true;
+    bool testFitter_ = false;
+//    buildMatrix_ = false;
+//    testMatrix_ = false;
+//    bool testFitter_ = true;
 
 
 
-
+    bool sixOutOfSixOnly_ = true;
     bool defaultCombinationsOnly_ = false;
 
 
 
 
     // To run on all combinations
-    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+//    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
     // Select layers to use for each stub coordinate
 //   std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
 //   std::vector<int> layersAll_{6, 7, 8, 9, 10};
 
     // Hybrid
-//  std::vector<int> layersAll_{5, 6, 7, 8, 9, 11}; // region 2
+  std::vector<int> layersAll_{5, 6, 7, 8, 9, 11}; // region 2
 //  std::vector<int> layersAll_{5, 6, 7, 8, 11, 12}; // region 3
 //  std::vector<int> layersAll_{5, 6, 7, 11, 12, 13}; // region 4
 
@@ -225,7 +225,7 @@ int main(int argc, char* argv[])
     eventsFractionStartBuild_ = 0.;
     eventsFractionEndBuild_ = 0.2;
 
-    eventsFractionStartTest_ = 0.;
+    eventsFractionStartTest_ = 0.8;
     eventsFractionEndTest_ = 1.;
 
 
@@ -242,9 +242,9 @@ int main(int argc, char* argv[])
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrder"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrder"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR"};
-//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactR"};
+    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactR"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrderPz"};
-  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGen"};
+//  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGen"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenDeltaZ"};
 //  firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse_Pz/";
 
@@ -266,6 +266,8 @@ int main(int argc, char* argv[])
 //  std::vector<std::string> inputVarNames_{"R", "z"};
 
 //  std::vector<std::string> inputVarNames_{"DeltaZOverDeltaR"};
+
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrder", "R", "CorrectedZSecondOrder"};
 
     // Track parameters
     // ----------------
@@ -300,10 +302,10 @@ int main(int argc, char* argv[])
 
 
     // Geometric cuts
-    oneOverPtMax_ = 1 / 1.;
+//    oneOverPtMax_ = 1 / 2.;
+//    oneOverPtMin_ = 0.;
+    oneOverPtMax_ = 1. / 10.;
     oneOverPtMin_ = 0.;
-//    oneOverPtMax_ = 1. / 15.;
-//    oneOverPtMin_ = 1. / 100.;
 //    oneOverPtRegions_ = 1;
     phiMin_ = 0.;
     phiMax_ = 0.8;
@@ -312,7 +314,7 @@ int main(int argc, char* argv[])
 //    phiMin_ = -3.4;
 //    phiMax_ = 3.4;
 //    phiRegions_ = 1;
-    etaMin_ = 0.;
+    etaMin_ = 0.8;
     etaMax_ = 3.;
 //    etaRegions_ = 1;
 //    z0Min_ = -15.;
@@ -335,7 +337,7 @@ int main(int argc, char* argv[])
                              oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                              etaMin_, etaMax_, z0Min_, z0Max_,
                              firstOrderChargeOverPtCoefficientsDirName_,
-                             firstOrderCotThetaCoefficientsDirName_);
+                             firstOrderCotThetaCoefficientsDirName_, sixOutOfSixOnly_);
     }
 
     if (testMatrix_) {
@@ -347,7 +349,7 @@ int main(int argc, char* argv[])
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                             etaMin_, etaMax_, z0Min_, z0Max_,
                             firstOrderChargeOverPtCoefficientsDirName_,
-                            firstOrderCotThetaCoefficientsDirName_, defaultCombinationsOnly_);
+                            firstOrderCotThetaCoefficientsDirName_, defaultCombinationsOnly_, sixOutOfSixOnly_);
     }
 
 
@@ -494,7 +496,7 @@ int main(int argc, char* argv[])
                              oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                              etaMin_, etaMax_, z0Min_, z0Max_,
                              firstOrderChargeOverPtCoefficientsDirName_,
-                             firstOrderCotThetaCoefficientsDirName_);
+                             firstOrderCotThetaCoefficientsDirName_, false);
     }
     else {
       // Test
@@ -507,7 +509,7 @@ int main(int argc, char* argv[])
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                             etaMin_, etaMax_, z0Min_, z0Max_,
                             firstOrderChargeOverPtCoefficientsDirName_,
-                            firstOrderCotThetaCoefficientsDirName_, false);
+                            firstOrderCotThetaCoefficientsDirName_, false, false);
     }
   }
 };

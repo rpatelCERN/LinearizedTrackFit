@@ -2051,6 +2051,7 @@ class TransformCorrectedPhiSecondOrder : public TransformBase
     double estimatedChargeOverPt = estimator_->estimate(originalPhi);
     double DeltaR = R - meanRadius_[index];
     double RCube = R*R*R;
+    // double deltaPhi = estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.;
     return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
   }
 };
@@ -2275,7 +2276,9 @@ class TransformCorrectedPhiSecondOrderGenExactR : public TransformBase
     if (uniqueLayers[index] > 10 && R > 61.) {
       R = sin((z - genZ0) * chargeOverTwoRho / genCotTheta) / chargeOverTwoRho;
     }
+    // double meanR = meanRadius_[index];
     double DeltaR = R - meanRadius_[index];
+    // double deltaPhi = DeltaR*chargeOverTwoRho + std::pow(R*chargeOverTwoRho, 3)/6.;
     return (phi + DeltaR*chargeOverTwoRho + std::pow(R*chargeOverTwoRho, 3)/6.);
   }
 };

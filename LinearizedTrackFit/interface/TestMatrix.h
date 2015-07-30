@@ -23,7 +23,7 @@ namespace LinearFit
                   const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
                   const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_,
                   const std::string & firstOrderChargeOverPtCoefficientsDirName, const std::string & firstOrderCotThetaCoefficientsDirName,
-                  const bool defaultCombinationsOnly)
+                  const bool defaultCombinationsOnly, const bool sixOutOfSixOnly)
   {
     LinearFitter linearFitter("");
 
@@ -70,6 +70,8 @@ namespace LinearFit
         std::cout << "Error: number of variables ("<<vars.size()<<") is not divisible by 3." << std::endl;
         throw;
       }
+
+      if (sixOutOfSixOnly && vars.size() != 18) continue;
 
       // Extract the radii
       std::vector<double> radius;

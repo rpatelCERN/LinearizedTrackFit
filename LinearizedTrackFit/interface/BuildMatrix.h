@@ -10,6 +10,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilder.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/MatrixBuilderHistograms.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/Base2DHistograms.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/StubResidualHistograms.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/CorrelationHistograms.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/SingleSector.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/CombinationIndex.h"
@@ -31,9 +32,9 @@ namespace LinearFit {
                    const bool usePcs,
                    const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
                    const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_,
-                   const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsDirName)
+                   const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsDirName,
+                   const bool sixOutOfSixOnly)
   {
-    // std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
     std::unordered_map<std::string, std::set<int> > requiredLayers;
     requiredLayers.insert(std::make_pair("phi", std::set<int>(layersAll.begin(), layersAll.end())));
     requiredLayers.insert(std::make_pair("R", std::set<int>(layersAll.begin(), layersAll.end())));
@@ -54,9 +55,12 @@ namespace LinearFit {
 
     // Extra, not necessarily used
     std::unordered_map<std::string, int> sectors;
-    std::unordered_map<unsigned long, BaseHistograms> stubDistanceTransverseHistograms;
-    std::unordered_map<unsigned long, BaseHistograms> stubDistanceLongitudinalHistograms;
-    std::unordered_map<unsigned long, BaseHistograms> stubDistanceLongitudinalHistogramsR;
+    std::unordered_map<unsigned long, StubResidualHistograms> stubDistanceTransverseHistograms;
+    std::unordered_map<unsigned long, StubResidualHistograms> stubDistanceLongitudinalHistograms;
+    std::unordered_map<unsigned long, StubResidualHistograms> stubDistanceLongitudinalHistogramsR;
+    std::unordered_map<unsigned long, StubResidualHistograms> stubDistanceTransverseTransformedHistograms;
+    std::unordered_map<unsigned long, StubResidualHistograms> stubDistanceLongitudinalTransformedHistograms;
+    std::unordered_map<unsigned long, StubResidualHistograms> stubDistanceLongitudinalTransformedHistogramsR;
 
     // Map of combination indexes to pairs of counts and vectors of average radii
     std::unordered_map<unsigned long, std::pair<int, std::vector<double> > > meanRadius;
@@ -83,6 +87,8 @@ namespace LinearFit {
         std::cout << "Error: number of variables ("<<vars.size()<<") is not divisible by 3." << std::endl;
         throw;
       }
+
+      if (sixOutOfSixOnly && vars.size() != 18) continue;
 
       // Extract the radii
       std::vector<double> radius;
@@ -125,6 +131,37 @@ namespace LinearFit {
       auto varTransformVec = variablesTransformations[combinationIndex_];
       transformVariables(vars, uniqueRequiredLayers, varTransformVec, transformedVars,
                          treeReader.getChargeOverPt(), treeReader.getCotTheta(), treeReader.getZ0());
+
+      if (computeDistances) {
+        std::vector<double> fullTransformedVars(vars);
+        int inputVarNamesSize = inputVarNames.size();
+        for (int i=0; i<inputVarNamesSize; ++i) {
+          int shift = -1;
+          if (inputVarNames.at(i).find("phi") != std::string::npos || inputVarNames.at(i).find("Phi") != std::string::npos) {
+            shift = 0;
+          }
+          else if (inputVarNames.at(i).find("R") != std::string::npos) {
+            shift = 1;
+          }
+          else if (inputVarNames.at(i).find("z") != std::string::npos || inputVarNames.at(i).find("Z") != std::string::npos) {
+            shift = 2;
+          }
+          if (shift != -1) {
+            for (size_t j = 0; j < vars.size() / 3; ++j) {
+              fullTransformedVars[j * 3 + shift] = transformedVars[j * inputVarNamesSize + i];
+            }
+          }
+        }
+        // Setting meanRadius
+        for (size_t j = 0; j < vars.size() / 3; ++j) {
+          fullTransformedVars[j*3+1] = inputMeanRadius[combinationIndex_][j];
+        }
+        fillDistances(treeReader, fullTransformedVars, uniqueRequiredLayers, treeReader.getPt(), treeReader.getPhi(),
+                      treeReader.getD0(), treeReader.getCharge(), treeReader.getZ0(), treeReader.getCotTheta(),
+                      combinationIndex_, stubDistanceTransverseTransformedHistograms,
+                      stubDistanceLongitudinalTransformedHistograms, stubDistanceLongitudinalTransformedHistogramsR,
+                      "Transformed");
+      }
 
       // printTrack(vars, pars, geomIndex);
 
@@ -222,6 +259,8 @@ namespace LinearFit {
       std::vector<int> uniqueRequiredLayers(treeReader.uniqueLayersVec());
       // std::vector<int> requiredLayersVec(treeReader.layersVec());
 
+      if (sixOutOfSixOnly && vars.size() != 18) continue;
+
       if (vars.size()%3 != 0) {
         std::cout << "Error: number of variables ("<<vars.size()<<") is not divisible by 3." << std::endl;
         throw;
@@ -270,7 +309,11 @@ namespace LinearFit {
     treeReader.writeConfiguration();
 
 ////    if (doMapSectors) writeSectorsMap(sectors);
-    if (computeDistances) writeDistances(stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms, stubDistanceLongitudinalHistogramsR);
+    if (computeDistances) {
+      writeDistances(stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms, stubDistanceLongitudinalHistogramsR);
+      writeDistances(stubDistanceTransverseTransformedHistograms, stubDistanceLongitudinalTransformedHistograms,
+                     stubDistanceLongitudinalTransformedHistogramsR, "StubDistanceFromGenTrackTransformed");
+    }
 
 //    if (computeCorrelations) {
 //      TFile outputCorrelationsFile("correlationHistograms.root", "RECREATE");
