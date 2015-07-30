@@ -55,16 +55,19 @@ namespace LinearFit
 
       if (treeReader.getOneOverPt() < oneOverPtMin_) continue;
       if (treeReader.getOneOverPt() > oneOverPtMax_) continue;
-      if (treeReader.getPhi() < phiMin_) continue;
-      if (treeReader.getPhi() > phiMax_) continue;
+      if (treeReader.getPhi0() < phiMin_) continue;
+      if (treeReader.getPhi0() > phiMax_) continue;
       if (treeReader.getEta() < etaMin_) continue;
       if (treeReader.getEta() > etaMax_) continue;
       if (treeReader.getZ0() < z0Min_) continue;
       if (treeReader.getZ0() > z0Max_) continue;
 
-      std::vector<double> vars(treeReader.getVariables());
+      StubsCombination stubsCombination(treeReader.getStubsCombination());
+      std::vector<double> vars(stubsCombination.variables());
+      std::vector<int> uniqueRequiredLayers(stubsCombination.layers());
+//      std::vector<double> vars(treeReader.getVariables());
       std::vector<double> pars(treeReader.getTrackParameters());
-      std::vector<int> uniqueRequiredLayers(treeReader.uniqueLayersVec());
+//      std::vector<int> uniqueRequiredLayers(treeReader.uniqueLayersVec());
 
       if (vars.size()%3 != 0) {
         std::cout << "Error: number of variables ("<<vars.size()<<") is not divisible by 3." << std::endl;
@@ -118,10 +121,10 @@ namespace LinearFit
 //            linearFitter.normalizedPrincipalComponents(transformedVars, combinationIndex_), pars, estimatedPars, normChi2);
         histograms.find(combinationIndex_)->second.fill(transformedVars, linearFitter.principalComponents(transformedVars, combinationIndex_),
                                                         linearFitter.normalizedPrincipalComponents(transformedVars, combinationIndex_), pars, estimatedPars, normChi2,
-                                                        treeReader.getChargePt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getD0());
+                                                        treeReader.getChargePt(), treeReader.getPhi0(), treeReader.getEta(), treeReader.getZ0(), treeReader.getD0());
         summaryHistograms.fill(transformedVars, linearFitter.principalComponents(transformedVars, combinationIndex_),
             linearFitter.normalizedPrincipalComponents(transformedVars, combinationIndex_), pars, estimatedPars, normChi2,
-            treeReader.getChargePt(), treeReader.getPhi(), treeReader.getEta(), treeReader.getZ0(), treeReader.getD0());
+            treeReader.getChargePt(), treeReader.getPhi0(), treeReader.getEta(), treeReader.getZ0(), treeReader.getD0());
       }
     }
 

@@ -6,7 +6,6 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/BuildMatrix.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TestMatrix.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/TestFitter.h"
-#include "LinearizedTrackFit/LinearizedTrackFit/interface/TestFitterEndcaps.h"
 
 int main(int argc, char* argv[])
 {

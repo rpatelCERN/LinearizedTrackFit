@@ -19,6 +19,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GetVariables.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/GetTrackParameters.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/CombinationsGenerator.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/StubsCombination.h"
 
 class TreeReaderNew
 {
@@ -30,8 +31,13 @@ class TreeReaderNew
 
   void reset(const double & eventsFractionStart, const double & eventsFractionEnd);
   bool nextTrack();
-  std::vector<double> getVariables();
+  // std::vector<double> getVariables();
+  StubsCombination getStubsCombination();
   std::vector<double> getTrackParameters();
+
+  double getStubPhi(const int k) const { return std::atan2(tree_->m_stub_y->at(k), tree_->m_stub_x->at(k)); }
+  double getStubR(const int k) const { return std::sqrt(std::pow(tree_->m_stub_x->at(k), 2) + std::pow(tree_->m_stub_y->at(k), 2)); }
+  double getStubZ(const int k) const { return tree_->m_stub_z->at(k); }
 
   double getPt() const {
     return std::sqrt(std::pow(tree_->m_stub_pxGEN->at(0), 2) + std::pow(tree_->m_stub_pyGEN->at(0), 2));
@@ -52,25 +58,22 @@ class TreeReaderNew
   }
   // double getPhi() const { return tree_->m_stub_PHI0->at(0); }
   int getTrackIndex() const { return trackIndex_; }
-  double getPhi() const { return getParPhi0_->at(0); }
+  double getPhi0() const { return getParPhi0_->at(0); }
   double getEta() const { return tree_->m_stub_etaGEN->at(0); }
   double getCotTheta() const { return 1./tan(2*atan(exp(-tree_->m_stub_etaGEN->at(0)))); }
   double getX0() const { return tree_->m_stub_X0->at(0); }
   double getY0() const { return tree_->m_stub_Y0->at(0); }
   // double getZ0() const { return tree_->m_stub_Z0->at(0); }
   double getZ0() const { return getParZ0_->at(0); }
-  double getR(const int k) const { return std::sqrt(std::pow(tree_->m_stub_x->at(k), 2) + std::pow(tree_->m_stub_y->at(k), 2)); }
   double getD0() const { return getParD0_->at(0); }
-  int getRegionForMeanR() const;
-  // int getEndcapRegion() const { return getVar_->getRegion(tree_->m_stub_x, tree_->m_stub_y, layersFound_); }
   int getCharge() const { return tree_->m_stub_pdg->at(0) > 0 ? -1 : 1; }
-  const std::vector<float> * getVarX() const { return tree_->m_stub_x; }
-  const std::vector<float> * getVarY() const { return tree_->m_stub_y; }
+//  const std::vector<float> * getVarX() const { return tree_->m_stub_x; }
+//  const std::vector<float> * getVarY() const { return tree_->m_stub_y; }
   unsigned int variablesSize() const { return variablesSize_; }
   unsigned int maxRequiredLayers() const { return maxRequiredLayers_; }
   std::set<int> allRequiredLayers() const { return allRequiredLayers_; }
-  std::vector<int> layersVec() const { return layersVec_; }
-  std::vector<int> uniqueLayersVec() const;
+//  std::vector<int> layersVec() const { return layersVec_; }
+//  std::vector<int> uniqueLayersVec() const;
   std::vector<std::string> const variablesNames() const { return variablesNames_; }
   // const std::vector<std::shared_ptr<GetTreeVariable>> * getVars() const { return &vars_; }
   void writeConfiguration();
@@ -81,7 +84,6 @@ class TreeReaderNew
                                          const double &B, const double &phi, const double &z) const;
   double genTrackDistanceLongitudinal(const double &z0, const double &cotTheta, const double &pt, const double &d0,
                                       const int charge, const double &B, const double &R, const double &z1) const;
-  std::map<int, unsigned int> layersFound() const { return layersFound_; }
 
  private:
   bool goodTrack();
@@ -107,7 +109,7 @@ class TreeReaderNew
   double eventsFractionEnd_;
   std::unordered_map<std::string, std::set<int> > requiredLayers_;
   std::set<int> allRequiredLayers_;
-  std::vector<int> layersVec_;
+//   std::vector<int> layersVec_;
   std::unordered_map<int, std::pair<double, double> > radiusCuts_;
   unsigned int parametersSize_;
   std::vector<std::shared_ptr<GetTreeVariable> > vars_;
@@ -116,7 +118,7 @@ class TreeReaderNew
   int lastTrack_;
   int totalTracks_;
   int trackIndex_;
-  std::vector<double> variables_;
+//   std::vector<double> variables_;
   std::vector<double> parameters_;
   unsigned int maxRequiredLayers_;
   unsigned int variablesSize_;
@@ -134,20 +136,19 @@ class TreeReaderNew
   // GetVarPhi is arbitrary, we only need access to the getRegion method of the base class, which is abstract.
   // std::shared_ptr<GetVarPhi> getVar_;
 
-  int phiIndex_;
-  int zIndex_;
-  bool phiDiscontinuous_;
-  bool adjustDiscontinuity_;
+//  int phiIndex_;
+//  int zIndex_;
+//  bool phiDiscontinuous_;
+//  bool adjustDiscontinuity_;
 
-  int regionForMeanR_;
-
-  int stubCombination_;
+  int stubCombinationIndex_;
   int maxStubCombinations_;
-  std::vector<double> allVariables_;
-  std::vector<int> allLayersVec_;
+  StubsCombination allStubsCombination_;
+  StubsCombination stubsCombination_;
+//   std::vector<double> allVariables_;
+//   std::vector<int> allLayersVec_;
 
   CombinationsGenerator combinationGenerator_;
-  std::vector<std::vector<int> > combinations_;
 };
 
 #endif //REMOTEPROJECTS_TREEREADERNEW_H

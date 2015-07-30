@@ -72,32 +72,39 @@ namespace LinearFit {
 
       if (treeReader.getOneOverPt() < oneOverPtMin_) continue;
       if (treeReader.getOneOverPt() > oneOverPtMax_) continue;
-      if (treeReader.getPhi() < phiMin_) continue;
-      if (treeReader.getPhi() > phiMax_) continue;
+      if (treeReader.getPhi0() < phiMin_) continue;
+      if (treeReader.getPhi0() > phiMax_) continue;
       if (treeReader.getEta() < etaMin_) continue;
       if (treeReader.getEta() > etaMax_) continue;
       if (treeReader.getZ0() < z0Min_) continue;
       if (treeReader.getZ0() > z0Max_) continue;
 
-      std::vector<double> vars(treeReader.getVariables());
+      // std::vector<double> vars(treeReader.getVariables());
+      StubsCombination stubsCombination(treeReader.getStubsCombination());
       std::vector<double> pars(treeReader.getTrackParameters());
-      std::vector<int> uniqueRequiredLayers(treeReader.uniqueLayersVec());
+//      std::vector<int> uniqueRequiredLayers(treeReader.uniqueLayersVec());
 
-      if (vars.size()%3 != 0) {
-        std::cout << "Error: number of variables ("<<vars.size()<<") is not divisible by 3." << std::endl;
-        throw;
-      }
+//      if (vars.size()%3 != 0) {
+//        std::cout << "Error: number of variables ("<<vars.size()<<") is not divisible by 3." << std::endl;
+//        throw;
+//      }
 
-      if (sixOutOfSixOnly && vars.size() != 18) continue;
+//      if (sixOutOfSixOnly && vars.size() != 18) continue;
+      if (sixOutOfSixOnly && stubsCombination.size() != 6) continue;
 
       // Extract the radii
-      std::vector<double> radius;
-      extractCoordinate(vars, 1, radius);
-      std::vector<double> z;
-      extractCoordinate(vars, 2, z);
+//      std::vector<double> radius;
+//      extractCoordinate(vars, 1, radius);
+//      std::vector<double> z;
+//      extractCoordinate(vars, 2, z);
+      std::vector<double> radius(stubsCombination.RVector());
+      std::vector<double> z(stubsCombination.zVector());
+      std::vector<double> vars(stubsCombination.variables());
+      std::vector<int> uniqueRequiredLayers(stubsCombination.layers());
 
       // Compute the combination index
-      unsigned long combinationIndex_ = combinationIndex(uniqueRequiredLayers, radius);
+      // unsigned long combinationIndex_ = combinationIndex(uniqueRequiredLayers, radius);
+      unsigned long combinationIndex_ = stubsCombination.getCombinationIndex();
 
 
 
@@ -105,7 +112,7 @@ namespace LinearFit {
 //      if (computeDistances) fillDistances(treeReader, stubDistanceTransverseHistograms,
 //                                          stubDistanceLongitudinalHistograms, stubDistanceLongitudinalHistogramsR);
       if (computeDistances) {
-        fillDistances(treeReader, vars, uniqueRequiredLayers, treeReader.getPt(), treeReader.getPhi(),
+        fillDistances(treeReader, vars, uniqueRequiredLayers, treeReader.getPt(), treeReader.getPhi0(),
                       treeReader.getD0(), treeReader.getCharge(), treeReader.getZ0(), treeReader.getCotTheta(),
                       combinationIndex_, stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms,
                       stubDistanceLongitudinalHistogramsR);
@@ -156,7 +163,7 @@ namespace LinearFit {
         for (size_t j = 0; j < vars.size() / 3; ++j) {
           fullTransformedVars[j*3+1] = inputMeanRadius[combinationIndex_][j];
         }
-        fillDistances(treeReader, fullTransformedVars, uniqueRequiredLayers, treeReader.getPt(), treeReader.getPhi(),
+        fillDistances(treeReader, fullTransformedVars, uniqueRequiredLayers, treeReader.getPt(), treeReader.getPhi0(),
                       treeReader.getD0(), treeReader.getCharge(), treeReader.getZ0(), treeReader.getCotTheta(),
                       combinationIndex_, stubDistanceTransverseTransformedHistograms,
                       stubDistanceLongitudinalTransformedHistograms, stubDistanceLongitudinalTransformedHistogramsR,
@@ -247,33 +254,39 @@ namespace LinearFit {
 
       if (treeReader.getOneOverPt() < oneOverPtMin_) continue;
       if (treeReader.getOneOverPt() > oneOverPtMax_) continue;
-      if (treeReader.getPhi() < phiMin_) continue;
-      if (treeReader.getPhi() > phiMax_) continue;
+      if (treeReader.getPhi0() < phiMin_) continue;
+      if (treeReader.getPhi0() > phiMax_) continue;
       if (treeReader.getEta() < etaMin_) continue;
       if (treeReader.getEta() > etaMax_) continue;
       if (treeReader.getZ0() < z0Min_) continue;
       if (treeReader.getZ0() > z0Max_) continue;
 
-      std::vector<double> vars(treeReader.getVariables());
+      StubsCombination stubsCombination(treeReader.getStubsCombination());
+//      std::vector<double> vars(treeReader.getVariables());
       std::vector<double> pars(treeReader.getTrackParameters());
-      std::vector<int> uniqueRequiredLayers(treeReader.uniqueLayersVec());
+//      std::vector<int> uniqueRequiredLayers(treeReader.uniqueLayersVec());
       // std::vector<int> requiredLayersVec(treeReader.layersVec());
+      std::vector<double> vars(stubsCombination.variables());
+      std::vector<int> uniqueRequiredLayers(stubsCombination.layers());
 
-      if (sixOutOfSixOnly && vars.size() != 18) continue;
+//      if (sixOutOfSixOnly && vars.size() != 18) continue;
+      if (sixOutOfSixOnly && stubsCombination.size() != 6) continue;
 
-      if (vars.size()%3 != 0) {
-        std::cout << "Error: number of variables ("<<vars.size()<<") is not divisible by 3." << std::endl;
-        throw;
-      }
+//      if (vars.size()%3 != 0) {
+//        std::cout << "Error: number of variables ("<<vars.size()<<") is not divisible by 3." << std::endl;
+//        throw;
+//      }
 
-      // Extract the radii
-      std::vector<double> radius;
-      for (size_t i=0; i<vars.size()/3; ++i) {
-        radius.push_back(vars[i*3+1]);
-      }
+//      // Extract the radii
+//      std::vector<double> radius;
+//      for (size_t i=0; i<vars.size()/3; ++i) {
+//        radius.push_back(vars[i*3+1]);
+//      }
+      std::vector<double> radius(stubsCombination.RVector());
 
       // Compute the combination index
-      unsigned long combinationIndex_ = combinationIndex(uniqueRequiredLayers, radius);
+//      unsigned long combinationIndex_ = combinationIndex(uniqueRequiredLayers, radius);
+      unsigned long combinationIndex_ = stubsCombination.getCombinationIndex();
 
       // Running on the same events as above, no new combinations are expected
       // initializeVariablesTransformations(inputVarNames, combinationIndex_, variablesTransformations);

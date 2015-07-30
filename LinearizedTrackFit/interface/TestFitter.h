@@ -169,8 +169,8 @@ namespace LinearFit
 
       if (treeReader.getOneOverPt() < oneOverPtMin_) continue;
       if (treeReader.getOneOverPt() > oneOverPtMax_) continue;
-      if (treeReader.getPhi() < phiMin_) continue;
-      if (treeReader.getPhi() > phiMax_) continue;
+      if (treeReader.getPhi0() < phiMin_) continue;
+      if (treeReader.getPhi0() > phiMax_) continue;
       if (treeReader.getEta() < etaMin_) continue;
       if (treeReader.getEta() > etaMax_) continue;
       if (treeReader.getZ0() < z0Min_) continue;
@@ -184,9 +184,9 @@ namespace LinearFit
 
 
 
-      std::vector<int> layersVec(treeReader.layersVec());
-      std::sort(layersVec.begin(), layersVec.end());
-      layersVec.erase(std::unique(layersVec.begin(), layersVec.end()), layersVec.end());
+//      std::vector<int> layersVec(treeReader.layersVec());
+//      std::sort(layersVec.begin(), layersVec.end());
+//      layersVec.erase(std::unique(layersVec.begin(), layersVec.end()), layersVec.end());
 
 
 
@@ -202,18 +202,21 @@ namespace LinearFit
         hGenCotTheta.Fill(treeReader.getCotTheta());
         fillFitResultsHistograms(linearFitterHistograms, summaryHistograms, fitResultsAndGen, fillBestNormChi2);
         fitResultsAndGen.clear();
-        fitResultsAndGen.storeGen(treeReader.getTrackParameters(), treeReader.getChargePt(), treeReader.getPhi(),
+        fitResultsAndGen.storeGen(treeReader.getTrackParameters(), treeReader.getChargePt(), treeReader.getPhi0(),
                                   treeReader.getEta(), treeReader.getZ0(), treeReader.getD0());
         if (minuitFit) {
           fillFitResultsHistograms(minuitFitterHistograms, minuitSummaryHistograms, minuitFitResultsAndGen, fillBestNormChi2);
           minuitFitResultsAndGen.clear();
-          minuitFitResultsAndGen.storeGen(treeReader.getTrackParameters(), treeReader.getChargePt(), treeReader.getPhi(),
+          minuitFitResultsAndGen.storeGen(treeReader.getTrackParameters(), treeReader.getChargePt(), treeReader.getPhi0(),
                                           treeReader.getEta(), treeReader.getZ0(), treeReader.getD0());
         }
       }
       trackIndex = treeReader.getTrackIndex();
 
-      std::vector<double> vars(treeReader.getVariables());
+      StubsCombination stubsCombination(treeReader.getStubsCombination());
+      std::vector<int> layersVec(stubsCombination.layers());
+      // std::vector<double> vars(treeReader.getVariables());
+      std::vector<double> vars(stubsCombination.variables());
       double normChi2 = linearizedTrackFitter.fit(vars, layersVec);
       // We do not have coefficients for this combination, skip it.
       if (normChi2 == -1.) continue;
@@ -233,14 +236,16 @@ namespace LinearFit
 
       if (minuitFit) {
         // Extract the radii
-        std::vector<double> radius;
-        extractCoordinate(vars, 1, radius);
+//        std::vector<double> radius;
+//        extractCoordinate(vars, 1, radius);
+        std::vector<double> radius(stubsCombination.RVector());
         // Compute the combination index
-        unsigned long combinationIndex_ = combinationIndex(treeReader.uniqueLayersVec(), radius);
+//        unsigned long combinationIndex_ = combinationIndex(treeReader.uniqueLayersVec(), radius);
+        unsigned long combinationIndex_ = stubsCombination.getCombinationIndex();
         readMean("/Users/demattia/RemoteProjects/Test/", "StubCoordinateResolutions_", combinationIndex_, stubCoordinateResolutions);
 
         double minuitNormChi2 = minuitTrackFitter.fit(vars, stubCoordinateResolutions[combinationIndex_],
-                                                      layersVec, treeReader.getChargeOverPt(), treeReader.getPhi());
+                                                      layersVec, treeReader.getChargeOverPt(), treeReader.getPhi0());
 
         minuitFitResultsAndGen.storeFitResults(vars, principalComponents, normalizedPrincipalComponents,
                                                minuitTrackFitter.estimatedPars(), minuitNormChi2);

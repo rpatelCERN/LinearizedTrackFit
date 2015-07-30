@@ -20,18 +20,14 @@ TreeReaderNew::TreeReaderNew(const TString & inputFileName, const double & event
     getParPhi0_(std::make_shared<GetParPhi>(tree_)),
     getParZ0_(std::make_shared<GetParZ0>(tree_)),
     getParD0_(std::make_shared<GetParD0>(tree_)),
-    phiIndex_(-1),
-    zIndex_(-1),
-    phiDiscontinuous_(false),
-    adjustDiscontinuity_(false),
-    regionForMeanR_(-1),
-    stubCombination_(-1),
+//    phiIndex_(-1),
+//    zIndex_(-1),
+//    phiDiscontinuous_(false),
+//    adjustDiscontinuity_(false),
+    stubCombinationIndex_(-1),
     maxStubCombinations_(0)//,
-//    fiveOutOfSix_(fiveOutOfSix)
 {
   reset(eventsFractionStart, eventsFractionEnd);
-
-  // if (fiveOutOfSix_) maxRequiredLayers_ = 5;
 
   std::cout << "Requested running from track number " << firstTrack_ << " to track number " << lastTrack_ <<
   " for a total of " << lastTrack_ - firstTrack_ << " tracks." << std::endl;
@@ -82,21 +78,21 @@ TreeReaderNew::TreeReaderNew(const TString & inputFileName, const double & event
   }
   assert(pars_.size() == trackParNames.size());
 
-  // Avoid discontinuity in phi between +pi and -pi
-  int countPhiNames = 0;
-  int countZNames = 0;
-  for (unsigned int i=0; i<varNames.size(); ++i) {
-    if (varNames[i] == "phi") {
-      phiIndex_ = i;
-      ++countPhiNames;
-    }
-    if (varNames[i] == "z") {
-      zIndex_ = i;
-      ++countZNames;
-    }
-  }
-  assert(countPhiNames == 0 || countPhiNames == 1);
-  assert(countZNames == 0 || countZNames == 1);
+//  // Avoid discontinuity in phi between +pi and -pi
+//  int countPhiNames = 0;
+//  int countZNames = 0;
+//  for (unsigned int i=0; i<varNames.size(); ++i) {
+//    if (varNames[i] == "phi") {
+//      phiIndex_ = i;
+//      ++countPhiNames;
+//    }
+//    if (varNames[i] == "z") {
+//      zIndex_ = i;
+//      ++countZNames;
+//    }
+//  }
+//  assert(countPhiNames == 0 || countPhiNames == 1);
+//  assert(countZNames == 0 || countZNames == 1);
 }
 
 
@@ -109,32 +105,35 @@ void TreeReaderNew::reset(const double & eventsFractionStart, const double & eve
   totalTracks_ = lastTrack_-firstTrack_;
   trackIndex_ = 0;
 
-  for(auto var : vars_) {
-    var->resetSeed();
-  }
+//  for(auto var : vars_) {
+//    var->resetSeed();
+//  }
 }
 
 
 // Generate all combinations and store them in a vector<vector<int> >. Initialize an index and go
 // through the combinations when this index is != -1. When the last combination is reached set
 // the index to -1 so that the next request will go through the next event.
-// Store the indeces of the layers instead of the layers themselves as this is more convenient
+// Store the indexes of the layers instead of the layers themselves as this is more convenient
 // to apply both to layers and variables.
 void TreeReaderNew::generateStubCombination()
 {
-  std::vector<int> combination(combinationGenerator_.combination(stubCombination_, layersFound_.size()));
-  variables_.clear();
-  layersVec_.clear();
-  // Fill with all the variables and layers from indeces contained in the combination
-  for (auto index : combination) {
-    variables_.push_back(allVariables_[index*3]);
-    variables_.push_back(allVariables_[index*3+1]);
-    variables_.push_back(allVariables_[index*3+2]);
-    layersVec_.push_back(allLayersVec_[index*3]);
-    layersVec_.push_back(allLayersVec_[index*3+1]);
-    layersVec_.push_back(allLayersVec_[index*3+2]);
-  }
-  ++stubCombination_;
+  // std::vector<int> combination(combinationGenerator_.combination(stubCombinationIndex_, layersFound_.size()));
+  // stubsCombination_.clear();
+  // variables_.clear();
+  // layersVec_.clear();
+  // Fill with all the variables and layers from indexes contained in the combination
+  stubsCombination_.build(allStubsCombination_, combinationGenerator_.combination(stubCombinationIndex_, layersFound_.size()));
+
+//  for (auto index : combination) {
+//    variables_.push_back(allVariables_[index*3]);
+//    variables_.push_back(allVariables_[index*3+1]);
+//    variables_.push_back(allVariables_[index*3+2]);
+//    layersVec_.push_back(allLayersVec_[index*3]);
+//    layersVec_.push_back(allLayersVec_[index*3+1]);
+//    layersVec_.push_back(allLayersVec_[index*3+2]);
+//  }
+  ++stubCombinationIndex_;
 }
 
 
@@ -142,10 +141,10 @@ void TreeReaderNew::generateStubCombination()
 // Also, compute the geometrical index based on the geometrical filter.
 bool TreeReaderNew::nextTrack()
 {
-  if (stubCombination_ >= 0) {
+  if (stubCombinationIndex_ >= 0) {
     // Generate the next combination
     generateStubCombination();
-    if (stubCombination_ >= maxStubCombinations_) stubCombination_ = -1;
+    if (stubCombinationIndex_ >= maxStubCombinations_) stubCombinationIndex_ = -1;
   }
   else {
     bool good = false;
@@ -172,11 +171,12 @@ bool TreeReaderNew::nextTrack()
         // If it is less than 5 set it as a bad combination
         // Otherwise go through and return the set of 5 stubs.
         if (layersFound_.size() > 5) {
-          stubCombination_ = 0;
+          stubCombinationIndex_ = 0;
           // maxStubCombinations_ = layersFound_.size();
           maxStubCombinations_ = combinationGenerator_.combinationsSize(layersFound_.size());
-          allVariables_ = variables_;
-          allLayersVec_ = layersVec_;
+//          allVariables_ = variables_;
+//          allLayersVec_ = layersVec_;
+          allStubsCombination_ = stubsCombination_;
         }
         else if (layersFound_.size() < 5) good = false;
       }
@@ -236,7 +236,7 @@ bool TreeReaderNew::closeDistanceFromGenTrack(const double &x, const double &y, 
 {
   double phi = std::atan2(y, x);
   double R = std::sqrt(x*x + y*y);
-  if (genTrackDistanceTransverse(getPt(), getPhi(), getD0(), getCharge(), 3.8114, phi, R) > distanceCutsTransverse_[layer]) return false;
+  if (genTrackDistanceTransverse(getPt(), getPhi0(), getD0(), getCharge(), 3.8114, phi, R) > distanceCutsTransverse_[layer]) return false;
   double distanceCutLongitudinal = distanceCutsLongitudinal_[layer];
   if (layer >= 11 && R < 61.) distanceCutLongitudinal = distanceCutsLongitudinal_[layer*10];
   if (fabs(genTrackDistanceLongitudinal(getZ0(), getCotTheta(), getPt(), getD0(), getCharge(), 3.8114, R, z)) > distanceCutLongitudinal) return false;
@@ -286,8 +286,9 @@ bool TreeReaderNew::goodTrack()
 // Fill the vector of selected variables
 bool TreeReaderNew::readVariables()
 {
-  variables_.clear();
-  layersVec_.clear();
+//  variables_.clear();
+//  layersVec_.clear();
+  stubsCombination_.clear();
   layersFound_.clear();
   // Find how the stub indexes correspond to the layers
   unsigned int totalStubs = tree_->m_stub;
@@ -301,7 +302,7 @@ bool TreeReaderNew::readVariables()
     // Cut on the radius of the stub
     const auto radiusCut = radiusCuts_.find(layer);
     if (radiusCut != radiusCuts_.end()) {
-      double R = getR(k);
+      double R = getStubR(k);
       if ((R < radiusCut->second.first) || (R > radiusCut->second.second)) continue;
     }
 
@@ -329,45 +330,46 @@ bool TreeReaderNew::readVariables()
     return false;
   }
 
-  // This needs to be after the layersFound is filled and before the variables are filled
-  regionForMeanR_ = getRegionForMeanR();
-
   for (const auto & m : layersFound_) {
     unsigned int k = m.second;
-    for (const auto &var : vars_) {
-      if (var->layer(m.first)) {
-        variables_.push_back(var->at(k, layersFound_, regionForMeanR_));
-        layersVec_.push_back(m.first);
-      }
-    }
+    stubsCombination_.pushStub(getStubPhi(k), getStubR(k), getStubZ(k), m.first);
+//    for (const auto &var : vars_) {
+//      if (var->layer(m.first)) {
+//        variables_.push_back(var->at(k));
+//        layersVec_.push_back(m.first);
+//      }
+//    }
   }
+  stubsCombination_.setCombinationIndex();
+  // Fill generator-level information
+  stubsCombination_.setGenTrack(getChargeOverPt(), getPhi0(), getD0(), getCotTheta(), getZ0());
 
-  if (allRequiredLayers_.size() <= 6) {
-    if (variables_.size() != variablesSize_) return false;
-  }
-  else if (variables_.size() < 15) {
-    return false;
-  }
+//  if (allRequiredLayers_.size() <= 6) {
+//    if (variables_.size() != variablesSize_) return false;
+//  }
+//  else if (variables_.size() < 15) {
+//    return false;
+//  }
 
-  if (adjustDiscontinuity_) {
-    // Avoid discontinuity in phi
-    phiDiscontinuous_ = false;
-    double firstPhi = variables_[phiIndex_];
-    // To avoid the change of sign around 0, which is continuous
-    if (fabs(firstPhi) > M_PI_2) {
-      for (unsigned int i = phiIndex_ + vars_.size(); i < variables_.size(); i += vars_.size()) {
-        if (firstPhi * variables_[i] < 0.) {
-          phiDiscontinuous_ = true;
-          break;
-        }
-      }
-    }
-    if (phiDiscontinuous_) {
-      for (unsigned int i = phiIndex_; i < variables_.size(); i += vars_.size()) {
-        if (variables_[i] < 0.) variables_[i] += 2 * M_PI;
-      }
-    }
-  }
+//  if (adjustDiscontinuity_) {
+//    // Avoid discontinuity in phi
+//    phiDiscontinuous_ = false;
+//    double firstPhi = variables_[phiIndex_];
+//    // To avoid the change of sign around 0, which is continuous
+//    if (fabs(firstPhi) > M_PI_2) {
+//      for (unsigned int i = phiIndex_ + vars_.size(); i < variables_.size(); i += vars_.size()) {
+//        if (firstPhi * variables_[i] < 0.) {
+//          phiDiscontinuous_ = true;
+//          break;
+//        }
+//      }
+//    }
+//    if (phiDiscontinuous_) {
+//      for (unsigned int i = phiIndex_; i < variables_.size(); i += vars_.size()) {
+//        if (variables_[i] < 0.) variables_[i] += 2 * M_PI;
+//      }
+//    }
+//  }
 
   return true;
 }
@@ -384,14 +386,14 @@ void TreeReaderNew::readTrackParameters()
   for (const auto & par : pars_) {
     parameters_.push_back(par->at(0)); // This could be improved avoiding to clear the vector and simply overwriting it.
 
-    if (adjustDiscontinuity_) {
-      // Adjust for discontinuity if the parameter phi is in the left hemisphere and it does not have the same sign
-      // as the phi coordinates (which have already been adjusted in this hemisphere).
-      if (parametersNames_[i] == "phi" && parameters_[i] * variables_[phiIndex_] < 0.) {
-        if (parameters_[i] > M_PI_2) parameters_[i] -= 2 * M_PI;
-        else if (parameters_[i] < -M_PI_2) parameters_[i] += 2 * M_PI;
-      }
-    }
+//    if (adjustDiscontinuity_) {
+//      // Adjust for discontinuity if the parameter phi is in the left hemisphere and it does not have the same sign
+//      // as the phi coordinates (which have already been adjusted in this hemisphere).
+//      if (parametersNames_[i] == "phi" && parameters_[i] * variables_[phiIndex_] < 0.) {
+//        if (parameters_[i] > M_PI_2) parameters_[i] -= 2 * M_PI;
+//        else if (parameters_[i] < -M_PI_2) parameters_[i] += 2 * M_PI;
+//      }
+//    }
 
     ++i;
   }
@@ -400,9 +402,15 @@ void TreeReaderNew::readTrackParameters()
 }
 
 
-std::vector<double> TreeReaderNew::getVariables()
+//std::vector<double> TreeReaderNew::getVariables()
+//{
+//  return variables_;
+//}
+
+
+StubsCombination TreeReaderNew::getStubsCombination()
 {
-  return variables_;
+  return stubsCombination_;
 }
 
 
@@ -432,38 +440,11 @@ void TreeReaderNew::writeConfiguration()
 }
 
 
-int TreeReaderNew::getRegionForMeanR() const
-{
-  auto l = layersFound_.find(15);
-  if ((l != layersFound_.end()) && (std::sqrt(std::pow(tree_->m_stub_x->at(l->second), 2) + std::pow(tree_->m_stub_y->at(l->second), 2)) < 61.))
-    return 9;
-  l = layersFound_.find(14);
-  if ((l != layersFound_.end()) && (std::sqrt(std::pow(tree_->m_stub_x->at(l->second), 2) + std::pow(tree_->m_stub_y->at(l->second), 2)) < 61.))
-    return 8;
-  l = layersFound_.find(13);
-  if ((l != layersFound_.end()) && (std::sqrt(std::pow(tree_->m_stub_x->at(l->second), 2) + std::pow(tree_->m_stub_y->at(l->second), 2)) < 61.))
-    return 7;
-  l = layersFound_.find(12);
-  if ((l != layersFound_.end()) && (std::sqrt(std::pow(tree_->m_stub_x->at(l->second), 2) + std::pow(tree_->m_stub_y->at(l->second), 2)) < 61.))
-    return 6;
-  l = layersFound_.find(11);
-  if ((l != layersFound_.end()) && (std::sqrt(std::pow(tree_->m_stub_x->at(l->second), 2) + std::pow(tree_->m_stub_y->at(l->second), 2)) < 61.))
-    return 5;
-  // Switch to the barrel layers to decide the average radius for the endcap disks
-  if (layersFound_.find(10) != layersFound_.end()) return 1;
-  if (layersFound_.find(9) != layersFound_.end()) return 2;
-  if (layersFound_.find(8) != layersFound_.end()) return 3;
-  if (layersFound_.find(7) != layersFound_.end()) return 4;
-  // It means layer 7 is missing, return the same meanR for the disks
-  return 4;
-}
-
-
-std::vector<int> TreeReaderNew::uniqueLayersVec() const
-{
-  std::vector<int> uniqueLayers(layersVec_);
-  std::sort(uniqueLayers.begin(), uniqueLayers.end());
-  uniqueLayers.erase(std::unique(uniqueLayers.begin(), uniqueLayers.end()), uniqueLayers.end());
-  return uniqueLayers;
-}
+//std::vector<int> TreeReaderNew::uniqueLayersVec() const
+//{
+//  std::vector<int> uniqueLayers(layersVec_);
+//  std::sort(uniqueLayers.begin(), uniqueLayers.end());
+//  uniqueLayers.erase(std::unique(uniqueLayers.begin(), uniqueLayers.end()), uniqueLayers.end());
+//  return uniqueLayers;
+//}
 
