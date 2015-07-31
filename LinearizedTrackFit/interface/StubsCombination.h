@@ -6,6 +6,7 @@
 #define REMOTEPROJECTS_STUBSCOMBINATION_H
 
 #include <vector>
+#include <cmath>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/Stub.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/CombinationIndex.h"
 
@@ -29,11 +30,19 @@ class StubsCombination
   void setCombinationIndex() { combinationIndex_ = combinationIndex(stubs_); }
   unsigned long getCombinationIndex() const { return combinationIndex_; }
   size_t size() const { return stubs_.size(); }
+  void setPhi(const int index, const double & phi) { stubs_.at(index).setPhi(phi); }
+  void setR(const int index, const double & R) { stubs_.at(index).setR(R); }
+  void setZ(const int index, const double & z) { stubs_.at(index).setZ(z); }
   std::vector<double> phiVector() const;
   std::vector<double> RVector() const;
   std::vector<double> zVector() const;
   std::vector<double> variables() const;
   std::vector<int> layers() const;
+  std::vector<Stub>::const_iterator begin() const { return stubs_.begin(); }
+  std::vector<Stub>::const_iterator end() const { return stubs_.end(); }
+  double genTrackDistanceTransverse(const int index) const;
+  double genTrackDistanceTransverseFromZ(const int index) const;
+  double genTrackDistanceLongitudinal(const int index) const;
 
  private:
   double genChargeOverPt_;

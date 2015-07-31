@@ -20,10 +20,6 @@ TreeReaderNew::TreeReaderNew(const TString & inputFileName, const double & event
     getParPhi0_(std::make_shared<GetParPhi>(tree_)),
     getParZ0_(std::make_shared<GetParZ0>(tree_)),
     getParD0_(std::make_shared<GetParD0>(tree_)),
-//    phiIndex_(-1),
-//    zIndex_(-1),
-//    phiDiscontinuous_(false),
-//    adjustDiscontinuity_(false),
     stubCombinationIndex_(-1),
     maxStubCombinations_(0)//,
 {
@@ -77,22 +73,6 @@ TreeReaderNew::TreeReaderNew(const TString & inputFileName, const double & event
     }
   }
   assert(pars_.size() == trackParNames.size());
-
-//  // Avoid discontinuity in phi between +pi and -pi
-//  int countPhiNames = 0;
-//  int countZNames = 0;
-//  for (unsigned int i=0; i<varNames.size(); ++i) {
-//    if (varNames[i] == "phi") {
-//      phiIndex_ = i;
-//      ++countPhiNames;
-//    }
-//    if (varNames[i] == "z") {
-//      zIndex_ = i;
-//      ++countZNames;
-//    }
-//  }
-//  assert(countPhiNames == 0 || countPhiNames == 1);
-//  assert(countZNames == 0 || countZNames == 1);
 }
 
 
@@ -104,10 +84,6 @@ void TreeReaderNew::reset(const double & eventsFractionStart, const double & eve
   lastTrack_ = tree_->n_entries*eventsFractionEnd;
   totalTracks_ = lastTrack_-firstTrack_;
   trackIndex_ = 0;
-
-//  for(auto var : vars_) {
-//    var->resetSeed();
-//  }
 }
 
 
@@ -118,21 +94,8 @@ void TreeReaderNew::reset(const double & eventsFractionStart, const double & eve
 // to apply both to layers and variables.
 void TreeReaderNew::generateStubCombination()
 {
-  // std::vector<int> combination(combinationGenerator_.combination(stubCombinationIndex_, layersFound_.size()));
-  // stubsCombination_.clear();
-  // variables_.clear();
-  // layersVec_.clear();
   // Fill with all the variables and layers from indexes contained in the combination
   stubsCombination_.build(allStubsCombination_, combinationGenerator_.combination(stubCombinationIndex_, layersFound_.size()));
-
-//  for (auto index : combination) {
-//    variables_.push_back(allVariables_[index*3]);
-//    variables_.push_back(allVariables_[index*3+1]);
-//    variables_.push_back(allVariables_[index*3+2]);
-//    layersVec_.push_back(allLayersVec_[index*3]);
-//    layersVec_.push_back(allLayersVec_[index*3+1]);
-//    layersVec_.push_back(allLayersVec_[index*3+2]);
-//  }
   ++stubCombinationIndex_;
 }
 
@@ -172,10 +135,7 @@ bool TreeReaderNew::nextTrack()
         // Otherwise go through and return the set of 5 stubs.
         if (layersFound_.size() > 5) {
           stubCombinationIndex_ = 0;
-          // maxStubCombinations_ = layersFound_.size();
           maxStubCombinations_ = combinationGenerator_.combinationsSize(layersFound_.size());
-//          allVariables_ = variables_;
-//          allLayersVec_ = layersVec_;
           allStubsCombination_ = stubsCombination_;
         }
         else if (layersFound_.size() < 5) good = false;
@@ -286,8 +246,6 @@ bool TreeReaderNew::goodTrack()
 // Fill the vector of selected variables
 bool TreeReaderNew::readVariables()
 {
-//  variables_.clear();
-//  layersVec_.clear();
   stubsCombination_.clear();
   layersFound_.clear();
   // Find how the stub indexes correspond to the layers
@@ -333,43 +291,10 @@ bool TreeReaderNew::readVariables()
   for (const auto & m : layersFound_) {
     unsigned int k = m.second;
     stubsCombination_.pushStub(getStubPhi(k), getStubR(k), getStubZ(k), m.first);
-//    for (const auto &var : vars_) {
-//      if (var->layer(m.first)) {
-//        variables_.push_back(var->at(k));
-//        layersVec_.push_back(m.first);
-//      }
-//    }
   }
   stubsCombination_.setCombinationIndex();
   // Fill generator-level information
   stubsCombination_.setGenTrack(getChargeOverPt(), getPhi0(), getD0(), getCotTheta(), getZ0());
-
-//  if (allRequiredLayers_.size() <= 6) {
-//    if (variables_.size() != variablesSize_) return false;
-//  }
-//  else if (variables_.size() < 15) {
-//    return false;
-//  }
-
-//  if (adjustDiscontinuity_) {
-//    // Avoid discontinuity in phi
-//    phiDiscontinuous_ = false;
-//    double firstPhi = variables_[phiIndex_];
-//    // To avoid the change of sign around 0, which is continuous
-//    if (fabs(firstPhi) > M_PI_2) {
-//      for (unsigned int i = phiIndex_ + vars_.size(); i < variables_.size(); i += vars_.size()) {
-//        if (firstPhi * variables_[i] < 0.) {
-//          phiDiscontinuous_ = true;
-//          break;
-//        }
-//      }
-//    }
-//    if (phiDiscontinuous_) {
-//      for (unsigned int i = phiIndex_; i < variables_.size(); i += vars_.size()) {
-//        if (variables_[i] < 0.) variables_[i] += 2 * M_PI;
-//      }
-//    }
-//  }
 
   return true;
 }
@@ -382,30 +307,11 @@ void TreeReaderNew::readTrackParameters()
   // Loop on pars_ and fill a vector of parameters. We validated the collection
   // such that it does not have stubs pointing to other generator level parameters
   // so we can use the first element.
-  int i = 0;
   for (const auto & par : pars_) {
     parameters_.push_back(par->at(0)); // This could be improved avoiding to clear the vector and simply overwriting it.
-
-//    if (adjustDiscontinuity_) {
-//      // Adjust for discontinuity if the parameter phi is in the left hemisphere and it does not have the same sign
-//      // as the phi coordinates (which have already been adjusted in this hemisphere).
-//      if (parametersNames_[i] == "phi" && parameters_[i] * variables_[phiIndex_] < 0.) {
-//        if (parameters_[i] > M_PI_2) parameters_[i] -= 2 * M_PI;
-//        else if (parameters_[i] < -M_PI_2) parameters_[i] += 2 * M_PI;
-//      }
-//    }
-
-    ++i;
   }
-
   assert(parameters_.size() == parametersSize_);
 }
-
-
-//std::vector<double> TreeReaderNew::getVariables()
-//{
-//  return variables_;
-//}
 
 
 StubsCombination TreeReaderNew::getStubsCombination()
@@ -438,13 +344,3 @@ void TreeReaderNew::writeConfiguration()
   }
   outfile.close();
 }
-
-
-//std::vector<int> TreeReaderNew::uniqueLayersVec() const
-//{
-//  std::vector<int> uniqueLayers(layersVec_);
-//  std::sort(uniqueLayers.begin(), uniqueLayers.end());
-//  uniqueLayers.erase(std::unique(uniqueLayers.begin(), uniqueLayers.end()), uniqueLayers.end());
-//  return uniqueLayers;
-//}
-

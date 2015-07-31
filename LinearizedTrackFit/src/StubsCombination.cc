@@ -84,3 +84,38 @@ std::vector<double> StubsCombination::variables() const
   }
   return variablesVec;
 }
+
+
+double StubsCombination::genTrackDistanceTransverse(const int index) const
+{
+  const Stub & stub = stubs_.at(index);
+  double rho = genChargeOverPt_ != 0 ? (1./genChargeOverPt_)/(3.8114*0.003) : 10000.;
+  double R = stub.R();
+  double phiGen = genPhi0_ - asin((genD0_*genD0_ + 2*genD0_*rho + R*R)/(2*R*(rho+genD0_)));
+  double deltaPhi = (stub.phi() - phiGen);
+  if (deltaPhi > M_PI) deltaPhi -= M_PI;
+  else if (deltaPhi < -M_PI) deltaPhi += M_PI;
+  return deltaPhi;
+}
+
+
+double StubsCombination::genTrackDistanceTransverseFromZ(const int index) const
+{
+  const Stub & stub = stubs_.at(index);
+  double rho = genChargeOverPt_ != 0 ? (1./genChargeOverPt_)/(3.8114*0.003) : 10000.;
+  double phiGen = genPhi0_ - (stub.z()-genZ0_)/(2*rho*genCotTheta_);
+  double deltaPhi = (stub.phi() - phiGen);
+  if (deltaPhi > M_PI) deltaPhi -= M_PI;
+  else if (deltaPhi < -M_PI) deltaPhi += M_PI;
+  return deltaPhi;
+}
+
+
+double StubsCombination::genTrackDistanceLongitudinal(const int index) const
+{
+  const Stub & stub = stubs_.at(index);
+  double rho = genChargeOverPt_ != 0 ? (1./genChargeOverPt_)/(3.8114*0.003) : 10000.;
+  double R = stub.R();
+  double zGen = genZ0_ + 2*rho*genCotTheta_*asin((genD0_*genD0_ + 2*genD0_*rho + R*R)/(2*R*(rho+genD0_)));
+  return (stub.z() - zGen);
+}

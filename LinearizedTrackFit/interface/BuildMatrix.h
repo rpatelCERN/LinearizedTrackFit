@@ -79,46 +79,24 @@ namespace LinearFit {
       if (treeReader.getZ0() < z0Min_) continue;
       if (treeReader.getZ0() > z0Max_) continue;
 
-      // std::vector<double> vars(treeReader.getVariables());
       StubsCombination stubsCombination(treeReader.getStubsCombination());
       std::vector<double> pars(treeReader.getTrackParameters());
-//      std::vector<int> uniqueRequiredLayers(treeReader.uniqueLayersVec());
 
-//      if (vars.size()%3 != 0) {
-//        std::cout << "Error: number of variables ("<<vars.size()<<") is not divisible by 3." << std::endl;
-//        throw;
-//      }
-
-//      if (sixOutOfSixOnly && vars.size() != 18) continue;
       if (sixOutOfSixOnly && stubsCombination.size() != 6) continue;
 
       // Extract the radii
-//      std::vector<double> radius;
-//      extractCoordinate(vars, 1, radius);
-//      std::vector<double> z;
-//      extractCoordinate(vars, 2, z);
       std::vector<double> radius(stubsCombination.RVector());
       std::vector<double> z(stubsCombination.zVector());
       std::vector<double> vars(stubsCombination.variables());
       std::vector<int> uniqueRequiredLayers(stubsCombination.layers());
 
       // Compute the combination index
-      // unsigned long combinationIndex_ = combinationIndex(uniqueRequiredLayers, radius);
       unsigned long combinationIndex_ = stubsCombination.getCombinationIndex();
 
-
-
-//      if (doMapSectors) mapSectors(treeReader.getStubRZPhi(), sectors);
-//      if (computeDistances) fillDistances(treeReader, stubDistanceTransverseHistograms,
-//                                          stubDistanceLongitudinalHistograms, stubDistanceLongitudinalHistogramsR);
       if (computeDistances) {
-        fillDistances(treeReader, vars, uniqueRequiredLayers, treeReader.getPt(), treeReader.getPhi0(),
-                      treeReader.getD0(), treeReader.getCharge(), treeReader.getZ0(), treeReader.getCotTheta(),
-                      combinationIndex_, stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms,
+        fillDistances(stubsCombination, stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms,
                       stubDistanceLongitudinalHistogramsR);
       }
-
-
 
       // Update the mean of R for this combination
       updateMean(meanRadius, combinationIndex_, radius);
@@ -130,10 +108,6 @@ namespace LinearFit {
                                          firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsDirName,
                                          inputMeanRadius[combinationIndex_], inputMeanZ[combinationIndex_]);
 
-//      std::cout << "input phi = " << std::endl;
-//      for (int i=0; i<vars.size()/3; ++i) std::cout << vars[i*3];
-//      std::cout << std::endl;
-
       std::vector<double> transformedVars;
       auto varTransformVec = variablesTransformations[combinationIndex_];
       transformVariables(vars, uniqueRequiredLayers, varTransformVec, transformedVars,
@@ -141,31 +115,40 @@ namespace LinearFit {
 
       if (computeDistances) {
         std::vector<double> fullTransformedVars(vars);
+        StubsCombination transformedStubsCombination(stubsCombination);
         int inputVarNamesSize = inputVarNames.size();
         for (int i=0; i<inputVarNamesSize; ++i) {
-          int shift = -1;
+//          int shift = -1;
           if (inputVarNames.at(i).find("phi") != std::string::npos || inputVarNames.at(i).find("Phi") != std::string::npos) {
-            shift = 0;
-          }
-          else if (inputVarNames.at(i).find("R") != std::string::npos) {
-            shift = 1;
-          }
-          else if (inputVarNames.at(i).find("z") != std::string::npos || inputVarNames.at(i).find("Z") != std::string::npos) {
-            shift = 2;
-          }
-          if (shift != -1) {
-            for (size_t j = 0; j < vars.size() / 3; ++j) {
-              fullTransformedVars[j * 3 + shift] = transformedVars[j * inputVarNamesSize + i];
+//            shift = 0;
+            for (size_t j = 0; j < stubsCombination.size(); ++j) {
+              transformedStubsCombination.setPhi(j, transformedVars[j * inputVarNamesSize + i]);
             }
           }
+          else if (inputVarNames.at(i).find("R") != std::string::npos) {
+//            shift = 1;
+            for (size_t j = 0; j < stubsCombination.size(); ++j) {
+              transformedStubsCombination.setR(j, transformedVars[j * inputVarNamesSize + i]);
+            }
+          }
+          else if (inputVarNames.at(i).find("z") != std::string::npos || inputVarNames.at(i).find("Z") != std::string::npos) {
+//            shift = 2;
+            for (size_t j = 0; j < stubsCombination.size(); ++j) {
+              transformedStubsCombination.setZ(j, transformedVars[j * inputVarNamesSize + i]);
+            }
+          }
+//          if (shift != -1) {
+//            for (size_t j = 0; j < vars.size() / 3; ++j) {
+//              fullTransformedVars[j * 3 + shift] = transformedVars[j * inputVarNamesSize + i];
+//            }
+//          }
         }
         // Setting meanRadius
-        for (size_t j = 0; j < vars.size() / 3; ++j) {
-          fullTransformedVars[j*3+1] = inputMeanRadius[combinationIndex_][j];
+        for (size_t j = 0; j < stubsCombination.size(); ++j) {
+          transformedStubsCombination.setR(j, inputMeanRadius[combinationIndex_][j]);
+          // fullTransformedVars[j*3+1] = inputMeanRadius[combinationIndex_][j];
         }
-        fillDistances(treeReader, fullTransformedVars, uniqueRequiredLayers, treeReader.getPt(), treeReader.getPhi0(),
-                      treeReader.getD0(), treeReader.getCharge(), treeReader.getZ0(), treeReader.getCotTheta(),
-                      combinationIndex_, stubDistanceTransverseTransformedHistograms,
+        fillDistances(transformedStubsCombination, stubDistanceTransverseTransformedHistograms,
                       stubDistanceLongitudinalTransformedHistograms, stubDistanceLongitudinalTransformedHistogramsR,
                       "Transformed");
       }
@@ -181,8 +164,6 @@ namespace LinearFit {
           requiredLayers.push_back(l);
         }
         matrices.insert({{combinationIndex_, MatrixBuilder(std::to_string(combinationIndex_),
-        // treeReader.variablesSize(), inputTrackParameterNames, requiredLayersVec)}});
-        // transformedVars.size(), inputTrackParameterNames, uniqueRequiredLayers)}});
         transformedVars.size(), inputTrackParameterNames, requiredLayers)}});
 
         histograms.insert({{combinationIndex_, MatrixBuilderHistograms(std::to_string(combinationIndex_),
@@ -262,30 +243,16 @@ namespace LinearFit {
       if (treeReader.getZ0() > z0Max_) continue;
 
       StubsCombination stubsCombination(treeReader.getStubsCombination());
-//      std::vector<double> vars(treeReader.getVariables());
       std::vector<double> pars(treeReader.getTrackParameters());
-//      std::vector<int> uniqueRequiredLayers(treeReader.uniqueLayersVec());
-      // std::vector<int> requiredLayersVec(treeReader.layersVec());
       std::vector<double> vars(stubsCombination.variables());
       std::vector<int> uniqueRequiredLayers(stubsCombination.layers());
 
-//      if (sixOutOfSixOnly && vars.size() != 18) continue;
       if (sixOutOfSixOnly && stubsCombination.size() != 6) continue;
 
-//      if (vars.size()%3 != 0) {
-//        std::cout << "Error: number of variables ("<<vars.size()<<") is not divisible by 3." << std::endl;
-//        throw;
-//      }
-
-//      // Extract the radii
-//      std::vector<double> radius;
-//      for (size_t i=0; i<vars.size()/3; ++i) {
-//        radius.push_back(vars[i*3+1]);
-//      }
+      // Extract the radii
       std::vector<double> radius(stubsCombination.RVector());
 
       // Compute the combination index
-//      unsigned long combinationIndex_ = combinationIndex(uniqueRequiredLayers, radius);
       unsigned long combinationIndex_ = stubsCombination.getCombinationIndex();
 
       // Running on the same events as above, no new combinations are expected

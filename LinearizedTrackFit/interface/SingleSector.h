@@ -13,22 +13,73 @@
 namespace LinearFit {
 
 
-  void fillDistances(const std::vector<double> & distances, const unsigned long combinationIndex,
+//  void fillDistances(const std::vector<double> & distances, const unsigned long combinationIndex,
+//                     std::unordered_map<unsigned long, StubResidualHistograms> & distanceHistograms,
+//                     const std::string & histoName, const size_t histoNumber,
+//                     const double & genChargeOverPt, const double & genPhi0, const double & genD0,
+//                     const double & genZ0, const double & genCotTheta)
+//  {
+//    if (distanceHistograms.find(combinationIndex) == distanceHistograms.end()) {
+//      distanceHistograms.insert(std::make_pair(combinationIndex, StubResidualHistograms(histoName, histoNumber)));
+//    }
+//    distanceHistograms.find(combinationIndex)->second.fill(distances, genChargeOverPt, genPhi0, genD0, genZ0, genCotTheta);
+//  }
+
+
+//  void fillDistances(const TreeReaderNew & treeReader, const std::vector<double> & vars, const std::vector<int> uniqueLayers,
+//                     const double & genPt, const double & genPhi0, const double & genD0, const int genCharge,
+//                     const double & genZ0, const double & genCotTheta, const unsigned long combinationIndex,
+//                     std::unordered_map<unsigned long, StubResidualHistograms> & histogramsTransverse,
+//                     std::unordered_map<unsigned long, StubResidualHistograms> & histogramsLongitudinal,
+//                     std::unordered_map<unsigned long, StubResidualHistograms> & histogramsLongitudinalR,
+//                     const std::string & histoType = "")
+//  {
+//    std::vector<double> distancesTransverse;
+//    std::vector<double> distancesLongitudinal;
+//    std::vector<double> distancesLongitudinalR;
+//    size_t varsNum = vars.size()/3;
+//    double genChargeOverPt = genPt == 0 ? 10000. : genCharge/genPt;
+//    for (size_t i=0; i<vars.size()/3; ++i) {
+//      double phi = vars[i*3];
+//      double R = vars[i*3+1];
+//      double z = vars[i*3+2];
+//      if (uniqueLayers[i] <= 10) {
+//        distancesTransverse.push_back(treeReader.genTrackDistanceTransverse(genPt, genPhi0, genD0, genCharge, 3.8114, phi, R));
+//      }
+//      else {
+//        distancesTransverse.push_back(treeReader.genTrackDistanceTransverseFromZ(genPt, genPhi0, genZ0, genCotTheta, genCharge, 3.8114, phi, z));
+//      }
+//      double distLongitudinal = treeReader.genTrackDistanceLongitudinal(genZ0, genCotTheta, genPt, genD0, genCharge, 3.8114, R, z);
+//      distancesLongitudinal.push_back(distLongitudinal);
+//      distancesLongitudinalR.push_back(distLongitudinal/genCotTheta);
+//    }
+//    fillDistances(distancesTransverse, combinationIndex, histogramsTransverse, "stubDistanceTransverse"+histoType, varsNum,
+//                  genChargeOverPt, genPhi0, genD0, genZ0, genCotTheta);
+//    fillDistances(distancesLongitudinal, combinationIndex, histogramsLongitudinal, "stubDistanceLongitudinal"+histoType, varsNum,
+//                  genChargeOverPt, genPhi0, genD0, genZ0, genCotTheta);
+//    fillDistances(distancesLongitudinalR, combinationIndex, histogramsLongitudinalR, "stubDistanceLongitudinalR"+histoType, varsNum,
+//                  genChargeOverPt, genPhi0, genD0, genZ0, genCotTheta);
+//  }
+
+
+  void fillDistances(const std::vector<double> & distances, const StubsCombination & stubsCombination,
                      std::unordered_map<unsigned long, StubResidualHistograms> & distanceHistograms,
-                     const std::string & histoName, const size_t histoNumber,
-                     const double & genChargeOverPt, const double & genPhi0, const double & genD0,
-                     const double & genZ0, const double & genCotTheta)
+                     const std::string & histoName)
   {
-    if (distanceHistograms.find(combinationIndex) == distanceHistograms.end()) {
-      distanceHistograms.insert(std::make_pair(combinationIndex, StubResidualHistograms(histoName, histoNumber)));
+    if (distanceHistograms.find(stubsCombination.getCombinationIndex()) == distanceHistograms.end()) {
+      distanceHistograms.insert(std::make_pair(stubsCombination.getCombinationIndex(),
+                                               StubResidualHistograms(histoName, stubsCombination.size())));
     }
-    distanceHistograms.find(combinationIndex)->second.fill(distances, genChargeOverPt, genPhi0, genD0, genZ0, genCotTheta);
+    distanceHistograms.find(stubsCombination.getCombinationIndex())->second.fill(distances,
+                                                                                 stubsCombination.genChargeOverPt(),
+                                                                                 stubsCombination.genPhi0(),
+                                                                                 stubsCombination.genD0(),
+                                                                                 stubsCombination.genZ0(),
+                                                                                 stubsCombination.genCotTheta());
   }
 
 
-  void fillDistances(const TreeReaderNew & treeReader, const std::vector<double> & vars, const std::vector<int> uniqueLayers,
-                     const double & genPt, const double & genPhi0, const double & genD0, const int genCharge,
-                     const double & genZ0, const double & genCotTheta, const unsigned long combinationIndex,
+  void fillDistances(const StubsCombination & stubsCombination,
                      std::unordered_map<unsigned long, StubResidualHistograms> & histogramsTransverse,
                      std::unordered_map<unsigned long, StubResidualHistograms> & histogramsLongitudinal,
                      std::unordered_map<unsigned long, StubResidualHistograms> & histogramsLongitudinalR,
@@ -37,53 +88,26 @@ namespace LinearFit {
     std::vector<double> distancesTransverse;
     std::vector<double> distancesLongitudinal;
     std::vector<double> distancesLongitudinalR;
-    size_t varsNum = vars.size()/3;
-    double genChargeOverPt = genPt == 0 ? 10000. : genCharge/genPt;
-    for (size_t i=0; i<vars.size()/3; ++i) {
-      double phi = vars[i*3];
-      double R = vars[i*3+1];
-      double z = vars[i*3+2];
-      if (uniqueLayers[i] <= 10) {
-        distancesTransverse.push_back(treeReader.genTrackDistanceTransverse(genPt, genPhi0, genD0, genCharge, 3.8114, phi, R));
+    int i=0;
+    for (auto it = stubsCombination.begin(); it != stubsCombination.end(); ++it) {
+//      double phi = it->phi();
+//      double R = it->R();
+//      double z = it->z();
+      if (it->layer() <= 10) {
+        distancesTransverse.push_back(stubsCombination.genTrackDistanceTransverse(i));
       }
       else {
-        distancesTransverse.push_back(treeReader.genTrackDistanceTransverseFromZ(genPt, genPhi0, genZ0, genCotTheta, genCharge, 3.8114, phi, z));
+        distancesTransverse.push_back(stubsCombination.genTrackDistanceTransverseFromZ(i));
       }
-      double distLongitudinal = treeReader.genTrackDistanceLongitudinal(genZ0, genCotTheta, genPt, genD0, genCharge, 3.8114, R, z);
+      double distLongitudinal = stubsCombination.genTrackDistanceLongitudinal(i);
       distancesLongitudinal.push_back(distLongitudinal);
-      distancesLongitudinalR.push_back(distLongitudinal/genCotTheta);
+      distancesLongitudinalR.push_back(distLongitudinal/stubsCombination.genCotTheta());
+      ++i;
     }
-    fillDistances(distancesTransverse, combinationIndex, histogramsTransverse, "stubDistanceTransverse"+histoType, varsNum,
-                  genChargeOverPt, genPhi0, genD0, genZ0, genCotTheta);
-    fillDistances(distancesLongitudinal, combinationIndex, histogramsLongitudinal, "stubDistanceLongitudinal"+histoType, varsNum,
-                  genChargeOverPt, genPhi0, genD0, genZ0, genCotTheta);
-    fillDistances(distancesLongitudinalR, combinationIndex, histogramsLongitudinalR, "stubDistanceLongitudinalR"+histoType, varsNum,
-                  genChargeOverPt, genPhi0, genD0, genZ0, genCotTheta);
+    fillDistances(distancesTransverse, stubsCombination, histogramsTransverse, "stubDistanceTransverse"+histoType);
+    fillDistances(distancesLongitudinal, stubsCombination, histogramsLongitudinal, "stubDistanceLongitudinal"+histoType);
+    fillDistances(distancesLongitudinalR, stubsCombination, histogramsLongitudinalR, "stubDistanceLongitudinalR"+histoType);
   }
-
-
-//  void fillDistances(const TreeReader & treeReader, BaseHistograms & histogramsTransverse,
-//                     BaseHistograms & histogramsLongitudinal, BaseHistograms & histogramsLongitudinalR)
-//  {
-//    std::vector<double> distancesTransverse;
-//    std::vector<double> distancesLongitudinal;
-//    std::vector<double> distancesLongitudinalR;
-//    for (const auto &s : treeReader.getStubRZPhi()) {
-//      double distTransverse = treeReader.genTrackDistanceTransverse(treeReader.getPt(), treeReader.getPhi(),
-//                                                                    treeReader.getD0(), treeReader.getCharge(),
-//                                                                    3.8114, s.x(), s.y());
-//      distancesTransverse.push_back(distTransverse);
-//      double distLongitudinal = treeReader.genTrackDistanceLongitudinal(treeReader.getZ0(), treeReader.getCotTheta(),
-//                                                                        treeReader.getPt(), treeReader.getD0(),
-//                                                                        treeReader.getCharge(), 3.8114, s.R(), s.z());
-//      distancesLongitudinal.push_back(distLongitudinal);
-//
-//      distancesLongitudinalR.push_back(distLongitudinal/treeReader.getCotTheta());
-//    }
-//    histogramsTransverse.fill(distancesTransverse);
-//    histogramsLongitudinal.fill(distancesLongitudinal);
-//    histogramsLongitudinalR.fill(distancesLongitudinalR);
-//  }
 
 
   void writeDistances(std::unordered_map<unsigned long, StubResidualHistograms> & histogramsTransverse,
@@ -129,22 +153,9 @@ namespace LinearFit {
   }
 
 
-//  void writeDistances(BaseHistograms & histogramsTransverse, BaseHistograms & histogramsLongitudinal,
-//                      BaseHistograms & histogramsLongitudinalR)
-//  {
-//    TFile outputFile("StubDistanceFromGenTrack.root", "RECREATE");
-//    outputFile.cd();
-//    histogramsTransverse.write();
-//    histogramsLongitudinal.write();
-//    histogramsLongitudinalR.write();
-//    outputFile.Close();
-//  }
-
-
   void mapSectors(const std::vector<StubRZPhi> & stubsRZPhi, std::unordered_map<std::string, int> & sectors)
   {
     std::string sectorString = "";
-    std::vector<float> distances;
     for (const auto &s : stubsRZPhi) {
       sectorString += std::to_string(s.module()) + "+" + std::to_string(s.ladder()) + "+";
     }
@@ -172,29 +183,6 @@ namespace LinearFit {
     }
     outfile.close();
   }
-
-
-//  void singleSector(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
-//      const std::unordered_map<std::string, std::unordered_set<int> > & requiredLayers,
-//      std::vector<double> & distanceCutsTransverse, std::vector<double> & distanceCutsLongitudinal,
-//      const std::vector<std::string> & inputVarNames, const std::vector<std::string> & inputTrackParameterNames)
-//  {
-//    TreeReader treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers,
-//        distanceCutsTransverse, distanceCutsLongitudinal, inputVarNames, inputTrackParameterNames);
-//
-//    std::unordered_map<std::string, int> sectors;
-//    BaseHistograms histogramsTransverse("stubDistanceTransverse", 6, 1000, 0., 5.);
-//    BaseHistograms histogramsLongitudinal("stubDistanceLongitudinal", 6, 1000, 0., 15.);
-//
-//    while (treeReader.nextTrack()) {
-//      mapSectors(treeReader.getStubRZPhi(), sectors);
-//      fillDistances(treeReader, histogramsTransverse, histogramsLongitudinal);
-//    }
-//
-//    writeSectorsMap(sectors);
-//
-//    writeDistances(histogramsTransverse, histogramsLongitudinal);
-//  }
 }
 
 #endif // SINGLESECTOR_H

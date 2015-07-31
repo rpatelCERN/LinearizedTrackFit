@@ -12,10 +12,14 @@ class Stub
   Stub(const double & phi, const double & R, const double & z, const int layer) :
       phi_(phi), R_(R), z_(z), layer_(layer)
   {}
- double phi() const { return phi_; }
- double R() const { return R_; }
- double z() const { return z_; }
- int layer() const { return layer_; }
+
+  void setPhi(const double & phi) { phi_ = phi; }
+  void setR(const double & R) { R_ = R; }
+  void setZ(const double & z) { z_ = z; }
+  double phi() const { return phi_; }
+  double R() const { return R_; }
+  double z() const { return z_; }
+  int layer() const { return layer_; }
 
  private:
   double phi_;
