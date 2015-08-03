@@ -99,9 +99,11 @@ namespace LinearFit {
       else {
         distancesTransverse.push_back(stubsCombination.genTrackDistanceTransverseFromZ(i));
       }
-      double distLongitudinal = stubsCombination.genTrackDistanceLongitudinal(i);
-      distancesLongitudinal.push_back(distLongitudinal);
-      distancesLongitudinalR.push_back(distLongitudinal/stubsCombination.genCotTheta());
+//      double distLongitudinal = stubsCombination.genTrackDistanceLongitudinal(i);
+//      distancesLongitudinal.push_back(distLongitudinal);
+//      distancesLongitudinalR.push_back(distLongitudinal/stubsCombination.genCotTheta());
+      distancesLongitudinal.push_back(stubsCombination.genTrackDistanceLongitudinal(i));
+      distancesLongitudinalR.push_back(stubsCombination.genTrackDistanceLongitudinalR(i));
       ++i;
     }
     fillDistances(distancesTransverse, stubsCombination, histogramsTransverse, "stubDistanceTransverse"+histoType);

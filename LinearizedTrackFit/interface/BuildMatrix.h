@@ -143,11 +143,11 @@ namespace LinearFit {
 //            }
 //          }
         }
-        // Setting meanRadius
-        for (size_t j = 0; j < stubsCombination.size(); ++j) {
-          transformedStubsCombination.setR(j, inputMeanRadius[combinationIndex_][j]);
-          // fullTransformedVars[j*3+1] = inputMeanRadius[combinationIndex_][j];
-        }
+//        // Setting meanRadius
+//        for (size_t j = 0; j < stubsCombination.size(); ++j) {
+//          transformedStubsCombination.setR(j, inputMeanRadius[combinationIndex_][j]);
+//          // fullTransformedVars[j*3+1] = inputMeanRadius[combinationIndex_][j];
+//        }
         fillDistances(transformedStubsCombination, stubDistanceTransverseTransformedHistograms,
                       stubDistanceLongitudinalTransformedHistograms, stubDistanceLongitudinalTransformedHistogramsR,
                       "Transformed");

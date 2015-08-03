@@ -237,15 +237,19 @@ int main(int argc, char* argv[])
 
     // Input coordinates
     // -----------------
-//  std::vector<std::string> inputVarNames_{"phi"};
-//  std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrder"};
-//  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrder"};
-//  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR"};
-    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactR"};
-//  std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrderPz"};
-//  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGen"};
-//  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenDeltaZ"};
-//  firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse_Pz/";
+//    std::vector<std::string> inputVarNames_{"phi"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrder"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrder"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR", "ExtrapolatedR"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR", "ExtrapolatedRSecondOrder"};
+    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrder"};
+
+    //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactR"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrderPz"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGen"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenDeltaZ"};
+//    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse_Pz/";
 
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiExactWithD0Gen"};
 //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderWithD0Gen"};
@@ -303,6 +307,8 @@ int main(int argc, char* argv[])
     // Geometric cuts
 //    oneOverPtMax_ = 1 / 2.;
 //    oneOverPtMin_ = 0.;
+//    oneOverPtMax_ = 1. / 2.;
+//    oneOverPtMin_ = 1. / 10.;
     oneOverPtMax_ = 1. / 10.;
     oneOverPtMin_ = 0.;
 //    oneOverPtRegions_ = 1;
@@ -314,6 +320,7 @@ int main(int argc, char* argv[])
 //    phiMax_ = 3.4;
 //    phiRegions_ = 1;
     etaMin_ = 0.8;
+//    etaMin_ = 0.;
     etaMax_ = 3.;
 //    etaRegions_ = 1;
 //    z0Min_ = -15.;

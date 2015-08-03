@@ -14,7 +14,6 @@
 
 
 // Extrapolate R to from the outermost PS module to the given z position using the given tgTheta
-// Note: the reference to R is passed and the variable is changed inside if needed.
 template <class T>
 double extrapolateR(const double & R, const double & z, const int layer, const double & tgTheta,
                     const std::vector<int> & uniqueLayers, const std::vector<double> & originalR, const T & originalZ)
@@ -31,6 +30,80 @@ double extrapolateR(const double & R, const double & z, const int layer, const d
   }
   return R;
 }
+
+
+// Extrapolate R to from the outermost PS module to the given z position using the given tgTheta.
+// Use a second order approximation.
+template <class T>
+double extrapolateRSecondOrder(const double & R, const double & z, const int layer, const double & tgTheta,
+                               const double & chargeOverPt,
+                               const std::vector<int> & uniqueLayers,
+                               const std::vector<double> & originalR, const T & originalZ)
+{
+  if (layer > 10 && R > 61.) {
+    // Extrapolate R from the outermost PS module in this stubs combination
+    for (int i = uniqueLayers.size() - 1; i >= 0; --i) {
+      if (uniqueLayers[i] < 8 || (uniqueLayers[i] > 10 && originalR[i] < 61.)) {
+        double rho = chargeOverPt != 0 ? (1./chargeOverPt)/(3.8114*0.003) : 10000.;
+        double deltaZTgTheta = (z - originalZ[i])*tgTheta;
+
+        double term1 = -deltaZTgTheta*std::pow(originalR[i], 2)/std::pow(2*rho, 2)/2.;
+        double term2 = -originalR[i]*std::pow(deltaZTgTheta, 2)/std::pow(2*rho, 2)/2.;
+        double term3 = -std::pow(deltaZTgTheta, 3)/std::pow(2*rho, 2)/6.;
+        double secondOrderTerm = term1+term2+term3;
+
+//        return (originalR[i] + deltaZTgTheta - std::pow(deltaZTgTheta, 3)/std::pow(2*rho, 2)/6.);
+        return (originalR[i] + deltaZTgTheta + secondOrderTerm);
+      }
+    }
+  }
+  return R;
+}
+
+
+//template <class T>
+//double extrapolateR(const double & R, const double & z, const int layer, const double & tgTheta,
+//                    const std::vector<int> & uniqueLayers, const std::vector<double> & originalR, const T & originalZ,
+//                    const double & genZ0, const double & genChargeOverPt)
+//{
+//  if (layer > 10 && R > 61.) {
+//    // Extrapolate R from the outermost PS module in this stubs combination
+//    for (int i = uniqueLayers.size() - 1; i >= 0; --i) {
+//      if (uniqueLayers[i] < 8 || (uniqueLayers[i] > 10 && originalR[i] < 61.)) {
+//        double deltaZTgTheta = (z - originalZ[i])*tgTheta;
+//        double extrapolatedR = (originalR[i] + deltaZTgTheta);
+//        double deltaZTgThetaGen = (z - genZ0) * tgTheta;
+//        double firstOrderExactR = deltaZTgThetaGen;
+//        double rho = genChargeOverPt != 0 ? (1./genChargeOverPt)/(3.8114*0.003) : 10000.;
+//        double secondOrderTermGen = std::pow(deltaZTgThetaGen, 3)/std::pow(2*rho, 2)/6.;
+//        double secondOrderExactR = deltaZTgThetaGen - secondOrderTermGen;
+//
+//        double term1 = -deltaZTgTheta*std::pow(originalR[i], 2)/std::pow(2*rho, 2)/2.;
+//        double term2 = -originalR[i]*std::pow(deltaZTgTheta, 2)/std::pow(2*rho, 2)/2.;
+//        double term3 = -std::pow(deltaZTgTheta, 3)/std::pow(2*rho, 2)/6.;
+//        double secondOrderTerm = term1+term2+term3;
+//
+//        double extrapolatedRSecondOrder = (originalR[i] + deltaZTgTheta + secondOrderTerm);
+//        double extrapolatedRFullOrder = originalR[i] + 2*rho*sin((z - originalZ[i])/(2*rho)*tgTheta);
+//        double fullOrderExactR = 2*rho*sin((z - genZ0)/(2*rho)*tgTheta);
+//
+////        double origR = originalR[i];
+//        // double term0 = std::pow(originalR[i], 3)/std::pow(2*rho, 2)/6.;
+//
+//
+////        return (originalR[i] + (z - originalZ[i]) * tgTheta);
+//        // return exactR;
+////        return extrapolatedR;
+//        return extrapolatedRSecondOrder;
+////        return extrapolatedRFullOrder;
+////        return firstOrderExactR;
+////        return secondOrderExactR;
+////        return fullOrderExactR;
+//      }
+//    }
+//  }
+//  return R;
+//}
 
 
 // Abstract base class
@@ -358,6 +431,46 @@ class TransformCorrectedPhiSecondOrderExtrapolatedR : public TransformBase
 };
 
 
+class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrder : public TransformBase
+{
+ public:
+  TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrder(const std::string & name,
+                                                           const std::string & firstOrderChargeOverPtCoefficientsFileName,
+                                                           const std::string & firstOrderTgThetaCoefficientsFileName,
+                                                           const std::vector<double> & meanRadius) :
+      TransformBase(name, firstOrderChargeOverPtCoefficientsFileName, meanRadius),
+      estimatorTgTheta_(std::make_shared<EstimatorSimple>(firstOrderTgThetaCoefficientsFileName))
+  {}
+  virtual ~TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrder() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double phi = vars.at(index*3);
+    double R = vars.at(index*3+1);
+    double z = vars.at(index*3+2);
+    std::vector<double> originalPhi;
+    std::vector<double> originalR;
+    std::vector<double> originalZ;
+    for (size_t i=0; i<vars.size()/3; ++i) {
+      originalPhi.push_back(vars.at(i*3));
+      originalR.push_back(vars.at(i*3+1));
+      originalZ.push_back(vars.at(i*3+2));
+    }
+    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+    double tgTheta = estimatorTgTheta_->estimate(originalR, originalZ);
+
+    // If this is a 2S module in the disks
+    R = extrapolateRSecondOrder(R, z, uniqueLayers[index], tgTheta, estimatedChargeOverPt, uniqueLayers, originalR, originalZ);
+
+    double DeltaR = R - meanRadius_[index];
+    double RCube = R*R*R;
+    return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
+  }
+ private:
+  std::shared_ptr<EstimatorSimple> estimatorTgTheta_;
+};
+
+
 class TransformCorrectedZFirstOrder : public TransformBase
 {
  public:
@@ -610,6 +723,85 @@ class TransformCorrectedZExactGen : public TransformBase
     double rho = 1./((3.8114*0.003)*genChargeOverPt);
     return (z - 2*rho*genCotTheta*asin(R/(2*rho)) + 2*rho*genCotTheta*asin(meanRadius_[index]/(2*rho)));
   }
+};
+
+
+class TransformExtrapolatedR : public TransformBase
+{
+ public:
+  TransformExtrapolatedR(const std::string & name,
+                         const std::string & firstOrderTgThetaCoefficientsFileName,
+                         const std::vector<double> & meanRadius) :
+      TransformBase(name, firstOrderTgThetaCoefficientsFileName, meanRadius)
+  {}
+  virtual ~TransformExtrapolatedR() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double R = vars.at(index*3+1);
+    double z = vars.at(index*3+2);
+    std::vector<double> originalR;
+    std::vector<double> originalZ;
+    for (size_t i=0; i<vars.size()/3; ++i) {
+      originalR.push_back(vars.at(i*3+1));
+      originalZ.push_back(vars.at(i*3+2));
+    }
+    double tgTheta = estimator_->estimate(originalR, originalZ);
+//    double tgTheta = 1./genCotTheta;
+//    double extrapolatedR = extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ);
+//    return extrapolatedR;
+//    return extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ);
+    return extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ);
+//    return extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ, genZ0, genChargeOverPt);
+
+//    double chargeOverTwoRho = (3.8114*0.003)*genChargeOverPt/2.;
+//    return sin((z - genZ0) * chargeOverTwoRho / genCotTheta) / chargeOverTwoRho;
+
+  }
+ private:
+};
+
+
+class TransformExtrapolatedRSecondOrder : public TransformBase
+{
+ public:
+  TransformExtrapolatedRSecondOrder(const std::string & name,
+                                    const std::string & firstOrderTgThetaCoefficientsFileName,
+                                    const std::string & firstOrderChargeOverPtCoefficientsFileName,
+                                    const std::vector<double> & meanRadius) :
+      TransformBase(name, firstOrderTgThetaCoefficientsFileName, meanRadius),
+      estimatorChargeOverPt_(std::make_shared<EstimatorSimple>(firstOrderChargeOverPtCoefficientsFileName))
+  {}
+  virtual ~TransformExtrapolatedRSecondOrder() {}
+  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double R = vars.at(index*3+1);
+    double z = vars.at(index*3+2);
+    std::vector<double> originalPhi;
+    std::vector<double> originalR;
+    std::vector<double> originalZ;
+    for (size_t i=0; i<vars.size()/3; ++i) {
+      originalPhi.push_back(vars.at(i*3));
+      originalR.push_back(vars.at(i*3+1));
+      originalZ.push_back(vars.at(i*3+2));
+    }
+    double tgTheta = estimator_->estimate(originalR, originalZ);
+//    double tgTheta = 1./estimator_->estimate(originalR, originalZ);
+    double chargeOverPt = estimatorChargeOverPt_->estimate(originalPhi);
+//    double tgTheta = 1./genCotTheta;
+//    double extrapolatedR = extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ);
+//    return extrapolatedR;
+//    return extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ);
+    return extrapolateRSecondOrder(R, z, uniqueLayers[index], tgTheta, chargeOverPt, uniqueLayers, originalR, originalZ);
+//    return extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ, genZ0, genChargeOverPt);
+
+//    double chargeOverTwoRho = (3.8114*0.003)*genChargeOverPt/2.;
+//    return sin((z - genZ0) * chargeOverTwoRho / genCotTheta) / chargeOverTwoRho;
+
+  }
+ private:
+  std::shared_ptr<EstimatorSimple> estimatorChargeOverPt_;
 };
 
 

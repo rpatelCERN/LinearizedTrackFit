@@ -59,11 +59,19 @@ void initializeVariablesTransformations(const std::vector<std::string> & inputVa
 {
   std::string preEstimateChargeOverPtFileName(preEstimateChargeOverPtDirName+"/matrixVD_"+std::to_string(combinationIndex)+"_pre_chargeOverPt.txt");
   std::string preEstimateCotThetaFileName(preEstimateCotThetaDirName+"/matrixVD_"+std::to_string(combinationIndex)+"_pre_cotTheta.txt");
+  std::string preEstimateTgThetaDirName(preEstimateCotThetaDirName);
+  int length = preEstimateTgThetaDirName.length();
+  // Remove trailing "/" if any
+  if (length > 1 && preEstimateTgThetaDirName[length-1] == '/') preEstimateTgThetaDirName = preEstimateTgThetaDirName.substr(0, length - 1);
+  std::string preEstimateTgThetaFileName = preEstimateTgThetaDirName+"_tgTheta/matrixVD_"+std::to_string(combinationIndex)+"_pre_tgTheta.txt";
+
   auto it = variablesTransformations.find(combinationIndex);
   if (it == variablesTransformations.end()) {
     it = variablesTransformations.insert(std::make_pair(combinationIndex, std::vector<std::shared_ptr<TransformBase> >())).first;
     for (auto varName : inputVarNames) {
-      if (varName == "phi") variablesTransformations[combinationIndex].push_back(std::make_shared<TransformPropagatePhi>(varName));
+      if (varName == "phi") {
+        variablesTransformations[combinationIndex].push_back(std::make_shared<TransformPropagatePhi>(varName));
+      }
       else if (varName == "CorrectedPhiFirstOrder") {
         variablesTransformations[combinationIndex].push_back(
             std::make_shared<TransformCorrectedPhiFirstOrder>(varName, preEstimateChargeOverPtFileName, meanRadius));
@@ -73,18 +81,19 @@ void initializeVariablesTransformations(const std::vector<std::string> & inputVa
             std::make_shared<TransformCorrectedPhiSecondOrder>(varName, preEstimateChargeOverPtFileName, meanRadius));
       }
       else if (varName == "CorrectedPhiSecondOrderExtrapolatedR") {
-        std::string preEstimateTgThetaDirName(preEstimateCotThetaDirName);
-        int length = preEstimateTgThetaDirName.length();
-        // Remove trailing "/" if any
-        if (length > 1 && preEstimateTgThetaDirName[length-1] == '/') preEstimateTgThetaDirName = preEstimateTgThetaDirName.substr(0, length - 1);
-        std::string preEstimateTgThetaFileName = preEstimateTgThetaDirName+"_tgTheta/matrixVD_"+std::to_string(combinationIndex)+"_pre_tgTheta.txt";
         variablesTransformations[combinationIndex].push_back(
-            std::make_shared<TransformCorrectedPhiSecondOrderExtrapolatedR>(varName, preEstimateChargeOverPtFileName, preEstimateTgThetaFileName, meanRadius));
-//        variablesTransformations[combinationIndex].push_back(
-//            std::make_shared<TransformCorrectedPhiSecondOrderExtrapolatedR>(varName, preEstimateChargeOverPtFileName, preEstimateCotThetaFileName, meanRadius));
+            std::make_shared<TransformCorrectedPhiSecondOrderExtrapolatedR>(varName, preEstimateChargeOverPtFileName,
+                                                                            preEstimateTgThetaFileName, meanRadius));
+      }
+      else if (varName == "CorrectedPhiSecondOrderExtrapolatedRSecondOrder") {
+        variablesTransformations[combinationIndex].push_back(
+            std::make_shared<TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrder>(varName,
+                                                                                       preEstimateChargeOverPtFileName,
+                                                                                       preEstimateTgThetaFileName,
+                                                                                       meanRadius));
       }
       else if (varName == "CorrectedPhiFirstOrderPz") {
-        preEstimateChargeOverPtFileName = preEstimateChargeOverPtDirName+"/matrixVD_"+std::to_string(combinationIndex)+"_pre_chargeOverPz.txt";
+        preEstimateChargeOverPtFileName = preEstimateChargeOverPtDirName + "/matrixVD_" + std::to_string(combinationIndex) + "_pre_chargeOverPz.txt";
         variablesTransformations[combinationIndex].push_back(
             std::make_shared<TransformCorrectedPhiFirstOrderPz>(varName, preEstimateChargeOverPtFileName,
                                                                 preEstimateCotThetaFileName, meanRadius));
@@ -109,8 +118,21 @@ void initializeVariablesTransformations(const std::vector<std::string> & inputVa
         variablesTransformations[combinationIndex].push_back(
             std::make_shared<TransformCorrectedPhiExactGenExactR>(varName, meanRadius));
       }
-      else if (varName == "R") variablesTransformations[combinationIndex].push_back(std::make_shared<TransformPropagateR>(varName));
-      else if (varName == "z") variablesTransformations[combinationIndex].push_back(std::make_shared<TransformPropagateZ>(varName));
+      else if (varName == "R") {
+        variablesTransformations[combinationIndex].push_back(std::make_shared<TransformPropagateR>(varName));
+      }
+      else if (varName == "ExtrapolatedR") {
+        variablesTransformations[combinationIndex].push_back(
+            std::make_shared<TransformExtrapolatedR>(varName, preEstimateTgThetaFileName, meanRadius));
+      }
+      else if (varName == "ExtrapolatedRSecondOrder") {
+        variablesTransformations[combinationIndex].push_back(
+            std::make_shared<TransformExtrapolatedRSecondOrder>(varName, preEstimateTgThetaFileName, preEstimateChargeOverPtFileName, meanRadius));
+//            std::make_shared<TransformExtrapolatedRSecondOrder>(varName, preEstimateCotThetaFileName, preEstimateChargeOverPtFileName, meanRadius));
+      }
+      else if (varName == "z") {
+        variablesTransformations[combinationIndex].push_back(std::make_shared<TransformPropagateZ>(varName));
+      }
       else if (varName == "CorrectedZFirstOrder") {
         variablesTransformations[combinationIndex].push_back(
             std::make_shared<TransformCorrectedZFirstOrder>(varName, preEstimateCotThetaFileName, meanRadius));

@@ -119,3 +119,14 @@ double StubsCombination::genTrackDistanceLongitudinal(const int index) const
   double zGen = genZ0_ + 2*rho*genCotTheta_*asin((genD0_*genD0_ + 2*genD0_*rho + R*R)/(2*R*(rho+genD0_)));
   return (stub.z() - zGen);
 }
+
+
+double StubsCombination::genTrackDistanceLongitudinalR(const int index) const
+{
+  const Stub & stub = stubs_.at(index);
+  double rho = genChargeOverPt_ != 0 ? (1./genChargeOverPt_)/(3.8114*0.003) : 10000.;
+  double z = stub.z();
+  double RGen = 2*rho*sin((z - genZ0_)/(2*rho*genCotTheta_));
+  double R = stub.R();
+  return (stub.R() - RGen);
+}

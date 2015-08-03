@@ -43,6 +43,7 @@ class StubsCombination
   double genTrackDistanceTransverse(const int index) const;
   double genTrackDistanceTransverseFromZ(const int index) const;
   double genTrackDistanceLongitudinal(const int index) const;
+  double genTrackDistanceLongitudinalR(const int index) const;
 
  private:
   double genChargeOverPt_;
