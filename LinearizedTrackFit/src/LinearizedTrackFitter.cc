@@ -37,7 +37,6 @@ LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const 
 double LinearizedTrackFitter::fit(const std::vector<double> & vars, const int bits)
 {
   std::vector<int> layers;
-  // std::cout << "bits = " << bits << std::endl;
   if (bits == 0) layers = {5, 6, 7, 8, 9, 10};
   else if (bits == 1) layers = {6, 7, 8, 9, 10};
   else if (bits == 2) layers = {5, 7, 8, 9, 10};
@@ -63,6 +62,8 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
   if (layers.size()*3 != vars.size()) {
     std::cout << "Error: inconsistent number of layers and number of variables. They should be in a ratio of 1/3." << std::endl;
     std::cout << "Number of layers = " << layers.size() << std::endl;
+    for (auto l : layers) std::cout << l << ", ";
+    std::cout << std::endl;
     std::cout << "Number of variables = " << vars.size() << std::endl;
   }
   unsigned int varsNum = vars.size()/3;
