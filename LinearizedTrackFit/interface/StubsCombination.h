@@ -17,7 +17,7 @@ class StubsCombination
       genChargeOverPt_(0.), genPhi0_(0.), genD0_(0.), genCotTheta_(0.), genZ0_(0.), combinationIndex_(0)
   {}
   void clear();
-  void pushStub(const double & phi, const double & R, const double & z, const int layer);
+  void pushStub(const double & phi, const double & R, const double & z, const int layer, const int strip);
   void setGenTrack(const double & genChargeOverPt, const double & genPhi0, const double & genD0,
                    const double & genCotTheta, const double & genZ0);
   void build(const StubsCombination & stubsCombination, const std::vector<int> & combination);
@@ -26,10 +26,14 @@ class StubsCombination
   double genD0() const { return genD0_; }
   double genCotTheta() const { return genCotTheta_; }
   double genZ0() const { return genZ0_; }
-  Stub stub(const int i) const { return stubs_.at(i); }
+  const Stub & stub(const int i) const { return stubs_.at(i); }
   void setCombinationIndex() { combinationIndex_ = combinationIndex(stubs_); }
   unsigned long getCombinationIndex() const { return combinationIndex_; }
   size_t size() const { return stubs_.size(); }
+  double phi(const int index) const { return stubs_.at(index).phi(); }
+  double R(const int index) const { return stubs_.at(index).R(); }
+  double z(const int index) const { return stubs_.at(index).z(); }
+  int layer(const int index) const { return stubs_.at(index).layer(); }
   void setPhi(const int index, const double & phi) { stubs_.at(index).setPhi(phi); }
   void setR(const int index, const double & R) { stubs_.at(index).setR(R); }
   void setZ(const int index, const double & z) { stubs_.at(index).setZ(z); }

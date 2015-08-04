@@ -152,14 +152,17 @@ int main(int argc, char* argv[])
 
     // Full Tracker (slice in 0 < phi < 0.8 and eta > 0)
     inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
+    // Same as above but with 10x the statistics
+    // inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker_bigger.root";
+
     // Full Tracker (slice in 0 < phi < 0.8 and eta > 0) with z0 = 0
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker_z0_0.root";
 
     // Central production
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_centralProduction_muMinus.root";
 
-    bool train = true;
-//    bool train = false;
+//    bool train = true;
+    bool train = false;
 
 
     if (train) {
@@ -186,14 +189,14 @@ int main(int argc, char* argv[])
 
 
     // To run on all combinations
-//    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
     // Select layers to use for each stub coordinate
 //   std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
 //   std::vector<int> layersAll_{6, 7, 8, 9, 10};
 
     // Hybrid
-  std::vector<int> layersAll_{5, 6, 7, 8, 9, 11}; // region 2
+//  std::vector<int> layersAll_{5, 6, 7, 8, 9, 11}; // region 2
 //  std::vector<int> layersAll_{5, 6, 7, 8, 11, 12}; // region 3
 //  std::vector<int> layersAll_{5, 6, 7, 11, 12, 13}; // region 4
 
@@ -244,6 +247,9 @@ int main(int argc, char* argv[])
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR", "ExtrapolatedR"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR", "ExtrapolatedRSecondOrder"};
     std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrder"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactRNonRadialStripCorrection"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection"};
+
 
     //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactR"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrderPz"};
@@ -319,8 +325,8 @@ int main(int argc, char* argv[])
 //    phiMin_ = -3.4;
 //    phiMax_ = 3.4;
 //    phiRegions_ = 1;
-    etaMin_ = 0.8;
-//    etaMin_ = 0.;
+//    etaMin_ = 0.8;
+    etaMin_ = 0.;
     etaMax_ = 3.;
 //    etaRegions_ = 1;
 //    z0Min_ = -15.;

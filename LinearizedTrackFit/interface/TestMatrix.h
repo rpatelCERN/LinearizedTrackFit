@@ -99,8 +99,9 @@ namespace LinearFit
 
       std::vector<double> transformedVars;
       auto varTransformVec = variablesTransformations[combinationIndex_];
-      transformVariables(vars, uniqueRequiredLayers, varTransformVec, transformedVars,
-                         treeReader.getChargeOverPt(), treeReader.getCotTheta(), treeReader.getZ0());
+//      transformVariables(vars, uniqueRequiredLayers, varTransformVec, transformedVars,
+//                         treeReader.getChargeOverPt(), treeReader.getCotTheta(), treeReader.getZ0());
+      transformVariables(stubsCombination, varTransformVec, transformedVars);
 
 
 

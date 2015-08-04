@@ -37,7 +37,7 @@ public:
   std::vector<int>    *m_stub_ladder;
   // std::vector<int>    *m_stub_seg;
   // std::vector<int>    *m_stub_modid;
-  // std::vector<int>    *m_stub_strip;
+  std::vector<float>    *m_stub_strip;
   std::vector<float>  *m_stub_x;
   std::vector<float>  *m_stub_y;
   std::vector<float>  *m_stub_z;

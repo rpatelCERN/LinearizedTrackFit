@@ -9,8 +9,8 @@
 class Stub
 {
  public:
-  Stub(const double & phi, const double & R, const double & z, const int layer) :
-      phi_(phi), R_(R), z_(z), layer_(layer)
+  Stub(const double & phi, const double & R, const double & z, const int layer, const int strip) :
+      phi_(phi), R_(R), z_(z), layer_(layer), strip_(strip)
   {}
 
   void setPhi(const double & phi) { phi_ = phi; }
@@ -20,12 +20,14 @@ class Stub
   double R() const { return R_; }
   double z() const { return z_; }
   int layer() const { return layer_; }
+  int strip() const { return strip_; }
 
  private:
   double phi_;
   double R_;
   double z_;
   int layer_;
+  int strip_;
 };
 
 

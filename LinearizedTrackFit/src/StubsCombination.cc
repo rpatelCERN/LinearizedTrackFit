@@ -15,9 +15,10 @@ void StubsCombination::clear()
   combinationIndex_ = 0;
 }
 
-void StubsCombination::pushStub(const double & phi, const double & R, const double & z, const int layer)
+void StubsCombination::pushStub(const double & phi, const double & R, const double & z,
+                                const int layer, const int strip)
 {
-  stubs_.push_back(Stub(phi, R, z, layer));
+  stubs_.push_back(Stub(phi, R, z, layer, strip));
 }
 
 
@@ -127,6 +128,5 @@ double StubsCombination::genTrackDistanceLongitudinalR(const int index) const
   double rho = genChargeOverPt_ != 0 ? (1./genChargeOverPt_)/(3.8114*0.003) : 10000.;
   double z = stub.z();
   double RGen = 2*rho*sin((z - genZ0_)/(2*rho*genCotTheta_));
-  double R = stub.R();
   return (stub.R() - RGen);
 }

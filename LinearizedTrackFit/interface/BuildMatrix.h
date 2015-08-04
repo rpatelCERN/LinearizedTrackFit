@@ -110,8 +110,9 @@ namespace LinearFit {
 
       std::vector<double> transformedVars;
       auto varTransformVec = variablesTransformations[combinationIndex_];
-      transformVariables(vars, uniqueRequiredLayers, varTransformVec, transformedVars,
-                         treeReader.getChargeOverPt(), treeReader.getCotTheta(), treeReader.getZ0());
+//      transformVariables(vars, uniqueRequiredLayers, varTransformVec, transformedVars,
+//                         treeReader.getChargeOverPt(), treeReader.getCotTheta(), treeReader.getZ0());
+      transformVariables(stubsCombination, varTransformVec, transformedVars);
 
       if (computeDistances) {
         std::vector<double> fullTransformedVars(vars);
@@ -260,11 +261,15 @@ namespace LinearFit {
 
       std::vector<double> transformedVars;
       auto varTransformVec = variablesTransformations[combinationIndex_];
-      for (size_t i=0; i<vars.size()/3; ++i) {
-        for (auto v : varTransformVec) {
-          transformedVars.push_back((*v)(i, vars, uniqueRequiredLayers, treeReader.getChargeOverPt(), treeReader.getCotTheta(), treeReader.getZ0()));
-        }
-      }
+//      transformVariables(vars, uniqueRequiredLayers, varTransformVec, transformedVars,
+//                         treeReader.getChargeOverPt(), treeReader.getCotTheta(), treeReader.getZ0());
+      transformVariables(stubsCombination, varTransformVec, transformedVars);
+//      for (size_t i=0; i<vars.size()/3; ++i) {
+//        for (auto v : varTransformVec) {
+////          transformedVars.push_back((*v)(i, vars, uniqueRequiredLayers, treeReader.getChargeOverPt(), treeReader.getCotTheta(), treeReader.getZ0()));
+//          transformedVars.push_back((*v)(stubsCombination, i));
+//        }
+//      }
 
       // Update mean and covariance for this linearization region
       matrices.find(combinationIndex_)->second.update(transformedVars, pars, usePcs);

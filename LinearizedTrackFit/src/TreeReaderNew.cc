@@ -290,7 +290,7 @@ bool TreeReaderNew::readVariables()
 
   for (const auto & m : layersFound_) {
     unsigned int k = m.second;
-    stubsCombination_.pushStub(getStubPhi(k), getStubR(k), getStubZ(k), m.first);
+    stubsCombination_.pushStub(getStubPhi(k), getStubR(k), getStubZ(k), m.first, getStubStrip(k));
   }
   stubsCombination_.setCombinationIndex();
   // Fill generator-level information

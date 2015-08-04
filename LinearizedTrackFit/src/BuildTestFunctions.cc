@@ -92,6 +92,13 @@ void initializeVariablesTransformations(const std::vector<std::string> & inputVa
                                                                                        preEstimateTgThetaFileName,
                                                                                        meanRadius));
       }
+      else if (varName == "CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection") {
+        variablesTransformations[combinationIndex].push_back(
+            std::make_shared<TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection>(varName,
+                                                                                       preEstimateChargeOverPtFileName,
+                                                                                       preEstimateTgThetaFileName,
+                                                                                       meanRadius));
+      }
       else if (varName == "CorrectedPhiFirstOrderPz") {
         preEstimateChargeOverPtFileName = preEstimateChargeOverPtDirName + "/matrixVD_" + std::to_string(combinationIndex) + "_pre_chargeOverPz.txt";
         variablesTransformations[combinationIndex].push_back(
@@ -109,6 +116,10 @@ void initializeVariablesTransformations(const std::vector<std::string> & inputVa
       else if (varName == "CorrectedPhiSecondOrderGenExactR") {
         variablesTransformations[combinationIndex].push_back(
             std::make_shared<TransformCorrectedPhiSecondOrderGenExactR>(varName, meanRadius, meanZ));
+      }
+      else if (varName == "CorrectedPhiSecondOrderGenExactRNonRadialStripCorrection") {
+        variablesTransformations[combinationIndex].push_back(
+            std::make_shared<TransformCorrectedPhiSecondOrderGenExactRNonRadialStripCorrection>(varName, meanRadius, meanZ));
       }
       else if (varName == "CorrectedPhiExactGen") {
         variablesTransformations[combinationIndex].push_back(
