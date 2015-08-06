@@ -37,7 +37,7 @@ class TreeReaderNew
   double getStubPhi(const int k) const { return std::atan2(tree_->m_stub_y->at(k), tree_->m_stub_x->at(k)); }
   double getStubR(const int k) const { return std::sqrt(std::pow(tree_->m_stub_x->at(k), 2) + std::pow(tree_->m_stub_y->at(k), 2)); }
   double getStubZ(const int k) const { return tree_->m_stub_z->at(k); }
-  int getStubStrip(const int k) const { return tree_->m_stub_strip->at(k); }
+  float getStubStrip(const int k) const { return tree_->m_stub_strip->at(k); }
 
   double getPt() const {
     return std::sqrt(std::pow(tree_->m_stub_pxGEN->at(0), 2) + std::pow(tree_->m_stub_pyGEN->at(0), 2));

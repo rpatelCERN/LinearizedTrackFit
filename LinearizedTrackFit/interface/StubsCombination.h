@@ -17,7 +17,7 @@ class StubsCombination
       genChargeOverPt_(0.), genPhi0_(0.), genD0_(0.), genCotTheta_(0.), genZ0_(0.), combinationIndex_(0)
   {}
   void clear();
-  void pushStub(const double & phi, const double & R, const double & z, const int layer, const int strip);
+  void pushStub(const double & phi, const double & R, const double & z, const int layer, const float strip);
   void setGenTrack(const double & genChargeOverPt, const double & genPhi0, const double & genD0,
                    const double & genCotTheta, const double & genZ0);
   void build(const StubsCombination & stubsCombination, const std::vector<int> & combination);

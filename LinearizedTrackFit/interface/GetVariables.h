@@ -62,8 +62,38 @@ double extrapolateRSecondOrder(const double & R, const double & z, const int lay
 }
 
 
-double correctPhiForNonRadialStrips(const double & phi, const double & stripPitch, const int stripIndex,
+double correctPhiForNonRadialStrips(const double & phi, const double & stripPitch, const float & stripIndex,
                                     const double & extrapolatedR, const double & R, const int layer);
+
+
+class CorrectPhiForNonRadialStripsLookup {
+ public:
+  CorrectPhiForNonRadialStripsLookup();
+  double correctPhiForNonRadialStrips(const double &phi, const double &stripPitch,
+                                      const double &extrapolatedR, const double &R,
+                                      const double & z,
+                                      const int layer);
+ private:
+  std::vector<std::vector<double> > rns_;
+
+  // Half length of the module perpendicular to the strip direction = strip_pitch*number_of_strips/2
+  // We use number_of_strips/2+1 as it works better with the floors, roundings and precision.
+  double d_;
+  // Multiplicative factor used to scale the R of the stub before flooring it. It allows to gain
+  // enough precision to distinguish all rings.
+  int factor_;
+
+  // Lookup table providing all the numbers necessary to perform the radial strip corrections in the 2S
+  // modules of the disks. It also includes the 1/R^2, event though it is not used in this correction.
+  // This number is used for the extrapolation of R we store it here for convenience.
+  // The limited precision value of int(R*4) is sufficient to distinguish all the R values. Two values
+  // are provided and they are valid for different z. The lookup_z map allows to select the appropriate
+  // value.The shift is roughly 2pi/N, however we prefer to use the phi of the central strip in module 0.
+  std::unordered_map<int, std::vector<double> > lookupR_;
+
+  // Look-up table to determine the shift to take for the given z
+  std::unordered_map<int, int> lookupZ_;
+};
 
 
 //template <class T>
@@ -496,6 +526,48 @@ class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorr
       estimatorTgTheta_(std::make_shared<EstimatorSimple>(firstOrderTgThetaCoefficientsFileName))
   {}
   virtual ~TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection() {}
+  virtual double operator()(const StubsCombination & stubsCombination, const int index) const
+  {
+    double phi = stubsCombination.phi(index);
+    double R = stubsCombination.R(index);
+    double z = stubsCombination.z(index);
+    std::vector<double> originalPhi;
+    std::vector<double> originalR;
+    std::vector<double> originalZ;
+    for (size_t i=0; i<stubsCombination.size(); ++i) {
+      originalPhi.push_back(stubsCombination.phi(i));
+      originalR.push_back(stubsCombination.R(i));
+      originalZ.push_back(stubsCombination.z(i));
+    }
+    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+    double tgTheta = estimatorTgTheta_->estimate(originalR, originalZ);
+
+    // If this is a 2S module in the disks
+    int layer = stubsCombination.layer(index);
+    double extrapolatedR = extrapolateRSecondOrder(R, z, layer, tgTheta, estimatedChargeOverPt, stubsCombination.layers(), originalR, originalZ);
+    phi = correctPhiForNonRadialStrips(phi, 0.009, stubsCombination.stub(index).strip(), extrapolatedR, R, layer);
+    R = extrapolatedR;
+
+    double DeltaR = R - meanRadius_[index];
+    double RCube = R*R*R;
+    return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
+  }
+ private:
+  std::shared_ptr<EstimatorSimple> estimatorTgTheta_;
+};
+
+
+class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup : public TransformBase
+{
+ public:
+  TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup(const std::string & name,
+                                                                                         const std::string & firstOrderChargeOverPtCoefficientsFileName,
+                                                                                         const std::string & firstOrderTgThetaCoefficientsFileName,
+                                                                                         const std::vector<double> & meanRadius) :
+      TransformBase(name, firstOrderChargeOverPtCoefficientsFileName, meanRadius),
+      estimatorTgTheta_(std::make_shared<EstimatorSimple>(firstOrderTgThetaCoefficientsFileName))
+  {}
+  virtual ~TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup() {}
   virtual double operator()(const StubsCombination & stubsCombination, const int index) const
   {
     double phi = stubsCombination.phi(index);

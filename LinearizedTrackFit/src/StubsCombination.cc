@@ -16,7 +16,7 @@ void StubsCombination::clear()
 }
 
 void StubsCombination::pushStub(const double & phi, const double & R, const double & z,
-                                const int layer, const int strip)
+                                const int layer, const float strip)
 {
   stubs_.push_back(Stub(phi, R, z, layer, strip));
 }
