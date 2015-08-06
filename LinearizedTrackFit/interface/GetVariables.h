@@ -330,12 +330,9 @@ class TransformPropagatePhi : public TransformBase
   TransformPropagatePhi(const std::string & name) : TransformBase(name)
   {}
   virtual ~TransformPropagatePhi() {}
-//  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
-//                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
   virtual double operator()(const StubsCombination & stubsCombination, const int index) const
   {
     return stubsCombination.phi(index);
-    // return vars.at(index*3);
   }
 };
 
