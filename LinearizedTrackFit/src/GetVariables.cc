@@ -68,9 +68,10 @@ CorrectPhiForNonRadialStripsLookup::CorrectPhiForNonRadialStripsLookup() :
 }
 
 double CorrectPhiForNonRadialStripsLookup::correctPhiForNonRadialStrips(const double &phi, const double &stripPitch,
+//                                                                        const float & inputStripIndex,
                                                                         const double &extrapolatedR, const double &R,
                                                                         const double & z,
-                                                                        const int layer)
+                                                                        const int layer) const
 {
   if (layer > 10 && R > 61.) {
     if (lookupR_.find(int(R*factor_)) == lookupR_.end()) {
@@ -81,16 +82,20 @@ double CorrectPhiForNonRadialStripsLookup::correctPhiForNonRadialStrips(const do
       std::cout << "Error: " << int(z) << " not found in lookupZ_" << std::endl;
       throw;
     }
-    auto strip_index_lookup = lookupR_[int(R*factor_)];
-    double A = strip_index_lookup[lookupZ_[int(z)]];
-    double B = strip_index_lookup[2];
-    double oneOverRSquared = strip_index_lookup[3];
+    auto strip_index_lookup = lookupR_.find(int(R*factor_))->second;
+    double A = strip_index_lookup.at(lookupZ_.find(int(z))->second);
+    double B = strip_index_lookup.at(2);
+    double oneOverRSquared = strip_index_lookup.at(3);
 
 //    double stripIndex = int(((phi+A)%B)*R/0.009);
-    double stripIndex = int(std::remainder(phi+A, B)*R/0.009);
+//    float ssss = inputStripIndex;
+    double stripIndex = int(std::fmod(phi+A, B)*R/0.009);
 
     // The 2S modules in the disks have 1016 strips.
     // The strip index starts from 0 meaning that 1015/2 = 507.5 is the central value.
+//    double phiCorrOne = (phi - stripPitch * (inputStripIndex - 507.5) * (extrapolatedR - R) * oneOverRSquared);
+//    double phiCorrTwo = (phi - stripPitch * (stripIndex - 507.5) * (extrapolatedR - R) * oneOverRSquared);
+//    return (phi - stripPitch * (inputStripIndex - 507.5) * (extrapolatedR - R) * oneOverRSquared);
     return (phi - stripPitch * (stripIndex - 507.5) * (extrapolatedR - R) * oneOverRSquared);
   }
   return phi;

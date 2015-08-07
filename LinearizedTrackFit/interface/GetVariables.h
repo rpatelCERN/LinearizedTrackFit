@@ -70,9 +70,10 @@ class CorrectPhiForNonRadialStripsLookup {
  public:
   CorrectPhiForNonRadialStripsLookup();
   double correctPhiForNonRadialStrips(const double &phi, const double &stripPitch,
+//                                      const float & inputStripIndex,
                                       const double &extrapolatedR, const double &R,
                                       const double & z,
-                                      const int layer);
+                                      const int layer) const;
  private:
   std::vector<std::vector<double> > rns_;
 
@@ -584,7 +585,9 @@ class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorr
     // If this is a 2S module in the disks
     int layer = stubsCombination.layer(index);
     double extrapolatedR = extrapolateRSecondOrder(R, z, layer, tgTheta, estimatedChargeOverPt, stubsCombination.layers(), originalR, originalZ);
-    phi = correctPhiForNonRadialStrips(phi, 0.009, stubsCombination.stub(index).strip(), extrapolatedR, R, layer);
+    // phi = correctPhiForNonRadialStrips(phi, 0.009, stubsCombination.stub(index).strip(), extrapolatedR, R, layer);
+    phi = correctPhiForNonRadialStripsLookup_.correctPhiForNonRadialStrips(phi, 0.009, // stubsCombination.stub(index).strip(),
+                                                                           extrapolatedR, R, z, layer);
     R = extrapolatedR;
 
     double DeltaR = R - meanRadius_[index];
@@ -593,6 +596,7 @@ class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorr
   }
  private:
   std::shared_ptr<EstimatorSimple> estimatorTgTheta_;
+  CorrectPhiForNonRadialStripsLookup correctPhiForNonRadialStripsLookup_;
 };
 
 

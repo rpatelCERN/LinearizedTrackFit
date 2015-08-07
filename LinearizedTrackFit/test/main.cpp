@@ -246,9 +246,11 @@ int main(int argc, char* argv[])
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR", "ExtrapolatedR"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR", "ExtrapolatedRSecondOrder"};
-    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrder"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrder"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactRNonRadialStripCorrection"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection"};
+    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"};
+
 
 
     //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactR"};

@@ -180,7 +180,7 @@ pre_estimate = False
 # 2 < pT < 10 GeV/c
 job_types = []
 # job_types.append(JobType("Transverse_2_10", ["CorrectedPhiFirstOrder"], ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_2_10", ["CorrectedPhiSecondOrder"], ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_SecondOrder_2_10", ["CorrectedPhiSecondOrder"], ["charge/pt", "phi"]))
 # job_types.append(JobType("Transverse_Pz_2_10", ["CorrectedPhiFirstOrderPz"], ["charge/pt", "phi"]))
 # job_types.append(JobType("Transverse_SecondOrder_GEN_2_10", ["CorrectedPhiSecondOrderGen"], ["charge/pt", "phi"]))
 # job_types.append(JobType("Transverse_Exact_GEN_2_10", ["CorrectedPhiExactGen"], ["charge/pt", "phi"]))
@@ -188,19 +188,22 @@ job_types.append(JobType("Transverse_SecondOrder_2_10", ["CorrectedPhiSecondOrde
 # job_types.append(JobType("Transverse_SecondOrder_GEN_DeltaZ_2_10", ["CorrectedPhiSecondOrderGenDeltaZ"], ["charge/pt", "phi"]))
 # job_types.append(JobType("Transverse_SecondOrder_GEN_ExactR_2_10", ["CorrectedPhiSecondOrderGenExactR"], ["charge/pt", "phi"]))
 # job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedR_2_10", ["CorrectedPhiSecondOrderExtrapolatedR"], ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_phiRz_2_10",
-                         ["CorrectedPhiSecondOrder", "R", "CorrectedZSecondOrder"], ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrder_2_10",
-                         ["CorrectedPhiSecondOrderExtrapolatedRSecondOrder"], ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_GenExactRSecondOrderNonRadialStripCorrection_2_10",
-                         ["CorrectedPhiSecondOrderGenExactRNonRadialStripCorrection"], ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrection_2_10",
-                         ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection"],
-                         ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrection_phiExtrapolatedRz_2_10",
-                         ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection",
-                          "ExtrapolatedRSecondOrder",
-                          "CorrectedZSecondOrder"],
+# job_types.append(JobType("Transverse_SecondOrder_phiRz_2_10",
+#                          ["CorrectedPhiSecondOrder", "R", "CorrectedZSecondOrder"], ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrder_2_10",
+#                          ["CorrectedPhiSecondOrderExtrapolatedRSecondOrder"], ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_SecondOrder_GenExactRSecondOrderNonRadialStripCorrection_2_10",
+#                          ["CorrectedPhiSecondOrderGenExactRNonRadialStripCorrection"], ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrection_2_10",
+#                          ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection"],
+#                          ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrection_phiExtrapolatedRz_2_10",
+#                          ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection",
+#                           "ExtrapolatedRSecondOrder",
+#                           "CorrectedZSecondOrder"],
+#                          ["charge/pt", "phi"]))
+job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_2_10",
+                         ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"],
                          ["charge/pt", "phi"]))
 prepare_all_jobs(job_types, pre_estimate, pt_min=2., pt_max=10.)
 
@@ -217,17 +220,20 @@ job_types = []
 # job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedR_10_more", ["CorrectedPhiSecondOrderExtrapolatedR"], ["charge/pt", "phi"]))
 # job_types.append(JobType("Transverse_SecondOrder_phiRz_10_more",
 #                          ["CorrectedPhiSecondOrder", "R", "CorrectedZSecondOrder"], ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrder_10_more",
-                         ["CorrectedPhiSecondOrderExtrapolatedRSecondOrder"], ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_GenExactRSecondOrderNonRadialStripCorrection_10_more",
-                         ["CorrectedPhiSecondOrderGenExactRNonRadialStripCorrection"], ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrection_10_more",
-                         ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection"],
-                         ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrection_phiExtrapolatedRz_10_more",
-                         ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection",
-                          "ExtrapolatedRSecondOrder",
-                          "CorrectedZSecondOrder"],
+# job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrder_10_more",
+#                          ["CorrectedPhiSecondOrderExtrapolatedRSecondOrder"], ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_SecondOrder_GenExactRSecondOrderNonRadialStripCorrection_10_more",
+#                          ["CorrectedPhiSecondOrderGenExactRNonRadialStripCorrection"], ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrection_10_more",
+#                          ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection"],
+#                          ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrection_phiExtrapolatedRz_10_more",
+#                          ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection",
+#                           "ExtrapolatedRSecondOrder",
+#                           "CorrectedZSecondOrder"],
+#                          ["charge/pt", "phi"]))
+job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more",
+                         ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"],
                          ["charge/pt", "phi"]))
 prepare_all_jobs(job_types, pre_estimate, pt_min=10.)
 
@@ -284,7 +290,7 @@ def check_pid(pid):
 
 # Now submit the jobs to keep the total number of jobs running in parallel < N
 print jobs_queue
-maximum_parallel_jobs = 2
+maximum_parallel_jobs = 1
 
 failed_processes = []
 running_processes = []
