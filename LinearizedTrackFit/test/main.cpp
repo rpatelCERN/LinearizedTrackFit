@@ -175,10 +175,10 @@ int main(int argc, char* argv[])
     }
 
 
-    bool testFitter_ = false;
-//    buildMatrix_ = false;
-//    testMatrix_ = false;
-//    bool testFitter_ = true;
+//    bool testFitter_ = false;
+    buildMatrix_ = false;
+    testMatrix_ = false;
+    bool testFitter_ = true;
 
 
 
@@ -376,6 +376,7 @@ int main(int argc, char* argv[])
       bool minuitFit_ = false;
       bool fillBestNormChi2_ = true;
       bool extrapolateR_ = true;
+      bool correctNonRadialStrips_ = true;
 
       LinearFit::testFitter(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
                             inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_,
@@ -383,7 +384,7 @@ int main(int argc, char* argv[])
                             radiusCuts_, singleModules_,
                             firstOrderChargeOverPtCoefficientsDirName_, firstOrderCotThetaCoefficientsDirName_,
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_, etaMin_, etaMax_, z0Min_, z0Max_, fiveOutOfSix_,
-                            baseDir, minuitFit_, fillBestNormChi2_, extrapolateR_);
+                            baseDir, minuitFit_, fillBestNormChi2_, extrapolateR_, correctNonRadialStrips_);
     }
   }
   else {

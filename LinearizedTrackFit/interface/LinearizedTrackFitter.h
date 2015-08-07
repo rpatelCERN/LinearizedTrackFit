@@ -17,7 +17,8 @@
 class LinearizedTrackFitter
 {
  public:
-  LinearizedTrackFitter(const std::string & baseDir, const bool inputExtrapolateR);
+  LinearizedTrackFitter(const std::string & baseDir, const bool inputExtrapolateR,
+                        const bool inputCorrectNonRadialStrips);
 
   double fit(const std::vector<double> & vars, const std::vector<int> & layers);
   double fit(const std::vector<double> & vars, const int bits);
@@ -32,6 +33,7 @@ class LinearizedTrackFitter
   std::string linearFitHighPtDirName_;
   std::string linearFitLongitudinalDirName_;
   std::vector<double> varsR_;
+  std::vector<double> extrapolatedR_;
   Matrix<long double, Dynamic, 1> correctedVarsPhi_;
   Matrix<long double, Dynamic, 1> correctedVarsZ_;
   double preEstimatedPt_;
@@ -50,6 +52,8 @@ class LinearizedTrackFitter
   std::string baseDir_;
   CombinationIndexListBuilder combinationIndexListBuilder_;
   bool extrapolateR_;
+  bool correctNonRadialStrips_;
+  CorrectPhiForNonRadialStripsLookup correctPhiForNonRadialStripsLookup_;
 
   template <class T>
   void fillMatrices(const std::string & baseDir, const std::string & fileName,

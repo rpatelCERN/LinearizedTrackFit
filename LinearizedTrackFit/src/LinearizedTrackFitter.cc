@@ -1,6 +1,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearizedTrackFitter.h"
 
-LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const bool inputExtrapolateR) :
+LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const bool inputExtrapolateR,
+                                             const bool inputCorrectNonRadialStrips) :
     preEstimatePtDirName_("PreEstimate_Transverse"),
     preEstimateCotThetaDirName_("PreEstimate_Longitudinal_Rz"),
     linearFitLowPtDirName_("Combinations_Transverse_SecondOrder_2_10"),
@@ -10,11 +11,19 @@ LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const 
     ptSplitValue_(10.),
     combinationIndex_(0),
     baseDir_(baseDir),
-    extrapolateR_(inputExtrapolateR)
+    extrapolateR_(inputExtrapolateR),
+    correctNonRadialStrips_(inputCorrectNonRadialStrips)
 {
-  if (extrapolateR_) {
-    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedR_2_10";
-    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedR_10_more";
+  if (correctNonRadialStrips_) {
+    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_2_10";
+    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+    extrapolateR_ = true;
+  }
+  else if (extrapolateR_) {
+//    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedR_2_10";
+//    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedR_10_more";
+    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrder_2_10";
+    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrder_10_more";
   }
 
   // Read the constants for the full tracker.
@@ -89,6 +98,7 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
   for (unsigned int i=0; i<varsNum; ++i) { correctedVarsPhi_(i) = vars[i*3]; }
   for (unsigned int i=0; i<varsNum; ++i) { varsR_.push_back(vars[i*3+1]); }
   for (unsigned int i=0; i<varsNum; ++i) { correctedVarsZ_(i) = vars[i*3+2]; }
+  extrapolatedR_ = varsR_;
 
   std::vector<int> uniqueLayers(layers);
   std::sort(uniqueLayers.begin(), uniqueLayers.end());
@@ -240,7 +250,12 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
     EstimatorSimple &tgThetaEstimator = iterTgTheta->second;
     double tgTheta = tgThetaEstimator.estimate(varsR_, correctedVarsZ_);
     for (unsigned int i=0; i<varsNum; ++i) {
-      varsR_[i] = extrapolateR(varsR_[i], correctedVarsZ_[i], uniqueLayers[i], tgTheta, uniqueLayers, varsR_, correctedVarsZ_);
+      extrapolatedR_[i] = extrapolateRSecondOrder(varsR_[i], correctedVarsZ_[i], uniqueLayers[i], tgTheta,
+                                                  preEstimatedChargeOverPt, uniqueLayers, varsR_, correctedVarsZ_);
+      if (correctNonRadialStrips_) {
+        correctedVarsPhi_[i] = correctPhiForNonRadialStripsLookup_.correctPhiForNonRadialStrips(correctedVarsPhi_[i], 0.009, extrapolatedR_[i],
+                                                                                                varsR_[i], correctedVarsZ_[i], uniqueLayers[i]);
+      }
     }
   }
 
@@ -248,7 +263,12 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
     // double DeltaR = varsR_[i] - meanRadius(layers[i], region);
     double DeltaR = varsR_[i] - meanRadius_[combinationIndex_][i];
     double RCube = std::pow(varsR_[i], 3);
-    correctedVarsPhi_[i] += chargeOverTwoRho * DeltaR + RCube * std::pow(chargeOverTwoRho, 3) / 6.;
+    // Note: the extrapolatedR = R and is only extrapolated for 2S modules in the disks if requested
+    double DeltaExtrapolatedR = extrapolatedR_[i] - meanRadius_[combinationIndex_][i];
+    double extrapolatedRCube = std::pow(extrapolatedR_[i], 3);
+//    correctedVarsPhi_[i] += chargeOverTwoRho * DeltaR + RCube * std::pow(chargeOverTwoRho, 3) / 6.;
+    correctedVarsPhi_[i] += chargeOverTwoRho * DeltaExtrapolatedR + extrapolatedRCube * std::pow(chargeOverTwoRho, 3) / 6.;
+    // We use the regular R for the R-z plane. We could recompute constants with the extrapolated R (likely negligible difference).
     correctedVarsZ_[i] -= (DeltaR + 1/6.*RCube*(chargeOverTwoRho*chargeOverTwoRho))*cotTheta;
   }
 
