@@ -183,21 +183,6 @@ namespace LinearFit
 //      if (treeReader.getCharge() < 0) continue;
 
 
-
-
-//      std::vector<int> layersVec(treeReader.layersVec());
-//      std::sort(layersVec.begin(), layersVec.end());
-//      layersVec.erase(std::unique(layersVec.begin(), layersVec.end()), layersVec.end());
-
-
-
-
-//      if (fiveOutOfSix && layersVec.size() != 5) continue;
-//      if (layersVec.size() != 6) continue;
-
-
-
-
       if (trackIndex != treeReader.getTrackIndex()) {
         hGenEta.Fill(treeReader.getEta());
         hGenCotTheta.Fill(treeReader.getCotTheta());
@@ -216,6 +201,12 @@ namespace LinearFit
 
       StubsCombination stubsCombination(treeReader.getStubsCombination());
       std::vector<int> layersVec(stubsCombination.layers());
+
+
+//      if (fiveOutOfSix && layersVec.size() != 5) continue;
+      if (layersVec.size() != 6) continue;
+
+
       // std::vector<double> vars(treeReader.getVariables());
       std::vector<double> vars(stubsCombination.variables());
       double normChi2 = linearizedTrackFitter.fit(vars, layersVec);

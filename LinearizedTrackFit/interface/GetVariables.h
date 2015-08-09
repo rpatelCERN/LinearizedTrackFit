@@ -600,6 +600,52 @@ class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorr
 };
 
 
+class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta : public TransformBase
+{
+ public:
+  TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta(const std::string & name,
+                                                                                                  const std::string & firstOrderChargeOverPtCoefficientsFileName,
+                                                                                                  const std::string & firstOrderTgThetaCoefficientsFileName,
+                                                                                                  const std::vector<double> & meanRadius) :
+      TransformBase(name, firstOrderChargeOverPtCoefficientsFileName, meanRadius),
+      estimatorTgTheta_(std::make_shared<EstimatorSimple>(firstOrderTgThetaCoefficientsFileName))
+  {}
+  virtual ~TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta() {}
+  virtual double operator()(const StubsCombination & stubsCombination, const int index) const
+  {
+    double phi = stubsCombination.phi(index);
+    double R = stubsCombination.R(index);
+    double z = stubsCombination.z(index);
+    std::vector<double> originalPhi;
+    std::vector<double> originalR;
+    std::vector<double> originalZ;
+    for (size_t i=0; i<stubsCombination.size(); ++i) {
+      originalPhi.push_back(stubsCombination.phi(i));
+      originalR.push_back(stubsCombination.R(i));
+      originalZ.push_back(stubsCombination.z(i));
+    }
+    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+//    double tgTheta = estimatorTgTheta_->estimate(originalR, originalZ);
+    double tgTheta = 1./stubsCombination.genCotTheta();
+
+    // If this is a 2S module in the disks
+    int layer = stubsCombination.layer(index);
+    double extrapolatedR = extrapolateRSecondOrder(R, z, layer, tgTheta, estimatedChargeOverPt, stubsCombination.layers(), originalR, originalZ);
+    // phi = correctPhiForNonRadialStrips(phi, 0.009, stubsCombination.stub(index).strip(), extrapolatedR, R, layer);
+    phi = correctPhiForNonRadialStripsLookup_.correctPhiForNonRadialStrips(phi, 0.009, // stubsCombination.stub(index).strip(),
+                                                                           extrapolatedR, R, z, layer);
+    R = extrapolatedR;
+
+    double DeltaR = R - meanRadius_[index];
+    double RCube = R*R*R;
+    return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
+  }
+ private:
+  std::shared_ptr<EstimatorSimple> estimatorTgTheta_;
+  CorrectPhiForNonRadialStripsLookup correctPhiForNonRadialStripsLookup_;
+};
+
+
 class TransformCorrectedZFirstOrder : public TransformBase
 {
  public:
@@ -971,7 +1017,16 @@ class TransformExtrapolatedRSecondOrder : public TransformBase
 //    double extrapolatedR = extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ);
 //    return extrapolatedR;
 //    return extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ);
-    return extrapolateRSecondOrder(R, z, stubsCombination.layer(index), tgTheta, chargeOverPt, stubsCombination.layers(), originalR, originalZ);
+    double extrapolatedR = extrapolateRSecondOrder(R, z, stubsCombination.layer(index), tgTheta, chargeOverPt, stubsCombination.layers(), originalR, originalZ);
+//    double genDistanceR = stubsCombination.genTrackDistanceLongitudinalR(index);
+//    StubsCombination transformedStubsCombination(stubsCombination);
+//    transformedStubsCombination.setR(index, extrapolatedR);
+//    double genDistanceExtrapolatedR = transformedStubsCombination.genTrackDistanceLongitudinalR(index);
+//    std::cout << "R = " << R << "genTrackDistanceR = " << genDistanceR << std::endl;
+//    std::cout << "extrapolatedR = " << extrapolatedR << ", genTrackDistanceExtrapolatedR = " << genDistanceExtrapolatedR << std::endl;
+    return extrapolatedR;
+//    return extrapolateRSecondOrder(R, z, stubsCombination.layer(index), tgTheta, chargeOverPt, stubsCombination.layers(), originalR, originalZ);
+
 //    return extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ, genZ0, genChargeOverPt);
 
 //    double chargeOverTwoRho = (3.8114*0.003)*genChargeOverPt/2.;

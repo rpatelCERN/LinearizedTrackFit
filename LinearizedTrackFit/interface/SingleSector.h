@@ -93,6 +93,7 @@ namespace LinearFit {
 //      double phi = it->phi();
 //      double R = it->R();
 //      double z = it->z();
+
       if (it->layer() <= 10) {
         distancesTransverse.push_back(stubsCombination.genTrackDistanceTransverse(i));
       }
@@ -103,6 +104,8 @@ namespace LinearFit {
 //      distancesLongitudinal.push_back(distLongitudinal);
 //      distancesLongitudinalR.push_back(distLongitudinal/stubsCombination.genCotTheta());
       distancesLongitudinal.push_back(stubsCombination.genTrackDistanceLongitudinal(i));
+//      double distanceR = stubsCombination.genTrackDistanceLongitudinalR(i);
+//      std::cout << "R = " << R << ", distanceR = " << distanceR << std::endl;
       distancesLongitudinalR.push_back(stubsCombination.genTrackDistanceLongitudinalR(i));
       ++i;
     }

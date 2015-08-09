@@ -115,29 +115,26 @@ namespace LinearFit {
       transformVariables(stubsCombination, varTransformVec, transformedVars);
 
       if (computeDistances) {
-        std::vector<double> fullTransformedVars(vars);
+//        std::vector<double> fullTransformedVars(vars);
         StubsCombination transformedStubsCombination(stubsCombination);
         int inputVarNamesSize = inputVarNames.size();
         for (int i=0; i<inputVarNamesSize; ++i) {
-//          int shift = -1;
           if (inputVarNames.at(i).find("phi") != std::string::npos || inputVarNames.at(i).find("Phi") != std::string::npos) {
-//            shift = 0;
             for (size_t j = 0; j < stubsCombination.size(); ++j) {
               transformedStubsCombination.setPhi(j, transformedVars[j * inputVarNamesSize + i]);
             }
           }
-          else if (inputVarNames.at(i).find("R") != std::string::npos) {
-//            shift = 1;
+          else if (inputVarNames.at(i).find("ExtrapolatedR") != std::string::npos) {
             for (size_t j = 0; j < stubsCombination.size(); ++j) {
+//              double extrapolatedR = transformedVars[j * inputVarNamesSize + i];
               transformedStubsCombination.setR(j, transformedVars[j * inputVarNamesSize + i]);
             }
           }
-          else if (inputVarNames.at(i).find("z") != std::string::npos || inputVarNames.at(i).find("Z") != std::string::npos) {
-//            shift = 2;
-            for (size_t j = 0; j < stubsCombination.size(); ++j) {
-              transformedStubsCombination.setZ(j, transformedVars[j * inputVarNamesSize + i]);
-            }
-          }
+//          else if (inputVarNames.at(i).find("z") != std::string::npos || inputVarNames.at(i).find("Z") != std::string::npos) {
+//            for (size_t j = 0; j < stubsCombination.size(); ++j) {
+//              transformedStubsCombination.setZ(j, transformedVars[j * inputVarNamesSize + i]);
+//            }
+//          }
 //          if (shift != -1) {
 //            for (size_t j = 0; j < vars.size() / 3; ++j) {
 //              fullTransformedVars[j * 3 + shift] = transformedVars[j * inputVarNamesSize + i];

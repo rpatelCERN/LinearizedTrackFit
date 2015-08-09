@@ -160,6 +160,7 @@ int main(int argc, char* argv[])
 
     // Central production
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_centralProduction_muMinus.root";
+//    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_flatPt.root";
 
 //    bool train = true;
     bool train = false;
@@ -175,10 +176,10 @@ int main(int argc, char* argv[])
     }
 
 
-//    bool testFitter_ = false;
-    buildMatrix_ = false;
-    testMatrix_ = false;
-    bool testFitter_ = true;
+    bool testFitter_ = false;
+//    buildMatrix_ = false;
+//    testMatrix_ = false;
+//    bool testFitter_ = true;
 
 
 
@@ -189,7 +190,7 @@ int main(int argc, char* argv[])
 
 
     // To run on all combinations
-    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+//    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
     // Select layers to use for each stub coordinate
 //   std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
@@ -198,7 +199,7 @@ int main(int argc, char* argv[])
     // Hybrid
 //  std::vector<int> layersAll_{5, 6, 7, 8, 9, 11}; // region 2
 //  std::vector<int> layersAll_{5, 6, 7, 8, 11, 12}; // region 3
-//  std::vector<int> layersAll_{5, 6, 7, 11, 12, 13}; // region 4
+  std::vector<int> layersAll_{5, 6, 7, 11, 12, 13}; // region 4
 
     // Endcaps
 //    std::vector<int> layersAll_{5, 11, 12, 13, 14, 15};
@@ -249,8 +250,10 @@ int main(int argc, char* argv[])
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrder"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactRNonRadialStripCorrection"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection"};
-    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"};
+    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta"};
 
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection", "ExtrapolatedRSecondOrder"};
 
 
     //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactR"};
@@ -317,8 +320,16 @@ int main(int argc, char* argv[])
 //    oneOverPtMin_ = 0.;
 //    oneOverPtMax_ = 1. / 2.;
 //    oneOverPtMin_ = 1. / 10.;
+//    oneOverPtMax_ = 1. / 2.;
+//    oneOverPtMin_ = 1. / 5.;
+//    oneOverPtMax_ = 1. / 5.;
+//    oneOverPtMin_ = 1. / 15.;
+//    oneOverPtMax_ = 1. / 15.;
+//    oneOverPtMin_ = 1. / 100.;
     oneOverPtMax_ = 1. / 10.;
     oneOverPtMin_ = 0.;
+//    oneOverPtMax_ = 1. / 15.;
+//    oneOverPtMin_ = 0.;
 //    oneOverPtRegions_ = 1;
     phiMin_ = 0.;
     phiMax_ = 0.8;
