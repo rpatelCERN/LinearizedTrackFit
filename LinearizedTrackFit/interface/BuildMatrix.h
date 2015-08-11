@@ -115,6 +115,7 @@ namespace LinearFit {
       transformVariables(stubsCombination, varTransformVec, transformedVars);
 
       if (computeDistances) {
+        bool foundExtrapolatedR = false;
 //        std::vector<double> fullTransformedVars(vars);
         StubsCombination transformedStubsCombination(stubsCombination);
         int inputVarNamesSize = inputVarNames.size();
@@ -125,6 +126,7 @@ namespace LinearFit {
             }
           }
           else if (inputVarNames.at(i).find("ExtrapolatedR") != std::string::npos) {
+            foundExtrapolatedR = true;
             for (size_t j = 0; j < stubsCombination.size(); ++j) {
 //              double extrapolatedR = transformedVars[j * inputVarNamesSize + i];
               transformedStubsCombination.setR(j, transformedVars[j * inputVarNamesSize + i]);
@@ -141,11 +143,12 @@ namespace LinearFit {
 //            }
 //          }
         }
-//        // Setting meanRadius
-//        for (size_t j = 0; j < stubsCombination.size(); ++j) {
-//          transformedStubsCombination.setR(j, inputMeanRadius[combinationIndex_][j]);
-//          // fullTransformedVars[j*3+1] = inputMeanRadius[combinationIndex_][j];
-//        }
+        // Setting meanRadius
+        if (!foundExtrapolatedR) {
+          for (size_t j = 0; j < stubsCombination.size(); ++j) {
+            transformedStubsCombination.setR(j, inputMeanRadius[combinationIndex_][j]);
+          }
+        }
         fillDistances(transformedStubsCombination, stubDistanceTransverseTransformedHistograms,
                       stubDistanceLongitudinalTransformedHistograms, stubDistanceLongitudinalTransformedHistogramsR,
                       "Transformed");

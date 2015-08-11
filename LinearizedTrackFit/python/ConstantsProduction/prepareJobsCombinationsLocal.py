@@ -45,7 +45,7 @@ def prepare_job(layers, input_file_name, radius_cut_min, radius_cut_max,
 
     train_start = 0.
     train_end = 0.5
-    test_start = 0.8
+    test_start = 0.5
     test_end = 1.
 
     configuration_file.write(str(0)+"\n")
@@ -112,7 +112,8 @@ def prepare_job(layers, input_file_name, radius_cut_min, radius_cut_max,
 
 
 files_dir = "/Users/demattia/RemoteProjects/"
-file_full = files_dir+"extracted_fullTracker_bigger.root"
+# file_full = files_dir+"extracted_fullTracker_bigger.root"
+file_full = files_dir+"extracted_fullTracker.root"
 
 layers_list = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 radius_cut_min = [0.]*len(layers_list)
@@ -178,7 +179,7 @@ pre_estimate = False
 
 # Transverse plane only and splitting low and high pT
 # 2 < pT < 10 GeV/c
-job_types = []
+# job_types = []
 # job_types.append(JobType("Transverse_2_10", ["CorrectedPhiFirstOrder"], ["charge/pt", "phi"]))
 # job_types.append(JobType("Transverse_SecondOrder_2_10", ["CorrectedPhiSecondOrder"], ["charge/pt", "phi"]))
 # job_types.append(JobType("Transverse_Pz_2_10", ["CorrectedPhiFirstOrderPz"], ["charge/pt", "phi"]))
@@ -205,10 +206,16 @@ job_types = []
 # job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_2_10",
 #                          ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"],
 #                          ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta_2_10",
-                         ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta"],
-                         ["charge/pt", "phi"]))
-prepare_all_jobs(job_types, pre_estimate, pt_min=2., pt_max=10.)
+# job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta_2_10",
+#                          ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta"],
+#                          ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_2_10",
+#                          ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN"],
+#                          ["charge/pt", "phi"]))
+# job_types.append(JobType("Transform_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_ExactExtrapolation_2_10",
+#                          ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_ExactExtrapolation"],
+#                          ["charge/pt", "phi"]))
+# prepare_all_jobs(job_types, pre_estimate, pt_min=2., pt_max=10.)
 
 # pT > 10 GeV/c
 job_types = []
@@ -238,9 +245,15 @@ job_types = []
 # job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more",
 #                          ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"],
 #                          ["charge/pt", "phi"]))
-job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta_10_more",
-                         ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta"],
+# job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta_10_more",
+#                          ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta"],
+#                          ["charge/pt", "phi"]))
+job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_10_more",
+                         ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN"],
                          ["charge/pt", "phi"]))
+# job_types.append(JobType("Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_ExactExtrapolation_10_more",
+#                          ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_ExactExtrapolation"],
+#                          ["charge/pt", "phi"]))
 prepare_all_jobs(job_types, pre_estimate, pt_min=10.)
 
 

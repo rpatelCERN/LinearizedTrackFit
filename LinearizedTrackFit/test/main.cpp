@@ -145,13 +145,13 @@ int main(int argc, char* argv[])
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_prompt_extrapolated.root";
 
     // Hybrid
-//  inputFileName_ = "/Users/demattia/RemoteProjects/extracted_hybrid.root";
+  inputFileName_ = "/Users/demattia/RemoteProjects/extracted_hybrid.root";
 
     // Endcaps
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_endcaps.root";
 
     // Full Tracker (slice in 0 < phi < 0.8 and eta > 0)
-    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
+//    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
     // Same as above but with 10x the statistics
     // inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker_bigger.root";
 
@@ -162,8 +162,8 @@ int main(int argc, char* argv[])
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_centralProduction_muMinus.root";
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_flatPt.root";
 
-//    bool train = true;
-    bool train = false;
+    bool train = true;
+//    bool train = false;
 
 
     if (train) {
@@ -250,11 +250,16 @@ int main(int argc, char* argv[])
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrder"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactRNonRadialStripCorrection"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection"};
-//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"};
-    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta"};
+    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta"};
 
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection", "ExtrapolatedRSecondOrder"};
-
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup", "ExtrapolatedRSecondOrder"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN", "ExtrapolatedRSecondOrder"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN", "ExtrapolatedRExact"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_ExactExtrapolation", "ExtrapolatedR"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_ExactExtrapolation", "ExtrapolatedRSecondOrder"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_ExactExtrapolation", "ExtrapolatedRExact"};
 
     //  std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactR"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrderPz"};
@@ -326,10 +331,10 @@ int main(int argc, char* argv[])
 //    oneOverPtMin_ = 1. / 15.;
 //    oneOverPtMax_ = 1. / 15.;
 //    oneOverPtMin_ = 1. / 100.;
-    oneOverPtMax_ = 1. / 10.;
-    oneOverPtMin_ = 0.;
-//    oneOverPtMax_ = 1. / 15.;
+//    oneOverPtMax_ = 1. / 10.;
 //    oneOverPtMin_ = 0.;
+    oneOverPtMax_ = 1. / 15.;
+    oneOverPtMin_ = 0.;
 //    oneOverPtRegions_ = 1;
     phiMin_ = 0.;
     phiMax_ = 0.8;

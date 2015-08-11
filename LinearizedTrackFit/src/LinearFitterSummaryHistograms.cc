@@ -91,7 +91,7 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
   }
   if (tgThetaIndex_ != -1) {
     hDeltaTgThetaVsZ0_ = new TH2F("deltaTgThetaVsZ0", "deltaTgThetaVsZ0", 400, z0Min, z0Max, 200, -0.05, 0.05);
-    hDeltaTgThetaVsEta_ = new TH2F("deltaTgThetaVsEta", "deltaTgThetaVsEta", 500, etaMin, etaMax, 200, -0.05, 0.05);
+    hDeltaTgThetaVsEta_ = new TH2F("deltaTgThetaVsEta", "deltaTgThetaVsEta", 500, etaMin, etaMax, 200, -0.02, 0.02);
     hDeltaTgThetaVsPt_ = new TH2F("deltaTgThetaVsPt", "deltaTgThetaVsPt", 400, ptMin, ptMax, 100, -0.05, 0.05);
     hDeltaTgThetaVsD0_ = new TH2F("deltaTgThetaVsD0", "deltaTgThetaVsD0", 200, d0Min, d0Max, 100, -0.05, 0.05);
   }

@@ -37,7 +37,7 @@ double extrapolateR(const double & R, const double & z, const int layer, const d
 // Use a second order approximation.
 template <class T>
 double extrapolateRSecondOrder(const double & R, const double & z, const int layer, const double & tgTheta,
-                               const double & chargeOverPt,
+                               const double & chargeOverTwoRho,
                                const std::vector<int> & uniqueLayers,
                                const std::vector<double> & originalR, const T & originalZ)
 {
@@ -45,16 +45,38 @@ double extrapolateRSecondOrder(const double & R, const double & z, const int lay
     // Extrapolate R from the outermost PS module in this stubs combination
     for (int i = uniqueLayers.size() - 1; i >= 0; --i) {
       if (uniqueLayers[i] < 8 || (uniqueLayers[i] > 10 && originalR[i] < 61.)) {
-        double rho = chargeOverPt != 0 ? (1./chargeOverPt)/(3.8114*0.003) : 10000.;
+//        double rho = chargeOverPt != 0 ? (1./chargeOverPt)/(3.8114*0.003) : 10000.;
         double deltaZTgTheta = (z - originalZ[i])*tgTheta;
 
-        double term1 = -deltaZTgTheta*std::pow(originalR[i], 2)/std::pow(2*rho, 2)/2.;
-        double term2 = -originalR[i]*std::pow(deltaZTgTheta, 2)/std::pow(2*rho, 2)/2.;
-        double term3 = -std::pow(deltaZTgTheta, 3)/std::pow(2*rho, 2)/6.;
-        double secondOrderTerm = term1+term2+term3;
+//        double term1 = -deltaZTgTheta*std::pow(originalR[i], 2)/std::pow(2*rho, 2)/2.;
+//        double term2 = -originalR[i]*std::pow(deltaZTgTheta, 2)/std::pow(2*rho, 2)/2.;
+//        double term3 = -std::pow(deltaZTgTheta, 3)/std::pow(2*rho, 2)/6.;
+        double term1 = -deltaZTgTheta*std::pow(originalR[i], 2);
+        double term2 = -originalR[i]*std::pow(deltaZTgTheta, 2);
+        double term3 = -std::pow(deltaZTgTheta, 3)/3.;
+        double secondOrderTerm = (term1+term2+term3)*std::pow(chargeOverTwoRho, 2)/2.;
 
 //        return (originalR[i] + deltaZTgTheta - std::pow(deltaZTgTheta, 3)/std::pow(2*rho, 2)/6.);
         return (originalR[i] + deltaZTgTheta + secondOrderTerm);
+      }
+    }
+  }
+  return R;
+}
+
+
+template <class T>
+double extrapolateRExact(const double & R, const double & z, const int layer, const double & tgTheta,
+                         const double & chargeOverTwoRho,
+                         const std::vector<int> & uniqueLayers,
+                         const std::vector<double> & originalR, const T & originalZ)
+{
+  if (layer > 10 && R > 61.) {
+    // Extrapolate R from the outermost PS module in this stubs combination
+    for (int i = uniqueLayers.size() - 1; i >= 0; --i) {
+      if (uniqueLayers[i] < 8 || (uniqueLayers[i] > 10 && originalR[i] < 61.)) {
+        double deltaZTgTheta = (z - originalZ[i])*tgTheta;
+        return sin(deltaZTgTheta*chargeOverTwoRho + asin(originalR[i]*chargeOverTwoRho))/chargeOverTwoRho;
       }
     }
   }
@@ -498,15 +520,17 @@ class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrder : public Transfor
       originalR.push_back(stubsCombination.R(i));
       originalZ.push_back(stubsCombination.z(i));
     }
-    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+//    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+    double chargeOverTwoRho = estimator_->estimate(originalPhi)*3.8114*0.003/2.;
+
     double tgTheta = estimatorTgTheta_->estimate(originalR, originalZ);
 
     // If this is a 2S module in the disks
-    R = extrapolateRSecondOrder(R, z, stubsCombination.layer(index), tgTheta, estimatedChargeOverPt, stubsCombination.layers(), originalR, originalZ);
+    R = extrapolateRSecondOrder(R, z, stubsCombination.layer(index), tgTheta, chargeOverTwoRho, stubsCombination.layers(), originalR, originalZ);
 
     double DeltaR = R - meanRadius_[index];
     double RCube = R*R*R;
-    return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
+    return (phi + chargeOverTwoRho*DeltaR + RCube*std::pow(chargeOverTwoRho, 3)/6.);
   }
  private:
   std::shared_ptr<EstimatorSimple> estimatorTgTheta_;
@@ -537,18 +561,19 @@ class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorr
       originalR.push_back(stubsCombination.R(i));
       originalZ.push_back(stubsCombination.z(i));
     }
-    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+//    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+    double chargeOverTwoRho = estimator_->estimate(originalPhi)*3.8114*0.003/2.;
     double tgTheta = estimatorTgTheta_->estimate(originalR, originalZ);
 
     // If this is a 2S module in the disks
     int layer = stubsCombination.layer(index);
-    double extrapolatedR = extrapolateRSecondOrder(R, z, layer, tgTheta, estimatedChargeOverPt, stubsCombination.layers(), originalR, originalZ);
+    double extrapolatedR = extrapolateRSecondOrder(R, z, layer, tgTheta, chargeOverTwoRho, stubsCombination.layers(), originalR, originalZ);
     phi = correctPhiForNonRadialStrips(phi, 0.009, stubsCombination.stub(index).strip(), extrapolatedR, R, layer);
     R = extrapolatedR;
 
     double DeltaR = R - meanRadius_[index];
     double RCube = R*R*R;
-    return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
+    return (phi + chargeOverTwoRho*DeltaR + RCube*std::pow(chargeOverTwoRho, 3)/6.);
   }
  private:
   std::shared_ptr<EstimatorSimple> estimatorTgTheta_;
@@ -579,12 +604,14 @@ class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorr
       originalR.push_back(stubsCombination.R(i));
       originalZ.push_back(stubsCombination.z(i));
     }
-    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+//    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+    double chargeOverTwoRho = estimator_->estimate(originalPhi)*3.8114*0.003/2.;
+
     double tgTheta = estimatorTgTheta_->estimate(originalR, originalZ);
 
     // If this is a 2S module in the disks
     int layer = stubsCombination.layer(index);
-    double extrapolatedR = extrapolateRSecondOrder(R, z, layer, tgTheta, estimatedChargeOverPt, stubsCombination.layers(), originalR, originalZ);
+    double extrapolatedR = extrapolateRSecondOrder(R, z, layer, tgTheta, chargeOverTwoRho, stubsCombination.layers(), originalR, originalZ);
     // phi = correctPhiForNonRadialStrips(phi, 0.009, stubsCombination.stub(index).strip(), extrapolatedR, R, layer);
     phi = correctPhiForNonRadialStripsLookup_.correctPhiForNonRadialStrips(phi, 0.009, // stubsCombination.stub(index).strip(),
                                                                            extrapolatedR, R, z, layer);
@@ -592,7 +619,7 @@ class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorr
 
     double DeltaR = R - meanRadius_[index];
     double RCube = R*R*R;
-    return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
+    return (phi + chargeOverTwoRho*DeltaR + RCube*std::pow(chargeOverTwoRho, 3)/6.);
   }
  private:
   std::shared_ptr<EstimatorSimple> estimatorTgTheta_;
@@ -624,13 +651,15 @@ class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorr
       originalR.push_back(stubsCombination.R(i));
       originalZ.push_back(stubsCombination.z(i));
     }
-    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+//    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
+    double chargeOverTwoRho = estimator_->estimate(originalPhi)*3.8114*0.003/2.;
+
 //    double tgTheta = estimatorTgTheta_->estimate(originalR, originalZ);
     double tgTheta = 1./stubsCombination.genCotTheta();
 
     // If this is a 2S module in the disks
     int layer = stubsCombination.layer(index);
-    double extrapolatedR = extrapolateRSecondOrder(R, z, layer, tgTheta, estimatedChargeOverPt, stubsCombination.layers(), originalR, originalZ);
+    double extrapolatedR = extrapolateRSecondOrder(R, z, layer, tgTheta, chargeOverTwoRho, stubsCombination.layers(), originalR, originalZ);
     // phi = correctPhiForNonRadialStrips(phi, 0.009, stubsCombination.stub(index).strip(), extrapolatedR, R, layer);
     phi = correctPhiForNonRadialStripsLookup_.correctPhiForNonRadialStrips(phi, 0.009, // stubsCombination.stub(index).strip(),
                                                                            extrapolatedR, R, z, layer);
@@ -638,7 +667,102 @@ class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorr
 
     double DeltaR = R - meanRadius_[index];
     double RCube = R*R*R;
-    return (phi + estimatedChargeOverPt*DeltaR*3.8114*0.003/2. + RCube*std::pow(estimatedChargeOverPt*3.8114*0.003/2., 3)/6.);
+    return (phi + chargeOverTwoRho*DeltaR + RCube*std::pow(chargeOverTwoRho, 3)/6.);
+  }
+ private:
+  std::shared_ptr<EstimatorSimple> estimatorTgTheta_;
+  CorrectPhiForNonRadialStripsLookup correctPhiForNonRadialStripsLookup_;
+};
+
+
+class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN : public TransformBase
+{
+ public:
+  TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN(const std::string & name,
+                                                                                             const std::string & firstOrderChargeOverPtCoefficientsFileName,
+                                                                                             const std::string & firstOrderTgThetaCoefficientsFileName,
+                                                                                             const std::vector<double> & meanRadius) :
+      TransformBase(name, firstOrderChargeOverPtCoefficientsFileName, meanRadius),
+      estimatorTgTheta_(std::make_shared<EstimatorSimple>(firstOrderTgThetaCoefficientsFileName))
+  {}
+  virtual ~TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN() {}
+  virtual double operator()(const StubsCombination & stubsCombination, const int index) const
+  {
+    double phi = stubsCombination.phi(index);
+    double R = stubsCombination.R(index);
+    double z = stubsCombination.z(index);
+    std::vector<double> originalPhi;
+    std::vector<double> originalR;
+    std::vector<double> originalZ;
+    for (size_t i=0; i<stubsCombination.size(); ++i) {
+      originalPhi.push_back(stubsCombination.phi(i));
+      originalR.push_back(stubsCombination.R(i));
+      originalZ.push_back(stubsCombination.z(i));
+    }
+    double chargeOverTwoRho = stubsCombination.genChargeOverPt()*3.8114*0.003/2.;
+    // If this is a 2S module in the disks
+    int layer = stubsCombination.layer(index);
+    double extrapolatedR = extrapolateRSecondOrder(R, z, layer, 1./stubsCombination.genCotTheta(), chargeOverTwoRho,
+                                                   stubsCombination.layers(), originalR, originalZ);
+    phi = correctPhiForNonRadialStripsLookup_.correctPhiForNonRadialStrips(phi, 0.009, // stubsCombination.stub(index).strip(),
+                                                                           extrapolatedR, R, z, layer);
+//    if (stubsCombination.layer(index) > 10 && R > 61.) {
+//      double exactExtrapolatedR = sin((z - stubsCombination.genZ0()) * chargeOverTwoRho / stubsCombination.genCotTheta()) / chargeOverTwoRho;
+//      std::cout << "extrapolatedR = " << extrapolatedR << std::endl;
+//      std::cout << "exactExtrapolatedR = " << exactExtrapolatedR << std::endl;
+//      std::cout << std::endl;
+//    }
+    return phi;
+    R = extrapolatedR;
+
+    double DeltaR = R - meanRadius_[index];
+    double RCube = R*R*R;
+    return (phi + chargeOverTwoRho*DeltaR + RCube*std::pow(chargeOverTwoRho, 3)/6.);
+  }
+ private:
+  std::shared_ptr<EstimatorSimple> estimatorTgTheta_;
+  CorrectPhiForNonRadialStripsLookup correctPhiForNonRadialStripsLookup_;
+};
+
+
+class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_ExactExtrapolation : public TransformBase
+{
+ public:
+  TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_ExactExtrapolation(const std::string & name,
+                                                                                                                const std::string & firstOrderChargeOverPtCoefficientsFileName,
+                                                                                                                const std::string & firstOrderTgThetaCoefficientsFileName,
+                                                                                                                const std::vector<double> & meanRadius) :
+      TransformBase(name, firstOrderChargeOverPtCoefficientsFileName, meanRadius),
+      estimatorTgTheta_(std::make_shared<EstimatorSimple>(firstOrderTgThetaCoefficientsFileName))
+  {}
+  virtual ~TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_ExactExtrapolation() {}
+  virtual double operator()(const StubsCombination & stubsCombination, const int index) const
+  {
+    double phi = stubsCombination.phi(index);
+    double R = stubsCombination.R(index);
+    double z = stubsCombination.z(index);
+    std::vector<double> originalPhi;
+    std::vector<double> originalR;
+    std::vector<double> originalZ;
+    for (size_t i=0; i<stubsCombination.size(); ++i) {
+      originalPhi.push_back(stubsCombination.phi(i));
+      originalR.push_back(stubsCombination.R(i));
+      originalZ.push_back(stubsCombination.z(i));
+    }
+    double chargeOverTwoRho = stubsCombination.genChargeOverPt()*3.8114*0.003/2.;
+    // If this is a 2S module in the disks
+    int layer = stubsCombination.layer(index);
+    double extrapolatedR = R;
+    if (stubsCombination.layer(index) > 10 && R > 61.) {
+      extrapolatedR = sin((z - stubsCombination.genZ0()) * chargeOverTwoRho / stubsCombination.genCotTheta()) / chargeOverTwoRho;
+    }
+    phi = correctPhiForNonRadialStripsLookup_.correctPhiForNonRadialStrips(phi, 0.009, // stubsCombination.stub(index).strip(),
+                                                                           extrapolatedR, R, z, layer);
+    R = extrapolatedR;
+
+    double DeltaR = R - meanRadius_[index];
+    double RCube = R*R*R;
+    return (phi + chargeOverTwoRho*DeltaR + RCube*std::pow(chargeOverTwoRho, 3)/6.);
   }
  private:
   std::shared_ptr<EstimatorSimple> estimatorTgTheta_;
@@ -1012,12 +1136,14 @@ class TransformExtrapolatedRSecondOrder : public TransformBase
     }
     double tgTheta = estimator_->estimate(originalR, originalZ);
 //    double tgTheta = 1./estimator_->estimate(originalR, originalZ);
-    double chargeOverPt = estimatorChargeOverPt_->estimate(originalPhi);
-//    double tgTheta = 1./genCotTheta;
+//    double chargeOverPt = estimatorChargeOverPt_->estimate(originalPhi);
+    double chargeOverTwoRho = estimatorChargeOverPt_->estimate(originalPhi)*3.8114*0.003/2.;
+
+    //    double tgTheta = 1./genCotTheta;
 //    double extrapolatedR = extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ);
 //    return extrapolatedR;
 //    return extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ);
-    double extrapolatedR = extrapolateRSecondOrder(R, z, stubsCombination.layer(index), tgTheta, chargeOverPt, stubsCombination.layers(), originalR, originalZ);
+    double extrapolatedR = extrapolateRSecondOrder(R, z, stubsCombination.layer(index), tgTheta, chargeOverTwoRho, stubsCombination.layers(), originalR, originalZ);
 //    double genDistanceR = stubsCombination.genTrackDistanceLongitudinalR(index);
 //    StubsCombination transformedStubsCombination(stubsCombination);
 //    transformedStubsCombination.setR(index, extrapolatedR);
@@ -1025,13 +1151,48 @@ class TransformExtrapolatedRSecondOrder : public TransformBase
 //    std::cout << "R = " << R << "genTrackDistanceR = " << genDistanceR << std::endl;
 //    std::cout << "extrapolatedR = " << extrapolatedR << ", genTrackDistanceExtrapolatedR = " << genDistanceExtrapolatedR << std::endl;
     return extrapolatedR;
-//    return extrapolateRSecondOrder(R, z, stubsCombination.layer(index), tgTheta, chargeOverPt, stubsCombination.layers(), originalR, originalZ);
+//    return extrapolateRSecondOrder(R, z, stubsCombination.layer(index), tgTheta, chargeOverTwoRho, stubsCombination.layers(), originalR, originalZ);
 
 //    return extrapolateR(R, z, uniqueLayers[index], tgTheta, uniqueLayers, originalR, originalZ, genZ0, genChargeOverPt);
 
 //    double chargeOverTwoRho = (3.8114*0.003)*genChargeOverPt/2.;
 //    return sin((z - genZ0) * chargeOverTwoRho / genCotTheta) / chargeOverTwoRho;
 
+  }
+ private:
+  std::shared_ptr<EstimatorSimple> estimatorChargeOverPt_;
+};
+
+
+class TransformExtrapolatedRExact : public TransformBase
+{
+ public:
+  TransformExtrapolatedRExact(const std::string & name) :
+      TransformBase(name)
+  {}
+  virtual ~TransformExtrapolatedRExact() {}
+  virtual double operator()(const StubsCombination & stubsCombination, const int index) const
+//  virtual double operator()(const int index, const std::vector<double> & vars, const std::vector<int> & uniqueLayers,
+//                            const double & genChargeOverPt, const double & genCotTheta, const double & genZ0) const
+  {
+    double R = stubsCombination.R(index);
+    double z = stubsCombination.z(index);
+    std::vector<double> originalPhi;
+    std::vector<double> originalR;
+    std::vector<double> originalZ;
+    for (size_t i = 0; i < stubsCombination.size(); ++i) {
+      originalPhi.push_back(stubsCombination.phi(i));
+      originalR.push_back(stubsCombination.R(i));
+      originalZ.push_back(stubsCombination.z(i));
+    }
+    double chargeOverTwoRho = (3.8114 * 0.003) * stubsCombination.genChargeOverPt() / 2.;
+//    double exactExtrapolatedR = extrapolateRExact(R, z, stubsCombination.layer(index), 1./stubsCombination.genCotTheta(), chargeOverTwoRho,
+//                             stubsCombination.layers(), originalR, originalZ);
+//    double extrapolatedR = extrapolateRSecondOrder(R, z, stubsCombination.layer(index), 1./stubsCombination.genCotTheta(), chargeOverTwoRho,
+//                                                   stubsCombination.layers(), originalR, originalZ);
+//    return exactExtrapolatedR;
+    return extrapolateRExact(R, z, stubsCombination.layer(index), 1./stubsCombination.genCotTheta(), chargeOverTwoRho,
+                             stubsCombination.layers(), originalR, originalZ);
   }
  private:
   std::shared_ptr<EstimatorSimple> estimatorChargeOverPt_;

@@ -209,7 +209,16 @@ namespace LinearFit
 
       // std::vector<double> vars(treeReader.getVariables());
       std::vector<double> vars(stubsCombination.variables());
+
+
+
+
       double normChi2 = linearizedTrackFitter.fit(vars, layersVec);
+//      double normChi2 = linearizedTrackFitter.fit(vars, layersVec, stubsCombination.genChargeOverPt(), 1./stubsCombination.genCotTheta());
+
+
+
+
       // We do not have coefficients for this combination, skip it.
       if (normChi2 == -1.) continue;
       std::vector<double> estimatedPars(linearizedTrackFitter.estimatedPars());

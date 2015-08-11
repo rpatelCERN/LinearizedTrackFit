@@ -113,6 +113,20 @@ void initializeVariablesTransformations(const std::vector<std::string> & inputVa
                                                                                                                      preEstimateTgThetaFileName,
                                                                                                                      meanRadius));
       }
+      else if (varName == "CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN") {
+        variablesTransformations[combinationIndex].push_back(
+            std::make_shared<TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN>(varName,
+                                                                                                                         preEstimateChargeOverPtFileName,
+                                                                                                                         preEstimateTgThetaFileName,
+                                                                                                                         meanRadius));
+      }
+      else if (varName == "CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_ExactExtrapolation") {
+        variablesTransformations[combinationIndex].push_back(
+            std::make_shared<TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_ExactExtrapolation>(varName,
+                                                                                                                                            preEstimateChargeOverPtFileName,
+                                                                                                                                            preEstimateTgThetaFileName,
+                                                                                                                                            meanRadius));
+      }
       else if (varName == "CorrectedPhiFirstOrderPz") {
         preEstimateChargeOverPtFileName = preEstimateChargeOverPtDirName + "/matrixVD_" + std::to_string(combinationIndex) + "_pre_chargeOverPz.txt";
         variablesTransformations[combinationIndex].push_back(
@@ -154,6 +168,10 @@ void initializeVariablesTransformations(const std::vector<std::string> & inputVa
         variablesTransformations[combinationIndex].push_back(
             std::make_shared<TransformExtrapolatedRSecondOrder>(varName, preEstimateTgThetaFileName, preEstimateChargeOverPtFileName, meanRadius));
 //            std::make_shared<TransformExtrapolatedRSecondOrder>(varName, preEstimateCotThetaFileName, preEstimateChargeOverPtFileName, meanRadius));
+      }
+      else if (varName == "ExtrapolatedRExact") {
+        variablesTransformations[combinationIndex].push_back(
+            std::make_shared<TransformExtrapolatedRExact>(varName));
       }
       else if (varName == "z") {
         variablesTransformations[combinationIndex].push_back(std::make_shared<TransformPropagateZ>(varName));

@@ -21,12 +21,17 @@ class LinearizedTrackFitter
                         const bool inputCorrectNonRadialStrips);
 
   double fit(const std::vector<double> & vars, const std::vector<int> & layers);
+  double fit(const std::vector<double> & vars, const std::vector<int> & layers,
+             const double & genChargeOverPt, const double & genTgTheta);
   double fit(const std::vector<double> & vars, const int bits);
   std::vector<double> estimatedPars() { return estimatedPars_; }
   std::vector<double> principalComponents();
   std::vector<double> normalizedPrincipalComponents();
 
  private:
+  void initialize(const std::vector<double> & vars, const std::vector<int> & layers);
+  double fit(const double & chargeOverTwoRho, const double & cotTheta, const double & tgTheta);
+
   std::string preEstimatePtDirName_;
   std::string preEstimateCotThetaDirName_;
   std::string linearFitLowPtDirName_;
@@ -49,6 +54,8 @@ class LinearizedTrackFitter
   std::unordered_map<unsigned long, MatrixReader> linearFitLongitudinal_;
   std::unordered_map<unsigned long, std::vector<double> > meanRadius_;
   unsigned long combinationIndex_;
+  std::vector<int> uniqueLayers_;
+  unsigned int varsNum_;
   std::string baseDir_;
   CombinationIndexListBuilder combinationIndexListBuilder_;
   bool extrapolateR_;

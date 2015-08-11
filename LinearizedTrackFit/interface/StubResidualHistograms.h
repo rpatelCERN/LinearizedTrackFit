@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/BaseHistograms.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/StubsCombination.h"
 #include "TH2F.h"
 
 
@@ -14,8 +15,7 @@ class StubResidualHistograms
 {
  public:
   StubResidualHistograms (const std::string & name, const int inputVars);
-  void fill(const std::vector<double> & distances, const double & genChargeOverPt, const double & genPhi0,
-            const double & genD0, const double & genZ0, const double & genCotTheta);
+  void fill(const std::vector<double> & distances, const StubsCombination & stubsCombination);
   void write();
  private:
   std::shared_ptr<BaseHistograms> residualsAverages_;
@@ -23,6 +23,7 @@ class StubResidualHistograms
   std::vector<TH2F*> residualsVsPhi0_;
   std::vector<TH2F*> residualsVsCotTheta_;
   std::vector<TH2F*> residualsVsZ0_;
+  std::vector<TH2F*> residualsVsStripIndex_;
   // std::vector<TH2F*> residualsVsD0_;
 };
 

@@ -70,12 +70,7 @@ namespace LinearFit {
       distanceHistograms.insert(std::make_pair(stubsCombination.getCombinationIndex(),
                                                StubResidualHistograms(histoName, stubsCombination.size())));
     }
-    distanceHistograms.find(stubsCombination.getCombinationIndex())->second.fill(distances,
-                                                                                 stubsCombination.genChargeOverPt(),
-                                                                                 stubsCombination.genPhi0(),
-                                                                                 stubsCombination.genD0(),
-                                                                                 stubsCombination.genZ0(),
-                                                                                 stubsCombination.genCotTheta());
+    distanceHistograms.find(stubsCombination.getCombinationIndex())->second.fill(distances, stubsCombination);
   }
 
 
