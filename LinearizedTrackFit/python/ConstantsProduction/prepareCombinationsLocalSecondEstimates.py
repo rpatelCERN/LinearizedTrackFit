@@ -9,7 +9,6 @@ def prepare_second_estimates():
     """
     regions_number_names = {9: "NineRegions", 14: "FourteenRegions"}
 
-    file_full = files_dir+"extracted_fullTracker_bigger.root"
     for regions_number in regions_number_names:
         regions_name = regions_number_names[regions_number]
 

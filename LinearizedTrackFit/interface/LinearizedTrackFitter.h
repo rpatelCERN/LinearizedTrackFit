@@ -18,8 +18,12 @@ class LinearizedTrackFitter
 {
  public:
   LinearizedTrackFitter(const std::string & baseDir, const bool inputExtrapolateR,
-                        const bool inputCorrectNonRadialStrips, const int regionsNumber);
-
+                        const bool inputCorrectNonRadialStrips, const int regionsNumber,
+                        const std::string & preEstimatePtDirName = "",
+                        const std::string & preEstimateCotThetaDirName = "",
+                        const std::string & linearFitLowPtDirName = "",
+                        const std::string & linearFitHighPtDirName = "",
+                        const std::string & linearFitLongitudinalDirName = "");
   double fit(const std::vector<double> & vars, const std::vector<int> & layers);
   double fit(const std::vector<double> & vars, const std::vector<int> & layers,
              const double & genChargeOverPt, const double & genTgTheta);

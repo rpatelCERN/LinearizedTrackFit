@@ -5,7 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReader.h"
+#include "LinearizedTrackFit/LinearizedTrackFit/interface/TreeReaderNew.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitter.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterHistograms.h"
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearFitterSummaryHistograms.h"

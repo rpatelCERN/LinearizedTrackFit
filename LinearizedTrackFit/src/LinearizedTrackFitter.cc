@@ -1,21 +1,26 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearizedTrackFitter.h"
 
 LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const bool inputExtrapolateR,
-                                             const bool inputCorrectNonRadialStrips, const int regionsNumber) :
-
-//    preEstimatePtDirName_("PreEstimate_Transverse"),
-//    preEstimateCotThetaDirName_("PreEstimate_Longitudinal_Rz"),
-
-//    preEstimatePtDirName_("FourteenRegions/FlatOneOverPt/PreEstimate_Transverse"),
-//    preEstimateCotThetaDirName_("FourteenRegions/FlatOneOverPt/PreEstimate_Longitudinal_Rz"),
-
-    preEstimatePtDirName_("FourteenRegions/FlatPt/PreEstimate_Transverse"),
-    preEstimateCotThetaDirName_("FourteenRegions/FlatPt/PreEstimate_Longitudinal_Rz"),
-
-
-    linearFitLowPtDirName_("Combinations_Transverse_SecondOrder_2_10"),
-    linearFitHighPtDirName_("Combinations_Transverse_SecondOrder_10_more"),
-    linearFitLongitudinalDirName_("Combinations_Longitudinal_Rz_SecondOrder"),
+                                             const bool inputCorrectNonRadialStrips, const int regionsNumber,
+                                             const std::string & preEstimatePtDirName,
+                                             const std::string & preEstimateCotThetaDirName,
+                                             const std::string & linearFitLowPtDirName,
+                                             const std::string & linearFitHighPtDirName,
+                                             const std::string & linearFitLongitudinalDirName) :
+////    preEstimatePtDirName_("PreEstimate_Transverse"),
+////    preEstimateCotThetaDirName_("PreEstimate_Longitudinal_Rz"),
+////    preEstimatePtDirName_("FourteenRegions/FlatOneOverPt/PreEstimate_Transverse"),
+////    preEstimateCotThetaDirName_("FourteenRegions/FlatOneOverPt/PreEstimate_Longitudinal_Rz"),
+//    preEstimatePtDirName_("FourteenRegions/FlatPt/PreEstimate_Transverse"),
+//    preEstimateCotThetaDirName_("FourteenRegions/FlatPt/PreEstimate_Longitudinal_Rz"),
+//    linearFitLowPtDirName_("Combinations_Transverse_SecondOrder_2_10"),
+//    linearFitHighPtDirName_("Combinations_Transverse_SecondOrder_10_more"),
+//    linearFitLongitudinalDirName_("Combinations_Longitudinal_Rz_SecondOrder"),
+    preEstimatePtDirName_(preEstimatePtDirName),
+    preEstimateCotThetaDirName_(preEstimateCotThetaDirName),
+    linearFitLowPtDirName_(linearFitLowPtDirName),
+    linearFitHighPtDirName_(linearFitHighPtDirName),
+    linearFitLongitudinalDirName_(linearFitLongitudinalDirName),
     preEstimatedPt_(0.),
     ptSplitValue_(10.),
     combinationIndex_(0),
@@ -24,28 +29,32 @@ LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const 
     correctNonRadialStrips_(inputCorrectNonRadialStrips),
     regionsNumber_(regionsNumber)
 {
-  if (correctNonRadialStrips_) {
+  if (linearFitLowPtDirName_ == "") {
+    preEstimatePtDirName_ = "FourteenRegions/FlatPt/PreEstimate_Transverse";
+    preEstimateCotThetaDirName_ = "FourteenRegions/FlatPt/PreEstimate_Longitudinal_Rz";
+    if (correctNonRadialStrips_) {
 //    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_2_10";
 //    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
-
 //    linearFitLowPtDirName_ = "FourteenRegions/FlatOneOverPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
 //    linearFitHighPtDirName_ = "FourteenRegions/FlatOneOverPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
-
-    linearFitLowPtDirName_ = "FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
-    linearFitHighPtDirName_ = "FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
-
-
+      linearFitLowPtDirName_ = "FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+      linearFitHighPtDirName_ = "FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
 //    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_2_10";
 //    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_10_more";
-    extrapolateR_ = true;
-  }
-  else if (extrapolateR_) {
+      extrapolateR_ = true;
+    }
+    else if (extrapolateR_) {
 //    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedR_2_10";
 //    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedR_10_more";
-    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrder_2_10";
-    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrder_10_more";
+      linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrder_2_10";
+      linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrder_10_more";
+    }
+    else {
+      linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_2_10";
+      linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_10_more";
+      linearFitLongitudinalDirName_ = "Combinations_Longitudinal_Rz_SecondOrder";
+    }
   }
-
   // Read the constants for the full tracker.
   // It needs to read all 9 regions based on few base names and generate the names for the removed layers.
 
