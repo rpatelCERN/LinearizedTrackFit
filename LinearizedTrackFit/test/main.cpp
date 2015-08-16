@@ -422,6 +422,7 @@ int main(int argc, char* argv[])
                             distanceCutsLongitudinal_,
                             radiusCuts_, singleModules_,
                             firstOrderChargeOverPtCoefficientsDirName_, firstOrderCotThetaCoefficientsDirName_,
+                            "", "", "",
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_, etaMin_, etaMax_, z0Min_, z0Max_, fiveOutOfSix_,
                             baseDir, minuitFit_, fillBestNormChi2_, extrapolateR_, correctNonRadialStrips_, regionsNumber_);
     }
@@ -507,9 +508,18 @@ int main(int argc, char* argv[])
     firstOrderChargeOverPtCoefficientsDirName_ = line;
     std::getline(inputFile, line);
     firstOrderCotThetaCoefficientsDirName_ = line;
+    std::getline(inputFile, line);
+    std::string linearFitLowPtDirName_ = line;
+    std::getline(inputFile, line);
+    std::string linearFitHighPtDirName_ = line;
+    std::getline(inputFile, line);
+    std::string linearFitLongitudinalDirName_ = line;
 
     std::cout << "firstOrderChargeOverPtCoefficientsFileName = " << firstOrderChargeOverPtCoefficientsDirName_ << std::endl;
     std::cout << "firstOrderCotThetaCoefficientsFileName = " << firstOrderCotThetaCoefficientsDirName_ << std::endl;
+    std::cout << "linearFitLowPtDirName = " << linearFitLowPtDirName_ << std::endl;
+    std::cout << "linearFitHighPtDirName = " << linearFitHighPtDirName_ << std::endl;
+    std::cout << "linearFitLongitudinalDirName = " << linearFitLongitudinalDirName_ << std::endl;
 
 
     // Geometric cuts
@@ -584,7 +594,7 @@ int main(int argc, char* argv[])
       std::cout << "Running the LinearizedTrackFitter" << std::endl;
       const std::string baseDir("/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/");
 
-      bool fiveOutOfSix_ = true;
+      bool fiveOutOfSix_ = false;
       bool minuitFit_ = false;
       bool fillBestNormChi2_ = true;
       bool extrapolateR_ = true;
@@ -595,6 +605,7 @@ int main(int argc, char* argv[])
                             distanceCutsLongitudinal_,
                             radiusCuts_, singleModules_,
                             firstOrderChargeOverPtCoefficientsDirName_, firstOrderCotThetaCoefficientsDirName_,
+                            linearFitLowPtDirName_, linearFitHighPtDirName_, linearFitLongitudinalDirName_,
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_, etaMin_, etaMax_, z0Min_, z0Max_, fiveOutOfSix_,
                             baseDir, minuitFit_, fillBestNormChi2_, extrapolateR_, correctNonRadialStrips_, regionsNumber_);
 
