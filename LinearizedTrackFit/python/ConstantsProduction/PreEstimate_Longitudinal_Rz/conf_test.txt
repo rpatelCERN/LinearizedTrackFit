@@ -1,12 +1,12 @@
 1
-/Users/demattia/RemoteProjects/extracted_fullTracker.root
+/FlatOneOverPt
 5 6 7 8 9 10 11 12 13 14 15
 0.0
 0.5
-0.8
+0.5
 1.0
 R z
-cotTheta
+cotTheta tgTheta
 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
 1000.0 1000.0 1000.0 1000.0 1000.0 1000.0 1000.0 1000.0 1000.0 1000.0 1000.0
 
@@ -25,3 +25,4 @@ cotTheta
 1
 1
 0
+9

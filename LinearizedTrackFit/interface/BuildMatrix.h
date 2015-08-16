@@ -33,7 +33,7 @@ namespace LinearFit {
                    const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
                    const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_,
                    const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsDirName,
-                   const bool sixOutOfSixOnly)
+                   const bool sixOutOfSixOnly, const int regionsNumber)
   {
     std::unordered_map<std::string, std::set<int> > requiredLayers;
     requiredLayers.insert(std::make_pair("phi", std::set<int>(layersAll.begin(), layersAll.end())));
@@ -41,7 +41,7 @@ namespace LinearFit {
     requiredLayers.insert(std::make_pair("z", std::set<int>(layersAll.begin(), layersAll.end())));
 
     TreeReaderNew treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers, radiusCuts,
-                             distanceCutsTransverse, distanceCutsLongitudinal, inputTrackParameterNames);
+                             distanceCutsTransverse, distanceCutsLongitudinal, inputTrackParameterNames, regionsNumber);
 
     // The new tree reader always returns N sets of (phi, R, z) coordinates. A second step applies a transformation to
     // the requested subset of those coordinates.
@@ -146,7 +146,9 @@ namespace LinearFit {
         // Setting meanRadius
         if (!foundExtrapolatedR) {
           for (size_t j = 0; j < stubsCombination.size(); ++j) {
-            transformedStubsCombination.setR(j, inputMeanRadius[combinationIndex_][j]);
+            if (inputMeanRadius[combinationIndex_].size() > 0) {
+              transformedStubsCombination.setR(j, inputMeanRadius[combinationIndex_][j]);
+            }
           }
         }
         fillDistances(transformedStubsCombination, stubDistanceTransverseTransformedHistograms,

@@ -20,14 +20,14 @@ class StubsCombination
   void pushStub(const double & phi, const double & R, const double & z, const int layer, const float strip);
   void setGenTrack(const double & genChargeOverPt, const double & genPhi0, const double & genD0,
                    const double & genCotTheta, const double & genZ0);
-  void build(const StubsCombination & stubsCombination, const std::vector<int> & combination);
+  void build(const StubsCombination & stubsCombination, const std::vector<int> & combination, const int regionsNumber);
   double genChargeOverPt() const { return genChargeOverPt_; }
   double genPhi0() const { return genPhi0_; }
   double genD0() const { return genD0_; }
   double genCotTheta() const { return genCotTheta_; }
   double genZ0() const { return genZ0_; }
   const Stub & stub(const int i) const { return stubs_.at(i); }
-  void setCombinationIndex() { combinationIndex_ = combinationIndex(stubs_); }
+  void setCombinationIndex(const int regionsNumber) { combinationIndex_ = combinationIndex(stubs_, regionsNumber); }
   unsigned long getCombinationIndex() const { return combinationIndex_; }
   size_t size() const { return stubs_.size(); }
   double phi(const int index) const { return stubs_.at(index).phi(); }

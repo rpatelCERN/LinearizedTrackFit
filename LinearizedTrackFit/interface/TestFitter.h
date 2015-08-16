@@ -122,7 +122,7 @@ namespace LinearFit
                   const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
                   const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_, const bool fiveOutOfSix,
                   const std::string & baseDir, const bool minuitFit, const bool fillBestNormChi2, const bool inputExtrapolateR,
-                  const bool inputCorrectNonRadialStrips)
+                  const bool inputCorrectNonRadialStrips, const int regionsNumber)
   {
 //    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
 //    std::vector<int> layersAll_{5, 6, 7, 8, 11, 12};
@@ -141,7 +141,7 @@ namespace LinearFit
 //                          firstOrderChargeOverPtCoefficientsFileName, firstOrderCotThetaCoefficientsFileName);
 
     TreeReaderNew treeReader(inputFileName, eventsFractionStart, eventsFractionEnd, requiredLayers, radiusCuts,
-                             distanceCutsTransverse, distanceCutsLongitudinal, inputTrackParameterNames);
+                             distanceCutsTransverse, distanceCutsLongitudinal, inputTrackParameterNames, regionsNumber);
 
     // Monitor the distribution of the input tracks
     TH1F hGenEta("hGenEta", "genEta", 60, -3., 3.);
@@ -160,7 +160,7 @@ namespace LinearFit
     FitResultsAndGen minuitFitResultsAndGen;
 
     // Perform linearized track fit
-    LinearizedTrackFitter linearizedTrackFitter(baseDir, inputExtrapolateR, inputCorrectNonRadialStrips);
+    LinearizedTrackFitter linearizedTrackFitter(baseDir, inputExtrapolateR, inputCorrectNonRadialStrips, regionsNumber);
     MinuitTrackFitter minuitTrackFitter("Minuit2", "Migrad", inputTrackParameterNames.size());
 //    MinuitTrackFitter minuitTrackFitter("Minuit2", "Minos", inputTrackParameterNames.size());
 //    MinuitTrackFitter minuitTrackFitter("Minuit2", "Combined", inputTrackParameterNames.size());

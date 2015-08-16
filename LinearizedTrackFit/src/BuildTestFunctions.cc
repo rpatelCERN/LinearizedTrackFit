@@ -59,11 +59,12 @@ void initializeVariablesTransformations(const std::vector<std::string> & inputVa
 {
   std::string preEstimateChargeOverPtFileName(preEstimateChargeOverPtDirName+"/matrixVD_"+std::to_string(combinationIndex)+"_pre_chargeOverPt.txt");
   std::string preEstimateCotThetaFileName(preEstimateCotThetaDirName+"/matrixVD_"+std::to_string(combinationIndex)+"_pre_cotTheta.txt");
-  std::string preEstimateTgThetaDirName(preEstimateCotThetaDirName);
-  int length = preEstimateTgThetaDirName.length();
-  // Remove trailing "/" if any
-  if (length > 1 && preEstimateTgThetaDirName[length-1] == '/') preEstimateTgThetaDirName = preEstimateTgThetaDirName.substr(0, length - 1);
-  std::string preEstimateTgThetaFileName = preEstimateTgThetaDirName+"_tgTheta/matrixVD_"+std::to_string(combinationIndex)+"_pre_tgTheta.txt";
+  std::string preEstimateTgThetaFileName(preEstimateCotThetaDirName+"/matrixVD_"+std::to_string(combinationIndex)+"_pre_tgTheta.txt");
+//  std::string preEstimateTgThetaDirName(preEstimateCotThetaDirName);
+//  int length = preEstimateTgThetaDirName.length();
+//  // Remove trailing "/" if any
+//  if (length > 1 && preEstimateTgThetaDirName[length-1] == '/') preEstimateTgThetaDirName = preEstimateTgThetaDirName.substr(0, length - 1);
+//  std::string preEstimateTgThetaFileName = preEstimateTgThetaDirName+"_tgTheta/matrixVD_"+std::to_string(combinationIndex)+"_pre_tgTheta.txt";
 
   auto it = variablesTransformations.find(combinationIndex);
   if (it == variablesTransformations.end()) {
@@ -100,6 +101,7 @@ void initializeVariablesTransformations(const std::vector<std::string> & inputVa
                                                                                        meanRadius));
       }
       else if (varName == "CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup") {
+        // preEstimateTgThetaFileName = preEstimateTgThetaDirName+"_tgTheta_10_more_flatPt/matrixVD_"+std::to_string(combinationIndex)+"_pre_tgTheta.txt";
         variablesTransformations[combinationIndex].push_back(
             std::make_shared<TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup>(varName,
                                                                                                                      preEstimateChargeOverPtFileName,

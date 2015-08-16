@@ -44,11 +44,24 @@ int main(int argc, char* argv[])
 
   // Optional for the buildMatrix step
   mapSectors_ = false;
-  computeDistances_ = true;
-  computeCorrelations_ = true;
+
+
+
+
+
+
+  computeDistances_ = false;
+  computeCorrelations_ = false;
+
+
+
+
 
   // Use the principal components to estimate track parameters
   usePcs_ = true;
+
+  // How many regions. The possible values are 9 or 14
+  int regionsNumber_ = 14;
 
   // Pre-estimate coefficient files
   std::string firstOrderChargeOverPtCoefficientsDirName_;
@@ -145,13 +158,13 @@ int main(int argc, char* argv[])
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_prompt_extrapolated.root";
 
     // Hybrid
-  inputFileName_ = "/Users/demattia/RemoteProjects/extracted_hybrid.root";
+//  inputFileName_ = "/Users/demattia/RemoteProjects/extracted_hybrid.root";
 
     // Endcaps
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_endcaps.root";
 
     // Full Tracker (slice in 0 < phi < 0.8 and eta > 0)
-//    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
+    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
     // Same as above but with 10x the statistics
     // inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker_bigger.root";
 
@@ -162,8 +175,8 @@ int main(int argc, char* argv[])
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_centralProduction_muMinus.root";
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_flatPt.root";
 
-    bool train = true;
-//    bool train = false;
+//    bool train = true;
+    bool train = false;
 
 
     if (train) {
@@ -176,21 +189,21 @@ int main(int argc, char* argv[])
     }
 
 
-    bool testFitter_ = false;
-//    buildMatrix_ = false;
-//    testMatrix_ = false;
-//    bool testFitter_ = true;
+//    bool testFitter_ = false;
+    buildMatrix_ = false;
+    testMatrix_ = false;
+    bool testFitter_ = true;
 
 
 
     bool sixOutOfSixOnly_ = true;
-    bool defaultCombinationsOnly_ = false;
+    bool defaultCombinationsOnly_ = true;
 
 
 
 
     // To run on all combinations
-//    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+    std::vector<int> layersAll_{5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
     // Select layers to use for each stub coordinate
 //   std::vector<int> layersAll_{5, 6, 7, 8, 9, 10};
@@ -199,7 +212,7 @@ int main(int argc, char* argv[])
     // Hybrid
 //  std::vector<int> layersAll_{5, 6, 7, 8, 9, 11}; // region 2
 //  std::vector<int> layersAll_{5, 6, 7, 8, 11, 12}; // region 3
-  std::vector<int> layersAll_{5, 6, 7, 11, 12, 13}; // region 4
+//  std::vector<int> layersAll_{5, 6, 7, 11, 12, 13}; // region 4
 
     // Endcaps
 //    std::vector<int> layersAll_{5, 11, 12, 13, 14, 15};
@@ -235,13 +248,18 @@ int main(int argc, char* argv[])
     // Barrel pre-estimate
 //    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/Test/PreTransverse/";
 //    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/Test/PreLongitudinal/";
-    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse/";
-    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Longitudinal_Rz/";
+//    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse/";
+//    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse_10_more/";
+//    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse_10_more_flatPt/";
+//    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Longitudinal_Rz/";
+
+    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/Combinations_NineRegions/PreEstimate_Transverse/";
+    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/Combinations_NineRegions/PreEstimate_Longitudinal_Rz/";
 
 
     // Input coordinates
     // -----------------
-//    std::vector<std::string> inputVarNames_{"phi"};
+    std::vector<std::string> inputVarNames_{"phi"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrder"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrder"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR"};
@@ -250,8 +268,10 @@ int main(int argc, char* argv[])
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrder"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderGenExactRNonRadialStripCorrection"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection"};
-    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_genTheta"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN"};
+//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_ExactExtrapolation"};
 
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrection", "ExtrapolatedRSecondOrder"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup", "ExtrapolatedRSecondOrder"};
@@ -331,10 +351,11 @@ int main(int argc, char* argv[])
 //    oneOverPtMin_ = 1. / 15.;
 //    oneOverPtMax_ = 1. / 15.;
 //    oneOverPtMin_ = 1. / 100.;
-//    oneOverPtMax_ = 1. / 10.;
-//    oneOverPtMin_ = 0.;
-    oneOverPtMax_ = 1. / 15.;
-    oneOverPtMin_ = 0.;
+//    oneOverPtMax_ = 1. / 15.;
+////    oneOverPtMin_ = 0.;
+//    oneOverPtMin_ = 1. / 20.;
+    oneOverPtMax_ = 1. / 50.;
+    oneOverPtMin_ = 1. / 100.;
 //    oneOverPtRegions_ = 1;
     phiMin_ = 0.;
     phiMax_ = 0.8;
@@ -347,10 +368,10 @@ int main(int argc, char* argv[])
     etaMin_ = 0.;
     etaMax_ = 3.;
 //    etaRegions_ = 1;
-//    z0Min_ = -15.;
-//    z0Max_ = 15.;
-    z0Min_ = -30.;
-    z0Max_ = 30.;
+    z0Min_ = -15.;
+    z0Max_ = 15.;
+//    z0Min_ = -30.;
+//    z0Max_ = 30.;
 //    z0Regions_ = 1;
 //    // Specify 1 for no charge splitting and 2 for separating positive and negative charge in difference regions
 //    chargeRegions_ = 1;
@@ -367,7 +388,7 @@ int main(int argc, char* argv[])
                              oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                              etaMin_, etaMax_, z0Min_, z0Max_,
                              firstOrderChargeOverPtCoefficientsDirName_,
-                             firstOrderCotThetaCoefficientsDirName_, sixOutOfSixOnly_);
+                             firstOrderCotThetaCoefficientsDirName_, sixOutOfSixOnly_, regionsNumber_);
     }
 
     if (testMatrix_) {
@@ -379,7 +400,8 @@ int main(int argc, char* argv[])
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                             etaMin_, etaMax_, z0Min_, z0Max_,
                             firstOrderChargeOverPtCoefficientsDirName_,
-                            firstOrderCotThetaCoefficientsDirName_, defaultCombinationsOnly_, sixOutOfSixOnly_);
+                            firstOrderCotThetaCoefficientsDirName_, defaultCombinationsOnly_, sixOutOfSixOnly_,
+                            regionsNumber_);
     }
 
 
@@ -400,7 +422,7 @@ int main(int argc, char* argv[])
                             radiusCuts_, singleModules_,
                             firstOrderChargeOverPtCoefficientsDirName_, firstOrderCotThetaCoefficientsDirName_,
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_, etaMin_, etaMax_, z0Min_, z0Max_, fiveOutOfSix_,
-                            baseDir, minuitFit_, fillBestNormChi2_, extrapolateR_, correctNonRadialStrips_);
+                            baseDir, minuitFit_, fillBestNormChi2_, extrapolateR_, correctNonRadialStrips_, regionsNumber_);
     }
   }
   else {
@@ -506,6 +528,8 @@ int main(int argc, char* argv[])
     inputFile >> chargeRegions_;
     // Either 0 for no endcap region splitting or != 0 for endcap region splitting
     inputFile >> endcapRegions_;
+    // The total number possible 6/6 combinations
+    inputFile >> regionsNumber_;
 
     if (oneOverPtMin_ == 0.) std::cout << "pT > " << 1 / oneOverPtMax_;
     else std::cout << 1 / oneOverPtMax_ << " < pT < " << 1 / oneOverPtMin_;
@@ -515,6 +539,16 @@ int main(int argc, char* argv[])
     std::cout << z0Min_ << " < z0 < " << z0Max_ << ", eta regions = " << z0Regions_ << std::endl;
     std::cout << "charge regions = " << chargeRegions_ << std::endl;
     std::cout << "endcap regions = " << endcapRegions_ << std::endl;
+    std::cout << "Regions number = " << regionsNumber_ << std::endl;
+
+
+
+
+    bool sixOutOfSixOnly = true;
+    bool defaultCombinationsOnly = true;
+
+
+
 
     // Train
     if (test == 0) {
@@ -527,9 +561,10 @@ int main(int argc, char* argv[])
                              oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                              etaMin_, etaMax_, z0Min_, z0Max_,
                              firstOrderChargeOverPtCoefficientsDirName_,
-                             firstOrderCotThetaCoefficientsDirName_, false);
+//                             firstOrderCotThetaCoefficientsDirName_, false, regionsNumber_);
+                             firstOrderCotThetaCoefficientsDirName_, sixOutOfSixOnly, regionsNumber_);
     }
-    else {
+    else if (test == 1) {
       // Test
       std::cout << "Testing" << std::endl;
       LinearFit::testMatrix(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
@@ -540,7 +575,27 @@ int main(int argc, char* argv[])
                             oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                             etaMin_, etaMax_, z0Min_, z0Max_,
                             firstOrderChargeOverPtCoefficientsDirName_,
-                            firstOrderCotThetaCoefficientsDirName_, false, false);
+//                            firstOrderCotThetaCoefficientsDirName_, false, false, regionsNumber_);
+                            firstOrderCotThetaCoefficientsDirName_, defaultCombinationsOnly, sixOutOfSixOnly, regionsNumber_);
+    }
+    else {
+      std::cout << "Running the LinearizedTrackFitter" << std::endl;
+      const std::string baseDir("/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/");
+
+      bool fiveOutOfSix_ = true;
+      bool minuitFit_ = false;
+      bool fillBestNormChi2_ = true;
+      bool extrapolateR_ = true;
+      bool correctNonRadialStrips_ = true;
+
+      LinearFit::testFitter(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
+                            inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_,
+                            distanceCutsLongitudinal_,
+                            radiusCuts_, singleModules_,
+                            firstOrderChargeOverPtCoefficientsDirName_, firstOrderCotThetaCoefficientsDirName_,
+                            oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_, etaMin_, etaMax_, z0Min_, z0Max_, fiveOutOfSix_,
+                            baseDir, minuitFit_, fillBestNormChi2_, extrapolateR_, correctNonRadialStrips_, regionsNumber_);
+
     }
   }
 };

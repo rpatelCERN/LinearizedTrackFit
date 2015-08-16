@@ -7,7 +7,7 @@
 TreeReaderNew::TreeReaderNew(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
                              const std::unordered_map<std::string, std::set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
                              const std::unordered_map<int, double> & distanceCutsTransverse, const std::unordered_map<int, double> & distanceCutsLongitudinal,
-                             const std::vector<std::string> & trackParNames) :
+                             const std::vector<std::string> & trackParNames, const int regionsNumber) :
     tree_(std::make_shared<L1TrackTriggerTree>(inputFileName)),
     requiredLayers_(requiredLayers),
     radiusCuts_(radiusCuts),
@@ -21,7 +21,8 @@ TreeReaderNew::TreeReaderNew(const TString & inputFileName, const double & event
     getParZ0_(std::make_shared<GetParZ0>(tree_)),
     getParD0_(std::make_shared<GetParD0>(tree_)),
     stubCombinationIndex_(-1),
-    maxStubCombinations_(0)//,
+    maxStubCombinations_(0),
+    regionsNumber_(regionsNumber)
 {
   reset(eventsFractionStart, eventsFractionEnd);
 
@@ -95,7 +96,9 @@ void TreeReaderNew::reset(const double & eventsFractionStart, const double & eve
 void TreeReaderNew::generateStubCombination()
 {
   // Fill with all the variables and layers from indexes contained in the combination
-  stubsCombination_.build(allStubsCombination_, combinationGenerator_.combination(stubCombinationIndex_, layersFound_.size()));
+  stubsCombination_.build(allStubsCombination_,
+                          combinationGenerator_.combination(stubCombinationIndex_, layersFound_.size()),
+                          regionsNumber_);
   ++stubCombinationIndex_;
 }
 
@@ -143,9 +146,18 @@ bool TreeReaderNew::nextTrack()
 
       ++trackIndex_;
 
-      if (trackIndex_ % (totalTracks_ / 10) == 0) {
-        std::cout << "Analyzed " << (trackIndex_ / (totalTracks_ / 10)) * 10
-        << "% of " << totalTracks_ << " tracks" << std::endl;
+      if (totalTracks_ < 100000) {
+        if (trackIndex_ % (totalTracks_ / 10) == 0) {
+          std::cout << "Analyzed " << (trackIndex_ / (totalTracks_ / 10)) * 10
+          << "% of " << totalTracks_ << " tracks" << std::endl;
+        }
+      }
+      else {
+        if (trackIndex_ % (totalTracks_ / 1000) == 0) {
+          std::cout << "Analyzed " << (trackIndex_ / (totalTracks_ / 1000)) * 0.1
+
+          << "% of " << totalTracks_ << " tracks" << std::endl;
+        }
       }
     }
   }
@@ -292,7 +304,7 @@ bool TreeReaderNew::readVariables()
     unsigned int k = m.second;
     stubsCombination_.pushStub(getStubPhi(k), getStubR(k), getStubZ(k), m.first, getStubStrip(k));
   }
-  stubsCombination_.setCombinationIndex();
+  stubsCombination_.setCombinationIndex(regionsNumber_);
   // Fill generator-level information
   stubsCombination_.setGenTrack(getChargeOverPt(), getPhi0(), getD0(), getCotTheta(), getZ0());
 

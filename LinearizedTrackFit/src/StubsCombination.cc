@@ -33,13 +33,14 @@ void StubsCombination::setGenTrack(const double & genChargeOverPt, const double 
 }
 
 
-void StubsCombination::build(const StubsCombination & stubsCombination, const std::vector<int> & combination)
+void StubsCombination::build(const StubsCombination & stubsCombination, const std::vector<int> & combination,
+                             const int regionsNumber)
 {
   setGenTrack(stubsCombination.genChargeOverPt(), stubsCombination.genPhi0(), stubsCombination.genD0(),
               stubsCombination.genCotTheta(), stubsCombination.genZ0());
   stubs_.clear();
   for (auto i : combination) stubs_.push_back(stubsCombination.stub(i));
-  setCombinationIndex();
+  setCombinationIndex(regionsNumber);
 }
 
 

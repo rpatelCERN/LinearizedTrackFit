@@ -18,7 +18,7 @@ class LinearizedTrackFitter
 {
  public:
   LinearizedTrackFitter(const std::string & baseDir, const bool inputExtrapolateR,
-                        const bool inputCorrectNonRadialStrips);
+                        const bool inputCorrectNonRadialStrips, const int regionsNumber);
 
   double fit(const std::vector<double> & vars, const std::vector<int> & layers);
   double fit(const std::vector<double> & vars, const std::vector<int> & layers,
@@ -60,16 +60,17 @@ class LinearizedTrackFitter
   CombinationIndexListBuilder combinationIndexListBuilder_;
   bool extrapolateR_;
   bool correctNonRadialStrips_;
+  int regionsNumber_;
   CorrectPhiForNonRadialStripsLookup correctPhiForNonRadialStripsLookup_;
 
   template <class T>
   void fillMatrices(const std::string & baseDir, const std::string & fileName,
                     std::unordered_map<unsigned long, T> * matrices)
   {
-    bool fiveOutOfSix = true;
+    bool fiveOutOfSix = false;
 
     std::vector<unsigned long> combinationIndexList;
-    combinationIndexListBuilder_.fillDefaultIndexList(combinationIndexList, fiveOutOfSix);
+    combinationIndexListBuilder_.fillDefaultIndexList(combinationIndexList, fiveOutOfSix, regionsNumber_);
 
     for (auto index : combinationIndexList) {
       try {

@@ -606,13 +606,13 @@ class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorr
     }
 //    double estimatedChargeOverPt = estimator_->estimate(originalPhi);
     double chargeOverTwoRho = estimator_->estimate(originalPhi)*3.8114*0.003/2.;
-
     double tgTheta = estimatorTgTheta_->estimate(originalR, originalZ);
-
+//    chargeOverTwoRho = stubsCombination.genChargeOverPt()*3.8114*0.003/2.;
+//    tgTheta = 1./stubsCombination.genCotTheta();
     // If this is a 2S module in the disks
     int layer = stubsCombination.layer(index);
     double extrapolatedR = extrapolateRSecondOrder(R, z, layer, tgTheta, chargeOverTwoRho, stubsCombination.layers(), originalR, originalZ);
-    // phi = correctPhiForNonRadialStrips(phi, 0.009, stubsCombination.stub(index).strip(), extrapolatedR, R, layer);
+//    phi = correctPhiForNonRadialStrips(phi, 0.009, stubsCombination.stub(index).strip(), extrapolatedR, R, layer);
     phi = correctPhiForNonRadialStripsLookup_.correctPhiForNonRadialStrips(phi, 0.009, // stubsCombination.stub(index).strip(),
                                                                            extrapolatedR, R, z, layer);
     R = extrapolatedR;
@@ -712,7 +712,7 @@ class TransformCorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorr
 //      std::cout << "exactExtrapolatedR = " << exactExtrapolatedR << std::endl;
 //      std::cout << std::endl;
 //    }
-    return phi;
+//    return phi;
     R = extrapolatedR;
 
     double DeltaR = R - meanRadius_[index];

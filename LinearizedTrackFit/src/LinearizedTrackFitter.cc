@@ -1,9 +1,18 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/LinearizedTrackFitter.h"
 
 LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const bool inputExtrapolateR,
-                                             const bool inputCorrectNonRadialStrips) :
-    preEstimatePtDirName_("PreEstimate_Transverse"),
-    preEstimateCotThetaDirName_("PreEstimate_Longitudinal_Rz"),
+                                             const bool inputCorrectNonRadialStrips, const int regionsNumber) :
+
+//    preEstimatePtDirName_("PreEstimate_Transverse"),
+//    preEstimateCotThetaDirName_("PreEstimate_Longitudinal_Rz"),
+
+//    preEstimatePtDirName_("FourteenRegions/FlatOneOverPt/PreEstimate_Transverse"),
+//    preEstimateCotThetaDirName_("FourteenRegions/FlatOneOverPt/PreEstimate_Longitudinal_Rz"),
+
+    preEstimatePtDirName_("FourteenRegions/FlatPt/PreEstimate_Transverse"),
+    preEstimateCotThetaDirName_("FourteenRegions/FlatPt/PreEstimate_Longitudinal_Rz"),
+
+
     linearFitLowPtDirName_("Combinations_Transverse_SecondOrder_2_10"),
     linearFitHighPtDirName_("Combinations_Transverse_SecondOrder_10_more"),
     linearFitLongitudinalDirName_("Combinations_Longitudinal_Rz_SecondOrder"),
@@ -12,11 +21,20 @@ LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const 
     combinationIndex_(0),
     baseDir_(baseDir),
     extrapolateR_(inputExtrapolateR),
-    correctNonRadialStrips_(inputCorrectNonRadialStrips)
+    correctNonRadialStrips_(inputCorrectNonRadialStrips),
+    regionsNumber_(regionsNumber)
 {
   if (correctNonRadialStrips_) {
-    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_2_10";
-    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+//    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_2_10";
+//    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+
+//    linearFitLowPtDirName_ = "FourteenRegions/FlatOneOverPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+//    linearFitHighPtDirName_ = "FourteenRegions/FlatOneOverPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+
+    linearFitLowPtDirName_ = "FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+    linearFitHighPtDirName_ = "FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+
+
 //    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_2_10";
 //    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_10_more";
     extrapolateR_ = true;
@@ -35,11 +53,20 @@ LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const 
   fillMatrices(baseDir_+"/"+preEstimatePtDirName_, "matrixVD_0_pre_chargeOverPt.txt", &chargeOverPtEstimator_);
   // R and z are assumed to have the same number of layers. If not the estimator needs to be modified.
   fillMatrices(baseDir_+"/"+preEstimateCotThetaDirName_, "matrixVD_0_pre_cotTheta.txt", &cotThetaEstimator_);
-  fillMatrices(baseDir_+"/"+preEstimateCotThetaDirName_+"_tgTheta", "matrixVD_0_pre_tgTheta.txt", &tgThetaEstimator_);
+  fillMatrices(baseDir_+"/"+preEstimateCotThetaDirName_, "matrixVD_0_pre_tgTheta.txt", &tgThetaEstimator_);
 
   // Fill all PCA coefficients for parameters and chi2 estimates
   fillMatrices(baseDir_+"/"+linearFitLowPtDirName_, "matrixVD_0.txt", &linearFitLowPt_);
+
+
+
+
   fillMatrices(baseDir_+"/"+linearFitHighPtDirName_, "matrixVD_0.txt", &linearFitHighPt_);
+//  fillMatrices(linearFitHighPtDirName_, "matrixVD_0.txt", &linearFitHighPt_);
+
+
+
+
   fillMatrices(baseDir_+"/"+linearFitLongitudinalDirName_, "matrixVD_0.txt", &linearFitLongitudinal_);
 }
 
@@ -105,7 +132,7 @@ void LinearizedTrackFitter::initialize(const std::vector<double> & vars, const s
   uniqueLayers_ = layers;
   std::sort(uniqueLayers_.begin(), uniqueLayers_.end());
   uniqueLayers_.erase(std::unique(uniqueLayers_.begin(), uniqueLayers_.end()), uniqueLayers_.end());
-  combinationIndex_ = combinationIndex(uniqueLayers_, varsR_);
+  combinationIndex_ = combinationIndex(uniqueLayers_, varsR_, regionsNumber_);
 }
 
 

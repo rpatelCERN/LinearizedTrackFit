@@ -27,7 +27,7 @@ class TreeReaderNew
   TreeReaderNew(const TString & inputFileName, const double & eventsFractionStart, const double & eventsFractionEnd,
                 const std::unordered_map<std::string, std::set<int> > & requiredLayers, std::unordered_map<int, std::pair<double, double> > & radiusCuts,
                 const std::unordered_map<int, double> & distanceCutsTransverse,  const std::unordered_map<int, double> & distanceCutsLongitudinal,
-                const std::vector<std::string> & trackParNames);
+                const std::vector<std::string> & trackParNames, const int regionsNumber);
 
   void reset(const double & eventsFractionStart, const double & eventsFractionEnd);
   bool nextTrack();
@@ -133,6 +133,7 @@ class TreeReaderNew
   StubsCombination stubsCombination_;
 
   CombinationsGenerator combinationGenerator_;
+  int regionsNumber_;
 };
 
 #endif //REMOTEPROJECTS_TREEREADERNEW_H
