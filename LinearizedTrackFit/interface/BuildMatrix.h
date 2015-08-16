@@ -19,6 +19,7 @@
 #include "LinearizedTrackFit/LinearizedTrackFit/interface/BuildTestFunctions.h"
 #include "TString.h"
 #include "TFile.h"
+#include "CombinationIndexListBuilder.h"
 
 
 namespace LinearFit {
@@ -33,7 +34,7 @@ namespace LinearFit {
                    const double & oneOverPtMin_, const double & oneOverPtMax_, const double & phiMin_, const double & phiMax_,
                    const double & etaMin_, const double & etaMax_, const double & z0Min_, const double & z0Max_,
                    const std::string & firstOrderChargeOverPtCoefficientsFileName, const std::string & firstOrderCotThetaCoefficientsDirName,
-                   const bool sixOutOfSixOnly, const int regionsNumber)
+                   const bool sixOutOfSixOnly, const int regionsNumber, const bool defaultCombinationsOnly)
   {
     std::unordered_map<std::string, std::set<int> > requiredLayers;
     requiredLayers.insert(std::make_pair("phi", std::set<int>(layersAll.begin(), layersAll.end())));
@@ -68,6 +69,10 @@ namespace LinearFit {
     std::unordered_map<unsigned long, std::vector<double> > inputMeanRadius;
     std::unordered_map<unsigned long, std::vector<double> > inputMeanZ;
 
+    CombinationIndexListBuilder combinationIndexListBuilder_;
+    std::vector<unsigned long> combinationIndexList;
+    combinationIndexListBuilder_.fillDefaultIndexList(combinationIndexList, false, regionsNumber);
+
     while (treeReader.nextTrack()) {
 
       if (treeReader.getOneOverPt() < oneOverPtMin_) continue;
@@ -92,6 +97,11 @@ namespace LinearFit {
 
       // Compute the combination index
       unsigned long combinationIndex_ = stubsCombination.getCombinationIndex();
+
+      // This is to limit the combinations tested to the default ones only
+      if (defaultCombinationsOnly == true) {
+        if (std::find(combinationIndexList.begin(), combinationIndexList.end(), combinationIndex_) == combinationIndexList.end()) continue;
+      }
 
       if (computeDistances) {
         fillDistances(stubsCombination, stubDistanceTransverseHistograms, stubDistanceLongitudinalHistograms,
