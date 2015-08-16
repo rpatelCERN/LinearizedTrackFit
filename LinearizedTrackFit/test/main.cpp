@@ -388,7 +388,8 @@ int main(int argc, char* argv[])
                              oneOverPtMin_, oneOverPtMax_, phiMin_, phiMax_,
                              etaMin_, etaMax_, z0Min_, z0Max_,
                              firstOrderChargeOverPtCoefficientsDirName_,
-                             firstOrderCotThetaCoefficientsDirName_, sixOutOfSixOnly_, regionsNumber_);
+                             firstOrderCotThetaCoefficientsDirName_, sixOutOfSixOnly_, regionsNumber_,
+                             defaultCombinationsOnly_);
     }
 
     if (testMatrix_) {
@@ -562,7 +563,8 @@ int main(int argc, char* argv[])
                              etaMin_, etaMax_, z0Min_, z0Max_,
                              firstOrderChargeOverPtCoefficientsDirName_,
 //                             firstOrderCotThetaCoefficientsDirName_, false, regionsNumber_);
-                             firstOrderCotThetaCoefficientsDirName_, sixOutOfSixOnly, regionsNumber_);
+                             firstOrderCotThetaCoefficientsDirName_, sixOutOfSixOnly, regionsNumber_,
+                             defaultCombinationsOnly);
     }
     else if (test == 1) {
       // Test
