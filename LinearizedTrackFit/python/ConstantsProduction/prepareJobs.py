@@ -72,19 +72,19 @@ def prepare_job(layers, input_file_name, base_dir, radius_cut_min, radius_cut_ma
     current_dir = os.getcwd()
     print "input_regions_number = ", input_regions_number
     if input_regions_number == 9:
-        current_dir += "/NineRegions"+base_dir
+        current_dir += "/NineRegions"
     elif input_regions_number == 14:
-        current_dir += "/FourteenRegions"+base_dir
+        current_dir += "/FourteenRegions"
     else:
         raise ValueError("Error: regions number can only be 9 or 14. Value requested = "+str(input_regions_number))
-    job_dir = current_dir+"/Combinations_"+fit_type+"/"
+    job_dir = current_dir+"/"+base_dir+"/Combinations_"+fit_type+"/"
     pre_estimate_file_transverse = ""
     pre_estimate_file_longitudinal = ""
     if pre_estimate_transverse == "" and pre_estimate_longitudinal == "":
-        job_dir = current_dir+"/PreEstimate_"+fit_type+"/"
+        job_dir = current_dir+"/"+base_dir+"/PreEstimate_"+fit_type+"/"
     else:
-        pre_estimate_file_transverse = os.getcwd()+"/"+pre_estimate_transverse
-        pre_estimate_file_longitudinal = os.getcwd()+"/"+pre_estimate_longitudinal
+        pre_estimate_file_transverse = current_dir+"/"+pre_estimate_transverse
+        pre_estimate_file_longitudinal = current_dir+"/"+pre_estimate_longitudinal
     os.system("mkdir -p "+job_dir)
     train_start = 0.
     train_end = 0.5
@@ -125,14 +125,14 @@ def prepare_job_ltf(layers, input_file_name, base_dir, radius_cut_min, radius_cu
     """
     current_dir = os.getcwd()
     if input_regions_number == 9:
-        current_dir += "/NineRegions"+base_dir
+        current_dir += "/NineRegions"
     elif input_regions_number == 14:
-        current_dir += "/FourteenRegions"+base_dir
+        current_dir += "/FourteenRegions"
     else:
         raise ValueError("Error: regions number can only be 9 or 14. Value requested = "+str(input_regions_number))
-    job_dir = current_dir+"/LTF_"+fit_type+"/"
-    pre_estimate_file_transverse = os.getcwd()+"/"+pre_estimate_transverse
-    pre_estimate_file_longitudinal = os.getcwd()+"/"+pre_estimate_longitudinal
+    job_dir = current_dir+"/"+base_dir+"/LTF_"+fit_type+"/"
+    pre_estimate_file_transverse = current_dir+"/"+pre_estimate_transverse
+    pre_estimate_file_longitudinal = current_dir+"/"+pre_estimate_longitudinal
     linear_fit_low_pt_file_name = current_dir+"/"+linear_fit_low_pt
     linear_fit_high_pt_file_name = current_dir+"/"+linear_fit_high_pt
     linear_fit_longitudinal_file_name = current_dir+"/"+linear_fit_longitudinal

@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
   usePcs_ = true;
 
   // How many regions. The possible values are 9 or 14
-  int regionsNumber_ = 14;
+  int regionsNumber_ = 9;
 
   // Pre-estimate coefficient files
   std::string firstOrderChargeOverPtCoefficientsDirName_;
@@ -164,7 +164,7 @@ int main(int argc, char* argv[])
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_endcaps.root";
 
     // Full Tracker (slice in 0 < phi < 0.8 and eta > 0)
-    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
+//    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker.root";
     // Same as above but with 10x the statistics
     // inputFileName_ = "/Users/demattia/RemoteProjects/extracted_fullTracker_bigger.root";
 
@@ -173,10 +173,10 @@ int main(int argc, char* argv[])
 
     // Central production
 //    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_centralProduction_muMinus.root";
-//    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_flatPt.root";
+    inputFileName_ = "/Users/demattia/RemoteProjects/extracted_flatPt.root";
 
-//    bool train = true;
-    bool train = false;
+    bool train = true;
+//    bool train = false;
 
 
     if (train) {
@@ -253,15 +253,15 @@ int main(int argc, char* argv[])
 //    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse_10_more_flatPt/";
 //    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Longitudinal_Rz/";
 
-    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/Combinations_NineRegions/PreEstimate_Transverse/";
-    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/Combinations_NineRegions/PreEstimate_Longitudinal_Rz/";
+    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/NineRegions/FlatOneOverPt/PreEstimate_Transverse/";
+    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/NineRegions/FlatOneOverPt/PreEstimate_Longitudinal_Rz/";
 
 
     // Input coordinates
     // -----------------
-    std::vector<std::string> inputVarNames_{"phi"};
+//    std::vector<std::string> inputVarNames_{"phi"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiFirstOrder"};
-//    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrder"};
+    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrder"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR", "ExtrapolatedR"};
 //    std::vector<std::string> inputVarNames_{"CorrectedPhiSecondOrderExtrapolatedR", "ExtrapolatedRSecondOrder"};
@@ -411,11 +411,11 @@ int main(int argc, char* argv[])
       const std::string baseDir("/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/");
       // const std::string baseDir("/Users/demattia/RemoteProjects/Test/");
 
-      bool fiveOutOfSix_ = true;
+      bool fiveOutOfSix_ = false;
       bool minuitFit_ = false;
       bool fillBestNormChi2_ = true;
-      bool extrapolateR_ = true;
-      bool correctNonRadialStrips_ = true;
+      bool extrapolateR_ = false;
+      bool correctNonRadialStrips_ = false;
 
       LinearFit::testFitter(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
                             inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_,
@@ -597,8 +597,8 @@ int main(int argc, char* argv[])
       bool fiveOutOfSix_ = false;
       bool minuitFit_ = false;
       bool fillBestNormChi2_ = true;
-      bool extrapolateR_ = true;
-      bool correctNonRadialStrips_ = true;
+      bool extrapolateR_ = false;
+      bool correctNonRadialStrips_ = false;
 
       LinearFit::testFitter(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
                             inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_,

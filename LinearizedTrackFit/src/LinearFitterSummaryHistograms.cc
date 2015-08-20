@@ -51,7 +51,7 @@ LinearFitterSummaryHistograms::LinearFitterSummaryHistograms(const std::string &
     hDeltaPtOverPtVsD0_ = new TH2F("deltaPtOverPtVsD0", "deltaPtOverPtVsD0", 200, d0Min, d0Max, 100, -0.1, 0.1);
   }
   if (phiIndex_ != -1) {
-    hDeltaPhiVsEta_ = new TH2F("deltaPhiVsEta", "deltaPhiVsEta", 500, etaMin, etaMax, 200, -0.03, 0.03);
+    hDeltaPhiVsEta_ = new TH2F("deltaPhiVsEta", "deltaPhiVsEta", 500, etaMin, etaMax, 400, -0.03, 0.03);
     hDeltaPhiVsPt_ = new TH2F("deltaPhiVsPt", "deltaPhiVsPt", 400, ptMin, ptMax, 200, -0.010, 0.010);
     hDeltaPhiVsD0_ = new TH2F("deltaPhiVsD0", "deltaPhiVsD0", 200, d0Min, d0Max, 200, -0.010, 0.010);
   }

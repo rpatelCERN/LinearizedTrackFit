@@ -267,6 +267,10 @@ namespace LinearFit {
 
       // Compute the combination index
       unsigned long combinationIndex_ = stubsCombination.getCombinationIndex();
+      // This is to limit the combinations tested to the default ones only
+      if (defaultCombinationsOnly == true) {
+        if (std::find(combinationIndexList.begin(), combinationIndexList.end(), combinationIndex_) == combinationIndexList.end()) continue;
+      }
 
       // Running on the same events as above, no new combinations are expected
       // initializeVariablesTransformations(inputVarNames, combinationIndex_, variablesTransformations);

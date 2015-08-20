@@ -33,50 +33,41 @@ LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const 
     preEstimatePtDirName_ = "FourteenRegions/FlatPt/PreEstimate_Transverse";
     preEstimateCotThetaDirName_ = "FourteenRegions/FlatPt/PreEstimate_Longitudinal_Rz";
     if (correctNonRadialStrips_) {
-//    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_2_10";
-//    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
-//    linearFitLowPtDirName_ = "FourteenRegions/FlatOneOverPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
-//    linearFitHighPtDirName_ = "FourteenRegions/FlatOneOverPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
-      linearFitLowPtDirName_ = "FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
-      linearFitHighPtDirName_ = "FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
-//    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_2_10";
-//    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_10_more";
+//    linearFitLowPtDirName_ = baseDir_+"/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_2_10";
+//    linearFitHighPtDirName_ = baseDir_+"/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+//    linearFitLowPtDirName_ = baseDir_+"/FourteenRegions/FlatOneOverPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+//    linearFitHighPtDirName_ = baseDir_+"/FourteenRegions/FlatOneOverPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+      linearFitLowPtDirName_ = baseDir_+"/FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+      linearFitHighPtDirName_ = baseDir_+"/FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+//    linearFitLowPtDirName_ = baseDir_+"/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_2_10";
+//    linearFitHighPtDirName_ = baseDir_+"/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_10_more";
       extrapolateR_ = true;
     }
     else if (extrapolateR_) {
-//    linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedR_2_10";
-//    linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedR_10_more";
-      linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrder_2_10";
-      linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrder_10_more";
+//    linearFitLowPtDirName_ = baseDir+"/Combinations_Transverse_SecondOrder_ExtrapolatedR_2_10";
+//    linearFitHighPtDirName_ = baseDir+"/Combinations_Transverse_SecondOrder_ExtrapolatedR_10_more";
+      linearFitLowPtDirName_ = baseDir_+"/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrder_2_10";
+      linearFitHighPtDirName_ = baseDir+"/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrder_10_more";
     }
     else {
-      linearFitLowPtDirName_ = "Combinations_Transverse_SecondOrder_2_10";
-      linearFitHighPtDirName_ = "Combinations_Transverse_SecondOrder_10_more";
-      linearFitLongitudinalDirName_ = "Combinations_Longitudinal_Rz_SecondOrder";
+      linearFitLowPtDirName_ = baseDir+"/Combinations_Transverse_SecondOrder_2_10";
+      linearFitHighPtDirName_ = baseDir_+"/Combinations_Transverse_SecondOrder_10_more";
+      linearFitLongitudinalDirName_ = baseDir_+"/Combinations_Longitudinal_Rz_SecondOrder";
     }
   }
   // Read the constants for the full tracker.
   // It needs to read all 9 regions based on few base names and generate the names for the removed layers.
 
   // Fill all pre-estimates
-  fillMatrices(baseDir_+"/"+preEstimatePtDirName_, "matrixVD_0_pre_chargeOverPt.txt", &chargeOverPtEstimator_);
+  fillMatrices(preEstimatePtDirName_, "matrixVD_0_pre_chargeOverPt.txt", &chargeOverPtEstimator_);
   // R and z are assumed to have the same number of layers. If not the estimator needs to be modified.
-  fillMatrices(baseDir_+"/"+preEstimateCotThetaDirName_, "matrixVD_0_pre_cotTheta.txt", &cotThetaEstimator_);
-  fillMatrices(baseDir_+"/"+preEstimateCotThetaDirName_, "matrixVD_0_pre_tgTheta.txt", &tgThetaEstimator_);
+  fillMatrices(preEstimateCotThetaDirName_, "matrixVD_0_pre_cotTheta.txt", &cotThetaEstimator_);
+  fillMatrices(preEstimateCotThetaDirName_, "matrixVD_0_pre_tgTheta.txt", &tgThetaEstimator_);
 
   // Fill all PCA coefficients for parameters and chi2 estimates
-  fillMatrices(baseDir_+"/"+linearFitLowPtDirName_, "matrixVD_0.txt", &linearFitLowPt_);
-
-
-
-
-  fillMatrices(baseDir_+"/"+linearFitHighPtDirName_, "matrixVD_0.txt", &linearFitHighPt_);
-//  fillMatrices(linearFitHighPtDirName_, "matrixVD_0.txt", &linearFitHighPt_);
-
-
-
-
-  fillMatrices(baseDir_+"/"+linearFitLongitudinalDirName_, "matrixVD_0.txt", &linearFitLongitudinal_);
+  fillMatrices(linearFitLowPtDirName_, "matrixVD_0.txt", &linearFitLowPt_);
+  fillMatrices(linearFitHighPtDirName_, "matrixVD_0.txt", &linearFitHighPt_);
+  fillMatrices(linearFitLongitudinalDirName_, "matrixVD_0.txt", &linearFitLongitudinal_);
 }
 
 
@@ -154,7 +145,7 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
     return -1.;
   }
 
-  if (!readMean(baseDir_+"/"+preEstimateCotThetaDirName_, "MeanRadius_", combinationIndex_, meanRadius_)) {
+  if (!readMean(preEstimateCotThetaDirName_, "MeanRadius_", combinationIndex_, meanRadius_)) {
     std::cout << "Error: mean radii not found for combination = " << combinationIndex_ << std::endl;
     throw;
   }
@@ -194,7 +185,7 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
     return -1.;
   }
 
-  if (!readMean(baseDir_+"/"+preEstimateCotThetaDirName_, "MeanRadius_", combinationIndex_, meanRadius_)) {
+  if (!readMean(preEstimateCotThetaDirName_, "MeanRadius_", combinationIndex_, meanRadius_)) {
     std::cout << "Error: mean radii not found for combination = " << combinationIndex_ << std::endl;
     throw;
   }
