@@ -46,11 +46,18 @@ def prepare_second_estimates():
         for pt_distribution_name in file_full_list:
             file_full = file_full_list[pt_distribution_name]
 
+            job_types = [JobType("FullCorrections_GEN",
+                                 ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN"],
+                                 ["charge/pt", "phi"])]
+            prepare_all_jobs(job_types, "/FlatOneOverPt/PreEstimate_Transverse",
+                             "/FlatOneOverPt/PreEstimate_Longitudinal_Rz", file_full,
+                             pt_distribution_name, regions_number)
+
             # job_types = [JobType("Longitudinal_Rz", ["CorrectedZSecondOrder"], ["cotTheta", "z0"])]
             # prepare_all_jobs(job_types, "/FlatOneOverPt/PreEstimate_Transverse",
             #                  "/FlatOneOverPt/PreEstimate_Longitudinal_Rz", file_full,
             #                  pt_distribution_name, regions_number)
-
+            #
             # job_types = [JobType("Longitudinal_Rz_flatPtTgTheta", ["CorrectedZSecondOrder"], ["cotTheta", "z0"])]
             # prepare_all_jobs(job_types, "/FlatOneOverPt/PreEstimate_Transverse",
             #                  "/FlatPt/PreEstimate_Longitudinal_Rz", file_full,
@@ -61,18 +68,25 @@ def prepare_second_estimates():
             #                  "/FlatPt/PreEstimate_Longitudinal_Rz", file_full,
             #                  pt_distribution_name, regions_number)
 
-            # for c in constants_list_second_estimates:
-            #
-            #     job_types = [JobType(c[0]+"_2_10"+c[1],
-            #                  ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"],
-            #                  ["charge/pt", "phi"])]
-            #     prepare_all_jobs(job_types, c[2],
-            #                      c[3], file_full,
-            #                      pt_distribution_name+"/", regions_number, pt_min=2., pt_max=10.)
-            #
-            #     job_types = [JobType(c[0]+"_10_more"+c[1],
-            #                  ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"],
-            #                  ["charge/pt", "phi"])]
-            #     prepare_all_jobs(job_types, c[2],
-            #                      c[3], file_full,
-            #                      pt_distribution_name+"/", regions_number, pt_min=10.)
+            for c in constants_list_second_estimates:
+
+                job_types = [JobType("Longitudinal_Rz"+c[1],
+                                     ["CorrectedZSecondOrder"],
+                                     ["cotTheta", "z0"])]
+                prepare_all_jobs(job_types, c[2],
+                                 c[3], file_full,
+                                 pt_distribution_name+"/", regions_number)
+
+                job_types = [JobType(c[0]+"_2_10"+c[1],
+                             ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"],
+                             ["charge/pt", "phi"])]
+                prepare_all_jobs(job_types, c[2],
+                                 c[3], file_full,
+                                 pt_distribution_name+"/", regions_number, pt_min=2., pt_max=10.)
+
+                job_types = [JobType(c[0]+"_10_more"+c[1],
+                             ["CorrectedPhiSecondOrderExtrapolatedRSecondOrderNonRadialStripCorrectionLookup"],
+                             ["charge/pt", "phi"])]
+                prepare_all_jobs(job_types, c[2],
+                                 c[3], file_full,
+                                 pt_distribution_name+"/", regions_number, pt_min=10.)

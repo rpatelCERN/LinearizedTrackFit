@@ -71,7 +71,7 @@ namespace LinearFit {
 
     CombinationIndexListBuilder combinationIndexListBuilder_;
     std::vector<unsigned long> combinationIndexList;
-    combinationIndexListBuilder_.fillDefaultIndexList(combinationIndexList, false, regionsNumber);
+    combinationIndexListBuilder_.fillDefaultIndexList(combinationIndexList, !sixOutOfSixOnly, regionsNumber);
 
     while (treeReader.nextTrack()) {
 

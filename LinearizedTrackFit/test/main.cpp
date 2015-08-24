@@ -196,8 +196,8 @@ int main(int argc, char* argv[])
 
 
 
-    bool sixOutOfSixOnly_ = true;
-    bool defaultCombinationsOnly_ = true;
+    bool sixOutOfSixOnly_ = false;
+    bool defaultCombinationsOnly_ = false;
 
 
 
@@ -555,7 +555,7 @@ int main(int argc, char* argv[])
 
 
 
-    bool sixOutOfSixOnly = true;
+    bool sixOutOfSixOnly = false;
     bool defaultCombinationsOnly = true;
 
 
@@ -594,11 +594,11 @@ int main(int argc, char* argv[])
       std::cout << "Running the LinearizedTrackFitter" << std::endl;
       const std::string baseDir("/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/");
 
-      bool fiveOutOfSix_ = false;
+      bool fiveOutOfSix_ = true;
       bool minuitFit_ = false;
       bool fillBestNormChi2_ = true;
-      bool extrapolateR_ = false;
-      bool correctNonRadialStrips_ = false;
+      bool extrapolateR_ = true;
+      bool correctNonRadialStrips_ = true;
 
       LinearFit::testFitter(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
                             inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_,

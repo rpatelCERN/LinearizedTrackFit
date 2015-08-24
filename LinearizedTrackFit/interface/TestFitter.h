@@ -209,8 +209,8 @@ namespace LinearFit
       std::vector<int> layersVec(stubsCombination.layers());
 
 
-//      if (fiveOutOfSix && layersVec.size() != 5) continue;
-      if (layersVec.size() != 6) continue;
+      if (fiveOutOfSix && layersVec.size() != 5) continue;
+//      if (layersVec.size() != 6) continue;
 
 
       // std::vector<double> vars(treeReader.getVariables());
