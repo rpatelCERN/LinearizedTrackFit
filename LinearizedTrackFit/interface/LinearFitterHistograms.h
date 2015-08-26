@@ -13,7 +13,7 @@ class LinearFitterHistograms : public MatrixBuilderHistograms
 public:
   LinearFitterHistograms(const std::string & name, const std::vector<std::string> & varNames, const std::vector<std::string> & trackParameterNames);
   void fill(const std::vector<double> & vars, const std::vector<double> & pcs, const std::vector<double> & npcs,
-      const std::vector<double> & pars, const std::vector<double> & estimatedPars, const double & normChi2);
+      const std::vector<double> & pars, const std::vector<double> & estimatedPars, const double & normChi2, const int ndof);
   void write();
 
 private:
@@ -21,6 +21,7 @@ private:
   BaseHistograms hPC_;
   BaseHistograms hNPC_;
   TH1F * hNormChi2_;
+  TH1F * hNdof_;
   BaseHistograms hEstimatedPars_;
   BaseHistograms hEstimatedParErrors_;
   BaseHistograms hEstimatedParRelErrors_;

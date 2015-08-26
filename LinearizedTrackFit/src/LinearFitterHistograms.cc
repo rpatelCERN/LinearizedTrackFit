@@ -10,11 +10,13 @@ LinearFitterHistograms::LinearFitterHistograms(const std::string & name, const s
 {
   TString hName = "normChi2_"+name;
   hNormChi2_ = new TH1F(hName, hName, 500, 0., 10.);
+  hName = "ndof_"+name;
+  hNdof_ = new TH1F(hName, hName, 20, 0., 20);
 }
 
 
 void LinearFitterHistograms::fill(const std::vector<double> & vars, const std::vector<double> & pcs, const std::vector<double> & npcs,
-    const std::vector<double> & pars, const std::vector<double> & estimatedPars, const double & normChi2)
+    const std::vector<double> & pars, const std::vector<double> & estimatedPars, const double & normChi2, const int ndof)
 {
   MatrixBuilderHistograms::fill(vars, pars);
   hPC_.fill(pcs);
@@ -31,6 +33,7 @@ void LinearFitterHistograms::fill(const std::vector<double> & vars, const std::v
   hEstimatedParRelErrors_.fill(estimatedParRelErrors);
 
   hNormChi2_->Fill(normChi2);
+  hNdof_->Fill(ndof);
 }
 
 
@@ -43,4 +46,5 @@ void LinearFitterHistograms::write()
   hEstimatedParErrors_.write();
   hEstimatedParRelErrors_.write();
   hNormChi2_->Write();
+  hNdof_->Write();
 }

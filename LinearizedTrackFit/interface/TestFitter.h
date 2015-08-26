@@ -19,9 +19,9 @@ namespace LinearFit
   {
     void storeFitResults(const std::vector<double> & vars, const std::vector<double> & principalComponents,
                          const std::vector<double> & normalizedPrincipalComponents,
-                         const std::vector<double> & estimatedPars, const double & normChi2)
+                         const std::vector<double> & estimatedPars, const double & normChi2, const int ndof)
     {
-      fitResults_.push_back(FitResults(vars, principalComponents, normalizedPrincipalComponents, estimatedPars, normChi2));
+      fitResults_.push_back(FitResults(vars, principalComponents, normalizedPrincipalComponents, estimatedPars, normChi2, ndof));
     }
 
     void storeGen(const std::vector<double> & pars, const double & genChargePt,
@@ -50,9 +50,10 @@ namespace LinearFit
     {
       FitResults(const std::vector<double> & vars, const std::vector<double> & principalComponents,
                  const std::vector<double> & normalizedPrincipalComponents,
-                 const std::vector<double> & estimatedPars, const double & normChi2) :
+                 const std::vector<double> & estimatedPars, const double & normChi2, const int ndof) :
           vars_(vars), principalComponents_(principalComponents),
-          normalizedPrincipalComponents_(normalizedPrincipalComponents), estimatedPars_(estimatedPars), normChi2_(normChi2)
+          normalizedPrincipalComponents_(normalizedPrincipalComponents), estimatedPars_(estimatedPars),
+          normChi2_(normChi2), ndof_(ndof)
       {}
 
       std::vector<double> vars_;
@@ -60,6 +61,7 @@ namespace LinearFit
       std::vector<double> normalizedPrincipalComponents_;
       std::vector<double> estimatedPars_;
       double normChi2_;
+      int ndof_;
     };
 
     std::vector<FitResults> fitResults_;
@@ -79,12 +81,18 @@ namespace LinearFit
                                 FitResultsAndGen & fitResultsAndGen, const bool fillBestNormChi2)
   {
     if (fillBestNormChi2) {
+      // Find the biggest ndof and keep only those
+      const auto maxNdof = std::max_element(fitResultsAndGen.fitResults_.begin(), fitResultsAndGen.fitResults_.end(),
+                                            [](const FitResultsAndGen::FitResults & x, const FitResultsAndGen::FitResults & y) { return x.ndof_ < y.ndof_; });
+      fitResultsAndGen.fitResults_.erase(std::remove_if(fitResultsAndGen.fitResults_.begin(), fitResultsAndGen.fitResults_.end(),
+                                         [maxNdof](const FitResultsAndGen::FitResults & x) { return x.ndof_ < maxNdof->ndof_; }), fitResultsAndGen.fitResults_.end());
+      // Take the best chi2 among those with the biggest ndof (selected above)
       const auto fitResults = std::min_element(fitResultsAndGen.fitResults_.begin(), fitResultsAndGen.fitResults_.end(),
                                                [](const FitResultsAndGen::FitResults & x, const FitResultsAndGen::FitResults & y) { return x.normChi2_ < y.normChi2_; });
       if (fitResults != fitResultsAndGen.fitResults_.end()) {
         linearFitterHistograms.fill(fitResults->vars_, fitResults->principalComponents_,
                                     fitResults->normalizedPrincipalComponents_, fitResultsAndGen.pars_,
-                                    fitResults->estimatedPars_, fitResults->normChi2_);
+                                    fitResults->estimatedPars_, fitResults->normChi2_, fitResults->ndof_);
         summaryHistograms.fill(fitResults->vars_, fitResults->principalComponents_,
                                fitResults->normalizedPrincipalComponents_, fitResultsAndGen.pars_,
                                fitResults->estimatedPars_, fitResults->normChi2_, fitResultsAndGen.genChargePt_,
@@ -103,7 +111,7 @@ namespace LinearFit
         const auto & fitResults = fitResultsAndGen.fitResults_[i];
         linearFitterHistograms.fill(fitResults.vars_, fitResults.principalComponents_,
                                     fitResults.normalizedPrincipalComponents_, fitResultsAndGen.pars_,
-                                    fitResults.estimatedPars_, fitResults.normChi2_);
+                                    fitResults.estimatedPars_, fitResults.normChi2_, fitResults.ndof_);
         summaryHistograms.fill(fitResults.vars_, fitResults.principalComponents_,
                                fitResults.normalizedPrincipalComponents_, fitResultsAndGen.pars_,
                                fitResults.estimatedPars_, fitResults.normChi2_, fitResultsAndGen.genChargePt_,
@@ -183,11 +191,7 @@ namespace LinearFit
       if (treeReader.getZ0() < z0Min_) continue;
       if (treeReader.getZ0() > z0Max_) continue;
 
-
-
-
 //      if (treeReader.getCharge() < 0) continue;
-
 
       if (trackIndex != treeReader.getTrackIndex()) {
         hGenEta.Fill(treeReader.getEta());
@@ -209,7 +213,7 @@ namespace LinearFit
       std::vector<int> layersVec(stubsCombination.layers());
 
 
-      if (fiveOutOfSix && layersVec.size() != 5) continue;
+//      if (fiveOutOfSix && layersVec.size() != 5) continue;
 //      if (layersVec.size() != 6) continue;
 
 
@@ -227,6 +231,7 @@ namespace LinearFit
 
       // We do not have coefficients for this combination, skip it.
       if (normChi2 == -1.) continue;
+      int ndof = linearizedTrackFitter.ndof();
       std::vector<double> estimatedPars(linearizedTrackFitter.estimatedPars());
       std::vector<double> principalComponents(linearizedTrackFitter.principalComponents());
       std::vector<double> normalizedPrincipalComponents(linearizedTrackFitter.normalizedPrincipalComponents());
@@ -239,7 +244,7 @@ namespace LinearFit
 //                             treeReader.getD0());
 
       // Copying the generator-level quantities for each combination should be avoided.
-      fitResultsAndGen.storeFitResults(vars, principalComponents, normalizedPrincipalComponents, estimatedPars, normChi2);
+      fitResultsAndGen.storeFitResults(vars, principalComponents, normalizedPrincipalComponents, estimatedPars, normChi2, ndof);
 
       if (minuitFit) {
         // Extract the radii
@@ -255,7 +260,7 @@ namespace LinearFit
                                                       layersVec, treeReader.getChargeOverPt(), treeReader.getPhi0());
 
         minuitFitResultsAndGen.storeFitResults(vars, principalComponents, normalizedPrincipalComponents,
-                                               minuitTrackFitter.estimatedPars(), minuitNormChi2);
+                                               minuitTrackFitter.estimatedPars(), minuitNormChi2, ndof);
       }
     }
 

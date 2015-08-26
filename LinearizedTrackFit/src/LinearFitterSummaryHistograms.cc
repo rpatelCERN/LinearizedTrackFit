@@ -123,7 +123,7 @@ void LinearFitterSummaryHistograms::fill(const std::vector<double> & vars, const
                                          const std::vector<double> & pars, const std::vector<double> & estimatedPars, const double & normChi2,
                                          const double & genPt, const double & genPhi, const double & genEta, const double & genZ0, const double & genD0)
 {
-  linearFitterHistograms.fill(vars, pcs, npcs, pars, estimatedPars, normChi2);
+  linearFitterHistograms.fill(vars, pcs, npcs, pars, estimatedPars, normChi2, 0);
 
   if (ptIndex_ != -1) {
     double curvature = pars[ptIndex_];

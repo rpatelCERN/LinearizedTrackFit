@@ -46,22 +46,15 @@ int main(int argc, char* argv[])
   mapSectors_ = false;
 
 
-
-
-
-
   computeDistances_ = false;
   computeCorrelations_ = false;
-
-
-
 
 
   // Use the principal components to estimate track parameters
   usePcs_ = true;
 
   // How many regions. The possible values are 9 or 14
-  int regionsNumber_ = 9;
+  int regionsNumber_ = 14;
 
   // Pre-estimate coefficient files
   std::string firstOrderChargeOverPtCoefficientsDirName_;
@@ -253,8 +246,11 @@ int main(int argc, char* argv[])
 //    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Transverse_10_more_flatPt/";
 //    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/PreEstimate_Longitudinal_Rz/";
 
-    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/NineRegions/FlatOneOverPt/PreEstimate_Transverse/";
-    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/NineRegions/FlatOneOverPt/PreEstimate_Longitudinal_Rz/";
+//    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/NineRegions/FlatOneOverPt/PreEstimate_Transverse/";
+//    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/NineRegions/FlatOneOverPt/PreEstimate_Longitudinal_Rz/";
+
+    firstOrderChargeOverPtCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/FourteenRegions/FlatOneOverPt/PreEstimate_Transverse/";
+    firstOrderCotThetaCoefficientsDirName_ = "/Users/demattia/RemoteProjects/LinearizedTrackFit/LinearizedTrackFit/python/ConstantsProduction/FourteenRegions/FlatOneOverPt/PreEstimate_Longitudinal_Rz/";
 
 
     // Input coordinates
@@ -341,8 +337,8 @@ int main(int argc, char* argv[])
 
 
     // Geometric cuts
-//    oneOverPtMax_ = 1 / 2.;
-//    oneOverPtMin_ = 0.;
+    oneOverPtMax_ = 1 / 2.;
+    oneOverPtMin_ = 0.;
 //    oneOverPtMax_ = 1. / 2.;
 //    oneOverPtMin_ = 1. / 10.;
 //    oneOverPtMax_ = 1. / 2.;
@@ -354,8 +350,8 @@ int main(int argc, char* argv[])
 //    oneOverPtMax_ = 1. / 15.;
 ////    oneOverPtMin_ = 0.;
 //    oneOverPtMin_ = 1. / 20.;
-    oneOverPtMax_ = 1. / 50.;
-    oneOverPtMin_ = 1. / 100.;
+//    oneOverPtMax_ = 1. / 50.;
+//    oneOverPtMin_ = 1. / 100.;
 //    oneOverPtRegions_ = 1;
     phiMin_ = 0.;
     phiMax_ = 0.8;
@@ -415,7 +411,7 @@ int main(int argc, char* argv[])
       bool minuitFit_ = false;
       bool fillBestNormChi2_ = true;
       bool extrapolateR_ = false;
-      bool correctNonRadialStrips_ = false;
+      bool correctNonRadialStrips_ = true;
 
       LinearFit::testFitter(inputFileName_, eventsFractionStartTest_, eventsFractionEndTest_,
                             inputVarNames_, inputTrackParameterNames_, distanceCutsTransverse_,

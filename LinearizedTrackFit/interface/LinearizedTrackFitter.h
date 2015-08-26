@@ -31,6 +31,11 @@ class LinearizedTrackFitter
   std::vector<double> estimatedPars() { return estimatedPars_; }
   std::vector<double> principalComponents();
   std::vector<double> normalizedPrincipalComponents();
+  double chi2Transverse() const { return chi2Transverse_; }
+  int ndofTransverse() const { return ndofTransverse_; }
+  double chi2Longitudinal() const { return chi2Longitudinal_; }
+  int ndofLongitudinal() const { return ndofLongitudinal_; }
+  int ndof() const { return (ndofTransverse_+ndofLongitudinal_); }
 
  private:
   void initialize(const std::vector<double> & vars, const std::vector<int> & layers);
@@ -66,12 +71,16 @@ class LinearizedTrackFitter
   bool correctNonRadialStrips_;
   int regionsNumber_;
   CorrectPhiForNonRadialStripsLookup correctPhiForNonRadialStripsLookup_;
+  double chi2Transverse_;
+  int ndofTransverse_;
+  double chi2Longitudinal_;
+  int ndofLongitudinal_;
 
   template <class T>
   void fillMatrices(const std::string & baseDir, const std::string & fileName,
                     std::unordered_map<unsigned long, T> * matrices)
   {
-    bool fiveOutOfSix = false;
+    bool fiveOutOfSix = true;
 
     std::vector<unsigned long> combinationIndexList;
     combinationIndexListBuilder_.fillDefaultIndexList(combinationIndexList, fiveOutOfSix, regionsNumber_);

@@ -27,20 +27,27 @@ LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const 
     baseDir_(baseDir),
     extrapolateR_(inputExtrapolateR),
     correctNonRadialStrips_(inputCorrectNonRadialStrips),
-    regionsNumber_(regionsNumber)
+    regionsNumber_(regionsNumber),
+    chi2Transverse_(-1.),
+    ndofTransverse_(-1),
+    chi2Longitudinal_(-1.),
+    ndofLongitudinal_(-1)
 {
   if (linearFitLowPtDirName_ == "") {
-    preEstimatePtDirName_ = "FourteenRegions/FlatPt/PreEstimate_Transverse";
-    preEstimateCotThetaDirName_ = "FourteenRegions/FlatPt/PreEstimate_Longitudinal_Rz";
+    preEstimatePtDirName_ = baseDir_+"/FourteenRegions/FlatPt/PreEstimate_Transverse";
+    preEstimateCotThetaDirName_ = baseDir_+"/FourteenRegions/FlatPt/PreEstimate_Longitudinal_Rz";
     if (correctNonRadialStrips_) {
 //    linearFitLowPtDirName_ = baseDir_+"/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_2_10";
 //    linearFitHighPtDirName_ = baseDir_+"/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
 //    linearFitLowPtDirName_ = baseDir_+"/FourteenRegions/FlatOneOverPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
 //    linearFitHighPtDirName_ = baseDir_+"/FourteenRegions/FlatOneOverPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
-      linearFitLowPtDirName_ = baseDir_+"/FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
-      linearFitHighPtDirName_ = baseDir_+"/FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+//      linearFitLowPtDirName_ = baseDir_+"/FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
+//      linearFitHighPtDirName_ = baseDir_+"/FourteenRegions/FlatPt/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_10_more";
 //    linearFitLowPtDirName_ = baseDir_+"/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_2_10";
 //    linearFitHighPtDirName_ = baseDir_+"/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrderNonRadialStripCorrectionLookup_GEN_10_more";
+      linearFitLowPtDirName_ = baseDir_+"/FourteenRegions/FlatOneOverPt/Combinations_FullCorrections_2_10_flatPtTgThetaAndPtPreEstimate";
+      linearFitHighPtDirName_ = baseDir_+"/FourteenRegions/FlatPt/Combinations_FullCorrections_10_more_flatPtTgThetaAndPtPreEstimate";
+      linearFitLongitudinalDirName_ = baseDir_+"/FourteenRegions/FlatPt/Combinations_Longitudinal_Rz_flatPtTgThetaAndPtPreEstimate";
       extrapolateR_ = true;
     }
     else if (extrapolateR_) {
@@ -50,9 +57,9 @@ LinearizedTrackFitter::LinearizedTrackFitter(const std::string & baseDir, const 
       linearFitHighPtDirName_ = baseDir+"/Combinations_Transverse_SecondOrder_ExtrapolatedRSecondOrder_10_more";
     }
     else {
-      linearFitLowPtDirName_ = baseDir+"/Combinations_Transverse_SecondOrder_2_10";
-      linearFitHighPtDirName_ = baseDir_+"/Combinations_Transverse_SecondOrder_10_more";
-      linearFitLongitudinalDirName_ = baseDir_+"/Combinations_Longitudinal_Rz_SecondOrder";
+      linearFitLowPtDirName_ = baseDir+"/NineRegions/Combinations_OldBaseline_2_10";
+      linearFitHighPtDirName_ = baseDir_+"/NineRegions/Combinations_OldBaseline_10_more";
+      linearFitLongitudinalDirName_ = baseDir_+"/NineRegions/Combinations_Longitudinal_Rz_SecondOrder";
     }
   }
   // Read the constants for the full tracker.
@@ -240,12 +247,19 @@ double LinearizedTrackFitter::fit(const double & chargeOverTwoRho, const double 
 
   // Evaluate the chi2/ndof
   MatrixReader * linearFitLongitudinal = &(linearFitLongitudinal_.find(combinationIndex_)->second);
-  double normChi2 = linearFitLongitudinal->normChi2(correctedVarsZ_)*linearFitLongitudinal->nDof();
+  ndofLongitudinal_ = linearFitLongitudinal->nDof();
+  chi2Longitudinal_ = linearFitLongitudinal->normChi2(correctedVarsZ_)*ndofLongitudinal_;
+//  double normChi2 = linearFitLongitudinal->normChi2(correctedVarsZ_)*linearFitLongitudinal->nDof();
+//  double normChi2 = chi2Longitudinal_;
   MatrixReader * linearFitTransverse = nullptr;
   if (preEstimatedPt_ < ptSplitValue_) linearFitTransverse = &(linearFitLowPt_.find(combinationIndex_)->second);
   else linearFitTransverse = &(linearFitHighPt_.find(combinationIndex_)->second);
-  normChi2 += linearFitTransverse->normChi2(correctedVarsPhi_)*linearFitTransverse->nDof();
-  normChi2 /= linearFitLongitudinal->nDof()+linearFitTransverse->nDof();
+  ndofTransverse_ = linearFitTransverse->nDof();
+  chi2Transverse_ = linearFitTransverse->normChi2(correctedVarsPhi_)*ndofTransverse_;
+//  ndof_ = linearFitLongitudinal->nDof()+linearFitTransverse->nDof();
+//  normChi2 += linearFitTransverse->normChi2(correctedVarsPhi_)*linearFitTransverse->nDof();
+//  normChi2 += chi2Transverse_;
+//  normChi2 /= ndof_;
 
   // Estimate the track parameters
   estimatedPars_.clear();
@@ -253,7 +267,8 @@ double LinearizedTrackFitter::fit(const double & chargeOverTwoRho, const double 
   auto tempPars = linearFitLongitudinal->trackParameters(correctedVarsZ_);
   estimatedPars_.insert(estimatedPars_.end(), tempPars.begin(), tempPars.end());
 
-  return normChi2;
+//  return normChi2;
+  return (chi2Transverse_+chi2Longitudinal_)/(ndofTransverse_+ndofLongitudinal_);
 }
 
 
