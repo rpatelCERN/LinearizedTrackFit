@@ -5,7 +5,7 @@ using namespace Eigen;
 MatrixReader::MatrixReader(const std::string & inputFileName)
 {
   // open matrix file and read V and D arrays
-  std::cout << "opening "+inputFileName+" for reading" << std::endl;
+//  std::cout << "opening "+inputFileName+" for reading" << std::endl;
 
   std::ifstream inputFile;
   inputFile.open(inputFileName);
@@ -18,9 +18,9 @@ MatrixReader::MatrixReader(const std::string & inputFileName)
   inputFile >> nVars_;
   inputFile >> nTrackParameters_;
   nDof_ = nVars_ - nTrackParameters_;
-  std::cout << "Number of variables = " << nVars_ << std::endl;
-  std::cout << "Number of track parameters = " << nTrackParameters_ << std::endl;
-  std::cout << std::endl;
+//  std::cout << "Number of variables = " << nVars_ << std::endl;
+//  std::cout << "Number of track parameters = " << nTrackParameters_ << std::endl;
+//  std::cout << std::endl;
 
   double x;
   // Read eigenvalues
@@ -29,8 +29,8 @@ MatrixReader::MatrixReader(const std::string & inputFileName)
     inputFile >> x;
     sqrtEigenvalues_(i) = x;
   }
-  std::cout << "sqrt(eigenvalues):" << std::endl;
-  std::cout << sqrtEigenvalues_ << std::endl;
+//  std::cout << "sqrt(eigenvalues):" << std::endl;
+//  std::cout << sqrtEigenvalues_ << std::endl;
 
   // Read transformation matrix V from file
   V_ = Matrix<long double, Dynamic, Dynamic>::Zero(nVars_, nVars_);
@@ -40,24 +40,24 @@ MatrixReader::MatrixReader(const std::string & inputFileName)
       V_(i, j) = x;
     }
   }
-  std::cout << "V:" << std::endl;
-  std::cout << std::setprecision(4) << V_ << std::endl;
+//  std::cout << "V:" << std::endl;
+//  std::cout << std::setprecision(4) << V_ << std::endl;
 
   meanValues_ = Matrix<long double, Dynamic, 1>::Zero(nVars_);
   for (int i=0; i < nVars_; ++i) {
     inputFile >> x;
     meanValues_(i) = x;
   }
-  std::cout << "meanValues:" << std::endl;
-  std::cout << std::setprecision(4) << meanValues_ << std::endl;
+//  std::cout << "meanValues:" << std::endl;
+//  std::cout << std::setprecision(4) << meanValues_ << std::endl;
 
   meanPars_ = Matrix<long double, Dynamic, 1>::Zero(nTrackParameters_);
   for (int i=0; i < nTrackParameters_; ++i) {
     inputFile >> x;
     meanPars_(i) = x;
   }
-  std::cout << "meanTrackParameters:" << std::endl;
-  std::cout << std::setprecision(4) << meanPars_ << std::endl;
+//  std::cout << "meanTrackParameters:" << std::endl;
+//  std::cout << std::setprecision(4) << meanPars_ << std::endl;
 
   // Read transformation matrix D from file
   D_ = Matrix<long double, Dynamic, Dynamic>::Zero(nTrackParameters_, nVars_);
@@ -67,8 +67,8 @@ MatrixReader::MatrixReader(const std::string & inputFileName)
       D_(i, j) = x;
     }
   }
-  std::cout << "D:" << std::endl;
-  std::cout << D_ << std::endl;
+//  std::cout << "D:" << std::endl;
+///  std::cout << D_ << std::endl;
 }
 
 

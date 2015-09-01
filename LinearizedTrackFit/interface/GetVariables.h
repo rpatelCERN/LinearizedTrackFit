@@ -273,7 +273,7 @@ class Estimator
  public:
   Estimator(const TString & inputFileName) {
     // open matrix file and read V and D arrays
-    std::cout << "opening "+inputFileName+" for reading" << std::endl;
+    //std::cout << "opening "+inputFileName+" for reading" << std::endl;
 
     std::ifstream inputFile;
     inputFile.open(inputFileName);
@@ -324,17 +324,19 @@ class Estimator
     // For printing we do not need to repeat the layers. Be wary that this should not go before the filling of means_ and coeff_
     // or it will miss some layers.
     layers.erase(std::unique(layers.begin(), layers.end()), layers.end());
+/*
     for (auto layer : layers) {
       for (auto v : means_.at(layer)) {
-        std::cout << "Estimator variable mean[" << layer << "] = " << v << std::endl;
+        //std::cout << "Estimator variable mean[" << layer << "] = " << v << std::endl;
       }
     }
-    std::cout << "Estimator parameter mean = " << parameterMean_ << std::endl;
+   // std::cout << "Estimator parameter mean = " << parameterMean_ << std::endl;
     for (auto layer : layers) {
       for (auto v : coeff_.at(layer)) {
-        std::cout << "Estimator coefficient[" << layer << "] = " << v << std::endl;
+      //  std::cout << "Estimator coefficient[" << layer << "] = " << v << std::endl;
       }
     }
+*/
   }
 
   double estimate(const std::vector<float> * var_x, const std::vector<float> * var_y, const std::map<int, unsigned int> & layersFound) {
@@ -414,7 +416,7 @@ class EstimatorSimple
 //    }
 //    else {
       // open matrix file and read V and D arrays
-      std::cout << "opening " + inputFileName + " for reading" << std::endl;
+     // std::cout << "opening " + inputFileName + " for reading" << std::endl;
 
       std::ifstream inputFile;
       inputFile.open(inputFileName);
@@ -441,7 +443,7 @@ class EstimatorSimple
       }
       // Read parameter mean value
       inputFile >> parameterMean_;
-      std::cout << "parameterMean_ = " << parameterMean_ << std::endl;
+      //std::cout << "parameterMean_ = " << parameterMean_ << std::endl;
 
       // Read coefficients
       for (int i = 0; i < nVars; ++i) {

@@ -78,7 +78,7 @@ double LinearizedTrackFitter::fit(const std::vector<double> & vars, const std::v
     std::cout << "Number of layers = " << layers.size() << std::endl;
     for (auto l : layers) std::cout << l << ", ";
     std::cout << std::endl;
-    std::cout << "Number of variables = " << vars.size() << std::endl;
+   std::cout << "Number of variables = " << vars.size() << std::endl;
   }
   unsigned int varsNum = vars.size()/3;
   varsR_.clear();
